@@ -1,0 +1,84 @@
+
+/*
+ * Creates the main GUI structure of Sephia Mail.
+ */
+
+
+
+
+
+/*
+ * Making sure we modify our main root widget to become a Bootstrap CSS "container".
+ */
+p5.web.widgets.property.set:cnt
+  class:container sephia
+
+
+
+
+
+/*
+ * Creating header and "menu" row.
+ */
+create-widget:sephia-header
+  parent:cnt
+  class:row
+  widgets
+    div
+      class:col-xs-10
+      widgets
+        h1
+          innerValue:Sephia Email
+    div
+      class:col-xs-2 sephia-selector
+      widgets
+        ul
+          widgets
+            li
+              widgets
+                a
+                  href:#
+                  innerValue:Inbox
+                  onclick
+                    sys42.windows.show-lambda:x:/..
+            li
+              widgets
+                a
+                  href:#
+                  innerValue:Sent
+                  onclick
+                    sys42.windows.show-lambda:x:/..
+
+
+
+
+/*
+ * Creating "datagrid" widget.
+ */
+create-widget:sephia-content
+  parent:cnt
+  class:row
+  .onretrieve
+    p5.mysql.connect:[sephia]
+      p5.mysql.transaction.begin
+        sys42.utilities.execute-lambda-file:@SEPHIA/fetch-next.hl
+        p5.mysql.transaction.commit
+  oninit
+    p5.web.send-javascript:@"p5.$('sephia-content').raise('.onretrieve');"
+  widgets
+    table
+      class:table table-striped
+      widgets
+        thead
+          innerValue:@"<tr><th>Subject</th><th>From</th><th>Date</th></tr>"
+        container:sephia-datagrid
+          element:tbody
+
+
+
+
+
+/*
+ * Showing inbox.
+ */
+sys42.utilities.execute-lambda-file:@SEPHIA/show-inbox.hl

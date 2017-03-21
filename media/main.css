@@ -1,0 +1,28 @@
+
+/*
+ * Main CSS file for Sephia Mail.
+ */
+
+@keyframes animate-sephia-menu {
+    0% {
+        opacity:0;
+        margin-top:-100px;
+        background:#ffff00;
+    }
+    100% {
+        opacity:1;
+        margin-top:0;
+        background:rgba(0,0,0,.1);
+    }
+}
+.sephia .sephia-selector {
+    border-radius:0 0 5px 5px;
+    animation-name:animate-sephia-menu;
+    animation-duration:.5s;
+    animation-fill-mode:forwards;
+}
+.sephia .sephia-selector ul {
+    list-style:none;
+    padding-left:0;
+    padding-top:5px;
+}

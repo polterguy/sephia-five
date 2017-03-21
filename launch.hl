@@ -1,0 +1,65 @@
+﻿
+/*
+ * Launcher file for Sephia Mail
+ */
+
+
+
+
+
+/*
+ * Verifying user is authorized to access this application.
+ */
+whoami
+if:x:/@whoami/*/default?value
+  throw:Sorry, Sephia Mail is only accessible for logged in users
+
+
+
+
+
+/*
+ * Including Bootstrap CSS and JS, in addition to custom CSS.
+ */
+sys42.bootstrap.include-css
+sys42.bootstrap.include-javascript
+p5.web.include-css-file
+  @CMS/media/css/main.css
+  @SEPHIA/media/main.css
+
+
+
+
+
+/*
+ * Making sure user has his own private "sephia" folders, for attachments.
+ */
+folder-exists:~/documents/private/sephia/
+if:x:/@folder-exists/*?value
+  not
+  create-folder:~/documents/private/sephia/
+folder-exists:~/documents/private/sephia/attachments/
+if:x:/@folder-exists/*?value
+  not
+  create-folder:~/documents/private/sephia/attachments/
+
+
+
+
+
+/*
+ * Making sure user has configured his POP3/SMTP settings, and if not, opening up configure wizard, and "returning early".
+ */
+p5.auth.my-settings.get
+if:x:/@p5.auth.my-settings.get/*/sephia
+  not
+  sys42.utilities.execute-lambda-file:@SEPHIA/configure-inbox.hl
+  return
+
+
+
+
+/*
+ * Creating main form.
+ */
+sys42.utilities.execute-lambda-file:@SEPHIA/create-main-form.hl

@@ -1,0 +1,60 @@
+
+/*
+ * Startup file for Sephia Mail.
+ */
+
+
+
+
+
+/*
+ * Creating unrolling event for Sepia main folder.
+ */
+create-event:p5.io.unroll-path.@SEPHIA
+  return:/system42/apps/sephia-mail
+
+
+
+
+
+/*
+ * Creating database if it doesn't exist, assuming connection string in web.config exists, and is named "sephia".
+ */
+p5.mysql.connect:[sephia]
+  p5.mysql.execute:@"
+CREATE TABLE IF NOT EXISTS `contact` (
+  `id` int(10) unsigned NOT NULL,
+  `name` varchar(1024) NOT NULL,
+  `email` varchar(1024) NOT NULL,
+  `username` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `email` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `subject` varchar(4096) NOT NULL,
+  `date` datetime NOT NULL,
+  `from` varchar(1024) NOT NULL,
+  `username` varchar(45) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `part` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `type` varchar(45) DEFAULT NULL,
+  `content` text NOT NULL,
+  `emailid` int(11) unsigned NOT NULL,
+  UNIQUE KEY `id_UNIQUE` (`id`),
+  KEY `fk_email_idx` (`emailid`),
+  CONSTRAINT `fk_email` FOREIGN KEY (`emailid`) REFERENCES `email` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `recipient` (
+  `id` int(10) unsigned NOT NULL,
+  `contactid` int(10) unsigned NOT NULL,
+  `type` varchar(45) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;"

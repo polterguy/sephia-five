@@ -1,0 +1,74 @@
+
+/*
+ * Allows the user to configure POP3/SMTP settings.
+ */
+
+
+
+
+
+/*
+ * Showing a wizard window, asking user for credentials.
+ */
+sys42.windows.wizard
+  header:Please configure inbox
+  body:<p>Supply settings for your POP3/SMTP account(s).</p>
+  data
+    POP:pop.gmail.com
+    PORT:995
+    SSL:Yes
+      _options
+        No:No
+        Yes:Yes
+    Username
+    Password
+    SMTP:smtp.gmail.com
+    PORT:465
+    SSL:Yes
+      _options
+        No:No
+        Yes:Yes
+    Username
+    Password
+  .onok
+    sys42.windows.wizard.get-values
+
+    /*
+     * Verifying username/password is supplied for both POP3 and SMTP
+     */
+    if:x:/@sys42.windows.wizard.get-values/*/Username/[0,1]?value
+      =:
+      or:x:/@sys42.windows.wizard.get-values/*/Password/[0,1]?value
+        =:
+      or:x:/@sys42.windows.wizard.get-values/*/Username/[1,2]?value
+        =:
+      or:x:/@sys42.windows.wizard.get-values/*/Password/[1,2]?value
+        =:
+      sys42.windows.info-tip:You have to supply username and password for both SMTP and POP3 settings.
+        class:info-window info-window-longer info-window-error
+        parent:sys42-windows-modal-body-wrapper
+      return:bool:false
+
+    /*
+     * Data is valid (somehow).
+     */
+    eval-x:x:/+/*/*
+    p5.auth.my-settings.set
+      sephia
+        pop3-server:x:/@sys42.windows.wizard.get-values/*/POP?value
+        pop3-port:x:/@sys42.windows.wizard.get-values/*/PORT/[0,1]?value
+        pop3-use-ssl:x:/@sys42.windows.wizard.get-values/*/SSL/[0,1]?value
+        pop3-username:x:/@sys42.windows.wizard.get-values/*/Username/[0,1]?value
+        pop3-password:x:/@sys42.windows.wizard.get-values/*/Password/[0,1]?value
+        smtp-server:x:/@sys42.windows.wizard.get-values/*/SMTP?value
+        smtp-port:x:/@sys42.windows.wizard.get-values/*/PORT/[1,2]?value
+        smtp-use-ssl:x:/@sys42.windows.wizard.get-values/*/SSL/[1,2]?value
+        smtp-username:x:/@sys42.windows.wizard.get-values/*/Username/[1,2]?value
+        smtp-password:x:/@sys42.windows.wizard.get-values/*/Password/[1,2]?value
+
+    /*
+     * Returning success, to close modal window.
+     * Which doesn't really matter, since we're doing a reload of page anyways ...
+     */
+    p5.web.reload-location
+    return:bool:true
