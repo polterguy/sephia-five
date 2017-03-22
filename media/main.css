@@ -46,15 +46,35 @@
 .sephia .sephia-unread {
     font-weight:bold;
 }
-.sephia .sephia-has-attachment td:nth-child(3) {
+.sephia .sephia-email-row td:nth-child(3),
+.sephia .sephia-email-row td:nth-child(1) {
     position:relative;
+}
+.sephia .sephia-signed td:nth-child(1) span:before {
+    content:"\270f";
+    position:absolute;
+    top:2px;
+    left:5px;
+    font-family:'Glyphicons Halflings';
+    opacity:.2;
+    font-size:1.2em;
+    margin-left:-25px;
 }
 .sephia .sephia-has-attachment td:nth-child(3) span:after {
     content:"\e142";
     position:absolute;
     top:2px;
+    right:27px;
+    font-family:'Glyphicons Halflings';
+    opacity:.2;
+    font-size:1.2em;
+}
+.sephia .sephia-encrypted td:nth-child(3) span:before {
+    content:"\e033";
+    position:absolute;
+    top:2px;
     right:5px;
     font-family:'Glyphicons Halflings';
-    opacity:.5;
+    opacity:.2;
     font-size:1.2em;
 }
