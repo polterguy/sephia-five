@@ -30,6 +30,21 @@ whoami
 for-each:x:/@p5.pop3.get/*/envelope
 
   /*
+   * Checking if email has alread been fetched from POP server
+   */
+  p5.mysql.scalar:@"select count(*) from email where mimeid = @mimeid"
+    @mimeid:x:/@_dp/#?value
+  if:x:/@p5.mysql.scalar?value
+    >:long:0
+
+    /*
+     * Email has already been fetched.
+     * No need to continue.
+     */
+    continue
+
+
+  /*
    * Making sure we store the "from" database ID.
    */
   _from
@@ -79,13 +94,26 @@ for-each:x:/@p5.pop3.get/*/envelope
       src:x:/@p5.mysql.select/0/*/id?value
 
   /*
+   * Checking if email was signed/encrypted, and if so, making sure we pass in email of first signature to "email" table insertion.
+   */
+  _signature
+  _encrypted:int:0
+  if:x:/@_dp/#/*/*/signature/*
+    set:x:/@_signature?value
+      src:x:/@_dp/#/*/*/signature/0?value
+  
+
+  /*
    * Now inserting into "email" table.
    */
-  p5.mysql.insert:@"insert into email (subject, date, sender, username, isread) values (@subject, @date, @sender, @username, 0)"
+  p5.mysql.insert:@"insert into email (subject, date, sender, username, isread, mimeid, signature, encrypted) values (@subject, @date, @sender, @username, 0, @mimeid, @signature, @encrypted)"
     @subject:x:/@_dp/#/*/Subject?value
     @date:x:/@_dp/#/*/Date?value
     @sender:x:/@_from?value.uint
     @username:x:/@whoami/*/username?value
+    @mimeid:x:/@_dp/#?value
+    @signature:x:/@_signature?value
+    @encrypted:x:/@_encrypted?value
 
   /*
    * Now inserting into "attachment" table.
@@ -146,6 +174,7 @@ for-each:x:/@p5.pop3.get/*/envelope
        * Exists, but name has been updated.
        */
       p5.mysql.update:@"update contact set name = @name where id = @id"
+        @name:x:/@_dp/#?name
         @id:x:/@p5.mysql.select/0/*/id?value
       set:x:/@_contact-id?value
         src:x:/@p5.mysql.select/0/*/id?value

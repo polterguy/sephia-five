@@ -49,12 +49,20 @@ p5.mysql.connect:[sephia]
           :x:/@_class?value
 
     /*
+     * Nicely formatting date.
+     */
+    p5.types.date.format:x:/@_dp/#/*/date?value
+
+    /*
      * Creating table row for email item.
      */
     create-widget
       parent:sephia-datagrid
       element:tr
       class:x:/@_class?value
+      role:button
+      onclick
+        sys42.windows.show-lambda:x:/..
       widgets
         td
           innerValue:x:/@_dp/#/*/name?value
@@ -64,4 +72,4 @@ p5.mysql.connect:[sephia]
         td
           widgets
             span
-              innerValue:x:/@_dp/#/*/date?value
+              innerValue:x:/@p5.types.date.format?value
