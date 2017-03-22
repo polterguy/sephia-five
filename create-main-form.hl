@@ -41,20 +41,6 @@ create-widget:sephia-header
                   class:btn btn-default btn-sm sephia-create-email
                   onclick
                     sys42.windows.show-lambda:x:/..
-            li
-              widgets
-                a
-                  href:#
-                  innerValue:Inbox
-                  onclick
-                    sys42.windows.show-lambda:x:/..
-            li
-              widgets
-                a
-                  href:#
-                  innerValue:Sent
-                  onclick
-                    sys42.windows.show-lambda:x:/..
 
 
 
@@ -66,10 +52,7 @@ create-widget:sephia-content
   parent:cnt
   class:row
   .onretrieve
-    p5.mysql.connect:[sephia]
-      p5.mysql.transaction.begin
-        sys42.utilities.execute-lambda-file:@SEPHIA/fetch-next.hl
-        p5.mysql.transaction.commit
+    sys42.utilities.execute-lambda-file:@SEPHIA/fetch-next.hl
   oninit
     p5.web.send-javascript:@"p5.$('sephia-content').raise('.onretrieve');"
   widgets

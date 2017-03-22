@@ -23,7 +23,8 @@
     position:fixed;
     top:0;
     right:50px;
-    width:150px;
+    width:70px;
+    height:45px;
     z-index:1000;
 }
 .sephia .sephia-selector ul {
@@ -54,11 +55,12 @@
     content:"\270f";
     position:absolute;
     top:2px;
-    left:5px;
+    right:5px;
     font-family:'Glyphicons Halflings';
     opacity:.2;
     font-size:1.2em;
-    margin-left:-25px;
+}
+.sephia td:nth-child(1) span {
 }
 .sephia .sephia-has-attachment td:nth-child(3) span:after {
     content:"\e142";
