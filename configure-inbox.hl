@@ -30,6 +30,8 @@ sys42.windows.wizard
         Yes:Yes
     Username
     Password
+    Email
+    GPG Pwd
   .onok
     sys42.windows.wizard.get-values
 
@@ -44,7 +46,11 @@ sys42.windows.wizard
         =:
       or:x:/@sys42.windows.wizard.get-values/*/Password/[1,2]?value
         =:
-      sys42.windows.info-tip:You have to supply username and password for both SMTP and POP3 settings.
+      or:x:/@sys42.windows.wizard.get-values/*/Email?value
+        =:
+      or:x:/@sys42.windows.wizard.get-values/*/PGP Pwd?value
+        =:
+      sys42.windows.info-tip:You have to supply username and password for both SMTP and POP3 settings, in addition to email and GPG password.
         class:info-window info-window-longer info-window-error
         parent:sys42-windows-modal-body-wrapper
       return:bool:false
@@ -65,6 +71,8 @@ sys42.windows.wizard
         smtp-use-ssl:x:/@sys42.windows.wizard.get-values/*/SSL/[1,2]?value
         smtp-username:x:/@sys42.windows.wizard.get-values/*/Username/[1,2]?value
         smtp-password:x:/@sys42.windows.wizard.get-values/*/Password/[1,2]?value
+        email:x:/@sys42.windows.wizard.get-values/*/Email?value
+        gpg-password:x:/@sys42.windows.wizard.get-values/*/GPG Pwd?value
 
     /*
      * Returning success, to close modal window.

@@ -11,6 +11,7 @@
  * Retrieving POP3 settings, and fetching next 5 emails from POP3 server.
  */
 p5.auth.my-settings.get
+eval-x:x:/+/*/decrypt/**
 p5.pop3.get
   server:x:/@p5.auth.my-settings.get/*/sephia/*/pop3-server?value
   port:x:/@p5.auth.my-settings.get/*/sephia/*/pop3-port?value
@@ -18,6 +19,9 @@ p5.pop3.get
   username:x:/@p5.auth.my-settings.get/*/sephia/*/pop3-username?value
   password:x:/@p5.auth.my-settings.get/*/sephia/*/pop3-password?value
   attachment-folder:~/documents/private/sephia/attachments/
+  decrypt
+    email:x:/@p5.auth.my-settings.get/*/sephia/*/email?value
+      password:x:/@p5.auth.my-settings.get/*/sephia/*/gpg-password?value
 
 
 
@@ -101,7 +105,10 @@ for-each:x:/@p5.pop3.get/*/envelope
   if:x:/@_dp/#/*/*/signature/*
     set:x:/@_signature?value
       src:x:/@_dp/#/*/*/signature/0?value
-  
+  if:x:/@_dp/#/*/multipart/*/decryption-key
+    set:x:/@_encrypted?value
+      src:int:1
+
 
   /*
    * Now inserting into "email" table.
