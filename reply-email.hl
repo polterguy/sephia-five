@@ -10,6 +10,72 @@
 
 
 /*
- * Checking if email is already open.
+ * Finding main "reader widget" for given email, such that we can "replace it" with a "reply widget".
  */
-sys42.windows.show-lambda:x:/..
+p5.web.widgets.find:sephia-read-emails
+  _email-id:x:/../*/email-id?value
+
+
+
+
+
+/*
+ * Opening up database.
+ */
+p5.mysql.connect:[sephia]
+
+  /*
+   * Selecting email data from database.
+   */
+  p5.mysql.select:@"select * from email 
+inner join contact on email.sender = contact.id 
+inner join part on part.emailid = email.id 
+where email.id = @emailid and part.type='plain'"
+    @username:x:/@whoami/*/username?value
+    @emailid:x:/../*/email-id?value
+
+  /*
+   * Creating our "reply widget".
+   * Making sure we get the "Re: " parts in subject.
+   */
+  set:x:/@p5.mysql.select/0/*/subject?value
+    src:"Re: {0}"
+      :x:/@p5.mysql.select/0/*/subject?value
+  p5.html.html-encode:x:/@p5.mysql.select/0/*/subject?value
+
+  /*
+   * Making sure we get each line prepended with a ">".
+   */
+  replace:>{0}
+    :x:/@p5.mysql.select/0/*/content?value
+    src:"\r\n"
+    dest:"\r\n>"
+  trim-right:x:/@replace?value
+    chars:">"
+  p5.html.html-encode:x:/@trim-right?value
+
+  /*
+   * Creating our actual widget.
+   */
+  create-widget
+    after:x:/@p5.web.widgets.find/*/*?value
+    _email-id:x:/../*/email-id?value
+    _is-reply:true
+    class:sephia-email-reply col-xs-12
+    widgets
+      input
+        type:text
+        class:form-control sephia-reply-subject
+        oninit
+          p5.web.send-javascript:@"$('#{0}').focus().select();"
+            :x:/../*/_event?value
+        value:x:/@p5.mysql.connect/*/p5.html.html-encode/[0,1]?value
+      textarea
+        rows:19
+        class:form-control
+        innerValue:x:/@p5.mysql.connect/*/p5.html.html-encode/[1,2]?value
+
+  /*
+   * Deleting "reader widget".
+   */
+  delete-widget:x:/@p5.web.widgets.find/*/*?value

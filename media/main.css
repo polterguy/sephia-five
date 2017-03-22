@@ -103,3 +103,14 @@
     font-style:italic;
     text-align:right;
 }
+.sephia .sephia-email-reply {
+    background-color:rgba(255,255,0,.1);
+    margin-bottom:25px;
+    border-radius:5px;
+    box-shadow:rgba(0,0,0,.7) 3px 3px 6px;
+    padding-top:25px;
+    padding-bottom:25px;
+}
+.sephia .sephia-reply-subject {
+    margin-bottom:15px;
+}
