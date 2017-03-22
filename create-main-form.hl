@@ -61,8 +61,18 @@ create-widget:sephia-content
       widgets
         thead
           innerValue:@"<tr><th>From</th><th>Subject</th><th>Date</th></tr>"
+
+        /*
+         * "Databrid" content (inbox).
+         */
         container:sephia-datagrid
           element:tbody
+
+    /*
+     * Wrapper for "reading emails".
+     */
+    container:sephia-read-emails
+      class:sephia-reader
 
 
 

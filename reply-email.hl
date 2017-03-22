@@ -1,0 +1,15 @@
+
+/*
+ * Allows user to create a reply to an email.
+ *
+ * Expects [email-id] being ID of email from database.
+ */
+
+
+
+
+
+/*
+ * Checking if email is already open.
+ */
+sys42.windows.show-lambda:x:/..

@@ -78,9 +78,19 @@ p5.mysql.connect:[sephia]
       parent:sephia-datagrid
       element:tr
       class:x:/@_class?value
+      _email-id:x:/@_dp/#/*/id?value
       role:button
       onclick
-        sys42.windows.show-lambda:x:/..
+
+        /*
+         * Open email for reading, by invoking file responsible for doing such, passing in ID of email.
+         */
+        p5.web.widgets.property.get:x:/../*/_event?value
+          _email-id
+        eval-x:x:/+/*
+        sys42.utilities.execute-lambda-file:@SEPHIA/open-email.hl
+          email-id:x:/@p5.web.widgets.property.get/*/*?value
+
       widgets
         td
           widgets
@@ -101,6 +111,7 @@ p5.mysql.connect:[sephia]
   /*
    * Updating title of web page, to reflect unread emails.
    */
-  p5.mysql.scalar:@"select count(*) from email where isread=0"
+  p5.mysql.scalar:@"select count(*) from email where isread=0 and username = @username"
+    @username:x:/@whoami/*/username?value
   p5.web.page.set-title:@"Sephia ({0})"
     :x:/@p5.mysql.scalar?value
