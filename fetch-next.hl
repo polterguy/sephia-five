@@ -81,7 +81,7 @@ for-each:x:/@p5.pop3.get/*/envelope
   /*
    * Now inserting into "email" table.
    */
-  p5.mysql.insert:@"insert into email (subject, date, sender, username) values (@subject, @date, @sender, @username)"
+  p5.mysql.insert:@"insert into email (subject, date, sender, username, isread) values (@subject, @date, @sender, @username, 0)"
     @subject:x:/@_dp/#/*/Subject?value
     @date:x:/@_dp/#/*/Date?value
     @sender:x:/@_from?value.uint
@@ -91,7 +91,7 @@ for-each:x:/@p5.pop3.get/*/envelope
    * Now inserting into "attachment" table.
    */
   for-each:x:/@_dp/#/**/filename
-    p5.mysql.insert:@"insert into attachment (filename, prefix, folder, emailid) values (@filename, @prefix, @folder, @emailid)"
+    p5.mysql.insert:@"insert into attachments (filename, prefix, folder, emailid) values (@filename, @prefix, @folder, @emailid)"
       @filename:x:/@_dp/#?value
       @prefix:x:/@_dp/#/*/prefix?value
       @folder:x:/@_dp/#/*/folder?value
@@ -100,7 +100,7 @@ for-each:x:/@p5.pop3.get/*/envelope
   /*
    * Now inserting into "part" table.
    */
-  for-each:x:/@_dp/#/**/text
+  for-each:x:/@_dp/#/**/text/*/content/.
     p5.mysql.insert:@"insert into part (type, content, emailid) values (@type, @content, @emailid)"
       @type:x:/@_dp/#?value
       @content:x:/@_dp/#/*/content?value
@@ -184,3 +184,9 @@ else
    * Roundtripping to 5 minutes from now to check for more emails.
    */
   p5.web.send-javascript:@"setTimeout (function() {p5.$('sephia-content').raise('.onretrieve')}, 300000);"
+
+
+
+/*
+ * Re-create the emails "datagrid" inbox.
+ */

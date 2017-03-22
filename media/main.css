@@ -20,9 +20,41 @@
     animation-name:animate-sephia-menu;
     animation-duration:.5s;
     animation-fill-mode:forwards;
+    position:fixed;
+    top:0;
+    right:50px;
+    width:150px;
+    z-index:1000;
 }
 .sephia .sephia-selector ul {
     list-style:none;
     padding-left:0;
     padding-top:5px;
+}
+.sephia .sephia-create-email {
+    width:50px;
+    position:absolute;
+    top:5px;
+    right:10px;
+}
+.sephia .sephia-email-row {
+    cursor:pointer;
+    font-size:smaller;
+}
+.sephia .sephia-read {
+}
+.sephia .sephia-unread {
+    font-weight:bold;
+}
+.sephia .sephia-has-attachment td:nth-child(3) {
+    position:relative;
+}
+.sephia .sephia-has-attachment td:nth-child(3) span:after {
+    content:"\e142";
+    position:absolute;
+    top:2px;
+    right:5px;
+    font-family:'Glyphicons Halflings';
+    opacity:.5;
+    font-size:1.2em;
 }
