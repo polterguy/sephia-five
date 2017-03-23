@@ -74,6 +74,36 @@ where email.id = @emailid and part.type='plain'"
         rows:19
         class:form-control
         innerValue:x:/@p5.mysql.connect/*/p5.html.html-encode/[1,2]?value
+      div
+        class:text-right prepend-top
+        widgets
+          button
+            class:btn btn-default
+            innerValue:@"<span class=""glyphicon glyphicon-remove""></span>"
+            onclick
+
+              /*
+               * Asking user to confirm that he wants to discard his reply.
+               */
+              eval-x:x:/+/**/_widget
+              sys42.windows.confirm
+                header:Please confirm action
+                body:@"<p>Are you sure you wish to discard your reply?</p>"
+                .onok
+
+                  /*
+                   * Deleting "reply widget" and removing "open" CSS class on datagrid.
+                   */
+                  _widget:x:/../*/_event?value
+                  p5.web.widgets.find-first-ancestor:x:/@_widget?value
+                    _is-reply
+                  p5.web.widgets.property.get:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                    _email-id
+                  p5.web.widgets.find:sephia-datagrid
+                    _email-id:x:/@p5.web.widgets.property.get/*/*?value
+                  sys42.utilities.delete-css-classes:x:/@p5.web.widgets.find/*/*?value
+                    class:sephia-open
+                  delete-widget:x:/@p5.web.widgets.find-first-ancestor/*/*?value
 
   /*
    * Deleting "reader widget".

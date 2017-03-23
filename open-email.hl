@@ -153,8 +153,12 @@ where email.id = @emailid and part.type='plain'"
    */
   p5.mysql.scalar:@"select count(*) from email where isread=0 and username = @username"
     @username:x:/@whoami/*/username?value
-  p5.web.page.set-title:@"Sephia ({0})"
-    :x:/@p5.mysql.scalar?value
+  if:x:/@p5.mysql.scalar?value.int
+    =:int:0
+    p5.web.page.set-title:@"Sephia"
+  else
+    p5.web.page.set-title:@"Sephia ({0})"
+      :x:/@p5.mysql.scalar?value
 
 
 
