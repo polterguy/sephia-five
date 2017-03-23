@@ -91,7 +91,7 @@
 .sephia .sephia-email {
     margin-bottom:25px;
     border-radius:5px;
-    box-shadow:rgba(0,0,0,.7) 3px 3px 6px;
+    box-shadow:rgba(0,0,0,.3) 2px 2px 5px;
 }
 .sephia .sephia-reader-pre {
     white-space:pre;
@@ -119,7 +119,7 @@
     background-color:rgba(255,255,0,.1);
     margin-bottom:25px;
     border-radius:5px;
-    box-shadow:rgba(0,0,0,.7) 3px 3px 6px;
+    box-shadow:rgba(0,0,0,.3) 2px 2px 5px;
     padding-top:25px;
     padding-bottom:25px;
 }
