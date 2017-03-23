@@ -391,6 +391,9 @@ where email.id = @emailid and part.type='plain'"
                    * Constructing and sending email.
                    */
                   eval-x:x:/../*/p5.smtp.send/**
+                  add:x:/../*/sys42.utilities.execute-lambda-file
+                    src:x:/../*/p5.smtp.send/*/envelope
+                  sys42.utilities.execute-lambda-file:@SEPHIA/save-envelope-to-database.hl
                   p5.smtp.send
                     envelope
                       To
