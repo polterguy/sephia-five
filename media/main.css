@@ -137,3 +137,9 @@
 .sephia .sephia-add-recipient {
     cursor:pointer;
 }
+.sephia .sephia-recipient-table {
+    margin-top:15px;
+}
+.sephia .sephia-recipient-table tr:nth-child(1) td {
+    border-top:none;
+}
