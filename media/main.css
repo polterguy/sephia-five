@@ -50,6 +50,9 @@
 .sephia .sephia-unread {
     font-weight:bold;
 }
+.sephia .sephia-outbox {
+    background-color:rgba(0,128,0,.05);
+}
 .sephia .sephia-email-row td:nth-child(3),
 .sephia .sephia-email-row td:nth-child(1) {
     position:relative;
