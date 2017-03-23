@@ -110,6 +110,15 @@ sys42.windows.modal
                     return
 
                   else-if:x:/@p5.web.widgets.property.get/*/*?value
+                    =:
+
+                    /*
+                     * Setting widget's property.
+                     */
+                    p5.web.widgets.property.set:x:/@_return-widget?value
+                      value:x:/@p5.web.widgets.property.get/@p5.web.widgets.property.get/*/*?value
+
+                  else
 
                     /*
                      * Appending new address to widget.

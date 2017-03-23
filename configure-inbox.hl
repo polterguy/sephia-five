@@ -20,18 +20,19 @@ sys42.windows.wizard
       _options
         No:No
         Yes:Yes
-    Username
-    Password
+    Username:YOUR-GMAIL-USERNAME@gmail.com
+    Password:YOUR-GMAIL-PASSWORD
     SMTP:smtp.gmail.com
     PORT:465
     SSL:Yes
       _options
         No:No
         Yes:Yes
-    Username
-    Password
-    Email
-    GPG Pwd
+    Username:YOUR-GMAIL-USERNAME@gmail.com
+    Password:YOUR-GMAIL-PASSWORD
+    Name:John Doe
+    Email:YOUR-GMAIL-USERNAME@gmail.com
+    GPG Pwd:YOUR-Gnu-Privacy-Guard-PASSWORD
   .onok
     sys42.windows.wizard.get-values
 
@@ -45,6 +46,8 @@ sys42.windows.wizard
       or:x:/@sys42.windows.wizard.get-values/*/Username/[1,2]?value
         =:
       or:x:/@sys42.windows.wizard.get-values/*/Password/[1,2]?value
+        =:
+      or:x:/@sys42.windows.wizard.get-values/*/Name?value
         =:
       or:x:/@sys42.windows.wizard.get-values/*/Email?value
         =:
@@ -71,6 +74,7 @@ sys42.windows.wizard
         smtp-use-ssl:x:/@sys42.windows.wizard.get-values/*/SSL/[1,2]?value
         smtp-username:x:/@sys42.windows.wizard.get-values/*/Username/[1,2]?value
         smtp-password:x:/@sys42.windows.wizard.get-values/*/Password/[1,2]?value
+        name:x:/@sys42.windows.wizard.get-values/*/Name?value
         email:x:/@sys42.windows.wizard.get-values/*/Email?value
         gpg-password:x:/@sys42.windows.wizard.get-values/*/GPG Pwd?value
 
