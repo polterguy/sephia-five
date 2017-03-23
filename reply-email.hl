@@ -105,6 +105,67 @@ where email.id = @emailid and part.type='plain'"
     widgets
 
       /*
+       * Attachments "drag'n'drop" widget.
+       */
+      sys42.widgets.uploader
+        filter:hl|txt|zip
+        allow-multiple:true
+        class:sephia-uploader
+        clickable:false
+        .onupload
+
+          /*
+           * Creating a unique filename, and saving file to private documents folder.
+           */
+          p5.types.guid.new
+          replace:x:/@p5.types.guid.new?value.string
+            src:-
+          save-file:~/documents/private/sephia/attachments/sent-{0}-{1}
+            :x:/@replace?value
+            :x:/../*/_filename?value
+            src:x:/../*/_content?value
+
+          /*
+           * Creating an "attachment widget" and adding into "reply widget".
+           */
+          p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+            _is-reply
+          p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+            _attachment-wrapper
+          create-widget
+            parent:x:/@p5.web.widgets.find/*/*?value
+            class:sephia-attachment
+            _reply-attachment
+            _folder:~/documents/private/sephia/attachments/
+              :x:/@replace?value
+              :x:/../*/_filename?value
+            _filename:x:/../*/_filename?value
+            _prefix:sent-{0}-
+              :x:/@replace?value
+            widgets
+              span
+                innerValue:x:/../*/_filename?value
+              literal
+                element:span
+                role:button
+                class:glyphicon glyphicon-trash sephia-delete-attachment
+                onclick
+
+                  /*
+                   * Figuring out filename, and deleting file in its entirety, before deleting "attachment widget".
+                   */
+                  p5.web.widgets.get-parent:x:/../*/_event?value
+                  p5.web.widgets.property.get:x:/@p5.web.widgets.get-parent/*/*?value
+                    _folder
+                    _filename
+                    _prefix
+                  delete-file:{0}{1}{2}
+                    :x:/@p5.web.widgets.property.get/*/*/_folder?value
+                    :x:/@p5.web.widgets.property.get/*/*/_prefix?value
+                    :x:/@p5.web.widgets.property.get/*/*/_filename?value
+                  delete-widget:x:/@p5.web.widgets.get-parent/*/*?value
+
+      /*
        * Subject of email.
        */
       input
@@ -239,6 +300,15 @@ where email.id = @emailid and part.type='plain'"
                           sys42.utilities.execute-lambda-file:@SEPHIA/add-recipient.hl
                             widget:x:/@p5.web.widgets.find/*/*?value
 
+      /*
+       * Attachment widget.
+       */
+      container
+        _attachment-wrapper
+        class:sephia-attachments
+      literal
+        element:div
+        class:clearfix
 
       /*
        * "Action buttons" (send, discard).
@@ -386,6 +456,96 @@ where email.id = @emailid and part.type='plain'"
                     src:"{0}:{1}"
                       :x:/@p5.auth.my-settings.get/*/sephia/*/name?value
                       :x:/@p5.auth.my-settings.get/*/sephia/*/email?value
+
+                  /*
+                   * Adding attachments.
+                   */
+                  p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                    _reply-attachment
+                  p5.web.widgets.property.get:x:/@p5.web.widgets.find/*/*?value
+                    _folder
+                    _filename
+                    _prefix
+                  apply:x:/../*/sys42.utilities.execute-lambda-file
+                    src:x:/@p5.web.widgets.property.get/*
+                    template
+                      file
+                        {folder}:x:/*/_folder?value
+                        {filename}:x:/*/_filename?value
+                        {prefix}:x:/*/_prefix?value
+                  for-each:x:/@p5.web.widgets.property.get/*
+                    split:x:/@_dp/#/*/_filename?value
+                      =:.
+                    switch:x:/@split/0/-?name
+                      case:txt
+                      case:md
+                        eval-x:x:/+/*/*/*(/Content-Disposition|/filename)
+                        add:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart
+                          src
+                            text:plain
+                              Content-Disposition:@"attachment; filename=""{0}"""
+                                :x:/@_dp/#/*/_filename?value
+                              filename:{0}{1}{2}
+                                :x:/@_dp/#/*/_folder?value
+                                :x:/@_dp/#/*/_prefix?value
+                                :x:/@_dp/#/*/_filename?value
+                      case:zip
+                        eval-x:x:/+/*/*/*(/Content-Disposition|/filename)
+                        add:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart
+                          src
+                            application:zip
+                              Content-Disposition:@"attachment; filename=""{0}"""
+                                :x:/@_dp/#/*/_filename?value
+                              filename:{0}{1}{2}
+                                :x:/@_dp/#/*/_folder?value
+                                :x:/@_dp/#/*/_prefix?value
+                                :x:/@_dp/#/*/_filename?value
+                      case:png
+                        eval-x:x:/+/*/*/*(/Content-Disposition|/filename)
+                        add:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart
+                          src
+                            image:png
+                              Content-Disposition:@"attachment; filename=""{0}"""
+                                :x:/@_dp/#/*/_filename?value
+                              filename:{0}{1}{2}
+                                :x:/@_dp/#/*/_folder?value
+                                :x:/@_dp/#/*/_prefix?value
+                                :x:/@_dp/#/*/_filename?value
+                      case:jpg
+                      case:jpeg
+                        eval-x:x:/+/*/*/*(/Content-Disposition|/filename)
+                        add:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart
+                          src
+                            image:jpeg
+                              Content-Disposition:@"attachment; filename=""{0}"""
+                                :x:/@_dp/#/*/_filename?value
+                              filename:{0}{1}{2}
+                                :x:/@_dp/#/*/_folder?value
+                                :x:/@_dp/#/*/_prefix?value
+                                :x:/@_dp/#/*/_filename?value
+                      case:gif
+                        eval-x:x:/+/*/*/*(/Content-Disposition|/filename)
+                        add:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart
+                          src
+                            image:gif
+                              Content-Disposition:@"attachment; filename=""{0}"""
+                                :x:/@_dp/#/*/_filename?value
+                              filename:{0}{1}{2}
+                                :x:/@_dp/#/*/_folder?value
+                                :x:/@_dp/#/*/_prefix?value
+                                :x:/@_dp/#/*/_filename?value
+                      case:hl
+                        eval-x:x:/+/*/*/*(/Content-Disposition|/filename)
+                        add:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart
+                          src
+                            application:x-hyperlambda
+                              Content-Disposition:@"attachment; filename=""{0}"""
+                                :x:/@_dp/#/*/_filename?value
+                              filename:{0}{1}{2}
+                                :x:/@_dp/#/*/_folder?value
+                                :x:/@_dp/#/*/_prefix?value
+                                :x:/@_dp/#/*/_filename?value
+
 
                   /*
                    * Constructing and sending email.

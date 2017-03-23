@@ -104,3 +104,13 @@ p5.mysql.connect:[sephia]
       @contactid:x:/@p5.mysql.select/*/*/id?value
       @type:x:/@_dp/#/.?name
       @emailid:x:/..for-each/@p5.mysql.insert/@p5.mysql.insert/*/id?value
+
+  /*
+   * Inserting into "attachments" table in database.
+   */
+  for-each:x:/../*/file
+    p5.mysql.insert:@"insert into attachments (filename, prefix, folder, emailid) values (@filename, @prefix, @folder, @emailid)"
+      @filename:x:/@_dp/#/*/filename?value
+      @prefix:x:/@_dp/#/*/prefix?value
+      @folder:x:/@_dp/#/*/folder?value
+      @emailid:x:/@p5.mysql.insert/@p5.mysql.insert/@p5.mysql.insert/*/id?value

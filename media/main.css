@@ -43,15 +43,15 @@
 }
 .sephia .sephia-email-row {
     cursor:pointer;
-    color:#999;
+    color:#55aa55;
 }
 .sephia .sephia-read {
 }
 .sephia .sephia-unread {
     font-weight:bold;
 }
-.sephia .sephia-outbox {
-    background-color:rgba(0,128,0,.05);
+.sephia .sephia-outbox td {
+    color:#5555aa;
 }
 .sephia .sephia-email-row td:nth-child(3),
 .sephia .sephia-email-row td:nth-child(1) {
@@ -123,10 +123,21 @@
 }
 .sephia .sephia-attachment:hover {
     opacity:1;
-    transition:opacity .5s, transform ease-in .1s;
+    transition:opacity .5s;
 }
 .sephia .sephia-sandboxed-attachment {
     background-color:rgba(255,0,0,.1);
+}
+.sephia .sephia-delete-attachment {
+    float:right;
+    padding-top:2px;
+    margin-right:-15px;
+    transition:color .5s, transform ease-in .5s;
+}
+.sephia .sephia-delete-attachment:hover {
+    transition:color .5s, transform ease-in .5s;
+    color:Red;
+    transform:rotate(45deg);
 }
 .sephia .sephia-reader-remove {
     position:absolute;
@@ -155,6 +166,12 @@
     padding-top:15px;
     padding-bottom:15px;
 }
+.sephia .sephia-email-reply input,
+.sephia .sephia-email-reply textarea,
+.sephia .sephia-email-reply button {
+    z-index:2;
+    position:relative;
+}
 .sephia .sephia-reply-subject {
     margin-bottom:15px;
 }
@@ -165,6 +182,13 @@
 }
 .sephia .sephia-action-button {
     width:77px;
+}
+.sephia .sephia-uploader {
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
 }
 .sephia .sephia-add-recipient {
     cursor:pointer;
