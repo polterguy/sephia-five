@@ -213,6 +213,23 @@ where email.id = @emailid and part.type='plain'"
                     widgets
                       button
                         class:btn btn-default
+                        innerValue:@"<span class=""glyphicon glyphicon-remove""></span>"
+                        onclick
+
+                          /*
+                           * Removing entire value from textbox widget, and setting focus to textbox.
+                           */
+                          p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                            _to-field
+                          p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                            element:input
+                          p5.web.widgets.property.set:x:/@p5.web.widgets.find/*/*?value
+                            value:
+                          p5.web.send-javascript:@"$('#{0}').focus();"
+                            :x:/@p5.web.widgets.find/*/*?value
+
+                      button
+                        class:btn btn-default
                         innerValue:@"<span class=""glyphicon glyphicon-plus""></span>"
                         onclick
 
@@ -249,6 +266,22 @@ where email.id = @emailid and part.type='plain'"
                     widgets
                       button
                         class:btn btn-default
+                        innerValue:@"<span class=""glyphicon glyphicon-remove""></span>"
+                        onclick
+
+                          /*
+                           * Removing entire value from textbox widget, and setting focus to textbox.
+                           */
+                          p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                            _to-field
+                          p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                            element:input
+                          p5.web.widgets.property.set:x:/@p5.web.widgets.find/*/*?value
+                            value:
+                          p5.web.send-javascript:@"$('#{0}').focus();"
+                            :x:/@p5.web.widgets.find/*/*?value
+                      button
+                        class:btn btn-default
                         innerValue:@"<span class=""glyphicon glyphicon-plus""></span>"
                         onclick
 
@@ -283,6 +316,22 @@ where email.id = @emailid and part.type='plain'"
                   span
                     class:input-group-btn
                     widgets
+                      button
+                        class:btn btn-default
+                        innerValue:@"<span class=""glyphicon glyphicon-remove""></span>"
+                        onclick
+
+                          /*
+                           * Removing entire value from textbox widget, and setting focus to textbox.
+                           */
+                          p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                            _to-field
+                          p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                            element:input
+                          p5.web.widgets.property.set:x:/@p5.web.widgets.find/*/*?value
+                            value:
+                          p5.web.send-javascript:@"$('#{0}').focus();"
+                            :x:/@p5.web.widgets.find/*/*?value
                       button
                         class:btn btn-default
                         innerValue:@"<span class=""glyphicon glyphicon-plus""></span>"
@@ -546,6 +595,62 @@ where email.id = @emailid and part.type='plain'"
                                 :x:/@_dp/#/*/_prefix?value
                                 :x:/@_dp/#/*/_filename?value
 
+                  /*
+                   * Then verifying we have a public PGP key for all recipients, 
+                   * but only doing this if page value has not "overridden" check.
+                   */
+                  _encrypt:bool:false
+                  p5.web.viewstate.get:sephia.force-send
+                  if:x:/@p5.web.viewstate.get/*
+                    not
+                    p5.crypto.list-public-keys
+                    for-each:x:/../*/p5.smtp.send/*/envelope/*(/To|/Cc|/Bcc)/*?value
+                      if:x:@"/@p5.crypto.list-public-keys/*/~{0}"
+                        :"<{0}>"
+                          :x:/@_dp?value
+                        not
+
+                        /*
+                         * Warning user, asking to confirm sending, before allowing email to be sent without encryption!
+                         */
+                        eval-x:x:/+/**/_send-widget
+                        sys42.windows.confirm
+                          header:WARNING!!
+                          body:@"<p>You don't seem to have an encryption certificate for all recipients in your email, do you still wish to proceed?</p>"
+                          .onok
+                            _send-widget:x:/../*/_event?value
+                            p5.web.viewstate.set:sephia.force-send
+                              src:true
+                            p5.web.widgets.ajax-events.raise:x:/@_send-widget?value
+                              onclick
+                        return
+
+                    /*
+                     * If we've come this far, we have public PGP keys for all recipients.
+                     */
+                    set:x:/@_encrypt?value
+                      src:bool:true
+
+                  /*
+                   * Making sure we remove "signal value" used in above logic.
+                   */
+                  p5.web.viewstate.set:sephia.force-send
+
+                  /*
+                   * Checking to see if we should encrypt email.
+                   */
+                  if:x:/@_encrypt?value
+
+                    /*
+                     * Yup, encrypting!
+                     */
+                    add:x:/+/*/*
+                      src:x:/../*/p5.smtp.send/*/envelope/*(/To|/Cc|/Bcc)/*
+                    add:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart
+                      src
+                        encrypt
+                    set:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart/*/encrypt/*?name
+                      src:email
 
                   /*
                    * Constructing and sending email.
@@ -580,11 +685,13 @@ where email.id = @emailid and part.type='plain'"
                    */
                   delete-widget:x:/@p5.web.widgets.find-first-ancestor/*/*?value
                   sys42.windows.info-tip:Email was successfully sent!
+                  clear-widget:sephia-datagrid
+                  sys42.utilities.execute-lambda-file:@SEPHIA/show-inbox.hl
 
 
               button
                 class:btn btn-default sephia-action-button
-                innerValue:@"<span class=""glyphicon glyphicon-remove""></span>"
+                innerValue:@"<span class=""glyphicon glyphicon-trash""></span>"
                 title:Discard reply
                 onclick
 

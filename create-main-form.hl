@@ -37,7 +37,7 @@ create-widget:sephia-header
             li
               widgets
                 button
-                  innerValue:+
+                  innerValue:@"<span class=""glyphicon glyphicon-envelope""></span>"
                   class:btn btn-default btn-sm sephia-create-email
                   onclick
                     sys42.windows.show-lambda:x:/..
