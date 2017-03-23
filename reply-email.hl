@@ -390,7 +390,7 @@ where email.id = @emailid and part.type='plain'"
                   /*
                    * Constructing and sending email.
                    */
-                  eval-x:x:/+/**
+                  eval-x:x:/../*/p5.smtp.send/**
                   p5.smtp.send
                     envelope
                       To
@@ -400,13 +400,24 @@ where email.id = @emailid and part.type='plain'"
                       Subject:x:/../**/_subject/+/*/*?value
                       body
                         multipart:mixed
-                          preamble:Cryptoxified by Marvin, a WikiLeaks supporter
                           sign
                             email:x:/@p5.auth.my-settings.get/*/sephia/*/email?value
                               password:x:/@p5.auth.my-settings.get/*/sephia/*/gpg-password?value
                           text:plain
-                            content:x:/../**/_body/+/*/*?value
-                          epilogue:Check it out at - https://github.com/polterguy/sephia-mail
+                            content:@"{0}
+
+{1}
+{2}"
+                              :x:/../**/_body/+/*/*?value
+                              :"-- "
+                              :x:/@p5.auth.my-settings.get/*/sephia/*/signature?value
+
+                  /*
+                   * Deleting "reply widget", and notify user.
+                   */
+                  delete-widget:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                  sys42.windows.info-tip:Email was successfully sent!
+
 
               button
                 class:btn btn-default sephia-action-button

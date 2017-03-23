@@ -69,7 +69,7 @@
     content:"\e142";
     position:absolute;
     top:2px;
-    right:27px;
+    right:5px;
     font-family:'Glyphicons Halflings';
     opacity:.5;
     font-size:1.2em;
@@ -78,7 +78,7 @@
     content:"\e033";
     position:absolute;
     top:2px;
-    right:5px;
+    right:27px;
     font-family:'Glyphicons Halflings';
     opacity:.5;
     font-size:1.2em;
@@ -101,6 +101,7 @@
     color:rgba(0,0,0,.3);
     font-style:italic;
     font-size:0.8em;
+    margin-top:25px;
 }
 .sephia .sephia-attachments {
 }
@@ -141,6 +142,7 @@
     font-style:italic;
     text-align:right;
     margin-right:55px;
+    font-size:.8em;
 }
 .sephia .sephia-email-reply {
     background-color:rgba(255,255,0,.1);

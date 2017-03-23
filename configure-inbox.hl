@@ -33,6 +33,7 @@ sys42.windows.wizard
     Name:John Doe
     Email:YOUR-GMAIL-USERNAME@gmail.com
     GPG Pwd:YOUR-Gnu-Privacy-Guard-PASSWORD
+    Signature:"Support your local WikiLeaks chapter - https://wikileaks.org"
   .onok
     sys42.windows.wizard.get-values
 
@@ -77,6 +78,7 @@ sys42.windows.wizard
         name:x:/@sys42.windows.wizard.get-values/*/Name?value
         email:x:/@sys42.windows.wizard.get-values/*/Email?value
         gpg-password:x:/@sys42.windows.wizard.get-values/*/GPG Pwd?value
+        signature:x:/@sys42.windows.wizard.get-values/*/Signature?value
 
     /*
      * Returning success, to close modal window.

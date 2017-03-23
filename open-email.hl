@@ -216,7 +216,8 @@ where email.id = @emailid and part.type='plain'"
         innerValue:x:/@p5.mysql.connect/*/p5.html.html-encode/[1,2]?value
       p
         class:sephia-reader-recipients
-        innerValue:x:/@p5.mysql.connect/*/p5.html.html-encode/[4,5]?value
+        innerValue:"Recipients: {0}"
+          :x:/@p5.mysql.connect/*/p5.html.html-encode/[4,5]?value
       div
         class:sephia-attachments
         widgets
@@ -227,11 +228,11 @@ where email.id = @emailid and part.type='plain'"
         class:sephia-reader-meta
         widgets
           span
-            innerValue:x:/@p5.mysql.connect/*/p5.html.html-encode/[2,3]?value
+            innerValue:"From; {0}"
+              :x:/@p5.mysql.connect/*/p5.html.html-encode/[3,4]?value
           span
-            innerValue:" - "
-          span
-            innerValue:x:/@p5.mysql.connect/*/p5.html.html-encode/[3,4]?value
+            innerValue:" &lt;{0}&gt;"
+              :x:/@p5.mysql.connect/*/p5.html.html-encode/[2,3]?value
           span
             innerValue:" - "
           span
