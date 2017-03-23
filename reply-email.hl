@@ -134,6 +134,7 @@ where email.id = @emailid and part.type='plain'"
             widgets
               div
                 class:input-group
+                _to-field
                 widgets
                   span
                     class:input-group-addon
@@ -149,11 +150,26 @@ where email.id = @emailid and part.type='plain'"
                       button
                         class:btn btn-default
                         innerValue:@"<span class=""glyphicon glyphicon-plus""></span>"
+                        onclick
+
+                          /*
+                           * Executing file that is reponsible for retrieving a new email address from "contact" table,
+                           * making sure we pass in widget ID for widget where result should be added.
+                           */
+                          p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                            _to-field
+                          p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                            element:input
+                          eval-x:x:/+/*
+                          sys42.utilities.execute-lambda-file:@SEPHIA/add-recipient.hl
+                            widget:x:/@p5.web.widgets.find/*/*?value
+
           div
             class:col-xs-12 col-md-4 prepend-bottom
             widgets
               div
                 class:input-group
+                _to-field
                 widgets
                   span
                     class:input-group-addon
@@ -169,11 +185,26 @@ where email.id = @emailid and part.type='plain'"
                       button
                         class:btn btn-default
                         innerValue:@"<span class=""glyphicon glyphicon-plus""></span>"
+                        onclick
+
+                          /*
+                           * Executing file that is reponsible for retrieving a new email address from "contact" table,
+                           * making sure we pass in widget ID for widget where result should be added.
+                           */
+                          p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                            _to-field
+                          p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                            element:input
+                          eval-x:x:/+/*
+                          sys42.utilities.execute-lambda-file:@SEPHIA/add-recipient.hl
+                            widget:x:/@p5.web.widgets.find/*/*?value
+
           div
             class:col-xs-12 col-md-4 prepend-bottom
             widgets
               div
                 class:input-group
+                _to-field
                 widgets
                   span
                     class:input-group-addon
@@ -189,6 +220,20 @@ where email.id = @emailid and part.type='plain'"
                       button
                         class:btn btn-default
                         innerValue:@"<span class=""glyphicon glyphicon-plus""></span>"
+                        onclick
+
+                          /*
+                           * Executing file that is reponsible for retrieving a new email address from "contact" table,
+                           * making sure we pass in widget ID for widget where result should be added.
+                           */
+                          p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                            _to-field
+                          p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                            element:input
+                          eval-x:x:/+/*
+                          sys42.utilities.execute-lambda-file:@SEPHIA/add-recipient.hl
+                            widget:x:/@p5.web.widgets.find/*/*?value
+
 
       /*
        * "Action buttons" (send, discard).

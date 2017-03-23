@@ -1,0 +1,24 @@
+
+/*
+ * Adds a recipient to some "input" type of widget from "contact" table.
+ *
+ * Expects [widget] being widget where to add result.
+ */
+
+
+
+
+
+/*
+ * Using a modal window, which allows user to search for contacts.
+ */
+sys42.windows.modal
+  header:Add recipient
+  widgets
+    table
+      class:table table-hover
+      widgets
+        thead
+          innerValue:@"<tr><th>Name</th><th>Email</th></tr>"
+        tbody:sephia-search-for-recipient
+          widgets
