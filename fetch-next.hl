@@ -96,9 +96,12 @@ p5.mysql.connect:[sephia]
 
       else-if:x:/@p5.mysql.select/0/*/name?name
         !=:x:/@_dp/#/*/From/*?name
+        and:x:/@_dp/#/*/From/*?name
+          !=:Anonymous
 
         /*
          * Exists, but name has been updated.
+         * Notice, we do NOT update if name from POP3 server is "Anonymous".
          */
         p5.mysql.update:@"update contact set name = @name where id = @id"
           @id:x:/@p5.mysql.select/0/*/id?value

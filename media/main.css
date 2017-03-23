@@ -97,6 +97,11 @@
     white-space:pre;
     color:rgba(0,0,0,.7);
 }
+.sephia .sephia-reader-recipients {
+    color:rgba(0,0,0,.3);
+    font-style:italic;
+    font-size:0.8em;
+}
 .sephia .sephia-attachments {
 }
 .sephia .sephia-attachment {

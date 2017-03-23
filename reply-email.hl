@@ -390,9 +390,7 @@ where email.id = @emailid and part.type='plain'"
                   /*
                    * Constructing and sending email.
                    */
-                  eval-x:x:/+3/**
-                  sys42.windows.show-lambda:x:/..
-                  return
+                  eval-x:x:/+/**
                   p5.smtp.send
                     envelope
                       To
@@ -401,11 +399,14 @@ where email.id = @emailid and part.type='plain'"
                       From
                       Subject:x:/../**/_subject/+/*/*?value
                       body
-                        text:plain
+                        multipart:mixed
+                          preamble:Cryptoxified by Marvin, a WikiLeaks supporter
                           sign
                             email:x:/@p5.auth.my-settings.get/*/sephia/*/email?value
                               password:x:/@p5.auth.my-settings.get/*/sephia/*/gpg-password?value
-                          content:x:/../**/_body/+/*/*?value
+                          text:plain
+                            content:x:/../**/_body/+/*/*?value
+                          epilogue:Check it out at - https://github.com/polterguy/sephia-mail
 
               button
                 class:btn btn-default sephia-action-button
