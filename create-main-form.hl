@@ -63,7 +63,7 @@ create-widget:sephia-content
           innerValue:@"<tr><th>From</th><th>Subject</th><th>Date</th></tr>"
 
         /*
-         * "Databrid" content (inbox).
+         * "Datagrid" content (inbox).
          */
         container:sephia-datagrid
           element:tbody
