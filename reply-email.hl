@@ -3,6 +3,8 @@
  * Allows user to create a reply to an email.
  *
  * Expects [email-id] being ID of email from database.
+ *
+ * If no [email-id] is given, 
  */
 
 
@@ -545,6 +547,7 @@ where email.id = @emailid and part.type='plain'"
                             application:zip
                               Content-Disposition:@"attachment; filename=""{0}"""
                                 :x:/@_dp/#/*/_filename?value
+                              Content-Transfer-Encoding:binary
                               filename:{0}{1}{2}
                                 :x:/@_dp/#/*/_folder?value
                                 :x:/@_dp/#/*/_prefix?value
@@ -556,6 +559,7 @@ where email.id = @emailid and part.type='plain'"
                             image:png
                               Content-Disposition:@"attachment; filename=""{0}"""
                                 :x:/@_dp/#/*/_filename?value
+                              Content-Transfer-Encoding:binary
                               filename:{0}{1}{2}
                                 :x:/@_dp/#/*/_folder?value
                                 :x:/@_dp/#/*/_prefix?value
@@ -568,6 +572,7 @@ where email.id = @emailid and part.type='plain'"
                             image:jpeg
                               Content-Disposition:@"attachment; filename=""{0}"""
                                 :x:/@_dp/#/*/_filename?value
+                              Content-Transfer-Encoding:binary
                               filename:{0}{1}{2}
                                 :x:/@_dp/#/*/_folder?value
                                 :x:/@_dp/#/*/_prefix?value
@@ -579,6 +584,7 @@ where email.id = @emailid and part.type='plain'"
                             image:gif
                               Content-Disposition:@"attachment; filename=""{0}"""
                                 :x:/@_dp/#/*/_filename?value
+                              Content-Transfer-Encoding:binary
                               filename:{0}{1}{2}
                                 :x:/@_dp/#/*/_folder?value
                                 :x:/@_dp/#/*/_prefix?value
@@ -651,6 +657,9 @@ where email.id = @emailid and part.type='plain'"
                         encrypt
                     set:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart/*/encrypt/*?name
                       src:email
+                    add:x:/../*/sys42.utilities.execute-lambda-file
+                      src
+                        encrypted:int:1
 
                   /*
                    * Constructing and sending email.

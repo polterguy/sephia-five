@@ -83,7 +83,7 @@ p5.mysql.connect:[sephia]
     @username:x:/@whoami/*/username?value
     @mimeid:unknown-{0}
       :x:/@p5.types.guid.new?value.string
-    @encrypted:x:/@_is-encrypted?value
+    @encrypted:x:/../*/encrypted?value
     @signature:x:/../*/envelope/*/From/*?value
 
   /*
