@@ -176,7 +176,14 @@ p5.mysql.connect:[sephia]
 
           /*
            * Doesn't exist, inserting new entry.
+           * Making sure we default name to "Anonymous", unless explicitly given.
            */
+          if:x:/@_dp/#?name
+            =:
+            or:x:/@_dp/#?name
+              not
+            set:x:/@_dp/#?name
+              src:Anonymous
           p5.mysql.insert:@"insert into contact (name, email, username) value (@name, @email, @username)"
             @name:x:/@_dp/#?name
             @email:x:/@_dp/#?value
@@ -186,6 +193,9 @@ p5.mysql.connect:[sephia]
 
         else-if:x:/@p5.mysql.select/0/*/name?value
           !=:x:/@_dp/#?name
+          and:x:/@_dp/#?name
+            !=:
+          and:x:/@_dp/#?name
 
           /*
            * Exists, but name has been updated.

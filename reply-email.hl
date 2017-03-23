@@ -119,7 +119,7 @@ where email.id = @emailid and part.type='plain'"
        * Body of email.
        */
       textarea
-        rows:19
+        rows:13
         class:form-control
         innerValue:x:/@p5.mysql.connect/*/p5.html.html-encode/[1,2]?value
 
