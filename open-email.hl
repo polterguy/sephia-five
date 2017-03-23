@@ -44,6 +44,8 @@ where email.id = @emailid and part.type='plain'"
     _email-id:x:/../*/email-id?value
   sys42.utilities.delete-css-classes:x:/@p5.web.widgets.find/*/*?value
     class:sephia-unread
+  sys42.utilities.add-css-classes:x:/@p5.web.widgets.find/*/*?value
+    class:sephia-open
 
 
   /*
@@ -71,6 +73,25 @@ where email.id = @emailid and part.type='plain'"
         email-id:x:/@p5.web.widgets.property.get/*/*?value
 
     widgets
+      button
+        class:btn btn-default sephia-reader-remove
+        innerValue:@"<span class=""glyphicon glyphicon-remove""></span>"
+        onclick
+
+          /*
+           * Finding parent main container widget, and simply deleting it.
+           * Finding row for widget in datagrid, and removing the "sephia-open" CSS class.
+           */
+          p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+            _email-id
+          p5.web.widgets.property.get:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+            _email-id
+          p5.web.widgets.find:sephia-datagrid
+            _email-id:x:/@p5.web.widgets.property.get/*/*?value
+          sys42.utilities.delete-css-classes:x:/@p5.web.widgets.find/*/*?value
+            class:sephia-open
+          delete-widget:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+
       button
         class:btn btn-default sephia-reader-delete
         innerValue:@"<span class=""glyphicon glyphicon-trash""></span>"
