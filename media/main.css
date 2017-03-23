@@ -126,3 +126,11 @@
 .sephia .sephia-reply-subject {
     margin-bottom:15px;
 }
+.sephia .sephia-recipient {
+}
+.sephia .input-group-addon {
+    min-width:initial;
+}
+.sephia .sephia-action-button {
+    width:77px;
+}

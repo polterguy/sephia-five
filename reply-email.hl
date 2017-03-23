@@ -36,11 +36,21 @@ where email.id = @emailid and part.type='plain'"
 
   /*
    * Creating our "reply widget".
-   * Making sure we get the "Re: " parts in subject.
+   * Making sure we get the "Re: " parts in subject, but only if it does NOT exist from before.
    */
-  set:x:/@p5.mysql.select/0/*/subject?value
-    src:"Re: {0}"
-      :x:/@p5.mysql.select/0/*/subject?value
+  if
+    fetch:x:/0/0?value
+      index-of:x:/@p5.mysql.select/0/*/subject?value
+        src:"Re:"
+    =:int:0
+    not
+    set:x:/@p5.mysql.select/0/*/subject?value
+      src:"Re: {0}"
+        :x:/@p5.mysql.select/0/*/subject?value
+
+  /*
+   * Making sure we avoid "HTML injection", also in subject of email!
+   */
   p5.html.html-encode:x:/@p5.mysql.select/0/*/subject?value
 
   /*
@@ -55,6 +65,36 @@ where email.id = @emailid and part.type='plain'"
   p5.html.html-encode:x:/@trim-right?value
 
   /*
+   * Retrieving recipients of original email.
+   */
+  p5.mysql.select:@"select * from contact inner join email on email.sender = contact.id where email.id = @emailid"
+    @emailid:x:/../*/email-id?value
+  eval-x:x:/+
+  _to:x:/@p5.mysql.select/*/*/email?value
+
+  /*
+   * Then Cc (and Bcc, which technically shouldn't exist though for most cases).
+   */
+  p5.mysql.select:@"select * from contact inner join recipient on contact.id = recipient.contactid where recipient.emailid = @emailid"
+    @emailid:x:/../*/email-id?value
+  _cc
+  for-each:x:/@p5.mysql.select/*/*/type/=Cc/./*/email?value
+    set:x:/@_cc?value
+      src:{0}, {1}
+        :x:/@_cc?value
+        :x:/@_dp?value
+  trim-left:x:/@_cc?value
+    chars:", "
+  _bcc
+  for-each:x:/@p5.mysql.select/*/*/type/=Bcc/./*/email?value
+    set:x:/@_bcc?value
+      src:{0}, {1}
+        :x:/@_bcc?value
+        :x:/@_dp?value
+  trim-left:x:/@_bcc?value
+    chars:", "
+
+  /*
    * Creating our actual widget.
    */
   create-widget
@@ -63,6 +103,10 @@ where email.id = @emailid and part.type='plain'"
     _is-reply:true
     class:sephia-email-reply col-xs-12
     widgets
+
+      /*
+       * Subject of email.
+       */
       input
         type:text
         class:form-control sephia-reply-subject
@@ -70,24 +114,99 @@ where email.id = @emailid and part.type='plain'"
           p5.web.send-javascript:@"$('#{0}').focus().select();"
             :x:/../*/_event?value
         value:x:/@p5.mysql.connect/*/p5.html.html-encode/[0,1]?value
+
+      /*
+       * Body of email.
+       */
       textarea
         rows:19
         class:form-control
         innerValue:x:/@p5.mysql.connect/*/p5.html.html-encode/[1,2]?value
+
+      /*
+       * Recipients of email.
+       */
       div
-        class:text-right prepend-top
+        class:prepend-top row
+        widgets
+          div
+            class:col-xs-12 col-md-4 prepend-bottom
+            widgets
+              div
+                class:input-group
+                widgets
+                  span
+                    class:input-group-addon
+                    innerValue:To
+                  input
+                    type:text
+                    class:form-control sephia-recipient
+                    placeholder:To ...
+                    value:x:/@_to?value
+                  span
+                    class:input-group-btn
+                    widgets
+                      button
+                        class:btn btn-default
+                        innerValue:@"<span class=""glyphicon glyphicon-plus""></span>"
+          div
+            class:col-xs-12 col-md-4 prepend-bottom
+            widgets
+              div
+                class:input-group
+                widgets
+                  span
+                    class:input-group-addon
+                    innerValue:Cc
+                  input
+                    type:text
+                    class:form-control sephia-recipient
+                    placeholder:Cc ...
+                    value:x:/..p5.mysql.connect/*/trim-left/[0,1]?value
+                  span
+                    class:input-group-btn
+                    widgets
+                      button
+                        class:btn btn-default
+                        innerValue:@"<span class=""glyphicon glyphicon-plus""></span>"
+          div
+            class:col-xs-12 col-md-4 prepend-bottom
+            widgets
+              div
+                class:input-group
+                widgets
+                  span
+                    class:input-group-addon
+                    innerValue:Bcc
+                  input
+                    type:text
+                    class:form-control sephia-recipient
+                    placeholder:Bcc ...
+                    value:x:/..p5.mysql.connect/*/trim-left/[1,2]?value
+                  span
+                    class:input-group-btn
+                    widgets
+                      button
+                        class:btn btn-default
+                        innerValue:@"<span class=""glyphicon glyphicon-plus""></span>"
+
+      /*
+       * "Action buttons" (send, discard).
+       */
+      div
+        class:text-right
         widgets
           div
             class:btn-group
             role:group
             widgets
               button
-                class:btn btn-default
+                class:btn btn-default sephia-action-button
                 innerValue:@"<span class=""glyphicon glyphicon-send""></span>"
                 title:Send reply
                 onclick
               button
-                class:btn btn-default
+                class:btn btn-default sephia-action-button
                 innerValue:@"<span class=""glyphicon glyphicon-remove""></span>"
                 title:Discard reply
                 onclick
