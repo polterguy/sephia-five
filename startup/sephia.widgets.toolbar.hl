@@ -201,7 +201,7 @@ whenever the associated 'datagrid' needs to be re-databound"
                   class:input-group
                 p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
                   type:search
-                p5.web.widgets.property.get:x:/*p5.web.widgets.find/*/*?value
+                p5.web.widgets.property.get:x:/@p5.web.widgets.find/*/*?value
                   value
 
                 /*
@@ -269,7 +269,7 @@ whenever the associated 'datagrid' needs to be re-databound"
                   class:input-group
                 p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
                   type:search
-                p5.web.widgets.property.get:x:/*p5.web.widgets.find/*/*?value
+                p5.web.widgets.property.get:x:/@p5.web.widgets.find/*/*?value
                   value
 
                 /*

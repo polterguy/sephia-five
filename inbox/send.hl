@@ -278,7 +278,7 @@ if:x:/@p5.web.viewstate.get/*
            * Lambda callback supplied by user for what do do if user click OK.
            * Added before creation of modal window.
            */
-          eval:x:/.encryption-warning
+          eval:x:/../*/.encryption-warning
 
       /*
        * Returning early to avoid sending email.

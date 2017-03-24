@@ -49,7 +49,7 @@ create-widget:sephia-header
       clear-widget:sephia-datagrid
       add:x:/+
         src:x:/../*(/filter|/offset)
-      sys42.utilities.execute-lambda-file:@SEPHIA/show.hl
+      sys42.utilities.execute-lambda-file:@SEPHIA/inbox/show.hl
 
   widgets
     div
@@ -96,7 +96,7 @@ create-widget:sephia-header
               innerValue:@"<span class=""glyphicon glyphicon-envelope""></span>"
               class:btn btn-success sephia-new-email-btn
               onclick
-                sys42.utilities.execute-lambda-file:@SEPHIA/create.hl
+                sys42.utilities.execute-lambda-file:@SEPHIA/inbox/create.hl
 
 
 
