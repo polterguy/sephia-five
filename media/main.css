@@ -94,7 +94,7 @@
     box-shadow:rgba(0,0,0,.3) 2px 2px 5px;
 }
 .sephia .sephia-reader-pre {
-    white-space:pre;
+    white-space:pre-wrap;
     color:rgba(0,0,0,.7);
 }
 .sephia .sephia-reader-recipients {
