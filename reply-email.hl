@@ -31,7 +31,6 @@ p5.mysql.connect:[sephia]
 inner join contact on email.sender = contact.id 
 inner join part on part.emailid = email.id 
 where email.id = @emailid and part.type='plain'"
-    @username:x:/@whoami/*/username?value
     @emailid:x:/../*/email-id?value
 
   /*
@@ -712,27 +711,17 @@ where email.id = @emailid and part.type='plain'"
                 onclick
 
                   /*
-                   * Asking user to confirm that he wants to discard his reply.
+                   * Deleting "reply widget" and removing "open" CSS class on datagrid.
                    */
-                  eval-x:x:/+/**/_widget
-                  sys42.windows.confirm
-                    header:Please confirm action
-                    body:@"<p>Are you sure you wish to discard your reply?</p>"
-                    .onok
-
-                      /*
-                       * Deleting "reply widget" and removing "open" CSS class on datagrid.
-                       */
-                      _widget:x:/../*/_event?value
-                      p5.web.widgets.find-first-ancestor:x:/@_widget?value
-                        _is-reply
-                      p5.web.widgets.property.get:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-                        _email-id
-                      p5.web.widgets.find:sephia-datagrid
-                        _email-id:x:/@p5.web.widgets.property.get/*/*?value
-                      sys42.utilities.delete-css-classes:x:/@p5.web.widgets.find/*/*?value
-                        class:sephia-open
-                      delete-widget:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                  p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                    _is-reply
+                  p5.web.widgets.property.get:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                    _email-id
+                  p5.web.widgets.find:sephia-datagrid
+                    _email-id:x:/@p5.web.widgets.property.get/*/*?value
+                  sys42.utilities.delete-css-classes:x:/@p5.web.widgets.find/*/*?value
+                    class:sephia-open
+                  delete-widget:x:/@p5.web.widgets.find-first-ancestor/*/*?value
 
   /*
    * Deleting "reader widget".
