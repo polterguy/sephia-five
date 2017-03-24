@@ -162,7 +162,7 @@ sys42.windows.modal
           /*
            * Making sure we trap carriage return in textbox.
            */
-          onkeydown:"return p5.sephia_recipients_onkeypress(event);"
+          onkeydown:"return p5.sephia_recipients_onkeydown(event);"
 
         span
           class:input-group-btn
@@ -294,7 +294,7 @@ sys42.windows.modal
 /*
  * Making surw we trap carriage return, and click "filter" button in "search" textbox.
  */
-p5.web.include-javascript:@"p5.sephia_recipients_onkeypress = function(e) {
+p5.web.include-javascript:@"p5.sephia_recipients_onkeydown = function(e) {
   if(e.keyCode == 13) {
     p5.$('sephia-recipients-search-button').raise('onclick');
     return false;

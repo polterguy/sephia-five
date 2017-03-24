@@ -26,20 +26,11 @@
     position:fixed;
     top:0;
     right:50px;
-    width:70px;
-    height:45px;
     z-index:1000;
+    padding:7px;
+    width:300px;
 }
-.sephia .sephia-selector ul {
-    list-style:none;
-    padding-left:0;
-    padding-top:5px;
-}
-.sephia .sephia-create-email {
-    width:50px;
-    position:absolute;
-    top:5px;
-    right:10px;
+.sephia .sephia-selector input {
 }
 .sephia .sephia-email-row {
     cursor:pointer;

@@ -25,20 +25,58 @@ create-widget:sephia-header
   class:row
   widgets
     div
-      class:col-xs-10
+      class:col-xs-12
       widgets
         h1
           innerValue:Sephia Email
     div
-      class:col-xs-2 sephia-selector
+      class:sephia-selector
       widgets
-        ul
+        div
+          class:input-group
           widgets
-            li
+            input:sephia-search-textbox
+              type:search
+              class:form-control
+              placeholder:Search ...
+              accesskey:F
+              onkeydown:"return p5.sephia_search_inbox_onkeydown(event);"
+            span
+              class:input-group-btn
               widgets
+                button:sephia-search-inbox
+                  class:btn btn-default
+                  innerValue:@"<span class=""glyphicon glyphicon-search""></span>"
+                  onclick
+
+                    /*
+                     * Re-databinding datagrid, now with "search query".
+                     */
+                    p5.web.widgets.property.get:sephia-search-textbox
+                      value
+                    clear-widget:sephia-datagrid
+                    eval-x:x:/+/*
+                    sys42.utilities.execute-lambda-file:@SEPHIA/show-inbox.hl
+                      filter:x:/@p5.web.widgets.property.get/*/*?value
+                    p5.web.send-javascript:@"$('#sephia-search-textbox').focus().select();"
+
+                button
+                  class:btn btn-default
+                  innerValue:@"<span class=""glyphicon glyphicon-remove""></span>"
+                  onclick
+
+                    /*
+                     * Re-databinding datagrid, now without.
+                     */
+                    clear-widget:sephia-datagrid
+                    sys42.utilities.execute-lambda-file:@SEPHIA/show-inbox.hl
+                    p5.web.widgets.property.set:sephia-search-textbox
+                      value:
+                    p5.web.send-javascript:@"$('#sephia-search-textbox').focus().select();"
+
                 button
                   innerValue:@"<span class=""glyphicon glyphicon-envelope""></span>"
-                  class:btn btn-default btn-sm sephia-create-email
+                  class:btn btn-default
                   onclick
                     sys42.utilities.execute-lambda-file:@SEPHIA/new-email.hl
 
@@ -82,3 +120,17 @@ create-widget:sephia-content
  * Showing inbox.
  */
 sys42.utilities.execute-lambda-file:@SEPHIA/show-inbox.hl
+
+
+
+
+
+/*
+ * Making surw we trap carriage return, and click "search" button in "search" textbox.
+ */
+p5.web.include-javascript:@"p5.sephia_search_inbox_onkeydown = function(e) {
+  if(e.keyCode == 13) {
+    p5.$('sephia-search-inbox').raise('onclick');
+    return false;
+  }
+}"

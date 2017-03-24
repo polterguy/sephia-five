@@ -170,17 +170,22 @@ where email.id = @emailid"
     /*
      * Warning user.
      */
-    sys42.windows.info-tip:@"This email only had an HTML part. 
-We have stripped it down to its minimum, to ensure your safety, hopefully it is possible to read!
-Please notify sender that you do not wish to receive HTML emails in the future!"
-      class:info-window info-window-longer info-window-error
+    sys42.windows.confirm
+      header:WARNING!
+      body:@"<p>This email did only have HTML parts. 
+We have stripped it down to its minimum, to ensure your safety, hopefully it is possible to read.</p>
+<p>Please notify sender that you do not wish to receive HTML emails in the future!</p>
+<p>Emails with only HTML content is a known source for fishing attacks, and malware injection. We have protected
+you by stripping away everything in the email that is potentially malicious.</p>
+<p><strong>Notice!</strong> Be careful when clicking links in the email, and make 100% sure that the email is from who it claims to be from,
+and that you trust its source!</p>"
 
   /*
    * Creating widget that opens email, making sure we unescape any HTML.
    */
-  p5.html.html-encode:x:/@p5.mysql.select/*/*/subject?value
-  p5.html.html-encode:x:/@p5.mysql.select/*/*/email?value
-  p5.html.html-encode:x:/@p5.mysql.select/*/*/name?value
+  p5.html.html-encode:x:/@p5.mysql.select/@p5.mysql.select/*/*/subject?value
+  p5.html.html-encode:x:/@p5.mysql.select/@p5.mysql.select/*/*/email?value
+  p5.html.html-encode:x:/@p5.mysql.select/@p5.mysql.select/*/*/name?value
   p5.html.html-encode:x:/@_recipients?value
   p5.types.date.format:x:/@p5.mysql.select/*/*/date?value
   create-widget
