@@ -23,130 +23,65 @@ p5.web.widgets.property.set:cnt
 create-widget:sephia-header
   parent:cnt
   class:row
+  events
+
+    /*
+     * Event raised when datagrid needs re-databinding.
+     *
+     * Expects optionally [offset] and [filter], simply passes these two values into evaluation of Hyperlambda file,
+     * responsible for re-databinding "inbox".
+     */
+    sephia.inbox.databind
+
+      /*
+       * Invoking file responsible for re-databinding "inbox".
+       *
+       * First making sure we delete old widgets.
+       */
+      clear-widget:sephia-datagrid
+      add:x:/+
+        src:x:/../*(/filter|/offset)
+      sys42.utilities.execute-lambda-file:@SEPHIA/show-inbox.hl
+
   widgets
     div
-      class:col-xs-12
+      class:col-xs-12 sephia-brand
       widgets
+
+        /*
+         * Header at the top, feel free to add whatever "branding" widgets you wish here, 
+         * replacing the existing widget.
+         */
         h1
           innerValue:Sephia Email
     div
       class:sephia-selector
       widgets
+
         div
-          class:input-group
+          class:col-xs-10
           widgets
-            input:sephia-search-textbox
-              type:search
-              class:form-control
-              placeholder:Search ...
-              accesskey:F
-              onkeydown:"return p5.sephia_search_inbox_onkeydown(event);"
-            span:sephia-pager-buttons
-              class:input-group-btn
-              _offset:0
-              widgets
-                button:sephia-search-inbox
-                  class:btn btn-default
-                  innerValue:@"<span class=""glyphicon glyphicon-search""></span>"
-                  onclick
 
-                    /*
-                     * Re-databinding datagrid, now with "search query".
-                     */
-                    p5.web.widgets.property.get:sephia-search-textbox
-                      value
-                    clear-widget:sephia-datagrid
-                    eval-x:x:/+/*
-                    sys42.utilities.execute-lambda-file:@SEPHIA/show-inbox.hl
-                      filter:x:/@p5.web.widgets.property.get/*/*?value
-                    p5.web.widgets.property.set:sephia-pager-buttons
-                      _offset:0
-                    p5.web.send-javascript:@"$('#sephia-search-textbox').focus().select();"
+            /*
+             * This is the "search and page" toolbar at the top.
+             *
+             * Notice, we wrap it inside the "sephia-selector" CSS class widget, to make it "drop down" during start,
+             * and stay in a fixed position during browsing.
+             */
+            sephia.widgets.search-toolbar
+              databind-event:sephia.inbox.databind
+              page-size:int:19
+              search-accesskey:F
 
-                button
-                  class:btn btn-default
-                  innerValue:@"<span class=""glyphicon glyphicon-remove""></span>"
-                  onclick
 
-                    /*
-                     * Re-databinding datagrid, now without filter.
-                     */
-                    clear-widget:sephia-datagrid
-                    sys42.utilities.execute-lambda-file:@SEPHIA/show-inbox.hl
-                    p5.web.widgets.property.set:sephia-search-textbox
-                      value:
-                    p5.web.widgets.property.set:sephia-pager-buttons
-                      _offset:0
-                    p5.web.send-javascript:@"$('#sephia-search-textbox').focus().select();"
-
-                button
-                  class:btn btn-default
-                  innerValue:@"<span class=""glyphicon glyphicon-chevron-left""></span>"
-                  onclick
-
-                    /*
-                     * Verifying offset is more than 0, and if so, decrementing by 19, and re-databinding grid.
-                     */
-                    p5.web.widgets.property.get:sephia-pager-buttons
-                      _offset
-                    if:x:/@p5.web.widgets.property.get/*/*?value.int
-                      =:int:0
-                      sys42.windows.info-tip:No more pages.
-                      return
-                    -:x:/@p5.web.widgets.property.get/*/*?value.int
-                      _:int:19
-                    p5.web.widgets.property.set:sephia-pager-buttons
-                      _offset:x:/@-?value.string
-
-                    /*
-                     * Re-databinding datagrid, now paging to "previous page".
-                     */
-                    p5.web.widgets.property.get:sephia-search-textbox
-                      value
-                    clear-widget:sephia-datagrid
-                    eval-x:x:/+/*
-                    sys42.utilities.execute-lambda-file:@SEPHIA/show-inbox.hl
-                      filter:x:/@p5.web.widgets.property.get/*/*?value
-                      offset:x:/@-?value
-                    p5.web.send-javascript:@"$('#sephia-search-textbox').focus().select();"
-
-                button
-                  class:btn btn-default
-                  innerValue:@"<span class=""glyphicon glyphicon-chevron-right""></span>"
-                  onclick
-
-                    /*
-                     * Verifying datagrid has at least 19 items, and if not, returning early.
-                     */
-                    p5.web.widgets.get-children:sephia-datagrid
-                    if:x:/@p5.web.widgets.get-children/*/*?count
-                      <:int:19
-                      sys42.windows.info-tip:No more pages.
-                      return
-                    p5.web.widgets.property.get:sephia-pager-buttons
-                      _offset
-                    +:x:/@p5.web.widgets.property.get/*/*?value.int
-                      _:int:19
-                    p5.web.widgets.property.set:sephia-pager-buttons
-                      _offset:x:/@+?value.string
-
-                    /*
-                     * Re-databinding datagrid, now paging to "previous page".
-                     */
-                    p5.web.widgets.property.get:sephia-search-textbox
-                      value
-                    clear-widget:sephia-datagrid
-                    eval-x:x:/+/*
-                    sys42.utilities.execute-lambda-file:@SEPHIA/show-inbox.hl
-                      filter:x:/@p5.web.widgets.property.get/*/*?value
-                      offset:x:/@+?value
-                    p5.web.send-javascript:@"$('#sephia-search-textbox').focus().select();"
-
-                button
-                  innerValue:@"<span class=""glyphicon glyphicon-envelope""></span>"
-                  class:btn btn-default
-                  onclick
-                    sys42.utilities.execute-lambda-file:@SEPHIA/new-email.hl
+        div
+          class:col-xs-2
+          widgets
+            button
+              innerValue:@"<span class=""glyphicon glyphicon-envelope""></span>"
+              class:btn btn-success sephia-new-email-btn
+              onclick
+                sys42.utilities.execute-lambda-file:@SEPHIA/new-email.hl
 
 
 
@@ -188,17 +123,3 @@ create-widget:sephia-content
  * Showing inbox.
  */
 sys42.utilities.execute-lambda-file:@SEPHIA/show-inbox.hl
-
-
-
-
-
-/*
- * Making surw we trap carriage return, and click "search" button in "search" textbox.
- */
-p5.web.include-javascript:@"p5.sephia_search_inbox_onkeydown = function(e) {
-  if(e.keyCode == 13) {
-    p5.$('sephia-search-inbox').raise('onclick');
-    return false;
-  }
-}"

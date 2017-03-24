@@ -18,6 +18,11 @@
 .sephia {
     margin-bottom:50px;
 }
+.sephia .sephia-brand {
+    /*
+     * Add whatever "branding" you wish here.
+     */
+}
 .sephia .sephia-selector {
     border-radius:0 0 5px 5px;
     animation-name:animate-sephia-menu;
@@ -28,9 +33,10 @@
     right:50px;
     z-index:1000;
     padding:7px;
-    width:450px;
+    width:550px;
 }
-.sephia .sephia-selector input {
+.sephia .sephia-new-email-btn {
+    width:100%;
 }
 .sephia .sephia-email-row {
     cursor:pointer;
