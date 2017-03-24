@@ -3,8 +3,6 @@
  * Allows user to create a reply to an email.
  *
  * Expects [email-id] being ID of email from database.
- *
- * If no [email-id] is given, 
  */
 
 
@@ -660,6 +658,15 @@ where email.id = @emailid and part.type='plain'"
                     add:x:/../*/sys42.utilities.execute-lambda-file
                       src
                         encrypted:int:1
+
+                else
+
+                  /*
+                   * Nope, not encrypting!
+                   */
+                  add:x:/../*/sys42.utilities.execute-lambda-file
+                    src
+                      encrypted:int:1
 
                   /*
                    * Constructing and sending email.

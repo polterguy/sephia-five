@@ -175,6 +175,23 @@
 .sephia .sephia-reply-subject {
     margin-bottom:15px;
 }
+.sephia .sephia-new-email {
+    background-color:rgba(255,255,0,.1);
+    margin-bottom:25px;
+    border-radius:5px;
+    box-shadow:rgba(0,0,0,.3) 2px 2px 5px;
+    padding-top:15px;
+    padding-bottom:15px;
+}
+.sephia .sephia-new-email input,
+.sephia .sephia-new-email textarea,
+.sephia .sephia-new-email button {
+    z-index:2;
+    position:relative;
+}
+.sephia .sephia-new-email-subject {
+    margin-bottom:15px;
+}
 .sephia .sephia-recipient {
 }
 .sephia .input-group-addon {

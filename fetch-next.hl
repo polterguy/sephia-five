@@ -133,6 +133,10 @@ p5.mysql.connect:[sephia]
       /*
        * Now inserting into "email" table.
        */
+      if:x:/@_dp/#/*/Subject?value
+        not
+        set:x:/@_dp/#/*/Subject?value
+          src:
       p5.mysql.insert:@"insert into email (subject, date, sender, username, isread, mimeid, signature, encrypted, type) values (@subject, @date, @sender, @username, 0, @mimeid, @signature, @encrypted, 'received')"
         @subject:x:/@_dp/#/*/Subject?value
         @date:x:/@_dp/#/*/Date?value
