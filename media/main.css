@@ -28,7 +28,7 @@
     right:50px;
     z-index:1000;
     padding:7px;
-    width:300px;
+    width:450px;
 }
 .sephia .sephia-selector input {
 }
@@ -217,4 +217,8 @@
 }
 .sephia .sephia-recipient-table tr:nth-child(1) td {
     border-top:none;
+}
+.info-window {
+    right:initial;
+    left:350px;
 }
