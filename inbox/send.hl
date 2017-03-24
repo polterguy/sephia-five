@@ -1,0 +1,379 @@
+
+/*
+ * Responsible for sending an email.
+ *
+ * Expects [To], [Cc], [Bcc], [subject] and [body], in addition to [attachment]s, containing [_filename], [_prefix]
+ * and [_folder] for each file.
+ *
+ * Optionally, pass in [.encryption-warning], if you wish to give user a warning, in a modal window, if the email cannot be
+ * sent encrypted, due to you not having public keys from all recipients.
+ *
+ * If you pass in [.encryption-warning], then the user will be warned if email cannot be sent encrypted, 
+ * and your [.encryption-warning] lambda will be invoked after the warning has been shown.
+ *
+ * File will return boolean true if email was successfully sent.
+ */
+
+
+
+
+
+/*
+ * Retrieving SMTP settings, which we will need further down, to actually send the email.
+ */
+p5.auth.my-settings.get
+
+
+
+
+
+/*
+ * Adding recipients.
+ */
+whoami
+p5.mysql.connect:[sephia]
+
+  /*
+   * Adding "To", "Cc" and "Bcc" fields.
+   *
+   * Notice, we split upon ",", and trim each resulting value, before doing a lookup into the database,
+   * to retrieve the name for the current email address being iterated.
+   */
+  for-each:x:/../*(/To|/Cc|/Bcc)?name
+    split:x:/../*/{0}?value
+      :x:/@_dp?value
+      =:,
+      trim:true
+
+    /*
+     * Looping through each email resulting from the above split operation.
+     */
+    for-each:x:/@split/*?name
+
+      /*
+       * Finding email address' name property from database.
+       */
+      p5.mysql.select:@"select name, email from contact where username = @username and email = @email"
+        @username:x:/@whoami/*/username?value
+        @email:x:/@_dp?value
+
+      /*
+       * Checking if above SQL yielded anything.
+       */
+      if:x:/@p5.mysql.select/*
+
+        /*
+         * We have an existing name entry in our database for the current email address.
+         */
+        add:x:/../*/p5.smtp.send/*/envelope/*/{0}
+          :x:/..for-each/..for-each/*/_dp?value
+          src:"{0}:{1}"
+            :x:/@p5.mysql.select/*/*/name?value
+            :x:/@p5.mysql.select/*/*/email?value
+      else
+
+        /*
+         * We do not have a contact for this email address, defaulting name to "Anonymous".
+         */
+        add:x:/../*/p5.smtp.send/*/envelope/*/{0}
+          :x:/..for-each/..for-each/*/_dp?value
+          src:"Anonymous:{0}"
+            :x:/@_dp?value
+
+
+
+
+
+/*
+ * Adding "From".
+ */
+add:x:/../*/p5.smtp.send/*/envelope/*/From
+  src:"{0}:{1}"
+    :x:/@p5.auth.my-settings.get/*/sephia/*/name?value
+    :x:/@p5.auth.my-settings.get/*/sephia/*/email?value
+
+
+
+
+
+/*
+ * Adding attachments, first into invocation of execute-lambda-file that saves attachments to the database.
+ */
+apply:x:/../*/sys42.utilities.execute-lambda-file/[0,1]
+  src:x:/../*/attachment
+  template
+    file
+      {folder}:x:/*/_folder?value
+      {filename}:x:/*/_filename?value
+      {prefix}:x:/*/_prefix?value
+
+
+
+
+
+/*
+ * Then adding attachments into [p5.smtp.send] invocation.
+ */
+for-each:x:/../*/attachment
+  split:x:/@_dp/#/*/_filename?value
+    =:.
+
+  /*
+   * Checking how we should send attachments, which varies according to type.
+   *
+   * Either "binary", "image/something", or "text" - Depending upon file extension.
+   */
+  switch:x:/@split/0/-?name
+
+    case:txt
+    case:md
+
+      /*
+       * Adding as "text/plain" MIME part.
+       */
+      eval-x:x:/+/*/*/*(/Content-Disposition|/filename)
+      add:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart
+        src
+          text:plain
+            Content-Disposition:@"attachment; filename=""{0}"""
+              :x:/@_dp/#/*/_filename?value
+            filename:{0}{1}{2}
+              :x:/@_dp/#/*/_folder?value
+              :x:/@_dp/#/*/_prefix?value
+              :x:/@_dp/#/*/_filename?value
+
+    case:zip
+
+      /*
+       * Adding as "application/zip" MIME part.
+       */
+      eval-x:x:/+/*/*/*(/Content-Disposition|/filename)
+      add:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart
+        src
+          application:zip
+            Content-Disposition:@"attachment; filename=""{0}"""
+              :x:/@_dp/#/*/_filename?value
+            Content-Transfer-Encoding:binary
+            filename:{0}{1}{2}
+              :x:/@_dp/#/*/_folder?value
+              :x:/@_dp/#/*/_prefix?value
+              :x:/@_dp/#/*/_filename?value
+
+    case:png
+
+      /*
+       * Adding as "image/png" MIME part.
+       */
+      eval-x:x:/+/*/*/*(/Content-Disposition|/filename)
+      add:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart
+        src
+          image:png
+            Content-Disposition:@"attachment; filename=""{0}"""
+              :x:/@_dp/#/*/_filename?value
+            Content-Transfer-Encoding:binary
+            filename:{0}{1}{2}
+              :x:/@_dp/#/*/_folder?value
+              :x:/@_dp/#/*/_prefix?value
+              :x:/@_dp/#/*/_filename?value
+
+    case:jpg
+    case:jpeg
+
+      /*
+       * Adding as "image/jpeg" MIME part.
+       */
+      eval-x:x:/+/*/*/*(/Content-Disposition|/filename)
+      add:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart
+        src
+          image:jpeg
+            Content-Disposition:@"attachment; filename=""{0}"""
+              :x:/@_dp/#/*/_filename?value
+            Content-Transfer-Encoding:binary
+            filename:{0}{1}{2}
+              :x:/@_dp/#/*/_folder?value
+              :x:/@_dp/#/*/_prefix?value
+              :x:/@_dp/#/*/_filename?value
+
+    case:gif
+
+      /*
+       * Adding as "image/gif" MIME part.
+       */
+      eval-x:x:/+/*/*/*(/Content-Disposition|/filename)
+      add:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart
+        src
+          image:gif
+            Content-Disposition:@"attachment; filename=""{0}"""
+              :x:/@_dp/#/*/_filename?value
+            Content-Transfer-Encoding:binary
+            filename:{0}{1}{2}
+              :x:/@_dp/#/*/_folder?value
+              :x:/@_dp/#/*/_prefix?value
+              :x:/@_dp/#/*/_filename?value
+
+    case:hl
+
+      /*
+       * Adding as "application/x-hyperlambda" MIME part.
+       */
+      eval-x:x:/+/*/*/*(/Content-Disposition|/filename)
+      add:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart
+        src
+          application:x-hyperlambda
+            Content-Disposition:@"attachment; filename=""{0}"""
+              :x:/@_dp/#/*/_filename?value
+            filename:{0}{1}{2}
+              :x:/@_dp/#/*/_folder?value
+              :x:/@_dp/#/*/_prefix?value
+              :x:/@_dp/#/*/_filename?value
+
+
+
+
+
+/*
+ * Then verifying we have a public PGP key for all recipients, 
+ * but only doing this if page value has not "overridden" check.
+ */
+_encrypt:bool:false
+p5.web.viewstate.get:sephia.force-send
+if:x:/@p5.web.viewstate.get/*
+  not
+
+  /*
+   * User has not yet been warned about sending unencrypted emails.
+   */
+  p5.crypto.list-public-keys
+
+  /*
+   * Looping through to check that we have public certificates for all recipients.
+   */
+  for-each:x:/../*/p5.smtp.send/*/envelope/*(/To|/Cc|/Bcc)/*?value
+    if:x:@"/@p5.crypto.list-public-keys/*/~{0}"
+      :"<{0}>"
+        :x:/@_dp?value
+      not
+
+      /*
+       * Missing public PGP certificate.
+       *
+       * Warning user, asking to confirm sending, before allowing email to be sent without encryption!
+       * Then invoking [.encryption-warning] after warning user, if he clicks OK.
+       */
+      add:x:/+2/*/.onok
+        src:x:/../*/.encryption-warning
+      eval-x:x:/+/**/_send-widget
+      sys42.windows.confirm
+        header:WARNING!!
+        body:@"<p>You don't seem to have an encryption certificate for all recipients in your email, do you still wish to proceed?</p>"
+        .onok
+
+          /*
+           *
+           */
+          p5.web.viewstate.set:sephia.force-send
+            src:true
+
+          /*
+           * Lambda callback supplied by user for what do do if user click OK.
+           * Added before creation of modal window.
+           */
+          eval:x:/.encryption-warning
+
+      /*
+       * Returning early to avoid sending email.
+       */
+      return:bool:false
+
+  /*
+   * If we've come this far, we have public PGP keys for all recipients.
+   */
+  set:x:/@_encrypt?value
+    src:bool:true
+
+
+
+
+
+/*
+ * Making sure we remove "signal value" used in above logic.
+ * To make sure the next time an unencrypted email is attempted sent, user will be warned.
+ */
+p5.web.viewstate.set:sephia.force-send
+
+
+
+
+
+/*
+ * Checking to see if we should encrypt email.
+ */
+if:x:/@_encrypt?value
+
+  /*
+   * Yup, encrypting!
+   *
+   * Adding each recipient (To, Cc, Bcc) up as [encrypt] keys for MIME message.
+   */
+  add:x:/+/*/*
+    src:x:/../*/p5.smtp.send/*/envelope/*(/To|/Cc|/Bcc)/*
+  add:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart
+    src
+      encrypt
+  set:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart/*/encrypt/*?name
+    src:email
+
+  /*
+   * Making sure we store the fact that email was sent encrypted into execution of file that saves email into database.
+   */
+  add:x:/../*/sys42.utilities.execute-lambda-file/[0,1]
+    src
+      encrypted:int:1
+
+else
+
+  /*
+   * Nope, not encrypting!
+   */
+  add:x:/../*/sys42.utilities.execute-lambda-file/[0,1]
+    src
+      encrypted:int:0
+
+/*
+ * Puuh ...!!
+ *
+ * Constructing and sending email.
+ */
+eval-x:x:/../*/p5.smtp.send/*/envelope/*(/Subject|/body/*/multipart/*(/sign/**|/text/=plain/[0,1]/*/content))
+add:x:/../*/sys42.utilities.execute-lambda-file/[0,1]
+  src:x:/../*/p5.smtp.send/*/envelope
+sys42.utilities.execute-lambda-file:@SEPHIA/inbox/save-envelope.hl
+p5.smtp.send
+  envelope
+    To
+    Cc
+    Bcc
+    From
+    Subject:x:/../*/subject?value
+    body
+      multipart:mixed
+        sign
+          email:x:/@p5.auth.my-settings.get/*/sephia/*/email?value
+            password:x:/@p5.auth.my-settings.get/*/sephia/*/gpg-password?value
+        text:plain
+          content:@"{0}
+
+{1}
+{2}"
+            :x:/../*/body?value
+            :"-- "
+            :x:/@p5.auth.my-settings.get/*/sephia/*/signature?value
+
+
+
+
+
+/*
+ * Returning success to caller.
+ */
+return:bool:true

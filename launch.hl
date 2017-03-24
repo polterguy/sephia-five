@@ -1,6 +1,9 @@
 ﻿
 /*
- * Launcher file for Sephia Mail
+ * Launcher file for Sephia Mail.
+ *
+ * This file is evaluated (without any parameters) from the CMS when the menu item for the Sephia application
+ * is clicked by the user.
  */
 
 
@@ -19,7 +22,9 @@ if:x:/@whoami/*/default?value
 
 
 /*
- * Including Bootstrap CSS and JS, in addition to custom CSS.
+ * Including Bootstrap CSS and JS, in addition to custom Sephia Mail CSS.
+ *
+ * Notice, these events will also include jQuery, since Bootstrap (JS) relies on jQuery.
  */
 sys42.bootstrap.include-css
 sys42.bootstrap.include-javascript
@@ -32,7 +37,10 @@ p5.web.include-css-file
 
 
 /*
- * Making sure user has his own private "sephia" folders, for attachments.
+ * Making sure user has his own private "sephia" folders, for attachments, among other things.
+ *
+ * Notice, the files in these folders are stored in the user's "private folder", 
+ * which means they're not accessible for others, even if they have a direct link to the files.
  */
 folder-exists:~/documents/private/sephia/
 if:x:/@folder-exists/*?value
@@ -48,12 +56,13 @@ if:x:/@folder-exists/*?value
 
 
 /*
- * Making sure user has configured his POP3/SMTP settings, and if not, opening up configure wizard, and "returning early".
+ * Making sure user has configured his POP3/SMTP settings, and if not, 
+ * opening up configure wizard, and "returning early".
  */
 p5.auth.my-settings.get
 if:x:/@p5.auth.my-settings.get/*/sephia
   not
-  sys42.utilities.execute-lambda-file:@SEPHIA/configure-inbox.hl
+  sys42.utilities.execute-lambda-file:@SEPHIA/configure/configure.hl
   return
 
 
@@ -62,4 +71,4 @@ if:x:/@p5.auth.my-settings.get/*/sephia
 /*
  * Creating main form.
  */
-sys42.utilities.execute-lambda-file:@SEPHIA/create-main-form.hl
+sys42.utilities.execute-lambda-file:@SEPHIA/create-display.hl

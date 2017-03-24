@@ -1,6 +1,9 @@
 
 /*
  * Creates the main GUI structure of Sephia Mail.
+ *
+ * Sets a couple of properties on the page, in addition to creating the main "root widgets", such as the
+ * "inbox widget" and the "toolbar widget", for then to initially populate the "inbox datagrid".
  */
 
 
@@ -8,7 +11,12 @@
 
 
 /*
- * Making sure we modify our main root widget to become a Bootstrap CSS "container".
+ * Making sure we modify our main root widget to become a Bootstrap CSS "container",
+ * in addition to adding our own custom CSS root class to the root widget of page, to have a unique CSS selector,
+ * to make sure no CSS from other apps are not interfering with our custom CSS.
+ *
+ * This allows us, at least in theory, to have multiple apps running on the same page, 
+ * without interfering with each other.
  */
 p5.web.widgets.property.set:cnt
   class:container sephia
@@ -41,7 +49,7 @@ create-widget:sephia-header
       clear-widget:sephia-datagrid
       add:x:/+
         src:x:/../*(/filter|/offset)
-      sys42.utilities.execute-lambda-file:@SEPHIA/show-inbox.hl
+      sys42.utilities.execute-lambda-file:@SEPHIA/show.hl
 
   widgets
     div
@@ -54,6 +62,10 @@ create-widget:sephia-header
          */
         h1
           innerValue:Sephia Email
+
+    /*
+     * This is our main "toolbar" (the thing that drops down at the top of the page, and stays in a fixed position).
+     */
     div
       class:sephia-selector
       widgets
@@ -70,10 +82,13 @@ create-widget:sephia-header
              */
             sephia.widgets.search-toolbar
               databind-event:sephia.inbox.databind
-              page-size:int:19
+              page-size:int:10
               search-accesskey:F
 
 
+        /*
+         * Wrapper for "new email" button.
+         */
         div
           class:col-xs-2
           widgets
@@ -81,7 +96,7 @@ create-widget:sephia-header
               innerValue:@"<span class=""glyphicon glyphicon-envelope""></span>"
               class:btn btn-success sephia-new-email-btn
               onclick
-                sys42.utilities.execute-lambda-file:@SEPHIA/new-email.hl
+                sys42.utilities.execute-lambda-file:@SEPHIA/create.hl
 
 
 
@@ -92,11 +107,31 @@ create-widget:sephia-header
 create-widget:sephia-content
   parent:cnt
   class:row
+
+  /*
+   * This Ajax event is invoked from JavaScript on page, whenever we should for any reasons check POP3 server
+   * if it has more emails we need to fetch.
+   */
   .onretrieve
-    sys42.utilities.execute-lambda-file:@SEPHIA/fetch-next.hl
+
+    /*
+     * This file simply retrieves the next batch of emails from our POP3 server, and stores them into our
+     * MySQL database.
+     */
+    sys42.utilities.execute-lambda-file:@SEPHIA/inbox/fetch.hl
+
   oninit
+
+    /*
+     * Making sure during initial page load, that we immediately check for new emails.
+     */
     p5.web.send-javascript:@"p5.$('sephia-content').raise('.onretrieve');"
+
   widgets
+
+    /*
+     * This is our "inbox datagrid", which displays all the emails currently being viewed by user.
+     */
     table
       class:table table-hover table-condensed
       widgets
@@ -111,6 +146,8 @@ create-widget:sephia-content
 
     /*
      * Wrapper for "reading emails".
+     *
+     * This widget will contain any emails the user has selected for reading and/or replying to.
      */
     container:sephia-read-emails
       class:sephia-reader
@@ -122,4 +159,4 @@ create-widget:sephia-content
 /*
  * Showing inbox.
  */
-sys42.utilities.execute-lambda-file:@SEPHIA/show-inbox.hl
+sys42.utilities.execute-lambda-file:@SEPHIA/inbox/show.hl

@@ -1,9 +1,9 @@
 
 /*
- * Fetches next 19 emails.
+ * Fetches next 10 emails.
  *
  * Notice, this file is "recursively evaluated" by injecting an Ajax event on page, checking for email every 2 minutes,
- * unless we fetched 19 emails from pop server, at which point it is immediately re-invoked, from page, through invoking
+ * unless we fetched 10 emails from pop server, at which point it is immediately re-invoked, from page, through invoking
  * the same Ajax event immediately.
  *
  * The Ajax event it invokes, is called [.onretrieve], and can be found in our "create-main-form.hl" Hyperlambda file.
@@ -34,7 +34,7 @@ p5.mysql.connect:[sephia]
       ssl:x:/@p5.auth.my-settings.get/*/sephia/*/pop3-use-ssl?value
       username:x:/@p5.auth.my-settings.get/*/sephia/*/pop3-username?value
       password:x:/@p5.auth.my-settings.get/*/sephia/*/pop3-password?value
-      count:19
+      count:10
       attachment-folder:~/documents/private/sephia/attachments/
       decrypt
         email:x:/@p5.auth.my-settings.get/*/sephia/*/email?value
@@ -238,10 +238,10 @@ p5.mysql.connect:[sephia]
 
 
     /*
-     * Checking if there was 19 messages fetched, at which point we make sure we do another "roundtrip" to POP3 server.
+     * Checking if there was 10 messages fetched, at which point we make sure we do another "roundtrip" to POP3 server.
      */
     if:x:/@p5.pop3.get/*/envelope?count
-      >=:int:19
+      >=:int:10
 
       /*
        * Roundtripping to fetch "next batch".
@@ -278,4 +278,4 @@ if:x:/../**/p5.pop3.get/*/envelope?count
    * Re-creating datagrid.
    */
   clear-widget:sephia-datagrid
-  sys42.utilities.execute-lambda-file:@SEPHIA/show-inbox.hl
+  sys42.utilities.execute-lambda-file:@SEPHIA/inbox/show.hl

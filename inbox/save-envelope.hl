@@ -8,7 +8,6 @@
 
 
 
-
 /*
  * Open database connection, and make sure we use a transaction.
  */

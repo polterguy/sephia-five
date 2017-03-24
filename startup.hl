@@ -1,6 +1,11 @@
 
 /*
  * Startup file for Sephia Mail.
+ *
+ * This file is evaluated every time the server restarts, or the web server process is recycled for any reasons.
+ *
+ * This file simply creates an "IO environment variable", allowing us to more easily access the main 
+ * Sephia application folder, in addition to evaluating all Hyperlambda files inside the "/startup/" folder.
  */
 
 
