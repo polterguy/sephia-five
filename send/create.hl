@@ -10,6 +10,7 @@
  * - [cc] comma separated list of cc recipients
  * - [bcc] comma separated list of bcc recipients
  * - [email-id] being email that is responded to
+ * - [after] widget the widget should be created after
  */
 
 
@@ -25,6 +26,23 @@ list-files:@SEPHIA/send/send-action-buttons/
 load-file:x:/@list-files/*?name
 add:x:/../**/create-widget/**/div/*/class/=~btn-group/./*/widgets
   src:x:/@load-file/*/*
+
+
+
+
+
+/*
+ * Checking if caller declared an explicit "after widget".
+ */
+if:x:/../*/after?value
+  eval-x:x:/+/*/*
+  add:x:/../*/create-widget
+    src
+      after:x:/../*/after?value
+else
+  add:x:/../*/create-widget
+    src
+      parent:sephia-read-emails
 
 
 

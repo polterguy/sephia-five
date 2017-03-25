@@ -43,14 +43,6 @@ p5.mysql.connect:[sephia]
     @id:x:/../*/email-id?value
 
 /*
- * Deleting associated widgets (reader and table row), if it can be found on page.
- */
-p5.web.widgets.find:sephia-datagrid
-  _email-id:x:/../*/email-id?value
-if:x:/@p5.web.widgets.find/*/*?value
-  delete-widget:x:/@p5.web.widgets.find/*/*?value
-
-/*
  * Informing user.
  */
 sys42.windows.info-tip:Email was deleted.

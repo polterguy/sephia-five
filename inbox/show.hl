@@ -233,3 +233,12 @@ where email.username = @username order by email.id desc limit 19 offset @offset"
  * Updating title of web page, to reflect unread emails.
  */
 sys42.utilities.execute-lambda-file:@SEPHIA/inbox/set-title.hl
+
+
+
+
+
+/*
+ * Making sure we scroll datagrid into view.
+ */
+p5.web.send-javascript:@"$('#sephia-main-header')[0].scrollIntoView();"

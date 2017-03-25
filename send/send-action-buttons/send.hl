@@ -71,9 +71,9 @@ button
       /*
        * Success!
        *
-       * Notifying user, and re-databinding datagrid, before deleting entire "reply widget".
+       * Notifying user, and re-databinding datagrid and deleting entire "reply widget".
        */
       sys42.windows.info-tip:Email was successfully sent!
+      delete-widget:x:/@p5.web.widgets.find-first-ancestor/*/*?value
       clear-widget:sephia-datagrid
       sys42.utilities.execute-lambda-file:@SEPHIA/inbox/show.hl
-      delete-widget:x:/@p5.web.widgets.find-first-ancestor/*/*?value

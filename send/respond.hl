@@ -136,18 +136,9 @@ p5.mysql.connect:[sephia]
     /*
      * A "reader widget" exists for email, replacing it with our "reply widget".
      */
-    add:x:/..p5.mysql.connect/*/create-widget
+    add:x:/..p5.mysql.connect/*/sys42.utilities.execute-lambda-file
       src
         after:x:/@p5.web.widgets.find/*/*?value
-
-  else
-
-    /*
-     * No existing "reader widget" for this email, simply appending a new reply widget into "main reader root surface".
-     */
-    add:x:/..p5.mysql.connect/*/create-widget
-      src
-        parent:sephia-read-emails
 
     /*
      * Informing user he can find his "reply widget" at the bottom of the page.

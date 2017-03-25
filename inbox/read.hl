@@ -3,6 +3,7 @@
  * Opens an email for reading.
  *
  * Expects [email-id] being ID of email from database.
+ * Optionally pass in [after], being widget where the widget will be created after.
  *
  * Will create a widget, wrapping all relevant data for email, and inject into "reader widget" on page, allowing
  * user to reply to email if he wishes.
@@ -31,7 +32,9 @@ add:x:/../**/create-widget/**/div/*/class/=~btn-group/./*/widgets
  */
 p5.web.widgets.find:sephia-read-emails
   _email-id:x:/../*/email-id?value.string
-if:x:/@p5.web.widgets.find/*/*
+if:x:/../*/force?value.bool
+  not
+  and:x:/@p5.web.widgets.find/*/*
 
   /*
    * Email has already been opened for reading.
@@ -302,14 +305,35 @@ from who it claims to be from, and that you trust its source!</p>
   p5.types.date.format:x:/@p5.mysql.select/*/*/date?value
 
   /*
+   * Checking to see if an "after" argument was supplied, and if so, making sure we create the widget
+   * after that widget. Otherwise, simply appending the widget into "sephia-read-emails".
+   */
+  if:x:/../*/after?value
+    eval-x:x:/+/*/*
+    add:x:/..p5.mysql.connect/*/create-widget
+      src
+        after:x:/../*/after?value
+  else
+    add:x:/..p5.mysql.connect/*/create-widget
+      src
+        parent:sephia-read-emails
+
+  /*
    * Finally, we can create our "reader widget".
    *
    * Creating wrapper for reading email, and injecting it into the main "reader root widget".
    */
   create-widget
-    parent:sephia-read-emails
     _email-id:x:/@p5.mysql.select/@p5.mysql.select/*/*/id?value
     class:sephia-email col-xs-12
+    oninit
+
+      /*
+       * Making sure we scroll email into view.
+       */
+      p5.web.send-javascript:@"$('#{0}')[0].scrollIntoView();"
+        :x:/../*/_event?value
+
     widgets
 
       /*

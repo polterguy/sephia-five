@@ -1,0 +1,28 @@
+
+/*
+ * "Discard email" button.
+ */
+button
+  class:btn btn-default
+  innerValue:@"<span class=""glyphicon glyphicon-remove""></span>"
+  title:Discard reply
+  onclick
+
+    /*
+     * Deleting "reply widget" and replacing with "reader widget".
+     */
+    p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+      _is-reply
+    p5.web.widgets.property.get:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+      _email-id
+
+    /*
+     * Notice, only if this was a "reply" we actally reload the "reader" for email.
+     */
+    if:x:/@p5.web.widgets.property.get/*/*?value
+      eval-x:x:/+/*
+      sys42.utilities.execute-lambda-file:@SEPHIA/inbox/read.hl
+        after:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+        email-id:x:/@p5.web.widgets.property.get/*/*?value
+        force:bool:true
+    delete-widget:x:/@p5.web.widgets.find-first-ancestor/*/*?value

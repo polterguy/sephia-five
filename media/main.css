@@ -84,7 +84,7 @@
     font-size:1.2em;
 }
 .sephia .sephia-open td {
-    font-style:italic;
+    background-color:rgba(255,255,0,.05);
 }
 .sephia .sephia-reader {
 }

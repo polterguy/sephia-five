@@ -52,7 +52,7 @@ create-widget:sephia-header
       sys42.utilities.execute-lambda-file:@SEPHIA/inbox/show.hl
 
   widgets
-    div
+    div:sephia-main-header
       class:col-xs-12 sephia-brand
       widgets
 
@@ -82,7 +82,7 @@ create-widget:sephia-header
              */
             sephia.widgets.search-toolbar
               databind-event:sephia.inbox.databind
-              page-size:int:10
+              page-size:int:19
               search-accesskey:F
 
 
