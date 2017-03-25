@@ -40,15 +40,15 @@
 }
 .sephia .sephia-email-row {
     cursor:pointer;
-    color:#55aa55;
+    color:#555;
 }
 .sephia .sephia-read {
 }
 .sephia .sephia-unread {
-    font-weight:bold;
+    background-color:rgba(0,255,0,.05);
 }
-.sephia .sephia-outbox td {
-    color:#5555aa;
+.sephia .sephia-sent td {
+    color:#bbb;
 }
 .sephia .sephia-email-row td:nth-child(3),
 .sephia .sephia-email-row td:nth-child(1) {
@@ -103,6 +103,9 @@
     font-size:0.8em;
     margin-top:25px;
 }
+.sephia .sephia-action-buttons {
+    margin-top:-45px;
+}
 .sephia .sephia-attachments {
 }
 .sephia .sephia-attachment {
@@ -141,29 +144,9 @@
     color:Red;
     transform:rotate(45deg);
 }
-.sephia .sephia-reader-remove {
-    position:absolute;
-    top:5px;
-    right:5px;
-    z-index:1000;
-}
-.sephia .sephia-reader-delete {
-    position:absolute;
-    bottom:5px;
-    right:5px;
-    z-index:1000;
-}
-.sephia .sephia-reader-reply {
-    position:absolute;
-    bottom:5px;
-    right:55px;
-    z-index:1000;
-}
 .sephia .sephia-reader-meta {
     color:rgba(0,0,0,.3);
     font-style:italic;
-    text-align:right;
-    margin-right:100px;
     font-size:.8em;
 }
 .sephia .sephia-email-reply {

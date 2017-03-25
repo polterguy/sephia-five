@@ -106,7 +106,7 @@ where email.username = @username order by email.id desc limit 10 offset @offset"
     if:x:/@_dp/#/*/type?value
       =:sent
       set:x:/@_class?value
-        src:{0} sephia-outbox
+        src:{0} sephia-sent
           :x:/@_class?value
       add:x:/..for-each/*/create-widget
         src
@@ -171,6 +171,7 @@ where email.username = @username order by email.id desc limit 10 offset @offset"
      * Nicely formatting date.
      */
     p5.types.date.format:x:/@_dp/#/*/date?value
+      format:"ddd d. MMM yyyy - HH:mm"
 
     /*
      * Creating table row for email item, and inserting row widget into "table datagrid" for emails.

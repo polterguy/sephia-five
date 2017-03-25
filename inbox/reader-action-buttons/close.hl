@@ -1,0 +1,28 @@
+
+/*
+ * "Close button", for closing email.
+ *
+ * Deletes "reader widget" for email.
+ */
+button
+  class:btn btn-default
+  innerValue:@"<span class=""glyphicon glyphicon-remove""></span>"
+  title:Close
+  onclick
+
+    /*
+     * Finding parent container "reader widget" and deleting it.
+     */
+    p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+      _email-id
+    p5.web.widgets.property.get:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+      _email-id
+    delete-widget:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+
+    /*
+     * Deleting "open" CSS class from datagrid.
+     */
+    p5.web.widgets.find:sephia-datagrid
+      _email-id:x:/@p5.web.widgets.property.get/*/*?value
+    sys42.utilities.delete-css-classes:x:/@p5.web.widgets.find/*/*?value
+      class:sephia-open

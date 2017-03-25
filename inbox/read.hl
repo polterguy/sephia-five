@@ -13,6 +13,20 @@
 
 
 /*
+ * Loading all files from "reader-action-buttons" and assuming their some sort of widgets, and adding
+ * them into our "input-group-btn" div widget as such.
+ */
+list-files:@SEPHIA/inbox/reader-action-buttons/
+  filter:.hl
+load-file:x:/@list-files/*?name
+add:x:/../**/create-widget/**/div/*/class/=~btn-group/./*/widgets
+  src:x:/@load-file/*/*
+
+
+
+
+
+/*
  * Checking if email is already open.
  */
 p5.web.widgets.find:sephia-read-emails
@@ -22,7 +36,7 @@ if:x:/@p5.web.widgets.find/*/*
   /*
    * Email has already been opened for reading.
    *
-   * Informing user, and returning early, to abort the rest of the execution of this file.
+   * Informing user, and returning early, to stop the rest of the execution of this file.
    */
   sys42.windows.info-tip:Email is already open!
     class:info-window info-window-error
@@ -299,77 +313,6 @@ from who it claims to be from, and that you trust its source!</p>
     widgets
 
       /*
-       * "Close button", for closing email.
-       *
-       * Deletes "reader widget" for email.
-       */
-      button
-        class:btn btn-default sephia-reader-remove
-        innerValue:@"<span class=""glyphicon glyphicon-remove""></span>"
-        title:Close
-        onclick
-
-          /*
-           * Finding parent container "reader widget" and deleting it.
-           */
-          p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-            _email-id
-          p5.web.widgets.property.get:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-            _email-id
-          delete-widget:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-
-          /*
-           * Deleting "open" CSS class from datagrid.
-           */
-          p5.web.widgets.find:sephia-datagrid
-            _email-id:x:/@p5.web.widgets.property.get/*/*?value
-          sys42.utilities.delete-css-classes:x:/@p5.web.widgets.find/*/*?value
-            class:sephia-open
-
-      /*
-       * "Reply" button for email.
-       */
-      button
-        class:btn btn-default sephia-reader-reply
-        innerValue:@"<span class=""glyphicon glyphicon-share-alt""></span>"
-        title:Reply ...
-        onclick
-
-          /*
-           * Executing file responsible for creating a reply widget, making sure we pass in database ID of email.
-           */
-          p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-            _email-id
-          p5.web.widgets.property.get:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-            _email-id
-          eval-x:x:/+/*
-          sys42.utilities.execute-lambda-file:@SEPHIA/send/create.hl
-            email-id:x:/@p5.web.widgets.property.get/*/*?value
-
-      /*
-       * "Delete" button for email.
-       *
-       * Deletes the email entirely.
-       * Notice, there are no "trashcans" in Sephia Mail, and all emails deleted this way, are PERMANENTLY deleted!
-       */
-      button
-        class:btn btn-default sephia-reader-delete
-        innerValue:@"<span class=""glyphicon glyphicon-trash""></span>"
-        onclick
-
-          /*
-           * Executing file responsible for deleting email, making sure we pass in database id of email.
-           */
-          p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-            _email-id
-          p5.web.widgets.property.get:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-            _email-id
-          eval-x:x:/+/*
-          sys42.utilities.execute-lambda-file:@SEPHIA/inbox/delete.hl
-            email-id:x:/@p5.web.widgets.property.get/*/*?value
-            widget:x:/../*/_event?value
-
-      /*
        * Subject of email.
        */
       h4
@@ -381,14 +324,6 @@ from who it claims to be from, and that you trust its source!</p>
       p
         class:sephia-reader-pre
         innerValue:x:/@_content?value
-
-      /*
-       * All recipients of email.
-       */
-      p
-        class:sephia-reader-recipients
-        innerValue:"Recipients: {0}"
-          :x:/@p5.mysql.connect/*/p5.html.html-encode/[3,4]?value
 
       /*
        * All attachments in email.
@@ -403,6 +338,14 @@ from who it claims to be from, and that you trust its source!</p>
       literal
         element:div
         class:clearfix
+
+      /*
+       * All recipients of email.
+       */
+      p
+        class:sephia-reader-recipients
+        innerValue:"Recipient(s): {0}"
+          :x:/@p5.mysql.connect/*/p5.html.html-encode/[3,4]?value
 
       /*
        * "Meta" data of email, date sent, who sent it, name and email, etc.
@@ -421,6 +364,15 @@ from who it claims to be from, and that you trust its source!</p>
           span
             innerValue:x:/@p5.types.date.format?value
 
+      /*
+       * Input group for "action buttons" for email.
+       *
+       * Notice, this widget is dynamically populated according to all widgets in the "reader-action-buttons" folder.
+       */
+      div
+        class:btn-group prepend-bottom pull-right sephia-action-buttons
+        role:group
+        widgets
 
 
 
