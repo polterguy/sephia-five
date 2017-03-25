@@ -37,9 +37,12 @@
     right:50px;
     z-index:1000;
     padding:7px;
-    width:550px;
+    width:555px;
 }
 .sephia .sephia-new-email-btn {
+    width:100%;
+}
+.sephia .sephia-configuration-btn {
     width:100%;
 }
 .sephia .sephia-email-row {

@@ -8,15 +8,6 @@
 
 
 /*
- * Informing user that he must configure his settings before he can proceed.
- */
-sys42.windows.info-tip:You must configure Sephia Mail before you can start using it!
-
-
-
-
-
-/*
  * Loading files from "configure plugins" folder, and creates a tabview for each of them.
  */
 list-files:@SEPHIA/configure/plugins/
@@ -31,14 +22,17 @@ add:x:/../*/create-widget/**/items
 
 /*
  * Creating configure widget.
+ *
+ * Forward evaluating argument first.
  */
+eval-x:x:/+/**/_is-change
 create-widget:sephia-configure
   parent:cnt
   class:row prepend-top
   widgets
     h2
       class:prepend-bottom text-center
-      innerValue:Please configure Sephia Mail
+      innerValue:Configure Sephia Mail
     container
       class:col-xs-12
       widgets
@@ -51,6 +45,12 @@ create-widget:sephia-configure
           class:btn btn-default
           innerValue:Done
           onclick
+
+            /*
+             * Forward evaluated above, if true, doesn't require updates to any passwords, unless passwords
+             * have been explicitly changed by user.
+             */
+            _is-change:x:/../*/change?value
 
             /*
              * Retrieving settings from form.
@@ -122,3 +122,50 @@ create-widget:sephia-configure
              * Simply reloading page, to re-initialize app in its entirety.
              */
             p5.web.reload-location
+
+
+
+
+
+/*
+ * Checking if caller supplied "change" argument.
+ */
+if:x:/../*/change?value.bool
+
+  /*
+   * Populating with "old settings" (minus passwords).
+   */
+  p5.auth.my-settings.get:sephia
+  p5.web.widgets.property.set:sephia-settings-name
+    value:x:/@p5.auth.my-settings.get/*/sephia/*/name?value
+  p5.web.widgets.property.set:sephia-settings-email
+    value:x:/@p5.auth.my-settings.get/*/sephia/*/email?value
+  p5.web.widgets.property.set:sephia-settings-signature
+    value:x:/@p5.auth.my-settings.get/*/sephia/*/signature?value
+  p5.web.widgets.property.set:sephia-settings-pop3-server
+    value:x:/@p5.auth.my-settings.get/*/sephia/*/pop3-server?value
+  p5.web.widgets.property.set:sephia-settings-pop3-port
+    value:x:/@p5.auth.my-settings.get/*/sephia/*/pop3-port?value
+  p5.web.widgets.property.set:sephia-settings-pop3-username
+    value:x:/@p5.auth.my-settings.get/*/sephia/*/pop3-username?value
+  p5.web.widgets.property.set:sephia-settings-smtp-server
+    value:x:/@p5.auth.my-settings.get/*/sephia/*/smtp-server?value
+  p5.web.widgets.property.set:sephia-settings-smtp-port
+    value:x:/@p5.auth.my-settings.get/*/sephia/*/smtp-port?value
+  p5.web.widgets.property.set:sephia-settings-smtp-username
+    value:x:/@p5.auth.my-settings.get/*/sephia/*/smtp-username?value
+  if:x:/@p5.auth.my-settings.get/*/sephia/*/smtp-use-ssl?value.bool
+    not
+    p5.web.widgets.property.delete:sephia-settings-smtp-ssl
+      checked
+  if:x:/@p5.auth.my-settings.get/*/sephia/*/pop3-use-ssl?value.bool
+    not
+    p5.web.widgets.property.delete:sephia-settings-pop3-ssl
+      checked
+
+else
+
+  /*
+   * Informing user that he must configure his settings before he can proceed.
+   */
+  sys42.windows.info-tip:You must configure Sephia Mail before you can start using it!
