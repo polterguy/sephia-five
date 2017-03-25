@@ -18,6 +18,27 @@
 
 
 /*
+ * Making sure we append signature into email.
+ */
+p5.auth.my-settings.get
+if:x:/../*/body
+  not
+  insert-before:x:/../0
+    src
+      body:
+set:x:/../*/body?value
+  src:@"{0}
+
+-- 
+{1}"
+    :x:/../*/body?value
+    :x:/@p5.auth.my-settings.get/*/sephia/*/signature?value
+
+
+
+
+
+/*
  * Loading all files from "sender-action-buttons" and assuming their some sort of widgets, and adding
  * them into our "input-group-btn" div widget as such.
  */

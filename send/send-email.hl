@@ -361,13 +361,8 @@ p5.smtp.send
           email:x:/@p5.auth.my-settings.get/*/sephia/*/email?value
             password:x:/@p5.auth.my-settings.get/*/sephia/*/gpg-password?value
         text:plain
-          content:@"{0}
+          content:x:/../*/body?value
 
-{1}
-{2}"
-            :x:/../*/body?value
-            :"-- "
-            :x:/@p5.auth.my-settings.get/*/sephia/*/signature?value
 
 
 

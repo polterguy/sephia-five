@@ -81,15 +81,36 @@ p5.mysql.connect:[sephia]
   if:x:/@p5.mysql.select/*/*/type/=plain
 
     /*
+     * Stripping away any previous signatures in body.
+     */
+    eval-x:x:/+
+    _tmp-content:x:/@p5.mysql.select/*/*/type/=plain/./*/content?value
+    index-of:x:/@_tmp-content?value
+      src:@"
+
+-- 
+"
+    if:x:/@index-of/*?count
+      =:int:1
+
+      /*
+       * Content of email has a previously added signature, making sure we "strip" it away.
+       */
+      split:x:/@_tmp-content?value
+        =:x:/@index-of/0/-?value
+      set:x:/@_tmp-content?value
+        src:x:/@split/0?name
+
+    /*
      * Plain text content.
      * Checking if this is forward operation first.
      */
     if:x:/../*/is-forward?value
 
       /*
-       * Foward.
+       * Forward.
        */
-      p5.html.html-encode:x:/@p5.mysql.select/*/*/type/=plain/./*/content?value
+      p5.html.html-encode:x:/@_tmp-content?value
       set:x:/@_content?value
         src:x:/@p5.html.html-encode?value
 
@@ -99,7 +120,7 @@ p5.mysql.connect:[sephia]
        * Reply.
        */
       replace:>{0}
-        :x:/@p5.mysql.select/*/*/type/=plain/./*/content?value
+        :x:/@_tmp-content?value
         src:"\r\n"
         dest:"\r\n>"
       trim-right:x:/@replace?value
