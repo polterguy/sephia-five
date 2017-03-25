@@ -27,14 +27,31 @@ p5.mysql.connect:[sephia]
 
   /*
    * Creating our "respond widget".
-   * Making sure we get the "Re: " parts in subject, but only if it does NOT exist from before.
+   * Making sure we get the "Re:"/"Fwd:" parts in subject, but only if it does NOT exist from before.
    */
-  if
-    fetch:x:/0/0?value
-      index-of:x:/@p5.mysql.select/0/*/subject?value
-        src:"Re:"
-    =:int:0
+  if:x:/../*/is-forward?value.bool
+    and
+      fetch:x:/0/0?value
+        index-of:x:/@p5.mysql.select/0/*/subject?value
+          src:"Fwd:"
+      =:int:0
+      not
+
+    /*
+     * Email subject does not already start with "Fwd:".
+     */
+    set:x:/@p5.mysql.select/0/*/subject?value
+      src:"Fwd: {0}"
+        :x:/@p5.mysql.select/0/*/subject?value
+
+  else-if:x:/../*/is-forward?value
     not
+    and
+      fetch:x:/0/0?value
+        index-of:x:/@p5.mysql.select/0/*/subject?value
+          src:"Re:"
+      =:int:0
+      not
 
     /*
      * Email subject does not already start with "Re:".
@@ -43,6 +60,8 @@ p5.mysql.connect:[sephia]
     set:x:/@p5.mysql.select/0/*/subject?value
       src:"Re: {0}"
         :x:/@p5.mysql.select/0/*/subject?value
+
+
 
   /*
    * Making sure we avoid "HTML injection", also in subject of email!
@@ -63,16 +82,31 @@ p5.mysql.connect:[sephia]
 
     /*
      * Plain text content.
+     * Checking if this is forward operation first.
      */
-    replace:>{0}
-      :x:/@p5.mysql.select/*/*/type/=plain/./*/content?value
-      src:"\r\n"
-      dest:"\r\n>"
-    trim-right:x:/@replace?value
-      chars:">"
-    p5.html.html-encode:x:/@trim-right?value
-    set:x:/@_content?value
-      src:x:/@p5.html.html-encode?value
+    if:x:/../*/is-forward?value
+
+      /*
+       * Foward.
+       */
+      p5.html.html-encode:x:/@p5.mysql.select/*/*/type/=plain/./*/content?value
+      set:x:/@_content?value
+        src:x:/@p5.html.html-encode?value
+
+    else
+
+      /*
+       * Reply.
+       */
+      replace:>{0}
+        :x:/@p5.mysql.select/*/*/type/=plain/./*/content?value
+        src:"\r\n"
+        dest:"\r\n>"
+      trim-right:x:/@replace?value
+        chars:">"
+      p5.html.html-encode:x:/@trim-right?value
+      set:x:/@_content?value
+        src:x:/@p5.html.html-encode?value
 
   else
 
@@ -80,51 +114,59 @@ p5.mysql.connect:[sephia]
      * HTML content (only).
      *
      * Displaying raw HTML, since we have no real options here.
+     *
+     * Whether or not this is a forward operation or not is not important.
      */
     p5.html.html-encode:x:/@p5.mysql.select/*/*/type/=html/./*/content?value
     set:x:/@_content?value
       src:x:/@p5.html.html-encode?value
 
   /*
-   * Retrieving sender from original email and using as default "To" part for reply.
+   * Retrieving sender, cc and bcc from original email and using as default "To" part for reply.
    */
-  p5.mysql.select:@"select * from contact inner join email on email.sender = contact.id where email.id = @emailid"
-    @emailid:x:/../*/email-id?value
-  eval-x:x:/+
-  _to:x:/@p5.mysql.select/*/*/email?value
-
-  /*
-   * Then Cc (and Bcc, which technically shouldn't exist for most cases, but to make sure, we loop through also "Bcc").
-   * There are a lot of "funny" email programs out there ...!! :P (that's NOT a compliment!)
-   */
-  p5.mysql.select:@"select * from contact inner join recipient on contact.id = recipient.contactid where recipient.emailid = @emailid"
-    @emailid:x:/../*/email-id?value
-
-  /*
-   * Building our "Cc" list.
-   */
+  _to
   _cc
-  for-each:x:/@p5.mysql.select/*/*/type/=Cc/./*/email?value
-    set:x:/@_cc?value
-      src:{0}, {1}
-        :x:/@_cc?value
-        :x:/@_dp?value
-  set:x:/@_cc?value
-    trim-left:x:/@_cc?value
-      chars:", "
-
-  /*
-   * Building our "Bcc" list.
-   */
   _bcc
-  for-each:x:/@p5.mysql.select/*/*/type/=Bcc/./*/email?value
+  if:x:/../*/is-forward?value
+    not
+
+    /*
+     * This is not a forward operation, making sure default "To" field becomes original sender.
+     */
+    p5.mysql.select:@"select * from contact inner join email on email.sender = contact.id where email.id = @emailid"
+      @emailid:x:/../*/email-id?value
+    set:x:/@_to?value
+      src:x:/@p5.mysql.select/*/*/email?value
+
+    /*
+     * Then Cc and Bcc.
+     */
+    p5.mysql.select:@"select * from contact inner join recipient on contact.id = recipient.contactid where recipient.emailid = @emailid"
+      @emailid:x:/../*/email-id?value
+
+    /*
+     * Building our "Cc" list.
+     */
+    for-each:x:/@p5.mysql.select/*/*/type/=Cc/./*/email?value
+      set:x:/@_cc?value
+        src:{0}, {1}
+          :x:/@_cc?value
+          :x:/@_dp?value
+    set:x:/@_cc?value
+      trim-left:x:/@_cc?value
+        chars:", "
+
+    /*
+     * Building our "Bcc" list.
+     */
+    for-each:x:/@p5.mysql.select/*/*/type/=Bcc/./*/email?value
+      set:x:/@_bcc?value
+        src:{0}, {1}
+          :x:/@_bcc?value
+          :x:/@_dp?value
     set:x:/@_bcc?value
-      src:{0}, {1}
-        :x:/@_bcc?value
-        :x:/@_dp?value
-  set:x:/@_bcc?value
-    trim-left:x:/@_bcc?value
-      chars:", "
+      trim-left:x:/@_bcc?value
+        chars:", "
 
   /*
    * Checking if there exists a "reader widget" for email, at which point, we simply replace it, with a "reply widget".
@@ -132,8 +174,7 @@ p5.mysql.connect:[sephia]
   p5.web.widgets.find:sephia-read-emails
     _email-id:x:/../*/email-id?value
 
-  if:x:/../*/email-id?value
-    and:x:/@p5.web.widgets.find/*/*?value
+  if:x:/@p5.web.widgets.find/*/*?value
 
     /*
      * A "reader widget" exists for email, replacing it with our "reply widget".
@@ -141,11 +182,6 @@ p5.mysql.connect:[sephia]
     add:x:/..p5.mysql.connect/*/sys42.utilities.execute-lambda-file
       src
         after:x:/@p5.web.widgets.find/*/*?value
-
-    /*
-     * Informing user he can find his "reply widget" at the bottom of the page.
-     */
-    sys42.windows.info-tip:You can find your reply widget at the bottom of the page.
 
   /*
    * Invoking file responsible for creating our actual "create email widget".
@@ -164,6 +200,5 @@ p5.mysql.connect:[sephia]
   /*
    * Deleting "reader widget", if it exists.
    */
-  if:x:/../*/email-id?value
-    and:x:/@p5.web.widgets.find/*/*?value
+  if:x:/@p5.web.widgets.find/*/*?value
     delete-widget:x:/@p5.web.widgets.find/*/*?value
