@@ -96,7 +96,7 @@ create-widget:sephia-header
               innerValue:@"<span class=""glyphicon glyphicon-envelope""></span>"
               class:btn btn-success sephia-new-email-btn
               onclick
-                sys42.utilities.execute-lambda-file:@SEPHIA/inbox/create.hl
+                sys42.utilities.execute-lambda-file:@SEPHIA/send/create.hl
 
 
 
@@ -118,7 +118,7 @@ create-widget:sephia-content
      * This file simply retrieves the next batch of emails from our POP3 server, and stores them into our
      * MySQL database.
      */
-    sys42.utilities.execute-lambda-file:@SEPHIA/inbox/fetch.hl
+    sys42.utilities.execute-lambda-file:@SEPHIA/inbox/helpers/fetch.hl
 
   oninit
 

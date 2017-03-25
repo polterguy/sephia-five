@@ -347,7 +347,7 @@ else
 eval-x:x:/../*/p5.smtp.send/*/envelope/*(/Subject|/body/*/multipart/*(/sign/**|/text/=plain/[0,1]/*/content))
 add:x:/../*/sys42.utilities.execute-lambda-file/[0,1]
   src:x:/../*/p5.smtp.send/*/envelope
-sys42.utilities.execute-lambda-file:@SEPHIA/inbox/save-envelope.hl
+sys42.utilities.execute-lambda-file:@SEPHIA/send/save-envelope.hl
 p5.smtp.send
   envelope
     To

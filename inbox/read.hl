@@ -242,7 +242,7 @@ where email.id = @emailid"
      * Preparing content, which implies exchanging URLs among other things.
      */
     eval-x:x:/+/*
-    sys42.utilities.execute-lambda-file:@SEPHIA/inbox/prepare-plain.hl
+    sys42.utilities.execute-lambda-file:@SEPHIA/inbox/helpers/prepare-plain.hl
       content:x:@"/@p5.mysql.select/*/*/type/""=plain""/./*/content?value"
     set:x:/@_content?value
       src:x:/@sys42.utilities.execute-lambda-file?value
@@ -255,7 +255,7 @@ where email.id = @emailid"
      * Preparing content, which implies removing all potential malicious HTML etc.
      */
     eval-x:x:/+/*
-    sys42.utilities.execute-lambda-file:@SEPHIA/inbox/prepare-html.hl
+    sys42.utilities.execute-lambda-file:@SEPHIA/inbox/helpers/prepare-html.hl
       content:x:@"/@p5.mysql.select/*/*/type/""=html""/./*/content?value"
     set:x:/@_content?value
       src:x:/@sys42.utilities.execute-lambda-file?value
@@ -343,7 +343,7 @@ from who it claims to be from, and that you trust its source!</p>
           p5.web.widgets.property.get:x:/@p5.web.widgets.find-first-ancestor/*/*?value
             _email-id
           eval-x:x:/+/*
-          sys42.utilities.execute-lambda-file:@SEPHIA/inbox/create.hl
+          sys42.utilities.execute-lambda-file:@SEPHIA/send/create.hl
             email-id:x:/@p5.web.widgets.property.get/*/*?value
 
       /*

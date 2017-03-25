@@ -254,7 +254,7 @@ where recipient.emailid = @emailid"
            */
           add:x:/+
             src:x:/./--
-          sys42.utilities.execute-lambda-file:@SEPHIA/inbox/upload.hl
+          sys42.utilities.execute-lambda-file:@SEPHIA/send/upload.hl
 
       /*
        * Subject of email.
@@ -352,7 +352,7 @@ where recipient.emailid = @emailid"
                           p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
                             element:input
                           eval-x:x:/+/*
-                          sys42.utilities.execute-lambda-file:@SEPHIA/inbox/add-recipient.hl
+                          sys42.utilities.execute-lambda-file:@SEPHIA/send/add-recipient.hl
                             widget:x:/@p5.web.widgets.find/*/*?value
 
 
@@ -414,7 +414,7 @@ where recipient.emailid = @emailid"
                           p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
                             element:input
                           eval-x:x:/+/*
-                          sys42.utilities.execute-lambda-file:@SEPHIA/inbox/add-recipient.hl
+                          sys42.utilities.execute-lambda-file:@SEPHIA/send/add-recipient.hl
                             widget:x:/@p5.web.widgets.find/*/*?value
 
 
@@ -476,7 +476,7 @@ where recipient.emailid = @emailid"
                           p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
                             element:input
                           eval-x:x:/+/*
-                          sys42.utilities.execute-lambda-file:@SEPHIA/inbox/add-recipient.hl
+                          sys42.utilities.execute-lambda-file:@SEPHIA/send/add-recipient.hl
                             widget:x:/@p5.web.widgets.find/*/*?value
 
       /*
@@ -556,7 +556,7 @@ where recipient.emailid = @emailid"
                   eval-x:x:/+2/*/.encryption-warning/*
                   add:x:/+
                     src:x:/@sephia.get-email/*
-                  sys42.utilities.execute-lambda-file:@SEPHIA/inbox/send.hl
+                  sys42.utilities.execute-lambda-file:@SEPHIA/send/send.hl
                     .encryption-warning
 
                       /*

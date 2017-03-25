@@ -24,7 +24,7 @@
  */
 if:x:/../*/offset?value
   not
-  add:x:/..
+  insert-before:x:/../0
     src
       offset:int:0
 

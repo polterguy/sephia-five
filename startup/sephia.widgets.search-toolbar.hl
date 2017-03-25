@@ -47,20 +47,20 @@ whenever the associated 'datagrid' needs to be re-databound"
           type:search
         p5.web.widgets.find:x:/../*/_event?value
           _search-button
-        p5.web.include-javascript:@"p5.sephia_toolbar_search_keydown_{0} = function(e) {{
+        p5.web.include-javascript:@"p5.sephia_toolbar_search_keypress_{0} = function(e) {{
           if(e.keyCode == 13) {{
-            p5.$('{0}').raise('onclick');
+            p5.$('{1}').raise('onclick');
             return false;
           }}
         }}"
-          :x:/@p5.web.widgets.find/[0,1]/*/*?value
-          :x:/@p5.web.widgets.find/[1,2]/*/*?value
+          :x:/../*/p5.web.widgets.find/[0,1]/*/*?value
+          :x:/../*/p5.web.widgets.find/[1,2]/*/*?value
 
         /*
          * Then associating "onkeydown" DOM event with JavaScript function included above.
          */
         p5.web.widgets.property.set:x:/@p5.web.widgets.find/*/*?value
-          onkeydown:"return p5.sephia_toolbar_search_keydown_{0}(event);"
+          onkeypress:"return p5.sephia_toolbar_search_keypress_{0}(event);"
             :x:/@p5.web.widgets.find/*/*?value
 
       widgets
