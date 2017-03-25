@@ -9,8 +9,8 @@
  * [filter] will searchj for only emails matching the given [filter] one wy or another (from, content, subject etc)
  * having the search filter.
  *
- * [offset] is an integer number, meaning at which offset to display items from. For instance, if offset is 10, then
- * only the items between 10 and 20 (optionally) matching the given [filter] will be displayed.
+ * [offset] is an integer number, meaning at which offset to display items from. For instance, if offset is 19, then
+ * only the items between 19 and 38 (optionally) matching the given [filter] will be displayed.
  *
  * Default [filter] is empty, and default [offset] is 0.
  */
@@ -58,7 +58,7 @@ inner join contact on email.sender = contact.id
 inner join part on email.id = part.emailid
 where email.username = @username and part.type = 'plain'
 and (subject like @filter or contact.name like @filter or contact.email like @filter or part.content like @filter)
-order by email.id desc limit 10 offset @offset"
+order by email.id desc limit 19 offset @offset"
     add:x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]
       src
         @filter:"%{0}%"
@@ -69,7 +69,7 @@ order by email.id desc limit 10 offset @offset"
    */
   p5.mysql.select:@"select * from email 
 inner join contact on email.sender = contact.id 
-where email.username = @username order by email.id desc limit 10 offset @offset"
+where email.username = @username order by email.id desc limit 19 offset @offset"
     @username:x:/@whoami/*/username?value
     @offset:x:/../*/offset?value
 

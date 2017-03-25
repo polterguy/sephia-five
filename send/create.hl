@@ -132,7 +132,8 @@ where recipient.emailid = @emailid"
   p5.web.widgets.find:sephia-read-emails
     _email-id:x:/../*/email-id?value
 
-  if:x:/@p5.web.widgets.find/*/*?value
+  if:x:/../*/email-id?value
+    and:x:/@p5.web.widgets.find/*/*?value
 
     /*
      * A "reader widget" exists for email, replacing it with our "reply widget".
@@ -610,5 +611,6 @@ where recipient.emailid = @emailid"
   /*
    * Deleting "reader widget", if it exists.
    */
-  if:x:/@p5.web.widgets.find/*/*?value
+  if:x:/../*/email-id?value
+    and:x:/@p5.web.widgets.find/*/*?value
     delete-widget:x:/@p5.web.widgets.find/*/*?value
