@@ -18,5 +18,5 @@ button
     p5.web.widgets.property.get:x:/@p5.web.widgets.find-first-ancestor/*/*?value
       _email-id
     eval-x:x:/+/*
-    sys42.utilities.execute-lambda-file:@SEPHIA/send/create.hl
+    sys42.utilities.execute-lambda-file:@SEPHIA/send/respond.hl
       email-id:x:/@p5.web.widgets.property.get/*/*?value

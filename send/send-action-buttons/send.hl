@@ -1,0 +1,79 @@
+
+/*
+ * Send button.
+ */
+button
+  class:btn btn-default
+  innerValue:@"<span class=""glyphicon glyphicon-send""></span>"
+  title:Send reply
+  onclick
+
+    /*
+     * Retrieving main "root widget" for reply surface.
+     */
+    p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+      _is-reply
+
+    /*
+     * Retrieving data for email, by invoking "lambda event" for widget, that should return
+     * whatever data the user has supplied.
+     *
+     * Notice, this event requires an [_arg] being the ID of the main root "reply/compose" widget.
+     * Hence, we retrieve that widget above, and pass it into our event invocation.
+     */
+    sephia.get-email:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+
+    /*
+     * Sanity check.
+     */
+    if:x:/@sephia.get-email/*/To?value
+      =:
+      or:x:/@sephia.get-email/*/subject?value
+        =:
+      or:x:/@sephia.get-email/*/body?value
+        =:
+
+      /*
+       * Oops, returning early!
+       */
+      sys42.windows.info-tip:An email needs at least one recipient (To), a Subject and some Content.
+        class:info-window info-window-error info-window-longer
+      return
+
+    /*
+     * Invoking file responsible for sending email, adding all necessary associated fields.
+     *
+     * Notice, we provide a callback, which will be invoked if the file needs to display a "warning"
+     * about that we did not have all recipients' public PGP keys.
+     */
+    eval-x:x:/+2/*/.encryption-warning/*
+    add:x:/+
+      src:x:/@sephia.get-email/*
+    sys42.utilities.execute-lambda-file:@SEPHIA/send/send-email.hl
+      .encryption-warning
+
+        /*
+         * Making sure that if user clicks "OK" after being warned about sending unencrypted emails,
+         * we try again, this time "forcing" email to be sent.
+         *
+         * Notice, no need to "clean up here", since we're "recursively invoking self", which will clean
+         * up things for us.
+         */
+        p5.web.widgets.ajax-events.raise:x:/../*/_event?value
+          onclick
+
+    /*
+     * Checking if email was successfully sent.
+     */
+    if:x:/@sys42.utilities.execute-lambda-file?value
+      =:bool:true
+
+      /*
+       * Success!
+       *
+       * Notifying user, and re-databinding datagrid, before deleting entire "reply widget".
+       */
+      sys42.windows.info-tip:Email was successfully sent!
+      clear-widget:sephia-datagrid
+      sys42.utilities.execute-lambda-file:@SEPHIA/inbox/show.hl
+      delete-widget:x:/@p5.web.widgets.find-first-ancestor/*/*?value
