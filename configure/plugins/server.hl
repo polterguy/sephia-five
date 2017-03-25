@@ -11,7 +11,8 @@ Servers:sephia-server-settings
     sephia.widgets.settings.fieldset
       legend:POP3
       help:@"<p>Here you can configure your POP3 settings. These are normally given to you by your ISP or 'Internet Service Provider'.</p>
-<p>Alternatively, if you don't know these, or do not have a POP3 server through your ISP, you can use the (default) GMail settings, if you have a GMail account.</p>"
+<p>Alternatively, if you don't know these, or do not have a POP3 server through your ISP, you can use the (default) GMail settings, if you have a GMail account.</p>
+<p>Passwords are stored in your 'auth.hl' file inside of your p5.webapp folder, which is a 'protected file', only accessible for root accounts.</p>"
       widgets
         div
           class:col-xs-12 col-md-6 prepend-bottom
@@ -80,6 +81,7 @@ Servers:sephia-server-settings
                   placeholder:Password ...
                   autocomplete:new-password
                   value:
+                  title:Use your GMail password here, if you wish to test Sephia with GMail
 
     /*
      * SMTP settings goes here.
@@ -87,7 +89,8 @@ Servers:sephia-server-settings
     sephia.widgets.settings.fieldset
       legend:SMTP
       help:@"<p>Here you can configure your SMTP settings. These are normally given to you by your ISP or 'Internet Service Provider'.</p>
-<p>Alternatively, if you don't know these, or do not have a SMTP server through your ISP, you can use the (default) GMail settings, if you have a GMail account.</p>"
+<p>Alternatively, if you don't know these, or do not have a SMTP server through your ISP, you can use the (default) GMail settings, if you have a GMail account.</p>
+<p>Passwords are stored in your 'auth.hl' file inside of your p5.webapp folder, which is a 'protected file', only accessible for root accounts.</p>"
       widgets
         div
           class:col-xs-12 col-md-6 prepend-bottom
@@ -153,3 +156,4 @@ Servers:sephia-server-settings
                   placeholder:Password ...
                   autocomplete:new-password
                   value:
+                  title:Use your GMail password here, if you wish to test Sephia with GMail

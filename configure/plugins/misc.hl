@@ -10,7 +10,12 @@ Misc:sephia-misc-settings
      */
     sephia.widgets.settings.fieldset
       legend:Personal
-      help:@"<p>Here you can configure your personal information, such as your name, email and signature.</p>"
+      help:@"<p>Here you can configure your personal information, such as your name, email and signature.</p>
+<p>Notice, Sephia does not create GnuPG keys for you, in the current version. You need to make sure you have installed
+Gnu Privacy Guard on your computer, and that you have a private/public keypair matching your email address in your GnuPG database.
+You also need to supply the password for this keypair in this form, such that we can use it to decrypt and cryptographically sign
+emails sent by you.</p>
+<p>Later versions might have this, if I can afford to continue working on Sephia.</p>"
       widgets
         div
           class:col-xs-12 col-md-4 prepend-bottom
@@ -55,7 +60,7 @@ Misc:sephia-misc-settings
                   class:form-control
                   placeholder:Your GnuPG Password ...
                   autocomplete:new-password
-                  title:If you do not have a Gnu PG certificate, one will be created, with the password you supply here.
+                  title:Your GnuPG password, see the help button for more information about this ...
         div
           class:col-xs-12 col-md-12 prepend-bottom
           widgets
@@ -67,6 +72,6 @@ Misc:sephia-misc-settings
               class:form-control
               rows:7
               placeholder:Signature to use, will be injected into every email you send ...
-              innerValue:@"Help me reclaim your soul, by sharing this link with all your friends.
+              innerValue:@"Help me reclaim your privacy, by sharing this link with all your friends.
 
 https://gaiasoul.com/donate"

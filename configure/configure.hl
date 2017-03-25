@@ -41,88 +41,127 @@ create-widget:sephia-configure
     container
       class:col-xs-12 text-right
       widgets
-        button
-          class:btn btn-default
-          innerValue:Done
-          onclick
+        div
+          class:btn-group
+          role:group
+          widgets
+            button
+              class:btn btn-default
+              innerValue:Save
+              title:Save and close
+              onclick
 
-            /*
-             * Forward evaluated above, if true, doesn't require updates to any passwords, unless passwords
-             * have been explicitly changed by user.
-             */
-            _is-change:x:/../*/change?value
+                /*
+                 * Forward evaluated above, if true, doesn't require updates to any passwords, unless passwords
+                 * have been explicitly changed by user.
+                 */
+                _is-change:x:/../*/change?value
 
-            /*
-             * Retrieving settings from form.
-             */
-            _textboxes
-              sephia-settings-name
-              sephia-settings-email
-              sephia-settings-gpg-password
-              sephia-settings-signature
-              sephia-settings-pop3-server
-              sephia-settings-pop3-port
-              sephia-settings-pop3-username
-              sephia-settings-pop3-password
-              sephia-settings-smtp-server
-              sephia-settings-smtp-port
-              sephia-settings-smtp-username
-              sephia-settings-smtp-password
-            _checkboxes
-              sephia-settings-pop3-ssl
-              sephia-settings-smtp-ssl
-            p5.web.widgets.property.get:x:/@_textboxes/*?name
-              value
-            p5.web.widgets.property.get:x:/@_checkboxes/*?name
-              checked
+                /*
+                 * Retrieving settings from form.
+                 */
+                _textboxes
+                  sephia-settings-name
+                  sephia-settings-email
+                  sephia-settings-gpg-password
+                  sephia-settings-signature
+                  sephia-settings-pop3-server
+                  sephia-settings-pop3-port
+                  sephia-settings-pop3-username
+                  sephia-settings-pop3-password
+                  sephia-settings-smtp-server
+                  sephia-settings-smtp-port
+                  sephia-settings-smtp-username
+                  sephia-settings-smtp-password
+                _checkboxes
+                  sephia-settings-pop3-ssl
+                  sephia-settings-smtp-ssl
+                p5.web.widgets.property.get:x:/@_textboxes/*?name
+                  value
+                p5.web.widgets.property.get:x:/@_checkboxes/*?name
+                  checked
 
-            /*
-             * Parametrizing "save settings" invocation.
-             *
-             * Only checkbox values, the rest is formward evaluated below.
-             */
-            if:x:/../*/p5.web.widgets.property.get/[1,2]/*/sephia-settings-pop3-ssl/*/checked
-              set:x:/../**/pop3-use-ssl?value
-                src:bool:true
-            if:x:/../*/p5.web.widgets.property.get/[1,2]/*/sephia-settings-smtp-ssl/*/checked
-              set:x:/../**/smtp-use-ssl?value
-                src:bool:true
+                /*
+                 * Parametrizing "save settings" invocation.
+                 *
+                 * Only checkbox values, the rest is forward evaluated below.
+                 */
+                if:x:/../*/p5.web.widgets.property.get/[1,2]/*/sephia-settings-pop3-ssl/*/checked
+                  set:x:/../**/pop3-use-ssl?value
+                    src:bool:true
+                if:x:/../*/p5.web.widgets.property.get/[1,2]/*/sephia-settings-smtp-ssl/*/checked
+                  set:x:/../**/smtp-use-ssl?value
+                    src:bool:true
 
-            /*
-             * Forward evaluating settings values, before we validate that values are legal.
-             */
-            eval-x:x:/../*/p5.auth.my-settings.set/*/*
-            if:x:/../*/p5.auth.my-settings.set/*/*/=
-              sys42.windows.info-tip:You must fill out all settings in order for Sephia Mail to function correctly.
-                class:info-window info-window-error info-window-longer
-              return
+                /*
+                 * Checking if this is a "change settings" (not an initial configuration), at which we
+                 * allow the user to not supply a password, and resort to using his old passwords.
+                 */
+                if:x:/@_is-change?value
 
-            /*
-             * Saving settings to "auth.hl" file.
-             */
-            p5.auth.my-settings.set
-              sephia
-                pop3-server:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-pop3-server/*?value
-                pop3-port:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-pop3-port/*?value
-                pop3-use-ssl:bool:false
-                pop3-username:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-pop3-username/*?value
-                pop3-password:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-pop3-password/*?value
-                smtp-server:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-smtp-server/*?value
-                smtp-port:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-smtp-port/*?value
-                smtp-use-ssl:bool:false
-                smtp-username:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-smtp-username/*?value
-                smtp-password:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-smtp-password/*?value
-                name:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-name/*?value
-                email:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-email/*?value
-                gpg-password:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-gpg-password/*?value
-                signature:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-signature/*?value
+                  /*
+                   * Retrieving old settings, and defaulting all values not explicitly supplied to "old values".
+                   */
+                  p5.auth.my-settings.get
+                  if:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-pop3-password/*?value
+                    =:
+                    set:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-pop3-password/*?value
+                      src:x:/@p5.auth.my-settings.get/*/sephia/*/pop3-password?value
+                  if:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-smtp-password/*?value
+                    =:
+                    set:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-smtp-password/*?value
+                      src:x:/@p5.auth.my-settings.get/*/sephia/*/smtp-password?value
+                  if:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-gpg-password/*?value
+                    =:
+                    set:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-gpg-password/*?value
+                      src:x:/@p5.auth.my-settings.get/*/sephia/*/gpg-password?value
 
-            /*
-             * Easy version ...
-             * Simply reloading page, to re-initialize app in its entirety.
-             */
-            p5.web.reload-location
+                /*
+                 * Forward evaluating settings values, before we validate that values are legal.
+                 */
+                eval-x:x:/../*/p5.auth.my-settings.set/*/*
+                if:x:/../*/p5.auth.my-settings.set/*/*/=
+                  sys42.windows.info-tip:You must fill out all settings in order for Sephia Mail to function correctly.
+                    class:info-window info-window-error info-window-longer
+                  return
 
+                /*
+                 * Saving settings to "auth.hl" file.
+                 */
+                p5.auth.my-settings.set
+                  sephia
+                    pop3-server:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-pop3-server/*?value
+                    pop3-port:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-pop3-port/*?value
+                    pop3-use-ssl:bool:false
+                    pop3-username:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-pop3-username/*?value
+                    pop3-password:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-pop3-password/*?value
+                    smtp-server:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-smtp-server/*?value
+                    smtp-port:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-smtp-port/*?value
+                    smtp-use-ssl:bool:false
+                    smtp-username:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-smtp-username/*?value
+                    smtp-password:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-smtp-password/*?value
+                    name:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-name/*?value
+                    email:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-email/*?value
+                    gpg-password:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-gpg-password/*?value
+                    signature:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-signature/*?value
+
+                /*
+                 * Easy version ...
+                 * Simply reloading page, to re-initialize app in its entirety.
+                 */
+                p5.web.reload-location
+
+            button
+              class:btn btn-default
+              innerValue:Close
+              title:Close without saving
+              onclick
+
+                /*
+                 * Easy version ...
+                 * Simply reloading page, to re-initialize app in its entirety.
+                 */
+                p5.web.reload-location
 
 
 
