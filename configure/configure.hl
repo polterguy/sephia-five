@@ -1,12 +1,63 @@
 
 /*
- * Allows the user to configure POP3/SMTP settings.
+ * Allows the user to configure Sephia Mail.
  */
 
 
 
 
 
+/*
+ * Informing user that he must configure his settings before he can proceed.
+ */
+sys42.windows.info-tip:You must configure Sephia Mail before you can start using it!
+
+
+
+
+
+/*
+ * Loading files from "configure plugins" folder, and creates a tabview for each of them.
+ */
+list-files:@SEPHIA/configure/plugins/
+  filter:.hl
+load-file:x:/-/*?name
+add:x:/../*/create-widget/**/items
+  src:x:/@load-file/*/*
+
+
+
+
+
+/*
+ * Creating configure widget.
+ */
+create-widget:sephia-configure
+  parent:cnt
+  class:row prepend-top
+  widgets
+    container
+      class:col-xs-12
+      widgets
+        sys42.widgets.tab
+          items
+    container
+      class:col-xs-12 text-right
+      widgets
+        button
+          class:btn btn-default
+          innerValue:Done
+          onclick
+
+            /*
+             * Easy version ...
+             */
+            p5.web.reload-location
+
+
+
+
+return
 /*
  * Showing a wizard window, asking user for credentials.
  */
@@ -16,12 +67,13 @@ sys42.windows.wizard
   data
     POP:pop.gmail.com
     PORT:995
+    Username:YOUR-GMAIL-USERNAME@gmail.com
+    Password:YOUR-GMAIL-PASSWORD
     SSL:Yes
       _options
         No:No
         Yes:Yes
-    Username:YOUR-GMAIL-USERNAME@gmail.com
-    Password:YOUR-GMAIL-PASSWORD
+
     SMTP:smtp.gmail.com
     PORT:465
     SSL:Yes
@@ -30,10 +82,12 @@ sys42.windows.wizard
         Yes:Yes
     Username:YOUR-GMAIL-USERNAME@gmail.com
     Password:YOUR-GMAIL-PASSWORD
+
     Name:John Doe
     Email:YOUR-GMAIL-USERNAME@gmail.com
     GPG Pwd:YOUR-Gnu-Privacy-Guard-PASSWORD
     Signature:"Support your local WikiLeaks chapter - https://wikileaks.org"
+
   .onok
     sys42.windows.wizard.get-values
 

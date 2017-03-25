@@ -56,6 +56,21 @@ if:x:/@folder-exists/*?value
 
 
 /*
+ * Making sure we modify our main root widget to become a Bootstrap CSS "container",
+ * in addition to adding our own custom CSS root class to the root widget of page, to have a unique CSS selector,
+ * to make sure no CSS from other apps are not interfering with our custom CSS.
+ *
+ * This allows us, at least in theory, to have multiple apps running on the same page, 
+ * without interfering with each other.
+ */
+p5.web.widgets.property.set:cnt
+  class:container sephia
+
+
+
+
+
+/*
  * Making sure user has configured his POP3/SMTP settings, and if not, 
  * opening up configure wizard, and "returning early".
  */

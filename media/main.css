@@ -212,3 +212,21 @@
     right:initial;
     left:350px;
 }
+.sephia .sephia-settings-help-button {
+    float:right;
+    opacity:.2;
+    transform:scale(1);
+    transition:opacity, transform ease-in-out .3s;
+}
+.sephia-settings-help-button:hover,
+.sephia-settings-help-button:focus {
+    opacity:1;
+    transform:scale(1.5) rotate(19deg);
+    transition:opacity, transform ease-in-out .3s;
+}
+.sephia .sephia-settings-help-info {
+    color:rgba(0,0,0,.5);
+}
+#sephia-configure .input-group-addon:first-child {
+    min-width:100px;
+}

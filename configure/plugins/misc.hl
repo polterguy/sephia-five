@@ -1,0 +1,71 @@
+﻿
+/*
+ * Miscellanous settings.
+ */
+Misc:sephia-misc-settings
+  widgets
+
+    /*
+     * Personal settings goes here, such as name, email address and signature.
+     */
+    sephia.widgets.settings.fieldset
+      legend:Personal
+      help:@"<p>Here you can configure your personal information, such as your name, email and signature.</p>"
+      widgets
+        div
+          class:col-xs-12 col-md-4 prepend-bottom
+          widgets
+            span
+              class:input-group
+              widgets
+                span
+                  class:input-group-addon
+                  innerValue:Name
+                input:sephia-settings-name
+                  type:text
+                  class:form-control
+                  placeholder:Your full name ...
+                  oninit
+                    p5.web.send-javascript:@"$('#{0}').focus().select();"
+                      :x:/../*/_event?value
+        div
+          class:col-xs-12 col-md-4 prepend-bottom
+          widgets
+            span
+              class:input-group
+              widgets
+                span
+                  class:input-group-addon
+                  innerValue:Email
+                input:sephia-settings-email
+                  type:text
+                  class:form-control
+                  placeholder:Your email address ...
+        div
+          class:col-xs-12 col-md-4 prepend-bottom
+          widgets
+            span
+              class:input-group
+              widgets
+                span
+                  class:input-group-addon
+                  innerValue:GPG Password
+                input:sephia-settings-gpg-password
+                  type:password
+                  class:form-control
+                  placeholder:Your GnuPG Password ...
+                  autocomplete:new-password
+        div
+          class:col-xs-12 col-md-12 prepend-bottom
+          widgets
+            label
+              innerValue:Signature
+              for:sephia-settings-signature
+            literal:sephia-settings-signature
+              element:textarea
+              class:form-control
+              rows:7
+              placeholder:Signature to use, will be injected into every email you send ...
+              innerValue:@"Help me reclaim your soul, by sharing this link with all your friends.
+
+https://gaiasoul.com/donate"
