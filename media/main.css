@@ -22,6 +22,10 @@
     /*
      * Add whatever "branding" you wish here.
      */
+    background-image:url(logo.png);
+    color:transparent;
+    background-repeat:no-repeat;
+    height:100px;
 }
 .sephia .sephia-selector {
     border-radius:0 0 5px 5px;

@@ -54,6 +54,7 @@ create-widget:sephia-header
   widgets
     div:sephia-main-header
       class:col-xs-12 sephia-brand
+      title:No sharks allowed here!
       widgets
 
         /*
