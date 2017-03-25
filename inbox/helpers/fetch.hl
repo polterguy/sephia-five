@@ -133,10 +133,13 @@ p5.pop3.get
            * Checking if email was signed/encrypted, and if so, making sure we pass in email of first signature to "email" table insertion.
            */
           _signature
+          _fingerprint
           _encrypted:int:0
           if:x:/@_dp/#/*/*/signature/*?value
             set:x:/@_signature?value
               src:x:/@_dp/#/*/*/signature/0?name
+            set:x:/@_fingerprint?value
+              src:x:/@_dp/#/*/*/signature/0/0?value
           if:x:/@_dp/#/*/multipart/*/decryption-key
             set:x:/@_encrypted?value
               src:int:1
@@ -148,13 +151,14 @@ p5.pop3.get
             not
             set:x:/@_dp/#/*/Subject?value
               src:
-          p5.mysql.insert:@"insert into email (subject, date, sender, username, isread, mimeid, signature, encrypted, type) values (@subject, @date, @sender, @username, 0, @mimeid, @signature, @encrypted, 'received')"
+          p5.mysql.insert:@"insert into email (subject, date, sender, username, isread, mimeid, signature, fingerprint, encrypted, type) values (@subject, @date, @sender, @username, 0, @mimeid, @signature, @fingerprint, @encrypted, 'received')"
             @subject:x:/@_dp/#/*/Subject?value
             @date:x:/@_dp/#/*/Date?value
             @sender:x:/@_from?value.uint
             @username:x:/@whoami/*/username?value
             @mimeid:x:/@_dp/#?value
             @signature:x:/@_signature?value
+            @fingerprint:x:/@_fingerprint?value
             @encrypted:x:/@_encrypted?value
 
           /*

@@ -7,7 +7,7 @@
 button
   class:btn btn-default
   innerValue:@"<span class=""glyphicon glyphicon-share-alt""></span>"
-  title:Reply ...
+  title:Forward ...
   onclick
 
     /*
@@ -20,3 +20,4 @@ button
     eval-x:x:/+/*
     sys42.utilities.execute-lambda-file:@SEPHIA/send/respond.hl
       email-id:x:/@p5.web.widgets.property.get/*/*?value
+      is-forward:bool:true

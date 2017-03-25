@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS `email` (
   `isread` int(10) unsigned NOT NULL,
   `mimeid` varchar(2048) NOT NULL,
   `signature` varchar(1024) DEFAULT NULL,
+  `fingerprint` VARCHAR(256) NULL,
   `encrypted` int(11) unsigned NOT NULL,
   `type` varchar(45) NOT NULL,
   PRIMARY KEY (`id`),

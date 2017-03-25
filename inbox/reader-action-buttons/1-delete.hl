@@ -1,0 +1,38 @@
+
+/*
+ * "Delete" button for email.
+ *
+ * "Action button" for email, which means that it is dynamically loaded, and added into "toolbar" for email.
+ *
+ * Deletes the email entirely.
+ * Notice, there are no "trashcan" in Sephia Mail, and all emails deleted this way, are PERMANENTLY deleted!
+ */
+button
+  class:btn btn-default
+  innerValue:@"<span class=""glyphicon glyphicon-trash""></span>"
+  title:Delete
+  onclick
+
+    /*
+     * Asking user to confirm deletion of email.
+     */
+    eval-x:x:/+/*/.onok/*/_widget
+    sys42.windows.confirm
+      header:Please confirm!
+      body:@"<p>Do you really wish to delete this email? This action is permanent, and the email cannot be retrieved once it has been deleted.</p>"
+      .onok
+
+        /*
+         * Executing file responsible for deleting email, making sure we pass in database id of email.
+         */
+        _widget:x:/../*/_event?value
+        p5.web.widgets.find-first-ancestor:x:/../*/_widget?value
+          _email-id
+        p5.web.widgets.property.get:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+          _email-id
+        eval-x:x:/+/*
+        sys42.utilities.execute-lambda-file:@SEPHIA/inbox/delete.hl
+          email-id:x:/@p5.web.widgets.property.get/*/*?value
+          widget:x:/../*/_widget?value
+        clear-widget:sephia-datagrid
+        sys42.utilities.execute-lambda-file:@SEPHIA/inbox/show.hl

@@ -41,8 +41,3 @@ p5.mysql.connect:[sephia]
       :x:/@_dp/#/*/filename?value
   p5.mysql.delete:@"delete from email where id = @id"
     @id:x:/../*/email-id?value
-
-/*
- * Informing user.
- */
-sys42.windows.info-tip:Email was deleted.

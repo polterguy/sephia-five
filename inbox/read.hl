@@ -39,10 +39,10 @@ if:x:/../*/force?value.bool
   /*
    * Email has already been opened for reading.
    *
-   * Informing user, and returning early, to stop the rest of the execution of this file.
+   * Scrolling email into view.
    */
-  sys42.windows.info-tip:Email is already open!
-    class:info-window info-window-error
+  p5.web.send-javascript:@"$('#{0}')[0].scrollIntoView();"
+    :x:/@p5.web.widgets.find/*/*?value
   return
 
 
@@ -209,6 +209,15 @@ where email.id = @emailid"
    */
   p5.web.widgets.find:sephia-datagrid
     _email-id:x:/../*/email-id?value
+
+  /*
+   * Storing fingerprint as string, for later reference.
+   */
+  _fingerprint
+  if:x:/@p5.mysql.select/*/*/fingerprint?value
+    set:x:/@_fingerprint?value
+      src:" - Fingerprint: '{0}'"
+        :x:/@p5.mysql.select/*/*/fingerprint?value
 
   /*
    * Deleting "unread" CSS class from datagrid for given email.
@@ -394,7 +403,8 @@ from who it claims to be from, and that you trust its source!</p>
             innerValue:" &lt;{0}&gt;"
               :x:/@p5.mysql.connect/*/p5.html.html-encode/[1,2]?value
           span
-            innerValue:" - "
+            innerValue:"{0} - "
+              :x:/@_fingerprint?value
           span
             innerValue:x:/@p5.types.date.format?value
 

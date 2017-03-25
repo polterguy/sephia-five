@@ -146,7 +146,6 @@ sys42.windows.modal
                   sys42.windows.modal.destroy
                   p5.web.send-javascript:@"$('#{0}').focus().select();"
                     :x:/@_return-widget?value
-                  sys42.windows.info-tip:Email was added to your recipient list.
 
                 widgets
                   td

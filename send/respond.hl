@@ -1,8 +1,10 @@
 
 /*
- * Allows user to respond to another email, by creating for instance a reply.
+ * Allows user to respond to another email, by creating for instance a reply, or forward the email to others.
  *
  * Expects [email-id] being ID of email from database, which is an email being responded to.
+ * Optionally pass in [is-forward], and set it to boolean true, to signal this is not a reply, but a forward
+ * operation instead.
  *
  * Will delete any "reader widgets", if existing, and replace with a "reply widget".
  * Otherwise, it will simply append the respond widget to the main "root reader widget surface".
@@ -24,7 +26,7 @@ p5.mysql.connect:[sephia]
     @emailid:x:/../*/email-id?value
 
   /*
-   * Creating our "reply widget".
+   * Creating our "respond widget".
    * Making sure we get the "Re: " parts in subject, but only if it does NOT exist from before.
    */
   if
