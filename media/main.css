@@ -23,9 +23,13 @@
      * Add whatever "branding" you wish here.
      */
     background-image:url(logo.png);
-    color:transparent;
+    padding-left:77px;
     background-repeat:no-repeat;
-    height:100px;
+    background-position:10px 10px;
+}
+.sephia .sephia-brand a {
+    color:rgba(0,0,0,.2);
+    text-decoration:none;
 }
 .sephia .sephia-selector {
     border-radius:0 0 5px 5px;

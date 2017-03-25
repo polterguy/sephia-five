@@ -39,15 +39,19 @@ create-widget:sephia-header
   widgets
     div:sephia-main-header
       class:col-xs-12 sephia-brand
-      title:No sharks allowed here!
       widgets
 
         /*
          * Header at the top, feel free to add whatever "branding" widgets you wish here, 
          * replacing the existing widget.
          */
-        h1
-          innerValue:Sephia Email
+        a
+          href:"https://gaiasoul.com/donate"
+          target:_blank
+          widgets
+            h1
+              innerValue:"Sephia Mail"
+              title:Hide your ink!
 
     /*
      * This is our main "toolbar" (the thing that drops down at the top of the page, and stays in a fixed position).
