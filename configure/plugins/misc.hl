@@ -55,6 +55,7 @@ Misc:sephia-misc-settings
                   class:form-control
                   placeholder:Your GnuPG Password ...
                   autocomplete:new-password
+                  title:If you do not have a Gnu PG certificate, one will be created, with the password you supply here.
         div
           class:col-xs-12 col-md-12 prepend-bottom
           widgets

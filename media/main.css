@@ -208,10 +208,6 @@
 .sephia .sephia-recipient-table tr:nth-child(1) td {
     border-top:none;
 }
-.info-window {
-    right:initial;
-    left:350px;
-}
 .sephia .sephia-settings-help-button {
     float:right;
     opacity:.2;

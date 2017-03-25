@@ -36,6 +36,9 @@ create-widget:sephia-configure
   parent:cnt
   class:row prepend-top
   widgets
+    h2
+      class:prepend-bottom text-center
+      innerValue:Please configure Sephia Mail
     container
       class:col-xs-12
       widgets
@@ -50,93 +53,72 @@ create-widget:sephia-configure
           onclick
 
             /*
+             * Retrieving settings from form.
+             */
+            _textboxes
+              sephia-settings-name
+              sephia-settings-email
+              sephia-settings-gpg-password
+              sephia-settings-signature
+              sephia-settings-pop3-server
+              sephia-settings-pop3-port
+              sephia-settings-pop3-username
+              sephia-settings-pop3-password
+              sephia-settings-smtp-server
+              sephia-settings-smtp-port
+              sephia-settings-smtp-username
+              sephia-settings-smtp-password
+            _checkboxes
+              sephia-settings-pop3-ssl
+              sephia-settings-smtp-ssl
+            p5.web.widgets.property.get:x:/@_textboxes/*?name
+              value
+            p5.web.widgets.property.get:x:/@_checkboxes/*?name
+              checked
+
+            /*
+             * Parametrizing "save settings" invocation.
+             *
+             * Only checkbox values, the rest is formward evaluated below.
+             */
+            if:x:/../*/p5.web.widgets.property.get/[1,2]/*/sephia-settings-pop3-ssl/*/checked
+              set:x:/../**/pop3-use-ssl?value
+                src:bool:true
+            if:x:/../*/p5.web.widgets.property.get/[1,2]/*/sephia-settings-smtp-ssl/*/checked
+              set:x:/../**/smtp-use-ssl?value
+                src:bool:true
+
+            /*
+             * Forward evaluating settings values, before we validate that values are legal.
+             */
+            eval-x:x:/../*/p5.auth.my-settings.set/*/*
+            if:x:/../*/p5.auth.my-settings.set/*/*/=
+              sys42.windows.info-tip:You must fill out all settings in order for Sephia Mail to function correctly.
+                class:info-window info-window-error info-window-longer
+              return
+
+            /*
+             * Saving settings to "auth.hl" file.
+             */
+            p5.auth.my-settings.set
+              sephia
+                pop3-server:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-pop3-server/*?value
+                pop3-port:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-pop3-port/*?value
+                pop3-use-ssl:bool:false
+                pop3-username:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-pop3-username/*?value
+                pop3-password:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-pop3-password/*?value
+                smtp-server:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-smtp-server/*?value
+                smtp-port:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-smtp-port/*?value
+                smtp-use-ssl:bool:false
+                smtp-username:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-smtp-username/*?value
+                smtp-password:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-smtp-password/*?value
+                name:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-name/*?value
+                email:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-email/*?value
+                gpg-password:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-gpg-password/*?value
+                signature:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-signature/*?value
+
+            /*
              * Easy version ...
+             * Simply reloading page, to re-initialize app in its entirety.
              */
             p5.web.reload-location
-
-
-
-
-return
-/*
- * Showing a wizard window, asking user for credentials.
- */
-sys42.windows.wizard
-  header:Please configure inbox
-  body:<p>Supply settings for your POP3/SMTP account(s).</p>
-  data
-    POP:pop.gmail.com
-    PORT:995
-    Username:YOUR-GMAIL-USERNAME@gmail.com
-    Password:YOUR-GMAIL-PASSWORD
-    SSL:Yes
-      _options
-        No:No
-        Yes:Yes
-
-    SMTP:smtp.gmail.com
-    PORT:465
-    SSL:Yes
-      _options
-        No:No
-        Yes:Yes
-    Username:YOUR-GMAIL-USERNAME@gmail.com
-    Password:YOUR-GMAIL-PASSWORD
-
-    Name:John Doe
-    Email:YOUR-GMAIL-USERNAME@gmail.com
-    GPG Pwd:YOUR-Gnu-Privacy-Guard-PASSWORD
-    Signature:"Support your local WikiLeaks chapter - https://wikileaks.org"
-
-  .onok
-    sys42.windows.wizard.get-values
-
-    /*
-     * Verifying username/password is supplied for both POP3 and SMTP
-     */
-    if:x:/@sys42.windows.wizard.get-values/*/Username/[0,1]?value
-      =:
-      or:x:/@sys42.windows.wizard.get-values/*/Password/[0,1]?value
-        =:
-      or:x:/@sys42.windows.wizard.get-values/*/Username/[1,2]?value
-        =:
-      or:x:/@sys42.windows.wizard.get-values/*/Password/[1,2]?value
-        =:
-      or:x:/@sys42.windows.wizard.get-values/*/Name?value
-        =:
-      or:x:/@sys42.windows.wizard.get-values/*/Email?value
-        =:
-      or:x:/@sys42.windows.wizard.get-values/*/PGP Pwd?value
-        =:
-      sys42.windows.info-tip:You have to supply username and password for both SMTP and POP3 settings, in addition to email and GPG password.
-        class:info-window info-window-longer info-window-error
-        parent:sys42-windows-modal-body-wrapper
-      return:bool:false
-
-    /*
-     * Data is valid (somehow).
-     */
-    eval-x:x:/+/*/*
-    p5.auth.my-settings.set
-      sephia
-        pop3-server:x:/@sys42.windows.wizard.get-values/*/POP?value
-        pop3-port:x:/@sys42.windows.wizard.get-values/*/PORT/[0,1]?value
-        pop3-use-ssl:x:/@sys42.windows.wizard.get-values/*/SSL/[0,1]?value
-        pop3-username:x:/@sys42.windows.wizard.get-values/*/Username/[0,1]?value
-        pop3-password:x:/@sys42.windows.wizard.get-values/*/Password/[0,1]?value
-        smtp-server:x:/@sys42.windows.wizard.get-values/*/SMTP?value
-        smtp-port:x:/@sys42.windows.wizard.get-values/*/PORT/[1,2]?value
-        smtp-use-ssl:x:/@sys42.windows.wizard.get-values/*/SSL/[1,2]?value
-        smtp-username:x:/@sys42.windows.wizard.get-values/*/Username/[1,2]?value
-        smtp-password:x:/@sys42.windows.wizard.get-values/*/Password/[1,2]?value
-        name:x:/@sys42.windows.wizard.get-values/*/Name?value
-        email:x:/@sys42.windows.wizard.get-values/*/Email?value
-        gpg-password:x:/@sys42.windows.wizard.get-values/*/GPG Pwd?value
-        signature:x:/@sys42.windows.wizard.get-values/*/Signature?value
-
-    /*
-     * Returning success, to close modal window.
-     * Which doesn't really matter, since we're doing a reload of page anyways ...
-     */
-    p5.web.reload-location
-    return:bool:true

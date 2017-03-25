@@ -79,6 +79,7 @@ Servers:sephia-server-settings
                   class:form-control
                   placeholder:Password ...
                   autocomplete:new-password
+                  value:
 
     /*
      * SMTP settings goes here.
@@ -151,3 +152,4 @@ Servers:sephia-server-settings
                   class:form-control
                   placeholder:Password ...
                   autocomplete:new-password
+                  value:
