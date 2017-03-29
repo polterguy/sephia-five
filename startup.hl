@@ -16,7 +16,7 @@
  * Creating unrolling event for Sepia main folder.
  */
 create-event:p5.io.unroll-path.@SEPHIA
-  return:/system42/apps/sephia-mail
+  return:/system42/apps/sephia-five
 
 
 
