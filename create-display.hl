@@ -1,6 +1,6 @@
 
 /*
- * Creates the main GUI structure of Sephia Mail.
+ * Creates the main GUI structure of Sephia Five.
  *
  * Sets a couple of properties on the page, in addition to creating the main "root widgets", such as the
  * "inbox widget" and the "toolbar widget", for then to initially populate the "inbox datagrid".
@@ -50,7 +50,7 @@ create-widget:sephia-header
           target:_blank
           widgets
             h1
-              innerValue:"Sephia Mail"
+              innerValue:Sephia Five
               title:Hide your ink!
 
     /*

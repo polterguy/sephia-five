@@ -1,6 +1,6 @@
 
 /*
- * Opens up the "inbox" of Sephia Mail.
+ * Opens up the "inbox" of Sephia Five.
  *
  * Notice, the "inbox" contains all email, also sent emails.
  *
@@ -158,7 +158,7 @@ where email.username = @username order by email.id desc limit 19 offset @offset"
      * Notice, opened emails are rendered in our datagrid with "visual clues" to signal that they're already opened
      * up for viewing.
      *
-     * Opened email here, refer to emails that user is already reading, in the "reader" parts of Sephia Mail.
+     * Opened email here, refer to emails that user is already reading, in the "reader" parts of Sephia Five.
      */
     p5.web.widgets.find:sephia-read-emails
       _email-id:x:/@_dp/#/*/id?value

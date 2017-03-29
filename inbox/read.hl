@@ -83,7 +83,7 @@ p5.mysql.connect:[sephia]
    * - gif
    * - hl (Hyperlambda file)
    *
-   * All other file types are impossible to download from Sephia Mail!
+   * All other file types are impossible to download from Sephia Five!
    */
   apply:x:/../**/div/*/class/=sephia-attachments/./*/widgets
     src:x:/@p5.mysql.select/*
@@ -137,7 +137,7 @@ p5.mysql.connect:[sephia]
                     body:@"<p class=""text-danger"">These types of files can contain viruses and other types of 
 malware that can destroy your computer. Hence to make sure your computer stays safe, 
 we have explicitly turned OFF downloading of such files!</p>
-<p>Sorry, Sephia Mail <strong>never</strong> compromises security for convenience ...</p>"
+<p>Sorry, Sephia Five <strong>never</strong> compromises security for convenience ...</p>"
 
         onclick
 
@@ -237,7 +237,7 @@ where email.id = @emailid"
   /*
    * Selecing part from "part" database table, prioritizing "plain" text.
    *
-   * Notice, Sephia Mail will prioritize "text/plain" MIME parts, and go to extreme lengths to avoid having to
+   * Notice, Sephia Five will prioritize "text/plain" MIME parts, and go to extreme lengths to avoid having to
    * open up an HTML email.
    *
    * Only if an email is sent, without any "plain/text" MIME part, it will open up the HTML part, and when doing so, it
@@ -301,7 +301,7 @@ We have stripped it down to its minimum, to ensure your safety, hopefully it is 
 you by stripping away everything in the email that is potentially malicious.</p>
 <p><strong>Notice!</strong> Be careful when clicking links in the email, and make 100% sure that the email is 
 from who it claims to be from, and that you trust its source!</p>
-<p>Sorry, Sephia Mail <strong>never</strong> compromises security for convenience ...</p>"
+<p>Sorry, Sephia Five <strong>never</strong> compromises security for convenience ...</p>"
 
   /*
    * Creating widget that opens email, making sure we unescape any HTML.

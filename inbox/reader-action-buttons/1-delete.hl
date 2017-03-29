@@ -5,7 +5,7 @@
  * "Action button" for email, which means that it is dynamically loaded, and added into "toolbar" for email.
  *
  * Deletes the email entirely.
- * Notice, there are no "trashcan" in Sephia Mail, and all emails deleted this way, are PERMANENTLY deleted!
+ * Notice, there are no "trashcan" in Sephia Five, and all emails deleted this way, are PERMANENTLY deleted!
  */
 button
   class:btn btn-default

@@ -1,6 +1,6 @@
 ﻿
 /*
- * Launcher file for Sephia Mail.
+ * Launcher file for Sephia Five.
  *
  * This file is evaluated (without any parameters) from the CMS when the menu item for the Sephia application
  * is clicked by the user.
@@ -15,14 +15,14 @@
  */
 whoami
 if:x:/@whoami/*/default?value
-  throw:Sorry, Sephia Mail is only accessible for logged in users
+  throw:Sorry, Sephia Five is only accessible for logged in users
 
 
 
 
 
 /*
- * Including Bootstrap CSS and JS, in addition to custom Sephia Mail CSS.
+ * Including Bootstrap CSS and JS, in addition to custom Sephia Five CSS.
  *
  * Notice, these events will also include jQuery, since Bootstrap (JS) relies on jQuery.
  */

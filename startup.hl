@@ -1,6 +1,6 @@
 
 /*
- * Startup file for Sephia Mail.
+ * Startup file for Sephia Five.
  *
  * This file is evaluated every time the server restarts, or the web server process is recycled for any reasons.
  *

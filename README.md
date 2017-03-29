@@ -1,4 +1,4 @@
-# Sephia Mail
+# Sephia Five
 
 A blistering fast, secure, virus free, and PGP cryptography based alternative to GMail. Reclaim your 
 privacy **TODAY**!
@@ -21,4 +21,4 @@ Restart your web server process, configure Sephia, and enjoy.
 Hint, you'll need to have either Xamarin, MonoDevelop, or Visual Studio installed locally, to test it on your
 development machine - In addition to access to a MySQL instance, where you can create your database.
 
-**Disclaimer;** _"No teddy bears was harmed during the creation of Sephia Mail!"_
+**Disclaimer;** _"No teddy bears was harmed during the creation of Sephia Five!"_
