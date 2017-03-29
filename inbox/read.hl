@@ -4,6 +4,9 @@
  *
  * Expects [email-id] being ID of email from database.
  * Optionally pass in [after], being widget where the widget will be created after.
+ * Optionally, also pass in [force], to force the email to be opened, even if it is already open.
+ * This is necessary to allow our "discard reply" logic to work, allowing for the email to be re-opened,
+ * even though it is already open, since it opens up the reader, before deleting the reply widget.
  *
  * Will create a widget, wrapping all relevant data for email, and inject into "reader widget" on page, allowing
  * user to reply to email if he wishes.
