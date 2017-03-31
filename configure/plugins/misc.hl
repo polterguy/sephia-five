@@ -8,7 +8,7 @@ Misc:sephia-misc-settings
     /*
      * Personal settings goes here, such as name, email address and signature.
      */
-    sephia.widgets.settings.fieldset
+    gaiasoul.camphora.widgets.fieldset
       legend:Personal
       help:@"<p>Here you can configure your personal information, such as your name, email and signature.</p>
 <p>Notice, Sephia does not create GnuPG keys for you, in the current version. You need to make sure you have installed

@@ -171,7 +171,7 @@ sys42.windows.modal
         /*
          * This is the "search and page" toolbar to filter and page in contacts.
          */
-        sephia.widgets.search-toolbar
+        gaiasoul.camphora.widgets.grid-filter
           databind-event:sephia.contacts.databind
           page-size:int:10
           search-accesskey:S

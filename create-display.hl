@@ -70,7 +70,7 @@ create-widget:sephia-header
              * Notice, we wrap it inside the "sephia-selector" CSS class widget, to make it "drop down" during start,
              * and stay in a fixed position during browsing.
              */
-            sephia.widgets.search-toolbar
+            gaiasoul.camphora.widgets.grid-filter
               databind-event:sephia.inbox.databind
               page-size:int:19
               search-accesskey:F
