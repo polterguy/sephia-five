@@ -72,18 +72,6 @@ p5.mysql.connect:[sephia]
    *
    * Notice, only attachments matching our "whitelist" in regards to file extensions are legally allowed to be downloaded.
    * This is to prevent users from downloading viruses, and other types of malware.
-   *
-   * Legal filenames are;
-   * - txt
-   * - md
-   * - zip
-   * - png
-   * - jpg
-   * - jpeg (sometimes jpeg files are saved with different file extensions)
-   * - gif
-   * - hl (Hyperlambda file)
-   *
-   * All other file types are impossible to download from Sephia Five!
    */
   apply:x:/../**/div/*/class/=sephia-attachments/./*/widgets
     src:x:/@p5.mysql.select/*
@@ -94,47 +82,34 @@ p5.mysql.connect:[sephia]
 
           /*
            * Making sure file extension is in "whitelist", otherwise preventing download of file.
+           * We do this by checking if file's extension is in our "supported MIME types"
            */
           {_filename}:x:/*/filename?value
-          split:x:/@_filename?value
-            =:.
-          switch:x:/@split/0/-?name
-            case:txt
-            case:md
-            case:zip
-            case:png
-            case:jpg
-            case:jpeg
-            case:gif
-            case:hl
+          eval-x:x:/+/*
+          sys42.utilities.execute-lambda-file:@SEPHIA/common/get-mime-type.hl
+            file:x:/@_filename?value
+          if:x:/@sys42.utilities.execute-lambda-file/*?count
+            =:int:0
 
-              /*
-               * These files are allowed to be downloaded.
-               */
-              break
+            /*
+             * File extension is not on our "whitelist".
+             */
+            sys42.utilities.add-css-classes:x:/../*/_event?value
+              class:sephia-sandboxed-attachment
 
-            default
+            /*
+             * Then replacing the original [onclick] Ajax event, with another lambda object, informing user that he
+             * cannot download this attachment.
+             */
+            p5.web.widgets.ajax-events.set:x:/../*/_event?value
+              onclick
 
-              /*
-               * Denying download of file!
-               * First giving visual clues.
-               */
-              sys42.utilities.add-css-classes:x:/../*/_event?value
-                class:sephia-sandboxed-attachment
-
-              /*
-               * Then replacing the original [onclick] Ajax event, with another lambda object, informing user that he
-               * cannot download this attachment.
-               */
-              p5.web.widgets.ajax-events.set:x:/../*/_event?value
-                onclick
-
-                  /*
-                   * Using a modal window to warn user.
-                   */
-                  sys42.windows.modal
-                    header:WARNING!!
-                    body:@"<p class=""text-danger"">These types of files can contain viruses and other types of 
+                /*
+                 * Using a modal window to warn user.
+                 */
+                sys42.windows.modal
+                  header:WARNING!!
+                  body:@"<p class=""text-danger"">These types of files can contain viruses and other types of 
 malware that can destroy your computer. Hence to make sure your computer stays safe, 
 we have explicitly turned OFF downloading of such files!</p>
 <p>Sorry, Sephia Five <strong>never</strong> compromises security for convenience ...</p>"
@@ -158,13 +133,20 @@ we have explicitly turned OFF downloading of such files!</p>
            * This is being done automatically in the [p5.pop3.get] Active Event.
            *
            * Hence, we must use a "prefix", "folder" in addition to "filename" to figure out the correct path to file.
+           *
+           * Notice, in case file has been physically deleted from disc, this invocation will throw an exception, which we try to catch here.
            */
-          eval-x:x:/+/*/filename
-          sys42.cms.download-file:{0}{1}{2}
-            :x:/@_folder?value
-            :x:/@_prefix?value
-            :x:/@_filename?value
-            filename:x:/@_filename?value
+          try
+            eval-x:x:/+/*/filename
+            sys42.cms.download-file:{0}{1}{2}
+              :x:/@_folder?value
+              :x:/@_prefix?value
+              :x:/@_filename?value
+              filename:x:/@_filename?value
+          catch
+            sys42.windows.info-tip:Couldn't download file, message from system was; '{0}'
+              :x:/@message?value
+              class:info-window info-window-error info-window-longer
 
         widgets
           span

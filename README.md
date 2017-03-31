@@ -1,7 +1,7 @@
 # Sephia Five
 
 A blistering fast, secure, virus free, and PGP cryptography based alternative to GMail. Reclaim your 
-privacy **TODAY**!
+privacy today!
 
 ![alt tag](media/screenshot.png)
 
@@ -10,9 +10,10 @@ or [here](https://www.youtube.com/watch?v=lzRJGU2UrT0) for a deeper introduction
 
 ## Installation
 
-First download [Phosphorus Five](https://github.com/polterguy/phosphorusfive). Then follow the recipe below
+First download [Phosphorus Five](https://github.com/polterguy/phosphorusfive) 
+and [Camphora-Five](https://github.com/polterguy/camphora-five). Then follow the recipe below
 
-* Put the main _"/sephia-mail/"_ folder inside of your _"/phosphorusfive/core/p5.webapp/system42/apps/"_ folder
+* Put the main _"/sephia-five/"_ folder inside of your _"/phosphorusfive/core/p5.webapp/system42/apps/"_ folder
 * Create a MySQL database, and create a connection string in your web.config, and name it "sephia"
 * Install GnuPG, and create a keypair matching your email address
 

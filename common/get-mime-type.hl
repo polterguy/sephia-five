@@ -1,0 +1,47 @@
+
+/*
+ * Returns the MIME type for a file name, in addition to the "Content-Transfer-Encoding".
+ *
+ * If filename supplied as [file] is a non-supported file type, meaning its file extension is not valid for a Sephia attachment,
+ * it will return nothing.
+ *
+ * Notice, if you wish to change the list of supported file types, according to their extensions, this is the place where you'd
+ * configure such a thing.
+ */
+
+
+
+
+
+/*
+ * Splitting filename given in [file], to figure out its extension.
+ */
+split:x:/../*/file?value
+  =:.
+switch:x:/@split/0/-?name
+
+  case:txt
+  case:md
+    return
+      text:plain
+  case:zip
+    return
+      application:zip
+        Content-Transfer-Encoding:binary
+  case:png
+    return
+      image:png
+        Content-Transfer-Encoding:binary
+  case:jpg
+  case:jpeg
+    return
+      image:jpeg
+        Content-Transfer-Encoding:binary
+  case:gif
+    return
+      image:gif
+        Content-Transfer-Encoding:binary
+  case:hl
+    return
+      application:x-hyperlambda
+

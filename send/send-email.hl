@@ -115,117 +115,39 @@ apply:x:/../*/sys42.utilities.execute-lambda-file/[0,1]
  * Then adding attachments into [p5.smtp.send] invocation.
  */
 for-each:x:/../*/attachment
-  split:x:/@_dp/#/*/_filename?value
-    =:.
 
   /*
-   * Checking how we should send attachments, which varies according to type.
-   *
-   * Either "binary", "image/something", or "text" - Depending upon file extension.
+   * Retrieving MIME type, notice, if this invocation returns nothing, then file type is unsupported.
    */
-  switch:x:/@split/0/-?name
+  eval-x:x:/+/*
+  sys42.utilities.execute-lambda-file:@SEPHIA/common/get-mime-type.hl
+    file:x:/@_dp/#/*/_filename?value
 
-    case:txt
-    case:md
+  /*
+   * Verifying that file extension is actually supported, before creating attachment.
+   * Notice, unsupported filetypes, which should have been impossible to actually add, are simply ignored.
+   */
+  if:x:/@sys42.utilities.execute-lambda-file/*
 
-      /*
-       * Adding as "text/plain" MIME part.
-       */
-      eval-x:x:/+/*/*/*(/Content-Disposition|/filename)
-      add:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart
-        src
-          text:plain
-            Content-Disposition:@"attachment; filename=""{0}"""
-              :x:/@_dp/#/*/_filename?value
-            filename:{0}{1}{2}
-              :x:/@_dp/#/*/_folder?value
-              :x:/@_dp/#/*/_prefix?value
-              :x:/@_dp/#/*/_filename?value
+    /*
+     * File extension is supported filetype, adding MIME type, with (possibly) a "Content-Transfer-Encoding", as returned
+     * from "get-mime-type.hl".
+     */
+    add:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart
+      src:x:/@sys42.utilities.execute-lambda-file/*
 
-    case:zip
-
-      /*
-       * Adding as "application/zip" MIME part.
-       */
-      eval-x:x:/+/*/*/*(/Content-Disposition|/filename)
-      add:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart
-        src
-          application:zip
-            Content-Disposition:@"attachment; filename=""{0}"""
-              :x:/@_dp/#/*/_filename?value
-            Content-Transfer-Encoding:binary
-            filename:{0}{1}{2}
-              :x:/@_dp/#/*/_folder?value
-              :x:/@_dp/#/*/_prefix?value
-              :x:/@_dp/#/*/_filename?value
-
-    case:png
-
-      /*
-       * Adding as "image/png" MIME part.
-       */
-      eval-x:x:/+/*/*/*(/Content-Disposition|/filename)
-      add:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart
-        src
-          image:png
-            Content-Disposition:@"attachment; filename=""{0}"""
-              :x:/@_dp/#/*/_filename?value
-            Content-Transfer-Encoding:binary
-            filename:{0}{1}{2}
-              :x:/@_dp/#/*/_folder?value
-              :x:/@_dp/#/*/_prefix?value
-              :x:/@_dp/#/*/_filename?value
-
-    case:jpg
-    case:jpeg
-
-      /*
-       * Adding as "image/jpeg" MIME part.
-       */
-      eval-x:x:/+/*/*/*(/Content-Disposition|/filename)
-      add:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart
-        src
-          image:jpeg
-            Content-Disposition:@"attachment; filename=""{0}"""
-              :x:/@_dp/#/*/_filename?value
-            Content-Transfer-Encoding:binary
-            filename:{0}{1}{2}
-              :x:/@_dp/#/*/_folder?value
-              :x:/@_dp/#/*/_prefix?value
-              :x:/@_dp/#/*/_filename?value
-
-    case:gif
-
-      /*
-       * Adding as "image/gif" MIME part.
-       */
-      eval-x:x:/+/*/*/*(/Content-Disposition|/filename)
-      add:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart
-        src
-          image:gif
-            Content-Disposition:@"attachment; filename=""{0}"""
-              :x:/@_dp/#/*/_filename?value
-            Content-Transfer-Encoding:binary
-            filename:{0}{1}{2}
-              :x:/@_dp/#/*/_folder?value
-              :x:/@_dp/#/*/_prefix?value
-              :x:/@_dp/#/*/_filename?value
-
-    case:hl
-
-      /*
-       * Adding as "application/x-hyperlambda" MIME part.
-       */
-      eval-x:x:/+/*/*/*(/Content-Disposition|/filename)
-      add:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart
-        src
-          application:x-hyperlambda
-            Content-Disposition:@"attachment; filename=""{0}"""
-              :x:/@_dp/#/*/_filename?value
-            filename:{0}{1}{2}
-              :x:/@_dp/#/*/_folder?value
-              :x:/@_dp/#/*/_prefix?value
-              :x:/@_dp/#/*/_filename?value
+    /*
+     * Adding "Content-Disposition" MIME header and physical filename on disc.
+     */
+    eval-x:x:/+/*/*
+    add:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart/0/-
+      src
+        Content-Disposition:@"attachment; filename=""{0}"""
+          :x:/@_dp/#/*/_filename?value
+        filename:{0}{1}{2}
+          :x:/@_dp/#/*/_folder?value
+          :x:/@_dp/#/*/_prefix?value
+          :x:/@_dp/#/*/_filename?value
 
 
 
