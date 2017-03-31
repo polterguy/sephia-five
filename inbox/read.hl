@@ -337,7 +337,7 @@ from who it claims to be from, and that you trust its source!</p>
        * Notice, this widget is dynamically populated according to all widgets in the "reader-action-buttons" folder.
        */
       div
-        class:btn-group prepend-bottom pull-right sephia-action-buttons
+        class:btn-group prepend-bottom pull-right prepend-top
         role:group
         widgets
 
@@ -373,7 +373,7 @@ from who it claims to be from, and that you trust its source!</p>
        */
       p
         class:sephia-reader-recipients
-        innerValue:"Recipient(s): {0}"
+        innerValue:"Recipients; {0}"
           :x:/@p5.mysql.connect/*/p5.html.html-encode/[3,4]?value
 
       /*

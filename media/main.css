@@ -12,6 +12,10 @@
     margin-bottom:50px;
 }
 
+
+/*
+ * De-emphasizing hyperlinks slightly.
+ */
 .sephia a {
     color:#9EB5BD;
 }
@@ -31,6 +35,12 @@
     background-image:linear-gradient(#e6d1c7, #d6c1b8);
     background-position:0 0;
 }
+
+
+
+/*
+ * The "branding" parts, or "logo".
+ */
 .sephia .sephia-brand a {
     color:rgba(0,0,0,.02);
     text-decoration:none;
@@ -65,9 +75,17 @@
     width:777px;
 }
 .sephia .sephia-selector input[type=search] {
+
+    /*
+     * Rounding borders of "search textbox".
+     */
     border-radius:17px 0 0 17px;
 }
 .sephia .sephia-new-email-btn {
+
+    /*
+     * Making sure our "create new email" button becomes larger.
+     */
     width:100%;
 }
 .sephia .sephia-configuration-btn {
@@ -97,16 +115,19 @@
     background-color:#fff5eb;
 }
 .sephia tr.sephia-email-row td:nth-child(4) {
+
+    /*
+     * This is the "status" of email, meaning is it encrypted, etc ...
+     */
     text-align:right;
     color:#ccc;
 }
 
 
 
-
-
-.sephia .sephia-reader {
-}
+/*
+ * A single email being read.
+ */
 .sephia .sephia-email {
     margin-bottom:25px;
     border-radius:5px;
@@ -122,27 +143,25 @@
     font-size:0.8em;
     margin-top:25px;
 }
-.sephia .sephia-action-buttons {
-    margin-top:15px;
-}
-.sephia .sephia-attachments {
-}
 .sephia .sephia-attachment {
-    background-color:rgba(0,255,0,.2);
+    background-color:#ebffff;
+    color:#ccc;
     float:left;
     width:auto;
+    text-align:left;
     min-width:250px;
+    min-height:57px;
     margin-right:15px;
-    padding:5px 25px 5px 25px;
+    padding:5px 15px 5px 15px;
     border-radius:5px;
     border:solid 1px rgba(0,0,0,.2);
     margin-top:15px;
-    opacity:.5;
-    transition:opacity .5s, transform ease-in .1s;
+    font-size:.9em;
+    transition:color .5s;
 }
 .sephia .sephia-attachment:hover {
-    opacity:1;
-    transition:opacity .5s;
+    color:#555;
+    transition:color .5s;
 }
 .sephia .sephia-sandboxed-attachment {
     background-color:rgba(255,0,0,.1);
@@ -155,7 +174,7 @@
 .sephia .sephia-delete-attachment {
     float:right;
     padding-top:2px;
-    margin-right:-15px;
+    margin-right:-5px;
     transition:color .5s, transform ease-in .5s;
 }
 .sephia .sephia-delete-attachment:hover {
@@ -168,17 +187,23 @@
     font-style:italic;
     font-size:.8em;
 }
-.sephia .sephia-email-reply {
+
+
+
+/*
+ * Create email styles (new, reply and forward)
+ */
+.sephia .sephia-email-new {
     margin-bottom:25px;
     border-radius:5px;
     box-shadow:rgba(0,0,0,.3) 2px 2px 5px;
     padding-top:15px;
-    padding-bottom:15px;
+    padding-bottom:57px;
     background-color:#EBFFFF;
 }
-.sephia .sephia-email-reply input,
-.sephia .sephia-email-reply textarea,
-.sephia .sephia-email-reply button {
+.sephia .sephia-email-new input,
+.sephia .sephia-email-new textarea,
+.sephia .sephia-email-new button {
     z-index:2;
     position:relative;
 }
@@ -203,6 +228,7 @@
 }
 .sephia .input-group-addon {
     min-width:initial;
+    background-color:white;
 }
 .sephia .sephia-uploader {
     position:absolute;

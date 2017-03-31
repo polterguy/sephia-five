@@ -72,6 +72,4 @@ emails sent by you.</p>
               class:form-control
               rows:7
               placeholder:Signature to use, will be injected into every email you send ...
-              innerValue:@"Help me reclaim your privacy, by sharing this link with all your friends.
-
-https://gaiasoul.com/donate"
+              innerValue:@"Got privacy? - https://gaiasoul.com"
