@@ -134,7 +134,8 @@ we have explicitly turned OFF downloading of such files!</p>
            *
            * Hence, we must use a "prefix", "folder" in addition to "filename" to figure out the correct path to file.
            *
-           * Notice, in case file has been physically deleted from disc, this invocation will throw an exception, which we try to catch here.
+           * Notice, in case file has been physically deleted from disc, this invocation will throw an exception, 
+           * which we try to catch here.
            */
           try
             eval-x:x:/+/*/filename
