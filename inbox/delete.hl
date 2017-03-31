@@ -39,5 +39,9 @@ p5.mysql.connect:[sephia]
       :x:/@_dp/#/*/folder?value
       :x:/@_dp/#/*/prefix?value
       :x:/@_dp/#/*/filename?value
-  p5.mysql.delete:@"delete from email where id = @id"
+
+  /*
+   * No need to delete from attachments table, since cascading deletes are turned ON.
+   */
+  p5.mysql.delete:@"delete from emails where id = @id"
     @id:x:/../*/email-id?value

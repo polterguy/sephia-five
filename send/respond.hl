@@ -22,7 +22,8 @@ p5.mysql.connect:[sephia]
   /*
    * Selecting email data from database.
    */
-  p5.mysql.select:@"select * from email inner join contact on email.sender = contact.id where email.id = @emailid"
+  p5.mysql.select:@"select * from emails
+inner join contacts on emails.sender = contacts.id where emails.id = @emailid"
     @emailid:x:/../*/email-id?value
 
   /*
@@ -71,7 +72,7 @@ p5.mysql.connect:[sephia]
   /*
    * Selecting email content from "part" table in database.
    */
-  p5.mysql.select:@"select * from part where emailid = @emailid"
+  p5.mysql.select:@"select * from parts where emailid = @emailid"
     @emailid:x:/../*/email-id?value
   _content
 
@@ -154,7 +155,8 @@ p5.mysql.connect:[sephia]
     /*
      * This is not a forward operation, making sure default "To" field becomes original sender.
      */
-    p5.mysql.select:@"select * from contact inner join email on email.sender = contact.id where email.id = @emailid"
+    p5.mysql.select:@"select * from contacts 
+inner join emails on emails.sender = contacts.id where emails.id = @emailid"
       @emailid:x:/../*/email-id?value
     set:x:/@_to?value
       src:x:/@p5.mysql.select/*/*/email?value
@@ -162,7 +164,9 @@ p5.mysql.connect:[sephia]
     /*
      * Then Cc and Bcc.
      */
-    p5.mysql.select:@"select * from contact inner join recipient on contact.id = recipient.contactid where recipient.emailid = @emailid"
+    p5.mysql.select:@"select * from contacts 
+inner join recipients on contacts.id = recipients.contactid 
+where recipients.emailid = @emailid"
       @emailid:x:/../*/email-id?value
 
     /*

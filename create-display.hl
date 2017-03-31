@@ -38,7 +38,7 @@ create-widget:sephia-header
 
   widgets
     div:sephia-main-header
-      class:col-xs-12 sephia-brand
+      class:row sephia-brand
       widgets
 
         /*
@@ -48,10 +48,10 @@ create-widget:sephia-header
         a
           href:"https://gaiasoul.com/donate"
           target:_blank
+          class:col-xs-12
           widgets
             h1
               innerValue:Sephia Five
-              title:Hide your ink!
 
     /*
      * This is our main "toolbar" (the thing that drops down at the top of the page, and stays in a fixed position).
@@ -83,7 +83,7 @@ create-widget:sephia-header
           widgets
             button
               innerValue:@"<span class=""glyphicon glyphicon-envelope""></span>"
-              class:btn btn-success sephia-new-email-btn
+              class:btn btn-default sephia-new-email-btn
               onclick
 
                 /*
@@ -148,10 +148,10 @@ create-widget:sephia-content
      * This is our "inbox datagrid", which displays all the emails currently being viewed by user.
      */
     table
-      class:table table-hover table-condensed
+      class:table table-condensed
       widgets
         thead
-          innerValue:@"<tr><th>From</th><th>Subject</th><th>Date</th></tr>"
+          innerValue:@"<tr><th>From</th><th>Subject</th><th>Date</th><th>Status</th></tr>"
 
         /*
          * "Datagrid" content (inbox).

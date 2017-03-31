@@ -156,9 +156,9 @@ we have explicitly turned OFF downloading of such files!</p>
   /*
    * Retrieving all recipients.
    */
-  p5.mysql.select:@"select name, email from contact 
-inner join recipient on contact.id = recipient.contactid
-where recipient.emailid = @emailid"
+  p5.mysql.select:@"select name, email from contacts 
+inner join recipients on contacts.id = recipients.contactid
+where recipients.emailid = @emailid"
     @emailid:x:/../*/email-id?value.string
   _recipients
 
@@ -179,15 +179,15 @@ where recipient.emailid = @emailid"
   /*
    * Retrieving actual email.
    */
-  p5.mysql.select:@"select * from email 
-inner join contact on email.sender = contact.id 
-where email.id = @emailid"
+  p5.mysql.select:@"select * from emails 
+inner join contacts on emails.sender = contacts.id 
+where emails.id = @emailid"
     @emailid:x:/../*/email-id?value
 
   /*
    * Making sure we set email as read in database.
    */
-  p5.mysql.update:@"update email set isread = 1 where id = @id"
+  p5.mysql.update:@"update emails set isread = 1 where id = @id"
     @id:x:/../*/email-id?value
 
   /*
@@ -235,7 +235,7 @@ where email.id = @emailid"
    *
    * If this is a problem, let your friends know that you only accept "plain/text" emails.
    */
-  p5.mysql.select:@"select * from part where emailid = @emailid"
+  p5.mysql.select:@"select * from parts where emailid = @emailid"
     @emailid:x:/../*/email-id?value
 
   /*

@@ -59,7 +59,7 @@ p5.pop3.get
           /*
            * Checking if email has alread been fetched from POP server
            */
-          p5.mysql.scalar:@"select count(*) from email where mimeid = @mimeid"
+          p5.mysql.scalar:@"select count(*) from emails where mimeid = @mimeid"
             @mimeid:x:/@_dp/#?value
           if:x:/@p5.mysql.scalar?value
             >:long:0
@@ -86,7 +86,7 @@ p5.pop3.get
            * Stuffing emails into "contact" table, but only the [From] header initially.
            * Rest of email addresses are handled further down.
            */
-          p5.mysql.select:@"select name, id from contact where email = @email and username = @username"
+          p5.mysql.select:@"select name, id from contacts where email = @email and username = @username"
             @email:x:/@_dp/#/*/From/*?value
             @username:x:/@whoami/*/username?value
 
@@ -99,7 +99,7 @@ p5.pop3.get
             /*
              * Doesn't exist, inserting new entry.
              */
-            p5.mysql.insert:@"insert into contact (name, email, username) value (@name, @email, @username)"
+            p5.mysql.insert:@"insert into contacts (name, email, username) value (@name, @email, @username)"
               @name:x:/@_dp/#/*/From/0?name
               @email:x:/@_dp/#/*/From/0?value
               @username:x:/@whoami/*/username?value
@@ -115,7 +115,7 @@ p5.pop3.get
              * Exists, but name has been updated.
              * Notice, we do NOT update if name from POP3 server is "Anonymous".
              */
-            p5.mysql.update:@"update contact set name = @name where id = @id"
+            p5.mysql.update:@"update contacts set name = @name where id = @id"
               @id:x:/@p5.mysql.select/0/*/id?value
               @name:x:/@_dp/#/*/From/*?name
             set:x:/@_from?value
@@ -151,7 +151,7 @@ p5.pop3.get
             not
             set:x:/@_dp/#/*/Subject?value
               src:
-          p5.mysql.insert:@"insert into email (subject, date, sender, username, isread, mimeid, signature, fingerprint, encrypted, type) values (@subject, @date, @sender, @username, 0, @mimeid, @signature, @fingerprint, @encrypted, 'received')"
+          p5.mysql.insert:@"insert into emails (subject, date, sender, username, isread, mimeid, signature, fingerprint, encrypted, type) values (@subject, @date, @sender, @username, 0, @mimeid, @signature, @fingerprint, @encrypted, 'received')"
             @subject:x:/@_dp/#/*/Subject?value
             @date:x:/@_dp/#/*/Date?value
             @sender:x:/@_from?value.uint
@@ -175,7 +175,7 @@ p5.pop3.get
            * Now inserting into "part" table.
            */
           for-each:x:/@_dp/#/**/text/*/content/.
-            p5.mysql.insert:@"insert into part (type, content, emailid) values (@type, @content, @emailid)"
+            p5.mysql.insert:@"insert into parts (type, content, emailid) values (@type, @content, @emailid)"
               @type:x:/@_dp/#?value
               @content:x:/@_dp/#/*/content?value
               @emailid:x:/@for-each/@p5.mysql.insert/*/id?value
@@ -193,7 +193,7 @@ p5.pop3.get
             /*
              * Checking if contact exists in database "contact" table.
              */
-            p5.mysql.select:@"select name, id from contact where email = @email and username = @username"
+            p5.mysql.select:@"select name, id from contacts where email = @email and username = @username"
               @email:x:/@_dp/#?value
               @username:x:/@whoami/*/username?value
 
@@ -213,7 +213,7 @@ p5.pop3.get
                   not
                 set:x:/@_dp/#?name
                   src:Anonymous
-              p5.mysql.insert:@"insert into contact (name, email, username) value (@name, @email, @username)"
+              p5.mysql.insert:@"insert into contacts (name, email, username) value (@name, @email, @username)"
                 @name:x:/@_dp/#?name
                 @email:x:/@_dp/#?value
                 @username:x:/@whoami/*/username?value
@@ -229,7 +229,7 @@ p5.pop3.get
               /*
                * Exists, but name has been updated.
                */
-              p5.mysql.update:@"update contact set name = @name where id = @id"
+              p5.mysql.update:@"update contacts set name = @name where id = @id"
                 @name:x:/@_dp/#?name
                 @id:x:/@p5.mysql.select/0/*/id?value
               set:x:/@_contact-id?value
@@ -246,7 +246,7 @@ p5.pop3.get
             /*
              * Inserting into "recipient" table.
              */
-            p5.mysql.insert:@"insert into recipient (contactid, type, emailid) values (@contactid, @type, @emailid)"
+            p5.mysql.insert:@"insert into recipients (contactid, type, emailid) values (@contactid, @type, @emailid)"
               @contactid:x:/@_contact-id?value
               @type:x:/@_dp/#/.?name
               @emailid:x:/@for-each/@p5.mysql.insert/*/id?value

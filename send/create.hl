@@ -45,7 +45,7 @@ set:x:/../*/body?value
 list-files:@SEPHIA/send/send-action-buttons/
   filter:.hl
 load-file:x:/@list-files/*?name
-add:x:/../**/create-widget/**/div/*/class/=~btn-group/./*/widgets
+add:x:/../**/create-widget/**/span/*/class/=~sephia-action-buttons/./*/widgets
   src:x:/@load-file/*/*
 
 
@@ -173,19 +173,35 @@ create-widget
     /*
      * Subject of email.
      */
-    input
-      type:text
-      class:form-control sephia-reply-subject
-      placeholder:Subject ...
-      _subject
-      oninit
+    div
+      class:input-group prepend-bottom
+      widgets
+        input
+          type:text
+          class:form-control
+          placeholder:Subject ...
+          _subject
+          value:x:/../*/subject?value
+          oninit
+
+            /*
+             * Making sure "Subject" of email gets initial focus.
+             */
+            p5.web.send-javascript:@"$('#{0}').focus().select();"
+              :x:/../*/_event?value
 
         /*
-         * Making sure "Subject" of email gets initial focus.
+         * "Action buttons" (send, discard, etc).
+         *
+         * These widgets are actually plugins, and dynamically added from each of the files that can be found in
+         * the "/send/sender-action-buttons/" folder.
+         *
+         * If you wish to create your own "action button", this can easily be done by copying one of the existing buttons
+         * from that folder.
          */
-        p5.web.send-javascript:@"$('#{0}').focus().select();"
-          :x:/../*/_event?value
-      value:x:/../*/subject?value
+        span
+          class:input-group-btn sephia-action-buttons
+          widgets
 
     /*
      * Body of email.
@@ -217,7 +233,7 @@ create-widget
          * "add contact" form, if he doesn't want to do such.
          */
         div
-          class:col-xs-12 col-md-4 prepend-bottom
+          class:col-xs-12 col-md-4
           widgets
             div
               class:input-group
@@ -271,7 +287,7 @@ create-widget
          * "add contact" form, if he doesn't want to do such.
          */
         div
-          class:col-xs-12 col-md-4 prepend-bottom
+          class:col-xs-12 col-md-4
           widgets
             div
               class:input-group
@@ -325,7 +341,7 @@ create-widget
          * "add contact" form, if he doesn't want to do such.
          */
         div
-          class:col-xs-12 col-md-4 prepend-bottom
+          class:col-xs-12 col-md-4
           widgets
             div
               class:input-group
@@ -376,27 +392,3 @@ create-widget
     container
       _attachment-wrapper
       class:sephia-attachments
-
-    /*
-     * Necessary, since the attachments are rendered floating.
-     */
-    literal
-      element:div
-      class:clearfix
-
-    /*
-     * "Action buttons" (send, discard, etc).
-     *
-     * These widgets are actually plugins, and dynamically added from each of the files that can be found in
-     * the "/send/sender-action-buttons/" folder.
-     *
-     * If you wish to create your own "action button", this can easily be done by copying one of the existing buttons
-     * from that folder.
-     */
-    div
-      class:text-right
-      widgets
-        div
-          class:btn-group
-          role:group
-          widgets

@@ -5,7 +5,7 @@
 p5.mysql.connect:[sephia]
   p5.mysql.execute:@"
 
-CREATE TABLE IF NOT EXISTS `contact` (
+CREATE TABLE IF NOT EXISTS `contacts` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(1024) COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(1024) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS `contact` (
   UNIQUE KEY `id_UNIQUE` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `email` (
+CREATE TABLE IF NOT EXISTS `emails` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `subject` varchar(4096) NOT NULL,
   `date` datetime NOT NULL,
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `email` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`),
   KEY `email_sender_idx` (`sender`),
-  CONSTRAINT `fk_email_contact` FOREIGN KEY (`sender`) REFERENCES `contact` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `fk_emails_contacts` FOREIGN KEY (`sender`) REFERENCES `contacts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `attachments` (
@@ -40,30 +40,30 @@ CREATE TABLE IF NOT EXISTS `attachments` (
   `emailid` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`),
-  KEY `attachments_email_idx` (`emailid`),
-  CONSTRAINT `fk_attachment_email` FOREIGN KEY (`emailid`) REFERENCES `email` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `attachments_emails_idx` (`emailid`),
+  CONSTRAINT `fk_attachments_emails` FOREIGN KEY (`emailid`) REFERENCES `emails` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `part` (
+CREATE TABLE IF NOT EXISTS `parts` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `type` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `content` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `emailid` int(11) unsigned NOT NULL,
   UNIQUE KEY `id_UNIQUE` (`id`),
   KEY `part_emailid_idx` (`emailid`),
-  CONSTRAINT `fk_part_email` FOREIGN KEY (`emailid`) REFERENCES `email` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `fk_parts_emails` FOREIGN KEY (`emailid`) REFERENCES `emails` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `recipient` (
+CREATE TABLE IF NOT EXISTS `recipients` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `contactid` int(10) unsigned NOT NULL,
   `type` varchar(45) NOT NULL,
   `emailid` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`),
-  KEY `recipient_email_idx` (`emailid`),
-  KEY `recipient_contact_idx` (`contactid`),
-  CONSTRAINT `fk_recipient_contact` FOREIGN KEY (`contactid`) REFERENCES `contact` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_recipient_email` FOREIGN KEY (`emailid`) REFERENCES `email` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `recipients_emails_idx` (`emailid`),
+  KEY `recipients_contacts_idx` (`contactid`),
+  CONSTRAINT `fk_recipients_contacts` FOREIGN KEY (`contactid`) REFERENCES `contacts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_recipients_emails` FOREIGN KEY (`emailid`) REFERENCES `emails` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 "
