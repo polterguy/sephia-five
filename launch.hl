@@ -27,9 +27,8 @@ if:x:/@whoami/*/default?value
  * Notice, these events will also include jQuery, since Bootstrap (JS) relies on jQuery.
  */
 sys42.bootstrap.include-css
-sys42.bootstrap.include-javascript
+  _theme:bool:false
 p5.web.include-css-file
-  @CMS/media/css/main.css
   @SEPHIA/media/main.css
 
 

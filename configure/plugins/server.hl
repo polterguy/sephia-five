@@ -29,7 +29,7 @@ Servers:sephia-server-settings
                   placeholder:POP3 settings ...
                   value:pop.gmail.com
                   oninit
-                    p5.web.send-javascript:@"$('#{0}').focus().select();"
+                    p5.web.send-javascript:@"p5.$('{0}').el.focus();p5.$('{0}').el.select();"
                       :x:/../*/_event?value
                 span
                   class:input-group-addon

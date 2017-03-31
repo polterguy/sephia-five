@@ -87,7 +87,7 @@ sys42.windows.modal
               create-widget
                 element:tr
                 parent:sephia-search-for-recipient
-                class:sephia-add-recipient
+                class:sephia-add-recipient-row
                 role:button
                 _email:x:/@_dp/#/*/email?value
                 onclick
@@ -144,7 +144,7 @@ sys42.windows.modal
                    * Destroying modal window, setting focus to widget that had address appended into it.
                    */
                   sys42.windows.modal.destroy
-                  p5.web.send-javascript:@"$('#{0}').focus().select();"
+                  p5.web.send-javascript:@"p5.$('{0}').el.focus();p5.$('{0}').el.select();"
                     :x:/@_return-widget?value
 
                 widgets

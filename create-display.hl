@@ -92,7 +92,7 @@ create-widget:sephia-header
                 sys42.utilities.execute-lambda-file:@SEPHIA/send/create.hl
                 p5.web.widgets.find:sephia-read-emails
                   _email-id:x:/../*/email-id?value.string
-                p5.web.send-javascript:@"$('#{0}')[0].scrollIntoView();"
+                p5.web.send-javascript:@"p5.$('{0}').el.scrollIntoView();"
                   :x:/@p5.web.widgets.find/*/*?value
 
         /*

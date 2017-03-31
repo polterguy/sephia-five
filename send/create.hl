@@ -75,7 +75,7 @@ else
 create-widget
   _email-id:x:/../*/email-id?value
   _is-reply:true
-  class:sephia-email-new col-xs-12
+  class:sephia-email-compose col-xs-12
   events
 
     /*
@@ -187,7 +187,7 @@ create-widget
             /*
              * Making sure "Subject" of email gets initial focus.
              */
-            p5.web.send-javascript:@"$('#{0}').focus().select();"
+            p5.web.send-javascript:@"p5.$('{0}').el.focus();p5.$('{0}').el.select();"
               :x:/../*/_event?value
 
         /*

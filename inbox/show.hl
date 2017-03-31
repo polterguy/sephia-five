@@ -252,4 +252,4 @@ sys42.utilities.execute-lambda-file:@SEPHIA/inbox/set-title.hl
 /*
  * Making sure we scroll datagrid into view.
  */
-p5.web.send-javascript:@"$('#sephia-main-header')[0].scrollIntoView();"
+p5.web.send-javascript:@"p5.$('sephia-main-header').el.scrollIntoView();"

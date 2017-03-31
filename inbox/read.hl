@@ -44,7 +44,7 @@ if:x:/../*/force?value.bool
    *
    * Scrolling email into view.
    */
-  p5.web.send-javascript:@"$('#{0}')[0].scrollIntoView();"
+  p5.web.send-javascript:@"p5.$('{0}').el.scrollIntoView();"
     :x:/@p5.web.widgets.find/*/*?value
   return
 
@@ -326,7 +326,7 @@ from who it claims to be from, and that you trust its source!</p>
       /*
        * Making sure we scroll email into view.
        */
-      p5.web.send-javascript:@"$('#{0}')[0].scrollIntoView();"
+      p5.web.send-javascript:@"p5.$('{0}').el.scrollIntoView();"
         :x:/../*/_event?value
 
     widgets

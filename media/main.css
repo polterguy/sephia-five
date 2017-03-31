@@ -35,6 +35,70 @@
     background-image:linear-gradient(#e6d1c7, #d6c1b8);
     background-position:0 0;
 }
+.sephia .input-group-addon {
+    min-width:initial;
+    background-color:white;
+}
+
+
+
+/*
+ * Necessary to get the "camphora components" rendered correctly.
+ * To avoid including the entire Camphora CSS, we simply inline the parts we use here.
+ */
+.camphora-fieldset-help-button {
+    float:right;
+    opacity:.2;
+    transform:scale(1);
+    transition:opacity, transform ease-in-out .3s;
+}
+.camphora-fieldset-help-button:hover,
+.camphora-fieldset-help-button:focus {
+    opacity:1;
+    transform:scale(1.5) rotate(19deg);
+    transition:opacity, transform ease-in-out .3s;
+}
+.camphora-fieldset-help-info {
+    color:rgba(0,0,0,.5);
+}
+.camphora-search-toolbar .input-group-addon:first-child {
+    min-width:100px;
+}
+
+
+
+/*
+ * Including only the bare minimum parts from CMS main stuff, that we'll need.
+ */
+.info-window {
+    background:#f0f0f0;
+    max-width:300px;
+    position:fixed;
+    top:0px;
+    right:50px;
+    color:#9d9b97;
+    padding:5px 25px 0 25px;
+    border-radius:0 0 15px 15px;
+    z-index:1020;
+    animation-name:animate-info-feedback;
+    animation-duration:3s;
+    animation-fill-mode:forwards;
+}
+.info-window-longer {
+    animation-duration: 6s;
+}
+.info-window-error {
+    color:#e55;
+}
+.info-window-warning {
+    color:#ea5;
+}
+.prepend-top {
+    margin-top:15px;
+}
+.prepend-bottom {
+    margin-bottom:15px;
+}
 
 
 
@@ -193,7 +257,7 @@
 /*
  * Create email styles (new, reply and forward)
  */
-.sephia .sephia-email-new {
+.sephia .sephia-email-compose {
     margin-bottom:25px;
     border-radius:5px;
     box-shadow:rgba(0,0,0,.3) 2px 2px 5px;
@@ -201,35 +265,18 @@
     padding-bottom:57px;
     background-color:#EBFFFF;
 }
-.sephia .sephia-email-new input,
-.sephia .sephia-email-new textarea,
-.sephia .sephia-email-new button {
+.sephia .sephia-email-compose input,
+.sephia .sephia-email-compose textarea,
+.sephia .sephia-email-compose button {
     z-index:2;
     position:relative;
 }
-.sephia .sephia-new-email {
-    background-color:rgba(255,255,0,.1);
-    margin-bottom:25px;
-    border-radius:5px;
-    box-shadow:rgba(0,0,0,.3) 2px 2px 5px;
-    padding-top:15px;
-    padding-bottom:15px;
-}
-.sephia .sephia-new-email input,
-.sephia .sephia-new-email textarea,
-.sephia .sephia-new-email button {
-    z-index:2;
-    position:relative;
-}
-.sephia .sephia-new-email-subject {
-    margin-bottom:15px;
-}
-.sephia .sephia-recipient {
-}
-.sephia .input-group-addon {
-    min-width:initial;
-    background-color:white;
-}
+
+
+
+/*
+ * Uploader styles, for drag and drop of attachments.
+ */
 .sephia .sephia-uploader {
     position:absolute;
     top:0;
@@ -237,30 +284,18 @@
     width:100%;
     height:100%;
 }
-.sephia .sephia-add-recipient {
-    cursor:pointer;
-}
+
+
+
+/*
+ * Add recipients to email styles.
+ */
 .sephia .sephia-recipient-table {
     margin-top:15px;
 }
-.sephia .sephia-recipient-table tr:nth-child(1) td {
+.sephia .sephia-add-recipient-row {
+    cursor:pointer;
+}
+.sephia .sephia-recipient-table tr.sephia-add-recipient-row:nth-child(1) td {
     border-top:none;
-}
-.sephia .sephia-settings-help-button {
-    float:right;
-    opacity:.2;
-    transform:scale(1);
-    transition:opacity, transform ease-in-out .3s;
-}
-.sephia-settings-help-button:hover,
-.sephia-settings-help-button:focus {
-    opacity:1;
-    transform:scale(1.5) rotate(19deg);
-    transition:opacity, transform ease-in-out .3s;
-}
-.sephia .sephia-settings-help-info {
-    color:rgba(0,0,0,.5);
-}
-#sephia-configure .input-group-addon:first-child {
-    min-width:100px;
 }

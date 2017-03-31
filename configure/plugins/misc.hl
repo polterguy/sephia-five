@@ -31,7 +31,7 @@ emails sent by you.</p>
                   class:form-control
                   placeholder:Your full name ...
                   oninit
-                    p5.web.send-javascript:@"$('#{0}').focus().select();"
+                    p5.web.send-javascript:@"p5.$('{0}').el.focus();p5.$('{0}').el.select();"
                       :x:/../*/_event?value
         div
           class:col-xs-12 col-md-4 prepend-bottom
