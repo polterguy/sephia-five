@@ -70,12 +70,37 @@
 /*
  * Including only the bare minimum parts from CMS main stuff, that we'll need.
  */
+@keyframes animate-info-feedback {
+    0% {
+        opacity:0;
+        margin-top:-100px;
+        background:#00f0f0;
+    }
+    7% {
+        opacity:1;
+        margin-top:0;
+    }
+    10% {
+        background:#f0f000;
+    }
+    20% {
+        background:#f0f0f0;
+    }
+    80% {
+        opacity:1;
+        margin-top:0;
+    }
+    100% {
+        opacity:0;
+        margin-top:-500px;
+    }
+}
 .info-window {
     background:#f0f0f0;
     max-width:300px;
     position:fixed;
     top:0px;
-    right:50px;
+    left:50px;
     color:#9d9b97;
     padding:5px 25px 0 25px;
     border-radius:0 0 15px 15px;

@@ -76,6 +76,14 @@ create-widget
   _email-id:x:/../*/email-id?value
   _is-reply:true
   class:sephia-email-compose col-xs-12
+  oninit
+
+    /*
+     * Making sure we scroll bugger into view.
+     */
+    p5.web.send-javascript:@"p5.$('{0}').el.scrollIntoView();"
+      :x:/../*/_event?value
+
   events
 
     /*

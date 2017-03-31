@@ -138,9 +138,9 @@ create-widget:sephia-content
   oninit
 
     /*
-     * Making sure during initial page load, that we immediately check for new emails.
+     * Making sure during initial page load, that we initiate checking for new emails after 1 minute.
      */
-    p5.web.send-javascript:@"p5.$('sephia-content').raise('.onretrieve');"
+    p5.web.send-javascript:@"setTimeout (function() {p5.$('sephia-content').raise('.onretrieve')}, 60000);"
 
   widgets
 
