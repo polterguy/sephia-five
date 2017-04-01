@@ -46,17 +46,42 @@ create-widget:sephia-configure
         div
           class:column
           widgets
+
+            /*
+             * This one will by dynamically populated according to the files you've got in "/plugins/".
+             */
             sys42.widgets.tab
               items
+
     container
       class:row
       widgets
         div
           class:column
           widgets
+
+            /*
+             * Close (without saving) button.
+             */
+            button
+              innerValue:Close
+              title:Close without saving
+              class:float-right button-clear
+              onclick
+
+                /*
+                 * Easy version ...
+                 * Simply reloading page, to re-initialize app in its entirety.
+                 */
+                p5.web.reload-location
+
+            /*
+             * Close (and save) button.
+             */
             button
               innerValue:Save
               title:Save and close
+              class:float-right button-clear
               onclick
 
                 /*
@@ -152,17 +177,6 @@ create-widget:sephia-configure
                     email:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-email/*?value
                     gpg-password:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-gpg-password/*?value
                     signature:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-signature/*?value
-
-                /*
-                 * Easy version ...
-                 * Simply reloading page, to re-initialize app in its entirety.
-                 */
-                p5.web.reload-location
-
-            button
-              innerValue:Close
-              title:Close without saving
-              onclick
 
                 /*
                  * Easy version ...

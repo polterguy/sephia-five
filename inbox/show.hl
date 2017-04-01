@@ -197,6 +197,8 @@ where emails.username = @username order by emails.id desc limit 10 offset @offse
     else
       set:x:/@_from?value
         src:x:/@_dp/#/*/name?value
+    set:x:/@_from?value
+      p5.html.html-encode:x:/@_from?value
 
     /*
      * Checking if subject length exceeds 57 characters, and if so, right-"trimming" it down to 57.
@@ -213,6 +215,8 @@ where emails.username = @username order by emails.id desc limit 10 offset @offse
     else
       set:x:/@_subject?value
         src:x:/@_dp/#/*/subject?value
+    set:x:/@_subject?value
+      p5.html.html-encode:x:/@_subject?value
 
     /*
      * Checking if we have a custom class, and if so, making sure we add it to creation of row.

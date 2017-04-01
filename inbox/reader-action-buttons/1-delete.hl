@@ -8,8 +8,9 @@
  * Notice, there are no "trashcan" in Sephia Five, and all emails deleted this way, are PERMANENTLY deleted!
  */
 button
-  class:btn btn-default
-  innerValue:@"<span class=""glyphicon glyphicon-trash""></span>"
+  class:button-clear
+  innerValue:@"<svg class=""sephia-icon""><use xlink:href=""{0}media/si-sprite.svg#si-evil-trash""></use></svg>"
+    :x:/@p5.io.unroll-path?value
   title:Delete
   onclick
 

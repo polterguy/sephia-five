@@ -2,50 +2,43 @@
 /*
  * Miscellanous settings.
  */
-Misc:sephia-misc-settings
+Miscellaneous:sephia-misc-settings
   widgets
 
     /*
      * Personal settings goes here, such as name, email address and signature.
      */
-    gaiasoul.camphora.widgets.fieldset
-      legend:Personal
-      help:@"<p>Here you can configure your personal information, such as your name, email and signature.</p>
-<p>Notice, Sephia does not create GnuPG keys for you, in the current version. You need to make sure you have installed
-Gnu Privacy Guard on your computer, and that you have a private/public keypair matching your email address in your GnuPG database.
-You also need to supply the password for this keypair in this form, such that we can use it to decrypt and cryptographically sign
-emails sent by you.</p>
-<p>Later versions might have this, if I can afford to continue working on Sephia.</p>"
-      widgets
-        label
-          for:sephia-settings-name
-          innerValue:Name
-        input:sephia-settings-name
-          type:text
-          placeholder:Your full name ...
-          oninit
-            p5.web.send-javascript:@"p5.$('{0}').el.focus();p5.$('{0}').el.select();"
-              :x:/../*/_event?value
-        label
-          for:sephia-settings-email
-          innerValue:Email
-        input:sephia-settings-email
-          type:text
-          placeholder:Your email address ...
-        label
-          for:sephia-settings-gpg-password
-          innerValue:GPG Password
-        input:sephia-settings-gpg-password
-          type:password
-          placeholder:Your GnuPG Password ...
-          autocomplete:new-password
-          title:Your GnuPG password, see the help button for more information about this ...
-        label
-          innerValue:Signature
-          for:sephia-settings-signature
-        literal:sephia-settings-signature
-          element:textarea
-          class:form-control
-          rows:5
-          placeholder:Signature to use, will be injected into every email you send ...
-          innerValue:@"Got privacy? - https://gaiasoul.com"
+    label
+      for:sephia-settings-name
+      innerValue:Name
+    input:sephia-settings-name
+      type:text
+      placeholder:Your full name ...
+      title:Your full name, as displayed in emails you send
+      oninit
+        p5.web.send-javascript:@"p5.$('{0}').el.focus();p5.$('{0}').el.select();"
+          :x:/../*/_event?value
+    label
+      for:sephia-settings-email
+      innerValue:Email
+    input:sephia-settings-email
+      type:text
+      placeholder:Your email address ...
+      title:Your email address
+    label
+      for:sephia-settings-gpg-password
+      innerValue:GPG Password
+    input:sephia-settings-gpg-password
+      type:password
+      placeholder:Your GnuPG Password ...
+      autocomplete:new-password
+      title:Your GnuPG password
+    label
+      innerValue:Signature
+      for:sephia-settings-signature
+    literal:sephia-settings-signature
+      element:textarea
+      rows:5
+      placeholder:Signature to use ...
+      title:Signature to use, will be injected into every email you send ...
+      innerValue:@"Got privacy? - https://gaiasoul.com"

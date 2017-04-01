@@ -1,0 +1,53 @@
+﻿
+/*
+ * Server settings.
+ */
+SMTP:sephia-smtp-settings
+  widgets
+
+    /*
+     * SMTP settings goes here.
+     */
+    label
+      for:sephia-settings-smtp-server
+      innerValue:Server
+    input:sephia-settings-smtp-server
+      type:text
+      placeholder:SMTP settings ...
+      value:smtp.gmail.com
+      title:SMTP server
+      oninit
+        p5.web.send-javascript:@"p5.$('{0}').el.focus();p5.$('{0}').el.select();"
+          :x:/../*/_event?value
+    label
+      for:sephia-settings-smtp-port
+      innerValue:Port
+    input:sephia-settings-smtp-port
+      type:number
+      placeholder:Port ...
+      title:Port to use
+      value:465
+    label
+      for:sephia-settings-smtp-username
+      innerValue:Username
+    input:sephia-settings-smtp-username
+      type:text
+      placeholder:Username ...
+      title:SMTP username
+      value:YourGoogleUsername@gmail.com
+    label
+      for:sephia-settings-smtp-password
+      innerValue:Password
+    input:sephia-settings-smtp-password
+      type:password
+      placeholder:Password ...
+      autocomplete:new-password
+      value:
+      title:SMTP password, use your GMail password here, if you wish to test Sephia with GMail
+    input:sephia-settings-smtp-ssl
+      type:checkbox
+      checked
+    label
+      for:sephia-settings-smtp-ssl
+      class:label-inline
+      innerValue:Use SSL

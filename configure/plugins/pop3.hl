@@ -1,0 +1,53 @@
+﻿
+/*
+ * Server settings.
+ */
+POP3:sephia-pop3-settings
+  widgets
+
+    /*
+     * POP3 settings goes here.
+     */
+    label
+      for:sephia-settings-pop3-server
+      innerValue:Server
+    input:sephia-settings-pop3-server
+      type:text
+      placeholder:POP3 settings ...
+      value:pop.gmail.com
+      title:POP3 server
+      oninit
+        p5.web.send-javascript:@"p5.$('{0}').el.focus();p5.$('{0}').el.select();"
+          :x:/../*/_event?value
+    label
+      for:sephia-settings-pop3-port
+      innerValue:Port
+    input:sephia-settings-pop3-port
+      type:number
+      placeholder:Port ...
+      title:Port to use
+      value:995
+    label
+      for:sephia-settings-pop3-username
+      innerValue:Username
+    input:sephia-settings-pop3-username
+      type:text
+      placeholder:Username ...
+      title:POP3 username
+      value:YourGoogleUsername@gmail.com
+    label
+      for:sephia-settings-pop3-password
+      innerValue:Password
+    input:sephia-settings-pop3-password
+      type:password
+      placeholder:Password ...
+      autocomplete:new-password
+      value:
+      title:Username, use your GMail password here, if you wish to test Sephia with GMail
+    input:sephia-settings-pop3-ssl
+      type:checkbox
+      checked
+    label
+      for:sephia-settings-pop3-ssl
+      innerValue:Use SSL
+      class:label-inline

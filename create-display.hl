@@ -22,7 +22,7 @@ p5.io.unroll-path:@SEPHIA/
 /*
  * Creating header and "menu" row.
  */
-eval-x:x:/../*/create-widget/*/widgets/*/gaiasoul.camphora.widgets.grid-filter(/*|/**/literal/*/element/=button/./*/innerValue)
+eval-x:x:/../*/create-widget/*/widgets/*/gaiasoul.camphora.widgets.grid-filter/*
 create-widget:sephia-header
   parent:cnt
   class:container
@@ -68,7 +68,6 @@ create-widget:sephia-header
      */
     gaiasoul.camphora.widgets.grid-filter
       databind-event:sephia.inbox.databind
-      page-size:int:10
       search-accesskey:F
       class:row sephia-selector
       search-class:column column-50
@@ -86,9 +85,7 @@ create-widget:sephia-header
         /*
          * Compose new email button.
          */
-        literal
-          element:button
-          class:sephia-new-email-btn
+        button
           innerValue:@"<svg class=""sephia-icon""><use xlink:href=""{0}media/si-sprite.svg#si-ant-mail""></use></svg>"
             :x:/../*/p5.io.unroll-path?value
           onclick
@@ -105,9 +102,7 @@ create-widget:sephia-header
         /*
          * Open settings button
          */
-        literal
-          element:button
-          class:sephia-configuration-btn
+        button
           innerValue:@"<svg class=""sephia-icon""><use xlink:href=""{0}media/si-sprite.svg#si-ant-setting""></use></svg>"
             :x:/../*/p5.io.unroll-path?value
           onclick
@@ -177,7 +172,7 @@ create-widget:sephia-content
      * This widget will contain any emails the user has selected for reading and/or replying to.
      */
     container:sephia-read-emails
-      class:row sephia-reader
+      class:sephia-reader
 
 
 

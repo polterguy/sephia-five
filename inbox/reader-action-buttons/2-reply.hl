@@ -5,8 +5,9 @@
  * "Action button" for email, which means that it is dynamically loaded, and added into "toolbar" for email.
  */
 button
-  class:btn btn-default
-  innerValue:@"<span class=""glyphicon glyphicon-arrow-left""></span>"
+  class:button-clear
+  innerValue:@"<svg class=""sephia-icon""><use xlink:href=""{0}media/si-sprite.svg#si-evil-redo""></use></svg>"
+    :x:/@p5.io.unroll-path?value
   title:Reply ...
   onclick
 
