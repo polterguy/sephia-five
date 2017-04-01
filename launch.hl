@@ -22,13 +22,16 @@ if:x:/@whoami/*/default?value
 
 
 /*
- * Including Bootstrap CSS and JS, in addition to custom Sephia Five CSS.
+ * Including milligram, in addition to custom Sephia Five CSS.
  *
- * Notice, these events will also include jQuery, since Bootstrap (JS) relies on jQuery.
+ * TODO; Verify integrity and crossorigin, and set these to sha value and "anonymous" taken from;
+ * integrity="sha256-7LuOHbsBImoaCHWzjqQDLeGK9kq/rZZqIr6Gtkz0WzI=" crossorigin="anonymous"
+ * when this is supported in core.
  */
-sys42.bootstrap.include-css
-  _theme:bool:false
 p5.web.include-css-file
+  "https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic"
+  "https://cdnjs.cloudflare.com/ajax/libs/normalize/6.0.0/normalize.min.css"
+  "https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.min.css"
   @SEPHIA/media/main.css
 
 
@@ -63,7 +66,7 @@ if:x:/@folder-exists/*?value
  * without interfering with each other.
  */
 p5.web.widgets.property.set:cnt
-  class:container sephia
+  class:sephia
 
 
 

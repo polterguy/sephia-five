@@ -28,25 +28,33 @@ add:x:/../*/create-widget/**/items
 eval-x:x:/+/**/_is-change
 create-widget:sephia-configure
   parent:cnt
-  class:row prepend-top
+  class:container
   widgets
-    h2
-      class:prepend-bottom text-center
-      innerValue:Configure Sephia Five
-    container
-      class:col-xs-12
+    div
+      class:row sephia-brand
       widgets
-        sys42.widgets.tab
-          items
+        a
+          href:"https://gaiasoul.com"
+          target:_blank
+          class:column
+          widgets
+            h1
+              innerValue:Sephia Five
     container
-      class:col-xs-12 text-right
+      class:row
       widgets
         div
-          class:btn-group
-          role:group
+          class:column
+          widgets
+            sys42.widgets.tab
+              items
+    container
+      class:row
+      widgets
+        div
+          class:column
           widgets
             button
-              class:btn btn-default
               innerValue:Save
               title:Save and close
               onclick
@@ -152,7 +160,6 @@ create-widget:sephia-configure
                 p5.web.reload-location
 
             button
-              class:btn btn-default
               innerValue:Close
               title:Close without saving
               onclick

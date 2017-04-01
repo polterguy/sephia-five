@@ -11,11 +11,21 @@
 
 
 /*
+ * Unrolling path, which is necessary for databinding search toolbar buttons [innerValue] towards SVG file.
+ */
+p5.io.unroll-path:@SEPHIA/
+
+
+
+
+
+/*
  * Creating header and "menu" row.
  */
+eval-x:x:/../*/create-widget/*/widgets/*/gaiasoul.camphora.widgets.grid-filter(/*|/**/literal/*/element/=button/./*/innerValue)
 create-widget:sephia-header
   parent:cnt
-  class:row
+  class:container
   events
 
     /*
@@ -37,81 +47,77 @@ create-widget:sephia-header
       sys42.utilities.execute-lambda-file:@SEPHIA/inbox/show.hl
 
   widgets
+
+    /*
+     * Header at the top, feel free to add whatever "branding" widgets you wish here, replacing the existing widget.
+     */
     div:sephia-main-header
       class:row sephia-brand
       widgets
-
-        /*
-         * Header at the top, feel free to add whatever "branding" widgets you wish here, 
-         * replacing the existing widget.
-         */
         a
-          href:"https://gaiasoul.com/donate"
+          href:"https://gaiasoul.com"
           target:_blank
-          class:col-xs-12
+          class:column
           widgets
             h1
               innerValue:Sephia Five
-
     /*
-     * This is our main "toolbar" (the thing that drops down at the top of the page, and stays in a fixed position).
+     * This is the "search and page" toolbar at the top.
+     *
+     * Notice, we pass in "sephia-selector" CSS class to widget, to make it easy to style.
      */
-    div
-      class:sephia-selector
+    gaiasoul.camphora.widgets.grid-filter
+      databind-event:sephia.inbox.databind
+      page-size:int:10
+      search-accesskey:F
+      class:row sephia-selector
+      search-class:column column-50
+      buttons-class:column column-50
+      search-text:@"<svg class=""sephia-icon""><use xlink:href=""{0}media/si-sprite.svg#si-evil-search""></use></svg>"
+        :x:/../*/p5.io.unroll-path?value
+      clear-text:@"<svg class=""sephia-icon""><use xlink:href=""{0}media/si-sprite.svg#si-ant-cross""></use></svg>"
+        :x:/../*/p5.io.unroll-path?value
+      previous-text:@"<svg class=""sephia-icon""><use xlink:href=""{0}media/si-sprite.svg#si-evil-chevron-left""></use></svg>"
+        :x:/../*/p5.io.unroll-path?value
+      next-text:@"<svg class=""sephia-icon""><use xlink:href=""{0}media/si-sprite.svg#si-evil-chevron-right""></use></svg>"
+        :x:/../*/p5.io.unroll-path?value
       widgets
 
-        div
-          class:col-xs-8
-          widgets
+        /*
+         * Compose new email button.
+         */
+        literal
+          element:button
+          class:sephia-new-email-btn
+          innerValue:@"<svg class=""sephia-icon""><use xlink:href=""{0}media/si-sprite.svg#si-ant-mail""></use></svg>"
+            :x:/../*/p5.io.unroll-path?value
+          onclick
 
             /*
-             * This is the "search and page" toolbar at the top.
-             *
-             * Notice, we wrap it inside the "sephia-selector" CSS class widget, to make it "drop down" during start,
-             * and stay in a fixed position during browsing.
+             * Creating a new email, and making sure we scroll widget for creating it into view.
              */
-            gaiasoul.camphora.widgets.grid-filter
-              databind-event:sephia.inbox.databind
-              page-size:int:19
-              search-accesskey:F
+            sys42.utilities.execute-lambda-file:@SEPHIA/send/create.hl
+            p5.web.widgets.find:sephia-read-emails
+              _email-id:x:/../*/email-id?value.string
+            p5.web.send-javascript:@"p5.$('{0}').el.scrollIntoView();"
+              :x:/@p5.web.widgets.find/*/*?value
 
         /*
-         * Wrapper for "new email" button.
+         * Open settings button
          */
-        div
-          class:col-xs-2
-          widgets
-            button
-              innerValue:@"<span class=""glyphicon glyphicon-envelope""></span>"
-              class:btn btn-default sephia-new-email-btn
-              onclick
+        literal
+          element:button
+          class:sephia-configuration-btn
+          innerValue:@"<svg class=""sephia-icon""><use xlink:href=""{0}media/si-sprite.svg#si-ant-setting""></use></svg>"
+            :x:/../*/p5.io.unroll-path?value
+          onclick
 
-                /*
-                 * Creating a new email, and making sure we scroll widget for creating it into view.
-                 */
-                sys42.utilities.execute-lambda-file:@SEPHIA/send/create.hl
-                p5.web.widgets.find:sephia-read-emails
-                  _email-id:x:/../*/email-id?value.string
-                p5.web.send-javascript:@"p5.$('{0}').el.scrollIntoView();"
-                  :x:/@p5.web.widgets.find/*/*?value
-
-        /*
-         * Wrapper for "configure settings" button.
-         */
-        div
-          class:col-xs-2
-          widgets
-            button
-              innerValue:@"<span class=""glyphicon glyphicon-cog""></span>"
-              class:btn btn-default sephia-configuration-btn
-              onclick
-
-                /*
-                 * Opening up "configure settings form", making sure we populate fields with existing settings.
-                 */
-                clear-widget:cnt
-                sys42.utilities.execute-lambda-file:@SEPHIA/configure/configure.hl
-                  change:bool:true
+            /*
+             * Opening up "configure settings form", making sure we populate fields with existing settings.
+             */
+            clear-widget:cnt
+            sys42.utilities.execute-lambda-file:@SEPHIA/configure/configure.hl
+              change:bool:true
 
 
 
@@ -121,7 +127,7 @@ create-widget:sephia-header
  */
 create-widget:sephia-content
   parent:cnt
-  class:row
+  class:container
 
   /*
    * This Ajax event is invoked from JavaScript on page, whenever we should for any reasons check POP3 server
@@ -147,17 +153,23 @@ create-widget:sephia-content
     /*
      * This is our "inbox datagrid", which displays all the emails currently being viewed by user.
      */
-    table
-      class:table table-condensed
+    div
+      class:row
       widgets
-        thead
-          innerValue:@"<tr><th>From</th><th>Subject</th><th>Date</th><th>Status</th></tr>"
+        container
+          class:column
+          widgets
+            table
+              class:sephia-inbox
+              widgets
+                thead
+                  innerValue:@"<tr><th>From</th><th>Subject</th><th>Date</th><th>Status</th></tr>"
 
-        /*
-         * "Datagrid" content (inbox).
-         */
-        container:sephia-datagrid
-          element:tbody
+                /*
+                 * "Datagrid" content (inbox).
+                 */
+                container:sephia-datagrid
+                  element:tbody
 
     /*
      * Wrapper for "reading emails".
@@ -165,7 +177,7 @@ create-widget:sephia-content
      * This widget will contain any emails the user has selected for reading and/or replying to.
      */
     container:sephia-read-emails
-      class:sephia-reader
+      class:row sephia-reader
 
 
 

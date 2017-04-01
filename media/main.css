@@ -11,35 +11,37 @@
 .sephia {
     margin-bottom:50px;
 }
-
-
-/*
- * De-emphasizing hyperlinks slightly.
- */
-.sephia a {
-    color:#9EB5BD;
+.sephia input,
+.sephie button,
+.sephia textarea {
+    font-family: 'Roboto', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+    font-weight: 300;
+    letter-spacing: .01em;
+    line-height: 1.6em;
+    font-size:1em;
+}
+.sephia textarea {
+    height:initial;
 }
 
 
 
 /*
- * Overriding some of the Bootstrap CSS styles, to create our own "theme".
+ * Animation and CSS classes for "sephia toolbar/selector".
  */
-.sephia .btn {
-    background-image:linear-gradient(#f0dbd1, #e0cbc2);
-    border-color:#bdc16d;
+@keyframes animate-sephia-menu {
+    0% {
+        opacity:0;
+        margin-top:-100px;
+    }
+    100% {
+        opacity:1;
+        margin-top:0;
+    }
 }
-.sephia .btn:hover,
-.sephia .btn:focus,
-.sephia .btn:active {
-    background-image:linear-gradient(#e6d1c7, #d6c1b8);
-    background-position:0 0;
+.sephia .sephia-selector {
+    text-align:right;
 }
-.sephia .input-group-addon {
-    min-width:initial;
-    background-color:white;
-}
-
 
 
 /*
@@ -47,7 +49,11 @@
  * To avoid including the entire Camphora CSS, we simply inline the parts we use here.
  */
 .camphora-fieldset-help-button {
-    float:right;
+    position:absolute;
+    top:0;
+    right:10px;
+    display:block;
+    font-size:1.6em;
     opacity:.2;
     transform:scale(1);
     transition:opacity, transform ease-in-out .3s;
@@ -61,8 +67,33 @@
 .camphora-fieldset-help-info {
     color:rgba(0,0,0,.5);
 }
-.camphora-search-toolbar .input-group-addon:first-child {
-    min-width:100px;
+.camphora-search {
+}
+.camphora-search .camphora-textbox {
+}
+.camphora-search .camphora-buttons {
+    text-align:left;
+}
+.camphora-search .camphora-buttons button svg {
+    fill:#fff;
+}
+.camphora-search .camphora-search-btn {
+}
+.camphora-search .camphora-clear-btn {
+}
+.camphora-search .camphora-previous-btn {
+}
+.camphora-search .camphora-next-btn {
+}
+
+
+
+/*
+ * Plugin buttons for camphora toolbar.
+ */
+.sephia .sephia-new-email-btn {
+}
+.sephia .sephia-configuration-btn {
 }
 
 
@@ -100,10 +131,10 @@
     max-width:300px;
     position:fixed;
     top:0px;
-    left:50px;
+    left:0;
     color:#9d9b97;
     padding:5px 25px 0 25px;
-    border-radius:0 0 15px 15px;
+    border-radius:0 0 15px 0;
     z-index:1020;
     animation-name:animate-info-feedback;
     animation-duration:3s;
@@ -128,88 +159,29 @@
 
 
 /*
- * The "branding" parts, or "logo".
- */
-.sephia .sephia-brand a {
-    color:rgba(0,0,0,.02);
-    text-decoration:none;
-}
-
-
-
-/*
- * Animation and CSS classes for "sephia toolbar/selector".
- */
-@keyframes animate-sephia-menu {
-    0% {
-        opacity:0;
-        margin-top:-100px;
-    }
-    100% {
-        opacity:1;
-        margin-top:0;
-    }
-}
-.sephia .sephia-selector {
-    background:#d1e8f0;
-    border-radius:0 0 0 35px;
-    animation-name:animate-sephia-menu;
-    animation-duration:.5s;
-    animation-fill-mode:forwards;
-    position:fixed;
-    top:0;
-    right:0;
-    z-index:1000;
-    padding:15px;
-    width:777px;
-}
-.sephia .sephia-selector input[type=search] {
-
-    /*
-     * Rounding borders of "search textbox".
-     */
-    border-radius:17px 0 0 17px;
-}
-.sephia .sephia-new-email-btn {
-
-    /*
-     * Making sure our "create new email" button becomes larger.
-     */
-    width:100%;
-}
-.sephia .sephia-configuration-btn {
-    float:right;
-    margin-right:-15px;
-}
-
-
-
-/*
  * Inbox "datagrid".
  */
-.sephia tr.sephia-email-row {
+.sephia table.sephia-inbox tr td {
     cursor:pointer;
     color:#555;
 }
-.sephia .sephia-unread {
-    background-color:#ebffff;
+.sephia table.sephia-inbox tr.sephia-unread {
+    font-weight:bold;
 }
-.sephia .sephia-sent td {
+.sephia table.sephia-inbox tr.sephia-sent td {
     color:#ccc;
 }
-.sephia .sephia-open td {
+.sephia table.sephia-inbox tr.sephia-open td {
     font-style:italic;
 }
-.sephia tr.sephia-email-row:hover {
+.sephia table.sephia-inbox tr:hover td {
     background-color:#fff5eb;
 }
-.sephia tr.sephia-email-row td:nth-child(4) {
-
-    /*
-     * This is the "status" of email, meaning is it encrypted, etc ...
-     */
-    text-align:right;
-    color:#ccc;
+.sephia .sephia-icon {
+    width:20px;
+    height:20px;
+    float:right;
+    fill:rgba(0,0,0,.15);
 }
 
 
