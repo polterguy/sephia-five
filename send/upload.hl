@@ -32,9 +32,11 @@ p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
 /*
  * Creating actual widget wrapping the attachment.
  */
+p5.io.unroll-path:@SEPHIA/
 create-widget
+  element:button
   parent:x:/@p5.web.widgets.find/*/*?value
-  class:sephia-attachment
+  class:sephia-add-attachment button-outline
   _reply-attachment
   _folder:~/documents/private/sephia/attachments/
     :x:/@replace?value
@@ -42,6 +44,22 @@ create-widget
   _filename:x:/../*/_filename?value
   _prefix:sent-{0}-
     :x:/@replace?value
+  title:Click to remove attachment
+  onclick
+
+    /*
+     * Figuring out filename, and deleting file in its entirety, before deleting "attachment widget".
+     */
+    p5.web.widgets.property.get:x:/../*/_event?value
+      _folder
+      _filename
+      _prefix
+    delete-file:{0}{1}{2}
+      :x:/@p5.web.widgets.property.get/*/*/_folder?value
+      :x:/@p5.web.widgets.property.get/*/*/_prefix?value
+      :x:/@p5.web.widgets.property.get/*/*/_filename?value
+    delete-widget:x:/../*/_event?value
+
   widgets
 
     /*
@@ -49,26 +67,3 @@ create-widget
      */
     span
       innerValue:x:/../*/_filename?value
-
-    /*
-     * Allows the user to delete the attachment.
-     */
-    literal
-      element:span
-      role:button
-      class:glyphicon glyphicon-trash sephia-delete-attachment
-      onclick
-
-        /*
-         * Figuring out filename, and deleting file in its entirety, before deleting "attachment widget".
-         */
-        p5.web.widgets.get-parent:x:/../*/_event?value
-        p5.web.widgets.property.get:x:/@p5.web.widgets.get-parent/*/*?value
-          _folder
-          _filename
-          _prefix
-        delete-file:{0}{1}{2}
-          :x:/@p5.web.widgets.property.get/*/*/_folder?value
-          :x:/@p5.web.widgets.property.get/*/*/_prefix?value
-          :x:/@p5.web.widgets.property.get/*/*/_filename?value
-        delete-widget:x:/@p5.web.widgets.get-parent/*/*?value

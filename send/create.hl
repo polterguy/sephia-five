@@ -40,12 +40,12 @@ set:x:/../*/body?value
 
 /*
  * Loading all files from "sender-action-buttons" and assuming their some sort of widgets, and adding
- * them into our "input-group-btn" div widget as such.
+ * them into our "sephia-action-buttons" div widget as such.
  */
 list-files:@SEPHIA/send/send-action-buttons/
   filter:.hl
 load-file:x:/@list-files/*?name
-add:x:/../**/create-widget/**/span/*/class/=~sephia-action-buttons/./*/widgets
+add:x:/../**/create-widget/**/_action-buttons/./*/widgets
   src:x:/@load-file/*/*
 
 
@@ -72,18 +72,11 @@ else
 /*
  * Creating our actual widget.
  */
+p5.io.unroll-path:@SEPHIA/
 create-widget
   _email-id:x:/../*/email-id?value
   _is-reply:true
-  class:sephia-email-compose col-xs-12
-  oninit
-
-    /*
-     * Making sure we scroll bugger into view.
-     */
-    p5.web.send-javascript:@"p5.$('{0}').el.scrollIntoView();"
-      :x:/../*/_event?value
-
+  class:sephia-email-compose
   events
 
     /*
@@ -182,221 +175,205 @@ create-widget
      * Subject of email.
      */
     div
-      class:input-group prepend-bottom
+      class:row
       widgets
-        input
-          type:text
-          class:form-control
-          placeholder:Subject ...
-          _subject
-          value:x:/../*/subject?value
-          oninit
+        div
+          class:column
+          widgets
+            input
+              type:text
+              placeholder:Subject ...
+              _subject
+              value:x:/../*/subject?value
+              oninit
+
+                /*
+                 * Making sure "Subject" of email gets initial focus.
+                 */
+                p5.web.send-javascript:@"p5.$('{0}').el.focus();p5.$('{0}').el.select();"
+                  :x:/../*/_event?value
 
             /*
-             * Making sure "Subject" of email gets initial focus.
+             * Body of email.
              */
-            p5.web.send-javascript:@"p5.$('{0}').el.focus();p5.$('{0}').el.select();"
-              :x:/../*/_event?value
-
-        /*
-         * "Action buttons" (send, discard, etc).
-         *
-         * These widgets are actually plugins, and dynamically added from each of the files that can be found in
-         * the "/send/sender-action-buttons/" folder.
-         *
-         * If you wish to create your own "action button", this can easily be done by copying one of the existing buttons
-         * from that folder.
-         */
-        span
-          class:input-group-btn sephia-action-buttons
-          widgets
+            textarea
+              rows:13
+              placeholder:Content ...
+              _body
+              innerValue:x:/../*/body?value
 
     /*
-     * Body of email.
-     */
-    textarea
-      rows:13
-      class:form-control
-      placeholder:Content ...
-      _body
-      innerValue:x:/../*/body?value
-
-    /*
-     * Recipients of email.
-     * Wraps "To", "Cc" and "Bcc" textboxes.
+     * "To" field.
      *
-     * All of these textboxes renders "responsively" on page, to accommodate for devices with smaller screens.
+     * Notice, these email address(es) are stored comma separated in a simple textbox, 
+     * meaning we'll have to do some parsing, when actually sending email later.
+     *
+     * This allows the user to simply type in an addition email address, without having to go through the 
+     * "add contact" form, if he doesn't want to do such.
      */
     div
-      class:prepend-top row
+      class:row
+      _to-field
       widgets
 
-        /*
-         * "To" field.
-         *
-         * Notice, these email address(es) are stored comma separated in a simple textbox, 
-         * meaning we'll have to do some parsing, when actually sending email later.
-         *
-         * This allows the user to simply type in an addition email address, without having to go through the 
-         * "add contact" form, if he doesn't want to do such.
-         */
         div
-          class:col-xs-12 col-md-4 prepend-bottom
+          class:column
           widgets
-            div
-              class:input-group
-              _to-field
-              widgets
-                span
-                  class:input-group-addon
-                  innerValue:To
+
+            /*
+             * Textbox for "To" recipient(s).
+             */
+            input
+              type:text
+              class:sephia-recipient
+              placeholder:To ...
+              value:x:/../*/to?value
+              _to-field-to
+
+            /*
+             * Add new recipient button.
+             */
+            button
+              class:button-clear float-right sephia-add-recipient-btn
+              innerValue:@"<svg class=""sephia-icon""><use xlink:href=""{0}media/si-sprite.svg#si-evil-search""></use></svg>"
+                :x:/@p5.io.unroll-path?value
+              onclick
 
                 /*
-                 * Textbox for "To" recipient(s).
+                 * Executing file that is reponsible for retrieving a new email address from "contact" table,
+                 * making sure we pass in widget ID for widget, where result should be added.
                  */
-                input
-                  type:text
-                  class:form-control sephia-recipient
-                  placeholder:To ...
-                  value:x:/../*/to?value
-                  _to-field-to
-                span
-                  class:input-group-btn
-                  widgets
+                p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                  _to-field
+                p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                  element:input
+                eval-x:x:/+/*
+                sys42.utilities.execute-lambda-file:@SEPHIA/send/add-recipient.hl
+                  widget:x:/@p5.web.widgets.find/*/*?value
 
-                    /*
-                     * Add new recipient button.
-                     */
-                    button
-                      class:btn btn-default
-                      innerValue:@"<span class=""glyphicon glyphicon-plus""></span>"
-                      onclick
+    /*
+     * "Cc" field.
+     *
+     * Notice, these email address(es) are stored comma separated in a simple textbox, 
+     * meaning we'll have to do some parsing, when actually sending email later.
+     *
+     * This allows the user to simply type in an addition email address, without having to go through the 
+     * "add contact" form, if he doesn't want to do such.
+     */
+    div
+      class:row
+      _to-field
+      widgets
 
-                        /*
-                         * Executing file that is reponsible for retrieving a new email address from "contact" table,
-                         * making sure we pass in widget ID for widget, where result should be added.
-                         */
-                        p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                          _to-field
-                        p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-                          element:input
-                        eval-x:x:/+/*
-                        sys42.utilities.execute-lambda-file:@SEPHIA/send/add-recipient.hl
-                          widget:x:/@p5.web.widgets.find/*/*?value
-
-
-        /*
-         * "Cc" field.
-         *
-         * Notice, these email address(es) are stored comma separated in a simple textbox, 
-         * meaning we'll have to do some parsing, when actually sending email later.
-         *
-         * This allows the user to simply type in an addition email address, without having to go through the 
-         * "add contact" form, if he doesn't want to do such.
-         */
         div
-          class:col-xs-12 col-md-4 prepend-bottom
+          class:column
           widgets
-            div
-              class:input-group
-              _to-field
-              widgets
-                span
-                  class:input-group-addon
-                  innerValue:Cc
+
+            /*
+             * Textbox for "Cc" recipient(s).
+             */
+            input
+              type:text
+              class:sephia-recipient
+              placeholder:To ...
+              value:x:/../*/cc?value
+              _to-field-cc
+
+            /*
+             * Add new recipient button.
+             */
+            button
+              class:button-clear float-right sephia-add-recipient-btn
+              innerValue:@"<svg class=""sephia-icon""><use xlink:href=""{0}media/si-sprite.svg#si-evil-search""></use></svg>"
+                :x:/@p5.io.unroll-path?value
+              onclick
 
                 /*
-                 * Textbox for "Cc" recipient(s).
+                 * Executing file that is reponsible for retrieving a new email address from "contact" table,
+                 * making sure we pass in widget ID for widget, where result should be added.
                  */
-                input
-                  type:text
-                  class:form-control sephia-recipient
-                  placeholder:Cc ...
-                  value:x:/../*/cc?value
-                  _to-field-cc
-                span
-                  class:input-group-btn
-                  widgets
+                p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                  _to-field
+                p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                  element:input
+                eval-x:x:/+/*
+                sys42.utilities.execute-lambda-file:@SEPHIA/send/add-recipient.hl
+                  widget:x:/@p5.web.widgets.find/*/*?value
 
-                    /*
-                     * Add "Cc" recipient button.
-                     */
-                    button
-                      class:btn btn-default
-                      innerValue:@"<span class=""glyphicon glyphicon-plus""></span>"
-                      onclick
+    /*
+     * "Bcc" field.
+     *
+     * Notice, these email address(es) are stored comma separated in a simple textbox, 
+     * meaning we'll have to do some parsing, when actually sending email later.
+     *
+     * This allows the user to simply type in an addition email address, without having to go through the 
+     * "add contact" form, if he doesn't want to do such.
+     */
+    div
+      class:row
+      _to-field
+      widgets
 
-                        /*
-                         * Executing file that is reponsible for retrieving a new email address from "contact" table,
-                         * making sure we pass in widget ID for widget where result should be added.
-                         */
-                        p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                          _to-field
-                        p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-                          element:input
-                        eval-x:x:/+/*
-                        sys42.utilities.execute-lambda-file:@SEPHIA/send/add-recipient.hl
-                          widget:x:/@p5.web.widgets.find/*/*?value
-
-
-        /*
-         * "Bcc" field.
-         *
-         * Notice, these email address(es) are stored comma separated in a simple textbox, 
-         * meaning we'll have to do some parsing, when actually sending email later.
-         *
-         * This allows the user to simply type in an addition email address, without having to go through the 
-         * "add contact" form, if he doesn't want to do such.
-         */
         div
-          class:col-xs-12 col-md-4 prepend-bottom
+          class:column
           widgets
-            div
-              class:input-group
-              _to-field
-              widgets
-                span
-                  class:input-group-addon
-                  innerValue:Bcc
+
+            /*
+             * Textbox for "Bcc" recipient(s).
+             */
+            input
+              type:text
+              class:sephia-recipient
+              placeholder:Bcc ...
+              value:x:/../*/bcc?value
+              _to-field-bcc
+
+            /*
+             * Add new recipient button.
+             */
+            button
+              class:button-clear float-right sephia-add-recipient-btn
+              innerValue:@"<svg class=""sephia-icon""><use xlink:href=""{0}media/si-sprite.svg#si-evil-search""></use></svg>"
+                :x:/@p5.io.unroll-path?value
+              onclick
 
                 /*
-                 * Textbox for "Bcc" recipient(s).
+                 * Executing file that is reponsible for retrieving a new email address from "contact" table,
+                 * making sure we pass in widget ID for widget, where result should be added.
                  */
-                input
-                  type:text
-                  class:form-control sephia-recipient
-                  placeholder:Bcc ...
-                  value:x:/../*/bcc?value
-                  _to-field-bcc
-                span
-                  class:input-group-btn
-                  widgets
-
-                    /*
-                     * Add new "Bcc" recipient button.
-                     */
-                    button
-                      class:btn btn-default
-                      innerValue:@"<span class=""glyphicon glyphicon-plus""></span>"
-                      onclick
-
-                        /*
-                         * Executing file that is reponsible for retrieving a new email address from "contact" table,
-                         * making sure we pass in widget ID for widget where result should be added.
-                         */
-                        p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                          _to-field
-                        p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-                          element:input
-                        eval-x:x:/+/*
-                        sys42.utilities.execute-lambda-file:@SEPHIA/send/add-recipient.hl
-                          widget:x:/@p5.web.widgets.find/*/*?value
+                p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                  _to-field
+                p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                  element:input
+                eval-x:x:/+/*
+                sys42.utilities.execute-lambda-file:@SEPHIA/send/add-recipient.hl
+                  widget:x:/@p5.web.widgets.find/*/*?value
 
     /*
      * Attachment widget.
      *
      * This guys will contain one "button" for each attachment that has been uploaded.
      */
-    container
-      _attachment-wrapper
-      class:sephia-attachments
+    div
+      class:row
+      widgets
+        container
+          _attachment-wrapper
+          class:column sephia-attachments
+    div
+      class:row
+      widgets
+        div
+          class:column
+          _action-buttons
+          widgets
+
+            /*
+             * "Action buttons" (send, discard, etc).
+             *
+             * These widgets are actually plugins, and dynamically added from each of the files that can be found in
+             * the "/send/sender-action-buttons/" folder.
+             *
+             * If you wish to create your own "action button", this can easily be done by copying one of the existing buttons
+             * from that folder.
+             */

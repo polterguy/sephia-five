@@ -359,8 +359,6 @@ where emails.id = @emailid"
         class:column
         widgets
 
-          hr
-
           /*
            * Input group for "action buttons" for email.
            *

@@ -3,8 +3,9 @@
  * Send button.
  */
 button
-  class:btn btn-default
-  innerValue:@"<span class=""glyphicon glyphicon-send""></span>"
+  class:float-right button-clear
+  innerValue:@"<svg class=""sephia-icon""><use xlink:href=""{0}media/si-sprite.svg#si-evil-sc-telegram""></use></svg>"
+    :x:/@p5.io.unroll-path?value
   title:Send reply
   onclick
 

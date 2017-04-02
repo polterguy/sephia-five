@@ -31,6 +31,9 @@
 .sephia textarea {
     height:initial;
 }
+.sephia button.button-clear:hover svg {
+    fill:rgba(0,0,0,1);
+}
 
 
 
@@ -50,7 +53,7 @@
     0% {
         opacity:0;
         margin-top:-100px;
-        background:#00f0f0;
+        background:#ffffff;
     }
     7% {
         opacity:1;
@@ -60,7 +63,7 @@
         background:#f0f000;
     }
     20% {
-        background:#f0f0f0;
+        background:#fff5eb;
     }
     80% {
         opacity:1;
@@ -72,7 +75,7 @@
     }
 }
 .info-window {
-    background:#f0f0f0;
+    background:#fff5eb;
     max-width:300px;
     position:fixed;
     top:0px;
@@ -131,14 +134,13 @@
 .sephia .sephia-email {
     margin-top:50px;
     position:relative;
+    border-radius:5px;
+    box-shadow:3px 3px 6px rgba(0,0,0,.2);
 }
 .sephia .sephia-action-buttons {
     position:absolute;
     top:57px;
     right:0;
-}
-.sephia .sephia-action-buttons button:hover svg {
-    fill:rgba(0,0,0,1);
 }
 .sephia .sephia-reader-subject {
     margin-top:25px;
@@ -169,23 +171,6 @@
     font-style:italic;
     font-size:0.8em;
 }
-
-
-
-/*
- * Adding attachments to a composed email.
- */
-.sephia .sephia-delete-attachment {
-    float:right;
-    padding-top:2px;
-    margin-right:-5px;
-    transition:color .5s, transform ease-in .5s;
-}
-.sephia .sephia-delete-attachment:hover {
-    transition:color .5s, transform ease-in .5s;
-    color:Red;
-    transform:rotate(45deg);
-}
 .sephia .sephia-reader-meta {
     color:rgba(0,0,0,.3);
     font-style:italic;
@@ -198,18 +183,21 @@
  * Create email styles (new, reply and forward)
  */
 .sephia .sephia-email-compose {
-    margin-bottom:25px;
+    margin-top:50px;
+    position:relative;
     border-radius:5px;
-    box-shadow:rgba(0,0,0,.3) 2px 2px 5px;
-    padding-top:15px;
-    padding-bottom:57px;
-    background-color:#EBFFFF;
+    box-shadow:3px 3px 6px rgba(0,0,0,.2);
+    padding:15px;
 }
 .sephia .sephia-email-compose input,
 .sephia .sephia-email-compose textarea,
 .sephia .sephia-email-compose button {
     z-index:2;
     position:relative;
+}
+.sephia .sephia-add-recipient-btn {
+    margin-top:-54px;
+    margin-right:-20px;
 }
 
 
@@ -223,6 +211,26 @@
     left:0;
     width:100%;
     height:100%;
+}
+
+
+
+/*
+ * Adding attachments to a composed email.
+ */
+.sephia .sephia-add-attachment {
+    margin-right:15px;
+}
+.sephia .sephia-delete-attachment {
+    float:right;
+    padding-top:2px;
+    margin-right:-5px;
+    transition:color .5s, transform ease-in .5s;
+}
+.sephia .sephia-delete-attachment:hover {
+    transition:color .5s, transform ease-in .5s;
+    color:Red;
+    transform:rotate(45deg);
 }
 
 
