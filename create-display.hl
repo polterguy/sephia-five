@@ -20,32 +20,51 @@ p5.io.unroll-path:@SEPHIA/
 
 
 /*
+ * Creating "retriever" widget.
+ *
+ * Notice, this widget serves a single purpose, which is to retrieve the emails from our POP3 server,
+ * and put them into our database.
+ *
+ * We could have stuffed this guy into another widget, but since we delete widgets, according to where we
+ * are in the program, this seems to be easier.
+ */
+create-widget:sephia-retriever
+  style:"display:none;"
+
+  /*
+   * This Ajax event is invoked from JavaScript on page, whenever we should for some reasons check POP3 server
+   * if it has more emails we need to fetch.
+   */
+  .onretrieve
+
+    /*
+     * This file simply retrieves the next batch of emails from our POP3 server, and stores them into our
+     * MySQL database.
+     */
+    sys42.utilities.execute-lambda-file:@SEPHIA/inbox/helpers/fetch.hl
+
+    /*
+     * Checking if there was any new unread emails on POP server, and if so, we check to see
+     * if datagrid exists on page, and if both of these conditions are true, we re-create the datagrid, reflecting
+     * the new items fetched from the POP server.
+     */
+    if:x:/@sys42.utilities.execute-lambda-file?value
+      and
+        fetch:x:/0/0?value
+          widget-exists:sephia-datagrid
+      clear-widget:sephia-datagrid
+      sys42.utilities.execute-lambda-file:@SEPHIA/inbox/show.hl
+
+
+
+
+
+/*
  * Creating header and "menu" row.
  */
 eval-x:x:/../*/create-widget/*/widgets/*/gaiasoul.camphora.widgets.grid-filter/*
 create-widget:sephia-header
-  parent:cnt
   class:container
-  events
-
-    /*
-     * Event raised when datagrid needs re-databinding.
-     *
-     * Expects optionally [offset] and [filter], simply passes these two values into evaluation of Hyperlambda file,
-     * responsible for re-databinding "inbox".
-     */
-    sephia.inbox.databind
-
-      /*
-       * Invoking file responsible for re-databinding "inbox".
-       *
-       * First making sure we delete old widgets.
-       */
-      clear-widget:sephia-datagrid
-      add:x:/+
-        src:x:/../*(/filter|/offset)
-      sys42.utilities.execute-lambda-file:@SEPHIA/inbox/show.hl
-
   widgets
 
     /*
@@ -110,7 +129,8 @@ create-widget:sephia-header
             /*
              * Opening up "configure settings form", making sure we populate fields with existing settings.
              */
-            clear-widget:cnt
+            delete-widget:sephia-header
+            delete-widget:sephia-content
             sys42.utilities.execute-lambda-file:@SEPHIA/configure/configure.hl
               change:bool:true
 
@@ -119,43 +139,41 @@ create-widget:sephia-header
 
 
 /*
- * Associating our [.onretrieve] Ajax event with our main "cnt" widget.
- */
-p5.web.widgets.ajax-events.set:cnt
-
-  /*
-   * This Ajax event is invoked from JavaScript on page, whenever we should for any reasons check POP3 server
-   * if it has more emails we need to fetch.
-   */
-  .onretrieve
-
-    /*
-     * This file simply retrieves the next batch of emails from our POP3 server, and stores them into our
-     * MySQL database.
-     */
-    sys42.utilities.execute-lambda-file:@SEPHIA/inbox/helpers/fetch.hl
-
-
-
-
-
-/*
- * Creating "datagrid" widget.
+ * Creating "content" widget.
  */
 create-widget:sephia-content
-  parent:cnt
   class:container
+  events
+
+    /*
+     * Event raised when datagrid needs re-databinding.
+     *
+     * Expects optionally [offset] and [filter], simply passes these two values into evaluation of Hyperlambda file,
+     * responsible for re-databinding "inbox".
+     */
+    sephia.inbox.databind
+
+      /*
+       * Invoking file responsible for re-databinding "inbox".
+       *
+       * First making sure we delete old widgets.
+       */
+      clear-widget:sephia-datagrid
+      add:x:/+
+        src:x:/../*(/filter|/offset)
+      sys42.utilities.execute-lambda-file:@SEPHIA/inbox/show.hl
+
   oninit
 
     /*
      * Making sure during initial page load, that we initiate checking for new emails after 1 minute.
      */
-    p5.web.send-javascript:@"setTimeout (function() {p5.$('cnt').raise('.onretrieve')}, 5000);"
+    p5.web.send-javascript:@"setTimeout (function() {p5.$('sephia-retriever').raise('.onretrieve')}, 5000);"
 
   widgets
 
     /*
-     * This is our "inbox datagrid", which displays all the emails currently being viewed by user.
+     * This is our "datagrid", which displays all the emails currently being viewed by user.
      */
     div
       class:row

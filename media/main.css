@@ -41,7 +41,9 @@
     background-color:#d1e8f0;
     border-color:#c1d8e0;
 }
-.sephia button:hover {
+.sephia button:hover,
+.sephia button:active,
+.sephia button:focus {
     background-color:#b1c8d0;
 }
 .sephia button.button-clear {

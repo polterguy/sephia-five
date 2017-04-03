@@ -28,3 +28,4 @@ button
       widget:x:/../*/_widget?value
     clear-widget:sephia-datagrid
     sys42.utilities.execute-lambda-file:@SEPHIA/inbox/show.hl
+    sys42.windows.info-tip:Email was deleted!

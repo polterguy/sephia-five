@@ -1,7 +1,7 @@
 
 /*
  * Selects next 10 emails from database, according to optionally a [filter] and an [offset] criteria,
- * and returns to caller.
+ * and returns to caller. Will also return the count of all emails matching specified criteria.
  *
  * Expects an open database connection and [whoami] being passed in.
  *
@@ -36,6 +36,16 @@ _order:@"order by emails.id desc limit 10 offset @offset"
  * Optional parameters to our SQL is appended into this node.
  */
 _params
+
+
+
+
+
+/*
+ * Default arguments, used if no explicit arguments are given.
+ */
+.defaults
+  offset:int:0
 
 
 
@@ -154,7 +164,7 @@ p5.mysql.select:@"select * from emails inner join contacts on emails.sender = co
   :x:/@_clause?value
   :x:/@_order?value
   @username:x:/@whoami/*/username?value
-  @offset:x:/../*/offset?value
+  @offset:x:/../*(/offset|/.defaults/*/offset)/$?value
 
 
 

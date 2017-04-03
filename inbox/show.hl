@@ -20,19 +20,6 @@
 
 
 /*
- * Defaulting offset to 0 if not given.
- */
-if:x:/../*/offset?value
-  not
-  insert-before:x:/../0
-    src
-      offset:int:0
-
-
-
-
-
-/*
  * Opening up database connection, making sure we invoke [whoami], to use as criteria for "username" columns
  * in later SQLs.
  */

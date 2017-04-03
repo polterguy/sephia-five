@@ -1,0 +1,40 @@
+﻿
+/*
+ * Advanced settings.
+ */
+Advanced:sephia-advanced-settings
+  widgets
+    p
+      innerValue:Here you can either delete your emails, or set them as read. Warning, this action cannot be undone!
+    button
+      innerValue:Mark all emails as read
+      style:"margin-right:15px;"
+      title:This will mark all your emails as read in the database
+      onclick
+
+        /*
+         * Marking all of user's emails as read.
+         *
+         * Useful after having initially imported all emails from some POP3 server.
+         */
+        whoami
+        p5.mysql.connect:[sephia]
+          p5.mysql.update:@"update emails set isread=1 where username = @username"
+            @username:x:/@whoami/*/username?value
+        sys42.utilities.execute-lambda-file:@SEPHIA/inbox/set-title.hl
+        sys42.windows.info-tip:All your emails are now marked as read
+
+    button
+      innerValue:Delete all emails
+      title:This will delete all your emails
+      onclick
+
+        /*
+         * Deleting all of user's emails.
+         */
+        whoami
+        p5.mysql.connect:[sephia]
+          p5.mysql.delete:@"delete from emails where username = @username"
+            @username:x:/@whoami/*/username?value
+        sys42.utilities.execute-lambda-file:@SEPHIA/inbox/set-title.hl
+        sys42.windows.info-tip:All your emails are now deleted

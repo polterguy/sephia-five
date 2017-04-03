@@ -260,14 +260,14 @@ p5.pop3.get
           /*
            * Roundtripping to fetch "next batch".
            */
-          p5.web.send-javascript:@"p5.$('sephia-content').raise('.onretrieve');"
+          p5.web.send-javascript:@"p5.$('sephia-retriever').raise('.onretrieve');"
 
         else
 
           /*
            * Roundtripping to 5 minutes from now to check for more emails.
            */
-          p5.web.send-javascript:@"setTimeout (function() {p5.$('cnt').raise('.onretrieve')}, 300000);"
+          p5.web.send-javascript:@"setTimeout (function() {p5.$('sephia-retriever').raise('.onretrieve')}, 300000);"
 
         /*
          * Commit database transaction.
@@ -282,17 +282,6 @@ p5.pop3.get
 
 
 /*
- * Re-create the emails "datagrid" inbox, but only if there was any new emails.
- *
- * Notice, although we supply a callback [.onfinished] to [p5.pop3.get], this lambda object will not be evaluated async, 
- * hence this logic will execute at the very end, after all lambda above has been evaluated.
+ * Returning true if there was any unread emails on POP server.
  */
-if:x:/@_new-emails?value
-
-  /*
-   * Re-creating datagrid, but only if the datagrid is visible on page.
-   */
-  if
-    widget-exists:sephia-datagrid
-    clear-widget:sephia-datagrid
-    sys42.utilities.execute-lambda-file:@SEPHIA/inbox/show.hl
+return:x:/@_new-emails?value
