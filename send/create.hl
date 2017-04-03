@@ -185,13 +185,6 @@ create-widget
               placeholder:Subject ...
               _subject
               value:x:/../*/subject?value
-              oninit
-
-                /*
-                 * Making sure "Subject" of email gets initial focus.
-                 */
-                p5.web.send-javascript:@"p5.$('{0}').el.focus();p5.$('{0}').el.select();"
-                  :x:/../*/_event?value
 
             /*
              * Body of email.
@@ -250,6 +243,9 @@ create-widget
                 eval-x:x:/+/*
                 sys42.utilities.execute-lambda-file:@SEPHIA/send/add-recipient.hl
                   widget:x:/@p5.web.widgets.find/*/*?value
+                p5.web.widgets.get-parent:x:/@p5.web.widgets.find/*/*?value
+                sys42.utilities.add-css-classes:x:/@p5.web.widgets.get-parent/*/*?value
+                  class:sephia-open-recipient
 
     /*
      * "Cc" field.
@@ -275,7 +271,7 @@ create-widget
             input
               type:text
               class:sephia-recipient
-              placeholder:To ...
+              placeholder:Cc ...
               value:x:/../*/cc?value
               _to-field-cc
 
@@ -299,6 +295,9 @@ create-widget
                 eval-x:x:/+/*
                 sys42.utilities.execute-lambda-file:@SEPHIA/send/add-recipient.hl
                   widget:x:/@p5.web.widgets.find/*/*?value
+                p5.web.widgets.get-parent:x:/@p5.web.widgets.find/*/*?value
+                sys42.utilities.add-css-classes:x:/@p5.web.widgets.get-parent/*/*?value
+                  class:sephia-open-recipient
 
     /*
      * "Bcc" field.
@@ -348,6 +347,9 @@ create-widget
                 eval-x:x:/+/*
                 sys42.utilities.execute-lambda-file:@SEPHIA/send/add-recipient.hl
                   widget:x:/@p5.web.widgets.find/*/*?value
+                p5.web.widgets.get-parent:x:/@p5.web.widgets.find/*/*?value
+                sys42.utilities.add-css-classes:x:/@p5.web.widgets.get-parent/*/*?value
+                  class:sephia-open-recipient
 
     /*
      * Attachment widget.
@@ -364,7 +366,7 @@ create-widget
       class:row
       widgets
         div
-          class:column
+          class:column sephia-reply-action-buttons
           _action-buttons
           widgets
 

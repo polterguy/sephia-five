@@ -1,0 +1,193 @@
+
+/*
+ * Selects next 10 emails from database, according to optionally a [filter] and an [offset] criteria,
+ * and returns to caller.
+ *
+ * Expects an open database connection and [whoami] being passed in.
+ *
+ * Returns [emails] and [count] to caller.
+ */
+
+
+
+
+
+/*
+ * Used to hold "where" clause, which is used for both 'select *' and 'select count(*)' SQL.
+ */
+_clause:@"where emails.username = @username "
+
+
+
+
+
+/*
+ * Only used for 'select *' SQL.
+ */
+_order:@"order by emails.id desc limit 10 offset @offset"
+
+
+
+
+
+/*
+ * Used for both 'select *' and 'select count(*)' SQL.
+ *
+ * Optional parameters to our SQL is appended into this node.
+ */
+_params
+
+
+
+
+
+/*
+ * Checking if a filter was provided.
+ *
+ * Notice, if a [filter] was provided, we dynamically append into above [_clause], according to filter rules.
+ *
+ * Among other things, if "inbox" was supplied, we only search for 'received' items, if "outbox" was supplied, we
+ * only search for 'sent' items, if "unread" is supplied, we only search for 'isread' emails, and if "read" is supplied
+ * we only search for emails that are read.
+ *
+ * The rest of the [filter] value, is searched for using '%filter%'
+ */
+if:x:/../*/filter?value
+  and:x:/../*/filter?value
+    !=:
+
+  /*
+   * A filter was provided, checking for special search values; "read", "unread", "inbox", "outbox".
+   *
+   * If the above "special strings" exists in the search criteria, these are removed, and used for signaling type of
+   * emails to retrieve.
+   */
+  split:x:/../*/filter?value
+    =:" "
+  if:x:/@split/*/unread
+
+    /*
+     * Unread.
+     */
+    set:x:/@_clause?value
+      src:"{0} and isread = 0"
+        :x:/@_clause?value
+    set:x:/@split/*/unread
+
+  else-if:x:/@split/*/read
+
+    /*
+     * Read.
+     */
+    set:x:/@_clause?value
+      src:"{0} and isread != 0"
+        :x:/@_clause?value
+    set:x:/@split/*/read
+
+  if:x:/@split/*/inbox
+
+    /*
+     * Inbox/received.
+     */
+    set:x:/@_clause?value
+      src:"{0} and emails.type = 'received'"
+        :x:/@_clause?value
+    set:x:/@split/*/inbox
+
+  else-if:x:/@split/*/outbox
+
+    /*
+     * Outbox/sent.
+     */
+    set:x:/@_clause?value
+      src:"{0} and emails.type = 'sent'"
+        :x:/@_clause?value
+    set:x:/@split/*/outbox
+
+  /*
+   * Joining actual search criteria, now without "special filter values".
+   */
+  join:x:/@split/*?name
+    sep:" "
+
+  /*
+   * Modifying SQL we're evaluating below, to make sure we only retrieve items matching the specified 
+   * [filter] condition.
+   */
+  set:x:/@_clause?value
+    src:{0} {1}
+      :x:/@_clause?value
+      :@"and (subject like @filter or contacts.name like @filter or contacts.email like @filter
+         or exists (select id from parts where parts.content like @filter and parts.type='plain' 
+         and parts.emailid = emails.id))"
+
+  /*
+   * Then we must add up our [@filter] SQL command parameter to [_params] collection, which is later appended into
+   * both [p5.mysql.select] and [p5.mysql.scalar].
+   */
+  eval-x:x:/+/*/*
+  add:x:/../*/_params
+    src
+      @filter:"%{0}%"
+        :x:/@join?value
+
+
+
+
+
+/*
+ * Making sure we append any additional [_params] created as a consequence of some [filter] condition created above.
+ */
+add:x:/../*(/p5.mysql.select|/p5.mysql.scalar)
+  src:x:/../*/_params/*
+
+
+
+
+
+/*
+ * Then evaluating our select all emails SQL.
+ *
+ * Notice, this one uses our [_clause], [username], [offset], [_order] and (possibly) [filter] arguments.
+ */
+p5.mysql.select:@"select * from emails inner join contacts on emails.sender = contacts.id {0} {1}"
+  :x:/@_clause?value
+  :x:/@_order?value
+  @username:x:/@whoami/*/username?value
+  @offset:x:/../*/offset?value
+
+
+
+
+
+/*
+ * Then evaluating our select count SQL.
+ *
+ * This one only uses our [_clause], [username] and (possibly) our [filter] arguments.
+ */
+p5.mysql.scalar:@"select count(*) from emails inner join contacts on emails.sender = contacts.id {0}"
+  :x:/@_clause?value
+  @username:x:/@whoami/*/username?value
+
+
+
+
+
+/*
+ * Building up return results.
+ */
+add:x:/../*/return/*/emails
+  src:x:/@p5.mysql.select/*
+add:x:/../*/return
+  src:"count:int:{0}"
+    :x:/@p5.mysql.scalar?value
+
+
+
+
+
+/*
+ * Returning actual results to caller.
+ */
+return
+  emails

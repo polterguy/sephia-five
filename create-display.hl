@@ -59,8 +59,8 @@ create-widget:sephia-header
           target:_blank
           class:column
           widgets
-            h1
-              innerValue:Sephia Five
+            h1:sephia-header-text
+              innerValue:@"Sephia Five"
     /*
      * This is the "search and page" toolbar at the top.
      *
@@ -117,12 +117,11 @@ create-widget:sephia-header
 
 
 
+
 /*
- * Creating "datagrid" widget.
+ * Associating our [.onretrieve] Ajax event with our main "cnt" widget.
  */
-create-widget:sephia-content
-  parent:cnt
-  class:container
+p5.web.widgets.ajax-events.set:cnt
 
   /*
    * This Ajax event is invoked from JavaScript on page, whenever we should for any reasons check POP3 server
@@ -136,12 +135,22 @@ create-widget:sephia-content
      */
     sys42.utilities.execute-lambda-file:@SEPHIA/inbox/helpers/fetch.hl
 
+
+
+
+
+/*
+ * Creating "datagrid" widget.
+ */
+create-widget:sephia-content
+  parent:cnt
+  class:container
   oninit
 
     /*
      * Making sure during initial page load, that we initiate checking for new emails after 1 minute.
      */
-    p5.web.send-javascript:@"setTimeout (function() {p5.$('sephia-content').raise('.onretrieve')}, 60000);"
+    p5.web.send-javascript:@"setTimeout (function() {p5.$('cnt').raise('.onretrieve')}, 5000);"
 
   widgets
 

@@ -42,26 +42,24 @@ button
       return
 
     /*
+     * Checking if we should do a "force send".
+     */
+    p5.web.widgets.property.get:x:/../*/_event?value
+      _force
+    if:x:/@p5.web.widgets.property.get/*/*?value.bool
+      add:x:/../*/sys42.utilities.execute-lambda-file
+        src
+          send-unencrypted:bool:true
+
+    /*
      * Invoking file responsible for sending email, adding all necessary associated fields.
      *
      * Notice, we provide a callback, which will be invoked if the file needs to display a "warning"
      * about that we did not have all recipients' public PGP keys.
      */
-    eval-x:x:/+2/*/.encryption-warning/*
     add:x:/+
       src:x:/@sephia.get-email/*
     sys42.utilities.execute-lambda-file:@SEPHIA/send/send-email.hl
-      .encryption-warning
-
-        /*
-         * Making sure that if user clicks "OK" after being warned about sending unencrypted emails,
-         * we try again, this time "forcing" email to be sent.
-         *
-         * Notice, no need to "clean up here", since we're "recursively invoking self", which will clean
-         * up things for us.
-         */
-        p5.web.widgets.ajax-events.raise:x:/../*/_event?value
-          onclick
 
     /*
      * Checking if email was successfully sent.
@@ -72,9 +70,19 @@ button
       /*
        * Success!
        *
-       * Notifying user, and re-databinding datagrid and deleting entire "reply widget".
+       * Notifying user, and re-databinding datagrid, and deleting entire "reply widget".
        */
       sys42.windows.info-tip:Email was successfully sent!
       delete-widget:x:/@p5.web.widgets.find-first-ancestor/*/*?value
       clear-widget:sephia-datagrid
       sys42.utilities.execute-lambda-file:@SEPHIA/inbox/show.hl
+
+    else
+
+      /*
+       * Email wasn't sent, because one of the recipients didn't have a public PGP key.
+       */
+      sys42.windows.info-tip:You did not have encryption keys for all recipients, click the button again, to force sending it anyway.
+        class:info-window info-window-warning info-window-longer
+      p5.web.widgets.property.set:x:/../*/_event?value
+        _force:true

@@ -111,6 +111,19 @@ inner join contacts on emails.sender = contacts.id where emails.id = @emailid"
       /*
        * Forward.
        */
+      p5.types.date.format:x:/..p5.mysql.connect/*/p5.mysql.select/[0,1]/*/*/date?value
+        format:"ddd d. MMM yyyy - HH:mm"
+      set:x:/@_tmp-content?value
+        src:@"---- Forwarded message ----
+From: {0} <{1}>
+Date: {2}
+------------------------------------------------------
+
+{3}"
+          :x:/..p5.mysql.connect/*/p5.mysql.select/[0,1]/*/*/name?value
+          :x:/..p5.mysql.connect/*/p5.mysql.select/[0,1]/*/*/email?value
+          :x:/@p5.types.date.format?value
+          :x:/@_tmp-content?value
       p5.html.html-encode:x:/@_tmp-content?value
       set:x:/@_content?value
         src:x:/@p5.html.html-encode?value
