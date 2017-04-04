@@ -51,3 +51,6 @@ SMTP:sephia-smtp-settings
       for:sephia-settings-smtp-ssl
       class:label-inline
       innerValue:Use SSL
+    p
+      innerValue:@"These are your SMTP settings, and normally supplied by your ISP. If you wish to use GMail, you can leave everything
+as is, and only fill out your GMail username and password. Your GMail username is your GMail email address."

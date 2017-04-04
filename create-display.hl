@@ -38,22 +38,31 @@ create-widget:sephia-retriever
   .onretrieve
 
     /*
-     * This file simply retrieves the next batch of emails from our POP3 server, and stores them into our
-     * MySQL database.
+     * Error handling fetch operation.
      */
-    sys42.utilities.execute-lambda-file:@SEPHIA/inbox/helpers/fetch.hl
+    try
 
-    /*
-     * Checking if there was any new unread emails on POP server, and if so, we check to see
-     * if datagrid exists on page, and if both of these conditions are true, we re-create the datagrid, reflecting
-     * the new items fetched from the POP server.
-     */
-    if:x:/@sys42.utilities.execute-lambda-file?value
-      and
-        fetch:x:/0/0?value
-          widget-exists:sephia-datagrid
-      clear-widget:sephia-datagrid
-      sys42.utilities.execute-lambda-file:@SEPHIA/inbox/show.hl
+      /*
+       * This file simply retrieves the next batch of emails from our POP3 server, and stores them into our
+       * MySQL database.
+       */
+      sys42.utilities.execute-lambda-file:@SEPHIA/inbox/helpers/fetch.hl
+
+      /*
+       * Checking if there was any new unread emails on POP server, and if so, we check to see
+       * if datagrid exists on page, and if both of these conditions are true, we re-create the datagrid, reflecting
+       * the new items fetched from the POP server.
+       */
+      if:x:/@sys42.utilities.execute-lambda-file?value
+        and
+          fetch:x:/0/0?value
+            widget-exists:sephia-datagrid
+        clear-widget:sephia-datagrid
+        sys42.utilities.execute-lambda-file:@SEPHIA/inbox/show.hl
+
+    catch
+      sys42.windows.info-tip:Something went wrong when trying to check for new emails, please check your settings, or internet connection.
+        class:info-window info-window-error info-window-longer
 
 
 

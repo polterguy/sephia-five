@@ -26,14 +26,6 @@ Miscellaneous:sephia-misc-settings
       placeholder:Your email address ...
       title:Your email address
     label
-      for:sephia-settings-gpg-password
-      innerValue:GPG Password
-    input:sephia-settings-gpg-password
-      type:password
-      placeholder:Your GnuPG Password ...
-      autocomplete:new-password
-      title:Your GnuPG password
-    label
       innerValue:Signature
       for:sephia-settings-signature
     literal:sephia-settings-signature
@@ -49,8 +41,12 @@ Miscellaneous:sephia-misc-settings
         /*
          * Fetching emails, and letting user know if there was any new emails.
          */
-        sys42.utilities.execute-lambda-file:@SEPHIA/inbox/helpers/fetch.hl
-        if:x:/-?value
-          sys42.windows.info-tip:There was new emails for you to read
-        else
-          sys42.windows.info-tip:No new emails
+        try
+          sys42.utilities.execute-lambda-file:@SEPHIA/inbox/helpers/fetch.hl
+          if:x:/-?value
+            sys42.windows.info-tip:There was new emails for you to read
+          else
+            sys42.windows.info-tip:No new emails
+        catch
+          sys42.windows.info-tip:Something went wrong when trying to check for new emails, please check your settings, or internet connection.
+            class:info-window info-window-error info-window-longer

@@ -222,6 +222,31 @@ else
     src
       encrypted:int:0
 
+
+
+
+
+/*
+ * Checking if we should sign email.
+ */
+if:x:/@p5.auth.my-settings.get/*/sephia/*/gpg-fingerprint?value
+  !=:
+  and:x:/@p5.auth.my-settings.get/*/sephia/*/gpg-password?value
+    !=:
+
+  /*
+   * Yup, signing email!
+   */
+  add:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart
+    src
+      sign
+        fingerprint:x:/@p5.auth.my-settings.get/*/sephia/*/gpg-fingerprint?value
+          password:x:/@p5.auth.my-settings.get/*/sephia/*/gpg-password?value
+
+
+
+
+
 /*
  * Puuh ...!!
  *
@@ -240,9 +265,6 @@ p5.smtp.send
     Subject:x:/../*/subject?value
     body
       multipart:mixed
-        sign
-          email:x:/@p5.auth.my-settings.get/*/sephia/*/email?value
-            password:x:/@p5.auth.my-settings.get/*/sephia/*/gpg-password?value
         text:plain
           content:x:/../*/body?value
 

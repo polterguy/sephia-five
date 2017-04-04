@@ -51,3 +51,6 @@ POP3:sephia-pop3-settings
       for:sephia-settings-pop3-ssl
       innerValue:Use SSL
       class:label-inline
+    p
+      innerValue:@"These are your POP3 settings, and normally supplied by your ISP. If you wish to use GMail, you can leave everything
+as is, and only fill out your GMail username and password. Your GMail username is your GMail email address."

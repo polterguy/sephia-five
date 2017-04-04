@@ -1,0 +1,164 @@
+﻿
+/*
+ * Advanced settings.
+ */
+Advanced:sephia-advanced-settings
+  widgets
+
+    /*
+     * View PGP cryptography key settings.
+     */
+    container
+      oninit
+
+        /*
+         * Retrieving PGP key, and displaying to user.
+         */
+        p5.web.widgets.property.get:sephia-settings-gpg-fingerprint
+          value
+
+        /*
+         * Checking if there exists a PGP fingerprint.
+         */
+        if:x:/@p5.web.widgets.property.get/*/*?value
+          !=:
+
+          /*
+           * Retrieving key, and displaying data to user.
+           */
+          p5.crypto.get-key-details:x:/@p5.web.widgets.property.get/*/*?value
+          p5.types.date.format:x:/@p5.crypto.get-key-details/*/*/expires?value
+          p5.types.date.format:x:/@p5.crypto.get-key-details/*/*/creation-time?value
+          p5.html.html-encode:x:/@p5.crypto.get-key-details/*/*/user-ids/0?value
+          apply:x:/..if/*/create-widget/*/widgets/*/tbody/*/widgets
+            src:x:/@p5.crypto.get-key-details/*
+            template
+              tr
+                widgets
+                  td
+                    innerValue:Fingerprint
+                  td
+                    {innerValue}:x:/*/fingerprint?value
+              tr
+                widgets
+                  td
+                    innerValue:Key ID
+                  td
+                    {innerValue}:x:/*/id?value
+              tr
+                widgets
+                  td
+                    innerValue:Algorithm
+                  td
+                    {innerValue}:x:/*/algorithm?value
+              tr
+                widgets
+                  td
+                    innerValue:Strength
+                  td
+                    {innerValue}:x:/*/strength?value
+              tr
+                widgets
+                  td
+                    innerValue:Created
+                  td
+                    {innerValue}:x:/..if/*/p5.types.date.format/[1,2]?value
+              tr
+                widgets
+                  td
+                    innerValue:Is revoked
+                  td
+                    {innerValue}:x:/*/is-revoked?value
+              tr
+                widgets
+                  td
+                    innerValue:Version
+                  td
+                    {innerValue}:x:/*/version?value
+              tr
+                widgets
+                  td
+                    innerValue:Is master key
+                  td
+                    {innerValue}:x:/*/is-master-key?value
+              tr
+                widgets
+                  td
+                    innerValue:Algorithm
+                  td
+                    {innerValue}:x:/*/algorithm?value
+              tr
+                widgets
+                  td
+                    innerValue:Expires
+                  td
+                    {innerValue}:x:/..if/*/p5.types.date.format/[0,1]?value
+              tr
+                widgets
+                  td
+                    innerValue:User ID
+                  td
+                    {innerValue}:x:/..if/*/p5.html.html-encode?value
+          create-widget
+            parent:x:/../*/_event?value
+            element:table
+            widgets
+              h3
+                innerValue:PGP key details
+              tbody
+                widgets
+
+      widgets
+
+    h3
+      innerValue:Additional tools
+    p
+      innerValue:@"Here you can either delete your emails, contacts, or set your emails as read. Warning, these actions cannot be undone!"
+    button
+      innerValue:Mark all emails as read
+      style:"margin-right:15px;"
+      title:This will mark all your emails as read in the database
+      onclick
+
+        /*
+         * Marking all of user's emails as read.
+         *
+         * Useful after having initially imported all emails from some POP3 server.
+         */
+        whoami
+        p5.mysql.connect:[sephia]
+          p5.mysql.update:@"update emails set isread=1 where username = @username"
+            @username:x:/@whoami/*/username?value
+        sys42.utilities.execute-lambda-file:@SEPHIA/inbox/set-title.hl
+        sys42.windows.info-tip:All your emails are now marked as read
+
+    button
+      innerValue:Delete all emails
+      style:"margin-right:15px;"
+      title:This will delete all your emails
+      onclick
+
+        /*
+         * Deleting all of user's emails.
+         */
+        whoami
+        p5.mysql.connect:[sephia]
+          p5.mysql.delete:@"delete from emails where username = @username"
+            @username:x:/@whoami/*/username?value
+        sys42.utilities.execute-lambda-file:@SEPHIA/inbox/set-title.hl
+        sys42.windows.info-tip:All your emails are now deleted
+
+    button
+      innerValue:Delete all contacts and emails
+      title:This will delete all your contacts and your emails
+      onclick
+
+        /*
+         * Deleting all of user's contacts, which will also delete all emails, due to foreign key cascade settings.
+         */
+        whoami
+        p5.mysql.connect:[sephia]
+          p5.mysql.delete:@"delete from contacts where username = @username"
+            @username:x:/@whoami/*/username?value
+        sys42.utilities.execute-lambda-file:@SEPHIA/inbox/set-title.hl
+        sys42.windows.info-tip:All your contacts and emails are now deleted

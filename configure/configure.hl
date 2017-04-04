@@ -97,6 +97,7 @@ create-widget:sephia-configure
                   sephia-settings-name
                   sephia-settings-email
                   sephia-settings-gpg-password
+                  sephia-settings-gpg-password-repeat
                   sephia-settings-signature
                   sephia-settings-pop3-server
                   sephia-settings-pop3-port
@@ -106,6 +107,7 @@ create-widget:sephia-configure
                   sephia-settings-smtp-port
                   sephia-settings-smtp-username
                   sephia-settings-smtp-password
+                  sephia-settings-gpg-fingerprint
                 _checkboxes
                   sephia-settings-pop3-ssl
                   sephia-settings-smtp-ssl
@@ -128,7 +130,7 @@ create-widget:sephia-configure
 
                 /*
                  * Checking if this is a "change settings" (not an initial configuration), at which we
-                 * allow the user to not supply a password, and resort to using his old passwords.
+                 * allow the user to not supply a password and fingerprint, and resort to using his old passwords.
                  */
                 if:x:/@_is-change?value
 
@@ -153,7 +155,12 @@ create-widget:sephia-configure
                  * Forward evaluating settings values, before we validate that values are legal.
                  */
                 eval-x:x:/../*/p5.auth.my-settings.set/*/*
-                if:x:/../*/p5.auth.my-settings.set/*/*/=
+
+                /*
+                 * Except GPG fingerprint, GPG password and email signature, everything is mandatory, unless this is a "change"
+                 * operation.
+                 */
+                if:x:/../*/p5.auth.my-settings.set/*/*(!/gpg-fingerprint!/gpg-password!/signature)/=
                   sys42.windows.info-tip:You must fill out all settings in order for Sephia Five to function correctly.
                     class:info-window info-window-error info-window-longer
                   return
@@ -175,6 +182,7 @@ create-widget:sephia-configure
                     smtp-password:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-smtp-password/*?value
                     name:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-name/*?value
                     email:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-email/*?value
+                    gpg-fingerprint:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-gpg-fingerprint/*?value
                     gpg-password:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-gpg-password/*?value
                     signature:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-signature/*?value
 
@@ -214,6 +222,8 @@ if:x:/../*/change?value.bool
     value:x:/@p5.auth.my-settings.get/*/sephia/*/smtp-port?value
   p5.web.widgets.property.set:sephia-settings-smtp-username
     value:x:/@p5.auth.my-settings.get/*/sephia/*/smtp-username?value
+  p5.web.widgets.property.set:sephia-settings-gpg-fingerprint
+    value:x:/@p5.auth.my-settings.get/*/sephia/*/gpg-fingerprint?value
   if:x:/@p5.auth.my-settings.get/*/sephia/*/smtp-use-ssl?value.bool
     not
     p5.web.widgets.property.delete:sephia-settings-smtp-ssl

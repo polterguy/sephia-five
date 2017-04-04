@@ -45,6 +45,13 @@
     line-height: 1.6em;
     font-size:1em;
 }
+.sephia select.sephia-select {
+    font-family: 'Roboto', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+    font-weight: 300;
+    letter-spacing: .01em;
+    line-height: 1.6em;
+    font-size:1em;
+}
 .sephia textarea {
     height:initial;
 }
@@ -136,6 +143,9 @@
 }
 .info-window-longer {
     animation-duration: 6s;
+}
+.info-window-even-longer {
+    animation-duration: 15s;
 }
 .info-window-error {
     color:#e55;
