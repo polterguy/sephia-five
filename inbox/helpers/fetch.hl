@@ -40,7 +40,7 @@ p5.pop3.get
   count:10
   attachment-folder:~/documents/private/sephia/attachments/
   decrypt
-    email:x:/@p5.auth.my-settings.get/*/sephia/*/email?value
+    fingerprint:x:/@p5.auth.my-settings.get/*/sephia/*/gpg-fingerprint?value
       password:x:/@p5.auth.my-settings.get/*/sephia/*/gpg-password?value
   .onfinished
 

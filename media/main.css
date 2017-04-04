@@ -395,3 +395,8 @@
         right:35px;
     }
 }
+
+
+.sephia table.sephia-small-table tr td {
+    padding:2px;
+}

@@ -39,7 +39,7 @@ create-widget:sephia-configure
           class:column
           widgets
             h1
-              innerValue:Sephia Five
+              innerValue:Configuration
     container
       class:row
       widgets
@@ -63,7 +63,7 @@ create-widget:sephia-configure
             /*
              * Close (without saving) button.
              */
-            button
+            button:sephia-settings-close-button
               innerValue:Close
               title:Close without saving
               class:float-right button-clear
@@ -239,3 +239,5 @@ else
    * Informing user that he must configure his settings before he can proceed.
    */
   sys42.windows.info-tip:You must configure Sephia Five before you can start using it!
+  p5.web.widgets.property.set:sephia-settings-close-button
+    visible:false

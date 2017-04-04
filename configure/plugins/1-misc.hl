@@ -48,5 +48,7 @@ Miscellaneous:sephia-misc-settings
           else
             sys42.windows.info-tip:No new emails
         catch
-          sys42.windows.info-tip:Something went wrong when trying to check for new emails, please check your settings, or internet connection.
-            class:info-window info-window-error info-window-longer
+          sys42.windows.info-tip:@"Something went wrong when trying to check for new emails, please check your settings, or internet connection. 
+Message from server was '{0}'"
+            :x:/@message?value
+            class:info-window info-window-error info-window-even-longer

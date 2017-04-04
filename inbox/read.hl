@@ -342,6 +342,7 @@ where emails.id = @emailid"
   p5.html.html-encode:x:/@_cc?value
   p5.html.html-encode:x:/@_bcc?value
   p5.types.date.format:x:/..p5.mysql.connect/*/p5.mysql.select/*/*/date?value
+    format:"ddd d. MMM yyyy - HH:mm"
 
   /*
    * Checking to see if an "after" argument was supplied, and if so, making sure we create the widget

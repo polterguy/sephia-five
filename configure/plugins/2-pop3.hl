@@ -34,8 +34,37 @@ POP3:sephia-pop3-settings
       type:text
       placeholder:Username ...
       title:POP3 username
-      value:YourGoogleUsername@gmail.com
-    label
+      value:
+      oninit
+
+        /*
+         * Checking if settings for POP3 username is empty, and widget's value is empty, and if email settings is not empty, and contains
+         * "@gmail.com", and if so, populating value of widget to the same email address.
+         */
+        p5.web.widgets.property.get:x:/../*/_event?value
+          value
+        p5.auth.my-settings.get:sephia
+        if:x:/@p5.web.widgets.property.get/*/*?value
+          =:
+          and:x:/@p5.auth.my-settings.get/*/sephia?count
+            =:int:0
+            or:x:/@p5.auth.my-settings.get/*/sephia/*/pop3-username?value
+              not
+            or:x:/@p5.auth.my-settings.get/*/sephia/*/pop3-username?value
+              =:
+          p5.web.widgets.property.get:sephia-settings-email
+            value
+          if
+            fetch:x:/0/0?count
+              index-of:x:/@p5.web.widgets.property.get/*/*?value
+                src:@gmail.com
+            >:int:0
+            p5.web.widgets.property.set:x:/../*/_event?value
+              value:x:/@p5.web.widgets.property.get/*/*?value
+            p5.web.widgets.property.set:sephia-settings-pop3-password-label
+              innerValue:Your GMail password
+
+    label:sephia-settings-pop3-password-label
       for:sephia-settings-pop3-password
       innerValue:Password
     input:sephia-settings-pop3-password

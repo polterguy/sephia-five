@@ -12,6 +12,12 @@ Advanced:sephia-advanced-settings
       oninit
 
         /*
+         * Warning user.
+         */
+        sys42.windows.info-tip:Please be careful in here!!
+          class:info-window info-window-warning info-window-longer
+
+        /*
          * Retrieving PGP key, and displaying to user.
          */
         p5.web.widgets.property.get:sephia-settings-gpg-fingerprint
@@ -22,13 +28,19 @@ Advanced:sephia-advanced-settings
          */
         if:x:/@p5.web.widgets.property.get/*/*?value
           !=:
+          and
+            fetch:x:/0/0?value
+              widget-exists:sephia-pgp-key-details-grid
+            not
 
           /*
            * Retrieving key, and displaying data to user.
            */
           p5.crypto.get-key-details:x:/@p5.web.widgets.property.get/*/*?value
           p5.types.date.format:x:/@p5.crypto.get-key-details/*/*/expires?value
+            format:"ddd d. MMM yyyy - HH:mm"
           p5.types.date.format:x:/@p5.crypto.get-key-details/*/*/creation-time?value
+            format:"ddd d. MMM yyyy - HH:mm"
           p5.html.html-encode:x:/@p5.crypto.get-key-details/*/*/user-ids/0?value
           apply:x:/..if/*/create-widget/*/widgets/*/tbody/*/widgets
             src:x:/@p5.crypto.get-key-details/*
@@ -84,12 +96,6 @@ Advanced:sephia-advanced-settings
               tr
                 widgets
                   td
-                    innerValue:Algorithm
-                  td
-                    {innerValue}:x:/*/algorithm?value
-              tr
-                widgets
-                  td
                     innerValue:Expires
                   td
                     {innerValue}:x:/..if/*/p5.types.date.format/[0,1]?value
@@ -99,9 +105,10 @@ Advanced:sephia-advanced-settings
                     innerValue:User ID
                   td
                     {innerValue}:x:/..if/*/p5.html.html-encode?value
-          create-widget
+          create-widget:sephia-pgp-key-details-grid
             parent:x:/../*/_event?value
             element:table
+            class:sephia-small-table
             widgets
               h3
                 innerValue:PGP key details
@@ -113,7 +120,7 @@ Advanced:sephia-advanced-settings
     h3
       innerValue:Additional tools
     p
-      innerValue:@"Here you can either delete your emails, contacts, or set your emails as read. Warning, these actions cannot be undone!"
+      innerValue:@"Here you can either delete your emails, contacts, GnuPG keypair, or set your emails as read. Warning, these actions cannot be undone!"
     button
       innerValue:Mark all emails as read
       style:"margin-right:15px;"
@@ -150,6 +157,7 @@ Advanced:sephia-advanced-settings
 
     button
       innerValue:Delete all contacts and emails
+      style:"margin-right:15px;"
       title:This will delete all your contacts and your emails
       onclick
 
@@ -162,3 +170,37 @@ Advanced:sephia-advanced-settings
             @username:x:/@whoami/*/username?value
         sys42.utilities.execute-lambda-file:@SEPHIA/inbox/set-title.hl
         sys42.windows.info-tip:All your contacts and emails are now deleted
+
+    button
+      innerValue:Delete your PGP keypair
+      title:This will delete your private and public PGP key
+      oninit
+
+        /*
+         * Checking that there exists a PGP keypair for user, and if not, disabling deletion of key.
+         */
+        p5.auth.my-settings.get:sephia
+        if:x:/@p5.auth.my-settings.get/*/sephia/*/gpg-fingerprint?value
+          =:
+          or:x:/@p5.auth.my-settings.get/*/sephia/*/gpg-fingerprint?value
+            not
+          p5.web.widgets.property.set:x:/../*/_event?value
+            disabled
+
+      onclick
+
+        /*
+         * Retrieving PGP key, and deleting it.
+         */
+        p5.web.widgets.property.get:sephia-settings-gpg-fingerprint
+          value
+        p5.crypto.delete-private-key:x:/@p5.web.widgets.property.get/*/*?value
+        p5.crypto.delete-public-key:x:/@p5.web.widgets.property.get/*/*?value
+        p5.auth.my-settings.get:sephia
+        set:x:/@p5.auth.my-settings.get/*/*(/gpg-fingerprint|/gpg-password)?value
+          src:
+        add:x:/+/*
+          src:x:/@p5.auth.my-settings.get/*/*
+        p5.auth.my-settings.set:sephia
+          sephia
+        p5.web.reload-location

@@ -8,19 +8,6 @@ Crypto:sephia-crypto-settings
     /*
      * Cryptography settings goes here.
      */
-    label:sephia-settings-label-pgp-strength
-      for:sephia-settings-gpg-password-strength
-      innerValue:Strength of PGP Key (only for creating new keys)
-    select:sephia-settings-pgp-strength
-      class:sephia-select
-      widgets
-        option
-          innerValue:1024
-        option
-          innerValue:2048
-        option
-          innerValue:4096
-          selected
     label
       for:sephia-settings-gpg-fingerprint
       innerValue:PGP key fingerprint
@@ -28,6 +15,54 @@ Crypto:sephia-crypto-settings
       type:text
       placeholder:Fingerprint will show up here ...
       value:
+      oninit
+
+        /*
+         * Making sure we hide "create new key" by default.
+         */
+        p5.web.widgets.property.set:sephia-settings-create-new-pgp-key-wrapper
+          visible:false
+
+        /*
+         * Checking if fingerprint settings and widget is empty, and if so, we populate the fingerprint widget with the first available fingerprint
+         * from GnuPG matching the user's email address.
+         */
+        p5.web.widgets.property.get:x:/../*/_event?value
+          value
+        p5.auth.my-settings.get:sephia
+        if:x:/@p5.web.widgets.property.get/*/*?value
+          =:
+          and:x:/@p5.auth.my-settings.get/*/sephia?count
+            =:int:0
+            or:x:/@p5.auth.my-settings.get/*/sephia/*/fingerprint?value
+              not
+            or:x:/@p5.auth.my-settings.get/*/sephia/*/fingerprint?value
+              =:
+
+          /*
+           * Fingerprint is empty, therefor we lookup into GnuPG to see if there's an existing keypair for user's email address, if
+           * user has supplied an email address that is.
+           */
+          p5.web.widgets.property.get:sephia-settings-email
+            value
+          if:x:/@p5.web.widgets.property.get/*/*?value
+            =:
+            return
+
+          /*
+           * User has supplied an email address, but not a fingerprint, checking towards GnuPG database to see if there exists
+           * a keypair for user's email address.
+           */
+          p5.crypto.list-private-keys:x:/../*/p5.web.widgets.property.get/*/*?value
+          if:x:/@p5.crypto.list-private-keys/*?count
+            >:int:0
+
+            /*
+             * There already is a keypair with the supplied email address, using that email address, and preventing user from creating
+             * a new keypair.
+             */
+            p5.web.widgets.property.set:sephia-settings-gpg-fingerprint
+              value:x:/@p5.crypto.list-private-keys/0/*/fingerprint?value
     label:sephia-settings-label-gpg-password
       for:sephia-settings-gpg-password
       innerValue:GnuPG Password
@@ -37,182 +72,176 @@ Crypto:sephia-crypto-settings
       autocomplete:new-password
       title:Your GnuPG password
       value:
-    label:sephia-settings-label-gpg-password-repeat
-      for:sephia-settings-gpg-password-repeat
-      innerValue:Repeat password (only if you wish to create new keypair)
-    input:sephia-settings-gpg-password-repeat
-      type:password
-      placeholder:Repeat password ...
-      autocomplete:new-password
-      title:Your GnuPG password
-      value:
-    p:sephia-settings-create-key-information
-      innerValue:@"<strong>Notice</strong>, you have to set your <em>""Miscellaneous""</em> settings before you create a new keypair, since the cryptography
-settings are dependent upon your name and email address."
-    button:sephia-settings-create-new-key
-      innerValue:Create new PGP Keypair
-      oninit
-
-        /*
-         * Checking if there exists a keypair with the given email address, and if so, disabling creation of key, and populating the
-         * fingerprint widget with the key's fingerprint.
-         * Notice, we only do this, if there is no old value for fingerprint.
-         */
-        p5.web.widgets.property.get:sephia-settings-gpg-fingerprint
-          value
-        if:x:/-/*/*?value
-          !=:
-
-          /*
-           * There already is a keypair with the supplied email address, using that email address, and preventing user from creating
-           * a new keypair.
-           */
-          _widgets
-            sephia-settings-label-gpg-password-repeat
-            sephia-settings-gpg-password-repeat
-            sephia-settings-label-pgp-strength
-            sephia-settings-pgp-strength
-            sephia-settings-create-new-key
-            sephia-settings-create-key-information
-            sephia-settings-label-gpg-password
-            sephia-settings-gpg-password
-          p5.web.widgets.property.set:x:/@_widgets/*?name
-            style:"display:none;"
-          p5.web.widgets.property.set:sephia-settings-gpg-fingerprint
-            disabled
-          return
-
-        /*
-         * Fingerprint is empty, therefor we lookup into GnuPG to see if there's an existing keypair for user's email address, if
-         * user has supplied an email address that is.
-         */
-        p5.web.widgets.property.get:sephia-settings-email
-          value
-        if:x:/@p5.web.widgets.property.get/*/*?value
-          =:
-          return
-
-        /*
-         * User has supplied an email address, but not a fingerprint, checking towards GnuPG database to see if there exists
-         * a keypair for user's email address.
-         */
-        p5.crypto.list-private-keys:x:/@p5.web.widgets.property.get/*/*?value
-        if:x:/@p5.crypto.list-private-keys/*?count
-          >:int:0
-
-          /*
-           * There already is a keypair with the supplied email address, using that email address, and preventing user from creating
-           * a new keypair.
-           */
-          p5.web.widgets.property.set:sephia-settings-gpg-fingerprint
-            value:x:/@p5.crypto.list-private-keys/0/*/fingerprint?value
-          _widgets
-            sephia-settings-label-gpg-password-repeat
-            sephia-settings-gpg-password-repeat
-            sephia-settings-label-pgp-strength
-            sephia-settings-pgp-strength
-            sephia-settings-create-new-key
-            sephia-settings-create-key-information
-          p5.web.widgets.property.set:x:/@_widgets/*?name
-            style:"display:none;"
-
+    button
+      innerValue:Create new PGP keypar
       onclick
 
         /*
-         * Creating new PGP keypair with name/email and password, making sure passwords above are the same, and that
-         * name and email is already filled out.
+         * Verifying user has filled out name and email from first tab, before allow him to create a key.
          */
-        _widgets
-          sephia-settings-name
-          sephia-settings-email
-          sephia-settings-gpg-password
-          sephia-settings-gpg-password-repeat
-          sephia-settings-pgp-strength
-        p5.web.widgets.property.get:x:/@_widgets/*?name
+        p5.web.widgets.property.get:sephia-settings-name
           value
-
-        /*
-         * Verifying password was supplied.
-         */
-        trim:x:/@p5.web.widgets.property.get/*/sephia-settings-gpg-password/*?value
-        if:x:/@trim?value
-          =:""
-          sys42.windows.info-tip:No GnuPG password supplied
-            class:info-window info-windows-error
-          return
-
-        /*
-         * Verifying passwords are matching each other.
-         */
-        if:x:/@p5.web.widgets.property.get/*/sephia-settings-gpg-password/*?value
-          !=:x:/@p5.web.widgets.property.get/*/sephia-settings-gpg-password-repeat/*?value
-
-          /*
-           * Warning user, and returning early, to abort operation.
-           */
-          sys42.windows.info-tip:Passwords doesn't match each other!
-            class:info-window info-window-error
-          return
-
-        /*
-         * Verifying name and emails has been filled out.
-         */
-        if:x:/@p5.web.widgets.property.get/*/sephia-settings-name/*?value
+        p5.web.widgets.property.get:sephia-settings-email
+          value
+        if:x:/../*/p5.web.widgets.property.get/[0,1]/*/*?value
           =:
-          or:x:/@p5.web.widgets.property.get/*/sephia-settings-email/*?value
+          or:x:/../*/p5.web.widgets.property.get/[1,2]/*/*?value
             =:
-          sys42.windows.info-tip:@"Please fill out name and email in the ""Miscellaneous"" section first!"
-            class:info-window info-window-error
+          sys42.windows.info-tip:You have to fill out your name and email in the first section first.
+            class:info-window info-window-error info-window-longer
           return
 
         /*
-         * Checking if we have warned user that operation might take a VERY, VERY long time, and if not, warning user, and returning early.
+         * Setting create new key to visible.
          */
-        p5.web.widgets.property.get:x:/../*/_event?value
-          _has-warned
-        if:x:/@p5.web.widgets.property.get/*/*?value
-          not
-          p5.web.widgets.property.set:x:/../*/_event?value
-            _has-warned:yup!
-            innerValue:Click me again to start creating key!
-          sys42.windows.info-tip:@"This operation might take a VERY long time, depending upon the size of your key. 
+        p5.web.widgets.property.set:sephia-settings-create-new-pgp-key-wrapper
+          visible:true
+
+    /*
+     * Wrapper for creating a new PGP key.
+     */
+    container:sephia-settings-create-new-pgp-key-wrapper
+      widgets
+        h3:sephia-create-pgp-key-header
+          innerValue:Create new PGP keypair
+          style:"margin-top:30px;"
+        p:sephia-create-pgp-key-body
+          innerValue:Will create a new PGP keypair, and install into your GnuPG database, and use this as your PGP keypair for Sephia.
+        label:sephia-settings-label-pgp-strength
+          for:sephia-settings-gpg-password-strength
+          innerValue:Strength of PGP Key
+        select:sephia-settings-pgp-strength
+          class:sephia-select
+          widgets
+            option
+              innerValue:1024
+            option
+              innerValue:2048
+            option
+              innerValue:4096
+              selected
+        label:sephia-settings-label-gpg-password-create
+          for:sephia-settings-gpg-password-repeat
+          innerValue:GnuPG password
+        input:sephia-settings-gpg-password-create
+          type:password
+          placeholder:GnuPG password ...
+          autocomplete:new-password
+          title:Your GnuPG password
+          value:
+        label:sephia-settings-label-gpg-password-repeat
+          for:sephia-settings-gpg-password-repeat
+          innerValue:Repeat password
+        input:sephia-settings-gpg-password-repeat
+          type:password
+          placeholder:Repeat password ...
+          autocomplete:new-password
+          title:Your GnuPG password
+          value:
+
+        button:sephia-settings-create-new-key
+          innerValue:Create keypair
+          onclick
+
+            /*
+             * Creating new PGP keypair with name/email and password, making sure passwords above are the same, and that
+             * name and email is already filled out.
+             */
+            _widgets
+              sephia-settings-name
+              sephia-settings-email
+              sephia-settings-gpg-password-create
+              sephia-settings-gpg-password-repeat
+              sephia-settings-pgp-strength
+            p5.web.widgets.property.get:x:/@_widgets/*?name
+              value
+
+            /*
+             * Verifying password was supplied.
+             */
+            trim:x:/@p5.web.widgets.property.get/*/sephia-settings-gpg-password-create/*?value
+            if:x:/@trim?value
+              =:
+              sys42.windows.info-tip:No GnuPG password supplied
+                class:info-window info-windows-error
+              return
+
+            /*
+             * Verifying passwords are matching each other.
+             */
+            if:x:/@p5.web.widgets.property.get/*/sephia-settings-gpg-password-create/*?value
+              !=:x:/@p5.web.widgets.property.get/*/sephia-settings-gpg-password-repeat/*?value
+
+              /*
+               * Warning user, and returning early, to abort operation.
+               */
+              sys42.windows.info-tip:Passwords doesn't match each other!
+                class:info-window info-window-error
+              return
+
+            /*
+             * Verifying name and emails has been filled out.
+             */
+            if:x:/@p5.web.widgets.property.get/*/sephia-settings-name/*?value
+              =:
+              or:x:/@p5.web.widgets.property.get/*/sephia-settings-email/*?value
+                =:
+              sys42.windows.info-tip:@"Please fill out name and email in the ""Miscellaneous"" section first!"
+                class:info-window info-window-error
+              return
+
+            /*
+             * Checking if we have warned user that operation might take a VERY, VERY long time, and if not, warning user, and returning early.
+             */
+            p5.web.widgets.property.get:x:/../*/_event?value
+              _has-warned
+            if:x:/@p5.web.widgets.property.get/*/*?value
+              not
+              p5.web.widgets.property.set:x:/../*/_event?value
+                _has-warned:yup!
+                innerValue:Click me again to start creating key!
+              sys42.windows.info-tip:@"This operation might take a VERY long time, depending upon the size of your key. 
 Please just let your computer finish the process, without leaving this page. When it is done, the fingerprint of your new PGP key will be populated
 with your key's value. Please <strong>click button again</strong> to start process of creating your key!"
-            class:info-window info-window-warning info-window-even-longer
-          return
+                class:info-window info-window-warning info-window-even-longer
+              return
 
-        /*
-         * Creating PGP key based upon data retrieved from widgets.
-         */
-        p5.crypto.create-pgp-keypair
-          identity:{0} <{1}>
-            :x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-name/*?value
-            :x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-email/*?value
-          password:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-gpg-password/*?value
-          strength:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-pgp-strength/*?value
+            /*
+             * Creating PGP key based upon data retrieved from widgets.
+             */
+            p5.crypto.create-pgp-keypair
+              identity:{0} <{1}>
+                :x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-name/*?value
+                :x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-email/*?value
+              password:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-gpg-password-create/*?value
+              strength:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-pgp-strength/*?value
 
-        /*
-         * Hiding all widgets that user should not be able to inetract with anymore!
-         */
-        p5.web.widgets.property.set:sephia-settings-gpg-fingerprint
-          value:x:/@p5.crypto.list-private-keys/0/*/fingerprint?value
-        _widgets
-          sephia-settings-label-gpg-password
-          sephia-settings-gpg-password
-          sephia-settings-label-gpg-password-repeat
-          sephia-settings-gpg-password-repeat
-          sephia-settings-label-pgp-strength
-          sephia-settings-pgp-strength
-          sephia-settings-create-new-key
-          sephia-settings-create-key-information
-        p5.web.widgets.property.set:x:/@_widgets/*?name
-          style:"display:none;"
-        p5.web.widgets.property.set:sephia-settings-gpg-fingerprint
-          disabled
+            /*
+             * Hiding all widgets that user should not be able to interact with anymore!
+             */
+            p5.web.widgets.property.set:sephia-settings-gpg-fingerprint
+              value:x:/@p5.crypto.list-private-keys/0/*/fingerprint?value
+            p5.web.widgets.property.set:sephia-settings-create-new-pgp-key-wrapper
+              visible:false
+            p5.web.widgets.property.set:sephia-settings-gpg-fingerprint
+              disabled
+            p5.web.widgets.property.set:sephia-settings-gpg-password
+              value:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-gpg-password-create/*?value
 
-        /*
-         * Feedback to user.
-         */
-        p5.web.widgets.property.set:sephia-settings-gpg-fingerprint
-          value:x:/@p5.crypto.create-pgp-keypair/*/fingerprint?value
-        sys42.windows.info-tip:PGP keypair was successfully created
+            /*
+             * Feedback to user.
+             */
+            p5.web.widgets.property.set:sephia-settings-gpg-fingerprint
+              value:x:/@p5.crypto.create-pgp-keypair/*/fingerprint?value
+            sys42.windows.info-tip:PGP keypair was successfully created
+
+        button
+          innerValue:Cancel
+          style:"margin-left:15px;"
+          onclick
+
+            /*
+             * Setting create new key to visible.
+             */
+            p5.web.widgets.property.set:sephia-settings-create-new-pgp-key-wrapper
+              visible:false
