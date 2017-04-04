@@ -28,8 +28,7 @@ Miscellaneous:sephia-misc-settings
     label
       innerValue:Signature
       for:sephia-settings-signature
-    literal:sephia-settings-signature
-      element:textarea
+    textarea:sephia-settings-signature
       rows:5
       placeholder:Signature to use ...
       title:Signature to use, will be injected into every email you send ...

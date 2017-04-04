@@ -58,11 +58,26 @@ Crypto:sephia-crypto-settings
             >:int:0
 
             /*
-             * There already is a keypair with the supplied email address, using that email address, and preventing user from creating
-             * a new keypair.
+             * There already is a keypair with the supplied email address, using that email address.
              */
             p5.web.widgets.property.set:sephia-settings-gpg-fingerprint
               value:x:/@p5.crypto.list-private-keys/0/*/fingerprint?value
+
+        /*
+         * Checking if there's an accosiated key with user, somehow (due to having used previously created GnuPG key)
+         */
+        p5.web.widgets.property.get:x:/../*/_event?value
+          value
+        if:x:/@p5.web.widgets.property.get/*/*?value
+          !=:
+
+          /*
+           * Making sure we allow user to submit public key to keyserver.
+           */
+          p5.web.widgets.property.set:sephia-settings-submit-key
+            visible:true
+            
+
     label:sephia-settings-label-gpg-password
       for:sephia-settings-gpg-password
       innerValue:GnuPG Password
@@ -74,6 +89,7 @@ Crypto:sephia-crypto-settings
       value:
     button
       innerValue:Create new PGP keypar
+      style:"margin-right:15px;"
       onclick
 
         /*
@@ -96,6 +112,90 @@ Crypto:sephia-crypto-settings
          */
         p5.web.widgets.property.set:sephia-settings-create-new-pgp-key-wrapper
           visible:true
+
+    button:sephia-settings-submit-key
+      innerValue:Submit public key to Ubuntu key server
+      style:"margin-right:15px;"
+      visible:false
+      title:Will submit your public key to the Ubuntu key server.
+      onclick
+
+        /*
+         * Retrieving key and URL encoding it, to prepare it for HTTP POST towards Ubuntu key server.
+         */
+        p5.web.widgets.property.get:sephia-settings-gpg-fingerprint
+          value
+        p5.crypto.get-public-key:x:/@p5.web.widgets.property.get/*/*?value
+        p5.html.url-encode:x:/@p5.crypto.get-public-key?value
+
+        /*
+         * HTTP POSTing key to Ubuntu key server
+         */
+        p5.http.post:"http://keyserver.ubuntu.com/pks/add"
+          Content-Type:application/x-www-form-urlencoded
+          content:"keytext={0}"
+            :x:/@p5.html.url-encode?value
+
+        /*
+         * Checking status, and giving user feedback about operation.
+         */
+        if:x:/@p5.http.post/*/result/*/status?value
+          !=:OK
+
+          /*
+           * Oops, error!
+           */
+          sys42.windows.info-tip:@"Something went wrong, mesage from server was; '{0}'"
+            :x:/@p5.http.post/*/result/*/Status-Description?value
+            class:info-window info-window-error info-window-even-longer
+
+        else
+
+          /*
+           * Success!
+           */
+          sys42.windows.info-tip:Key was succesfully submitted to key server!
+
+    button:sephia-settings-attach-key-to-signature
+      innerValue:Attach this public key to your signature
+      style:"margin-right:15px;"
+      title:Will append this PGP public key to your email's signature
+      oninit
+
+        /*
+         * Checking if signature already contains PGP key, and if so, making this button invisible.
+         */
+        p5.web.widgets.property.get:sephia-settings-signature
+          value
+        if
+          fetch:x:/0/0?value
+            index-of:x:/@p5.web.widgets.property.get/*/*?value
+              src:"-----BEGIN PGP PUBLIC KEY BLOCK-----"
+          p5.web.widgets.property.set:x:/../*/_event?value
+            visible:false
+        else
+          p5.web.widgets.property.set:x:/../*/_event?value
+            visible:true
+
+      onclick
+
+        /*
+         * Modifying the signature textarea value, appending PGP public key, unless it's already there from before.
+         */
+        p5.web.widgets.property.get:sephia-settings-gpg-fingerprint
+          value
+        p5.crypto.get-public-key:x:/@p5.web.widgets.property.get/*/*?value
+        p5.web.widgets.property.get:sephia-settings-signature
+          value
+        p5.web.widgets.property.set:sephia-settings-signature
+          value:@"{0}
+
+{1}"
+            :x:/@p5.web.widgets.property.get/*/*?value
+            :x:/@p5.crypto.get-public-key?value
+        sys42.windows.info-tip:PGP public key was appended into your signature.
+        p5.web.widgets.property.set:x:/../*/_event?value
+          visible:false
 
     /*
      * Wrapper for creating a new PGP key.
@@ -221,12 +321,17 @@ with your key's value. Please <strong>click button again</strong> to start proce
              */
             p5.web.widgets.property.set:sephia-settings-gpg-fingerprint
               value:x:/@p5.crypto.list-private-keys/0/*/fingerprint?value
+              disabled
             p5.web.widgets.property.set:sephia-settings-create-new-pgp-key-wrapper
               visible:false
-            p5.web.widgets.property.set:sephia-settings-gpg-fingerprint
-              disabled
             p5.web.widgets.property.set:sephia-settings-gpg-password
               value:x:/../*/p5.web.widgets.property.get/[0,1]/*/sephia-settings-gpg-password-create/*?value
+
+            /*
+             * Making sure we allow user to submit public key to keyserver.
+             */
+            p5.web.widgets.property.set:sephia-settings-submit-key
+              visible:true
 
             /*
              * Feedback to user.

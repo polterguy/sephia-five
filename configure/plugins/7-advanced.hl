@@ -42,6 +42,7 @@ Advanced:sephia-advanced-settings
           p5.types.date.format:x:/@p5.crypto.get-key-details/*/*/creation-time?value
             format:"ddd d. MMM yyyy - HH:mm"
           p5.html.html-encode:x:/@p5.crypto.get-key-details/*/*/user-ids/0?value
+          p5.crypto.get-public-key:x:/@p5.web.widgets.property.get/*/*?value
           apply:x:/..if/*/create-widget/*/widgets/*/tbody/*/widgets
             src:x:/@p5.crypto.get-key-details/*
             template
@@ -105,6 +106,15 @@ Advanced:sephia-advanced-settings
                     innerValue:User ID
                   td
                     {innerValue}:x:/..if/*/p5.html.html-encode?value
+              tr
+                widgets
+                  td
+                    innerValue:Public key
+                  td
+                    widgets
+                      textarea
+                        rows:7
+                        {innerValue}:x:/..if/*/p5.crypto.get-public-key?value
           create-widget:sephia-pgp-key-details-grid
             parent:x:/../*/_event?value
             element:table

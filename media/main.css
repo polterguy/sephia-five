@@ -397,6 +397,22 @@
 }
 
 
+.sephia table.sephia-smaller-table tr td {
+    padding:2px;
+    font-size:.8em;
+}
+.sephia table.sephia-smaller-table tr td button {
+    height:30px;
+    line-height:30px;
+    font-size:.8em;
+    margin-bottom:0;
+}
 .sephia table.sephia-small-table tr td {
     padding:2px;
+}
+.sephia .sephia-key-search-results tr {
+    cursor:pointer;
+}
+.sephia .sephia-key-search-results tr:hover td {
+    background-color:#fff5eb;
 }

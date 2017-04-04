@@ -1,0 +1,147 @@
+﻿
+/*
+ * Cryptography keys interface.
+ */
+Ubuntu keys:sephia-crypto-keys
+  widgets
+
+    /*
+     * Allows user to search for cryptography keys
+     */
+    label
+      for:sephia-settings-search-for-keys
+      innerValue:Search on Ubuntu keyserver for public key
+    input:sephia-settings-search-for-keys
+      type:search
+      placeholder:Search for a PGP key here ...
+      style:"width:75%;"
+      oninit
+
+        /*
+         * Setting initial focus to search textbox.
+         */
+        p5.web.send-javascript:@"p5.$('sephia-settings-search-for-keys').el.focus();p5.$('sephia-settings-search-for-keys').el.select();"
+
+    button
+      innerValue:Search
+      style:"width:20%;margin-left:5%;"
+      onclick
+
+        /*
+         * Searching for key on Ubuntu key server.
+         */
+        p5.web.widgets.property.get:sephia-settings-search-for-keys
+          value
+
+        /*
+         * Sanity check.
+         */
+        if:x:/@p5.web.widgets.property.get/*/*?value
+          =:
+          sys42.windows.info-tip:Please supply a search query
+            class:info-window info-window-error
+          return
+
+        /*
+         * URL encoding, and retrieving result from Ubuntu key server.
+         */
+        p5.html.url-encode:x:/@p5.web.widgets.property.get/*/*?value
+        p5.http.get:"https://keyserver.ubuntu.com/pks/lookup?op=vindex&search={0}&fingerprint=on"
+          :x:/@p5.html.url-encode?value
+
+        /*
+         * Sanity checking results.
+         */
+        if:x:/@p5.http.get/*/result/*/status?value
+          !=:OK
+          sys42.windows.info-tip:Something went wrong when searching for key, message from server was '{0}'
+            :x:/@p5.http.get/*/result/*/Status-Description?value
+            class:info-window info-window-error info-window-even-longer
+          return
+
+        /*
+         * Parsing results.
+         */
+        _encode
+          p5.html.html-encode:x:/../*/_dn/#/*/span/[0,1]/*/#text?value
+          eval-x:x:/+/*
+          return
+            innerValue:x:/@p5.html.html-encode?value
+        _strip1
+          trim:x:/../*/_dn/#/*/#text/[0,1]?value
+            chars:" /"
+          eval-x:x:/+/*
+          return
+            innerValue:x:/@trim?value
+        _strip2
+          split:x:/../*/_dn/#/*/#text/[1,2]?value
+            =:"Fingerprint="
+          eval-x:x:/+/*
+          return
+            innerValue:x:/@split/1?name
+        _strip3
+          split:x:/../*/_dn/#/*/#text/[1,2]?value
+            =:"Fingerprint="
+          trim:x:/@split/0?name
+          eval-x:x:/+/*
+          return
+            innerValue:x:/@trim?value
+        clear-widget:sephia-key-search-results
+        p5.html.html2lambda:x:/@p5.http.get/*/result/*/content?value
+        apply:x:/../*/create-widget/*/widgets/*/table/*/widgets
+          src:x:/@p5.html.html2lambda/*/html/*/body/*/pre/[1,](!/*/span/*/\@class/=warn/./.)
+          template
+            tr
+              role:button
+              onclick
+                {_url}:x:/*/a/[0,1]/*/\@href?value
+                gaiasoul.sephia.import-public-key:{0}{1}
+                  :"https://keyserver.ubuntu.com"
+                  :x:/@_url?value
+              widgets
+                td
+                  {@eval}:x:/@_strip1
+                td
+                  {@eval}:x:/@_strip2
+                td
+                  {@eval}:x:/@_strip3
+                td
+                  {@eval}:x:/@_encode
+
+        /*
+         * Creating widget with result.
+         */
+        create-widget:sephia-key-search-results-table
+          parent:sephia-key-search-results
+          widgets
+            table
+              class:sephia-smaller-table sephia-key-search-results
+              widgets
+                tr
+                  innerValue:"<th>Size</th><th>Fingerprint</th><th>Identity</th><th>Created</th>"
+            p
+              innerValue:Click row you wish to import into your local GnuPG database
+
+        /*
+         * Setting focus back to search textbox.
+         */
+        p5.web.send-javascript:@"p5.$('sephia-settings-search-for-keys').el.focus();p5.$('sephia-settings-search-for-keys').el.select();"
+
+    /*
+     * Search results.
+     */
+    container:sephia-key-search-results
+      events
+
+        /*
+         * Imports the public key from the given URL.
+         */
+        gaiasoul.sephia.import-public-key
+
+          /*
+           * Downloading KEY using HTTP GET request.
+           */
+          p5.http.get:x:/../*/_arg?value
+          p5.html.html2lambda:x:/@p5.http.get/*/result/*/content?value
+          p5.crypto.import-public-pgp-key:x:/@p5.html.html2lambda/*/html/*/body/*/pre/[0,1]/*/#text?value
+          sys42.windows.info-tip:Public PGP cryptography key was successfully imported.
