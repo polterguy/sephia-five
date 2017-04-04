@@ -4,7 +4,7 @@
  */
 button
   class:float-right button-clear
-  innerValue:@"<svg class=""sephia-icon""><use xlink:href=""{0}media/si-sprite.svg#si-ant-cross""></use></svg>"
+  innerValue:@"<svg class=""sephia-icon""><use xlink:href=""{0}media/si-sprite.svg#si-ionic-android-close""></use></svg>"
     :x:/@p5.io.unroll-path?value
   title:Discard reply
   onclick

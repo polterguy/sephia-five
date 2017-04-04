@@ -6,7 +6,7 @@
  */
 button
   class:button-clear
-  innerValue:@"<svg class=""sephia-icon""><use xlink:href=""{0}media/si-sprite.svg#si-evil-close""></use></svg>"
+  innerValue:@"<svg class=""sephia-icon""><use xlink:href=""{0}media/si-sprite.svg#si-ionic-android-close""></use></svg>"
     :x:/@p5.io.unroll-path?value
   title:Close
   onclick

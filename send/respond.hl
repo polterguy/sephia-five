@@ -1,13 +1,13 @@
 
 /*
- * Allows user to respond to another email, by creating for instance a reply, or forward the email to others.
+ * Allows user to respond to another email, by creating for instance a reply, reply-to-all, 
+ * or forward the email.
  *
  * Expects [email-id] being ID of email from database, which is an email being responded to.
- * Optionally pass in [is-forward], and set it to boolean true, to signal this is not a reply, but a forward
- * operation instead.
+ * Optionally pass in [is-forward], [is-reply] or [is-reply-all] and set it to boolean true, 
+ * to signal type of response.
  *
- * Will delete any "reader widgets", if existing, and replace with a "reply widget".
- * Otherwise, it will simply append the respond widget to the main "root reader widget surface".
+ * Will delete any "reader widgets", if existing, and replace with a "respond widget".
  */
 
 
@@ -28,15 +28,14 @@ inner join contacts on emails.sender = contacts.id where emails.id = @emailid"
 
   /*
    * Creating our "respond widget".
-   * Making sure we get the "Re:"/"Fwd:" parts in subject, but only if it does NOT exist from before.
+   * Making sure we get the "Re:"/"Fwd:" parts correctly in our subject, but only if it does NOT exist from before.
    */
-  if:x:/../*/is-forward?value.bool
-    and
-      fetch:x:/0/0?value
-        index-of:x:/@p5.mysql.select/0/*/subject?value
-          src:"Fwd:"
-      =:int:0
-      not
+  if
+    fetch:x:/0/0?value
+      index-of:x:/@p5.mysql.select/0/*/subject?value
+        src:"Fwd:"
+    !=:int:0
+    and:x:/../*/is-forward?value.bool
 
     /*
      * Email subject does not already start with "Fwd:".
@@ -45,14 +44,13 @@ inner join contacts on emails.sender = contacts.id where emails.id = @emailid"
       src:"Fwd: {0}"
         :x:/@p5.mysql.select/0/*/subject?value
 
-  else-if:x:/../*/is-forward?value
-    not
-    and
-      fetch:x:/0/0?value
-        index-of:x:/@p5.mysql.select/0/*/subject?value
-          src:"Re:"
-      =:int:0
-      not
+  else-if
+    fetch:x:/0/0?value
+      index-of:x:/@p5.mysql.select/0/*/subject?value
+        src:"Re:"
+    !=:int:0
+    and:x:/../*/is-reply?value.bool
+      or:x:/../*/is-reply-all?value.bool
 
     /*
      * Email subject does not already start with "Re:".
@@ -61,8 +59,6 @@ inner join contacts on emails.sender = contacts.id where emails.id = @emailid"
     set:x:/@p5.mysql.select/0/*/subject?value
       src:"Re: {0}"
         :x:/@p5.mysql.select/0/*/subject?value
-
-
 
   /*
    * Making sure we avoid "HTML injection", also in subject of email!
@@ -162,49 +158,61 @@ Date: {2}
   _to
   _cc
   _bcc
-  if:x:/../*/is-forward?value
+  if:x:/../*/is-forward?value.bool
     not
 
     /*
-     * This is not a forward operation, making sure default "To" field becomes original sender.
+     * Checking if this is a "reply" type of operation.
      */
-    p5.mysql.select:@"select * from contacts 
+    if:x:/../*/is-reply?value.bool
+      or:x:/../*/is-reply-all?value.bool
+
+      /*
+       * This is a "reply" operation.
+       */
+      p5.mysql.select:@"select * from contacts 
 inner join emails on emails.sender = contacts.id where emails.id = @emailid"
-      @emailid:x:/../*/email-id?value
-    set:x:/@_to?value
-      src:x:/@p5.mysql.select/*/*/email?value
+        @emailid:x:/../*/email-id?value
+      set:x:/@_to?value
+        src:x:/@p5.mysql.select/*/*/email?value
 
-    /*
-     * Then Cc and Bcc.
-     */
-    p5.mysql.select:@"select * from contacts 
+    if:x:/../*/is-reply-all?value.bool
+
+      /*
+       * This is a "reply to all" operation.
+       */
+      p5.auth.my-settings.get
+      p5.mysql.select:@"select * from contacts 
 inner join recipients on contacts.id = recipients.contactid 
-where recipients.emailid = @emailid"
-      @emailid:x:/../*/email-id?value
+where recipients.emailid = @emailid and 
+contacts.email != @useremail and
+not exists (select * from emails where emails.sender = contacts.id and emails.id = @emailid)"
+        @emailid:x:/../*/email-id?value
+        @useremail:x:/@p5.auth.my-settings.get/*/sephia/*/email?value
 
-    /*
-     * Building our "Cc" list.
-     */
-    for-each:x:/@p5.mysql.select/*/*/type/=Cc/./*/email?value
+      /*
+       * Continuing building "To" list.
+       */
+      for-each:x:/@p5.mysql.select/*/*/type/=To/./*/email?value
+        set:x:/@_to?value
+          src:{0}, {1}
+            :x:/@_to?value
+            :x:/@_dp?value
+      set:x:/@_to?value
+        trim-left:x:/@_to?value
+          chars:", "
+
+      /*
+       * Building "Cc" list.
+       */
+      for-each:x:/@p5.mysql.select/*/*/type/=Cc/./*/email?value
+        set:x:/@_cc?value
+          src:{0}, {1}
+            :x:/@_cc?value
+            :x:/@_dp?value
       set:x:/@_cc?value
-        src:{0}, {1}
-          :x:/@_cc?value
-          :x:/@_dp?value
-    set:x:/@_cc?value
-      trim-left:x:/@_cc?value
-        chars:", "
-
-    /*
-     * Building our "Bcc" list.
-     */
-    for-each:x:/@p5.mysql.select/*/*/type/=Bcc/./*/email?value
-      set:x:/@_bcc?value
-        src:{0}, {1}
-          :x:/@_bcc?value
-          :x:/@_dp?value
-    set:x:/@_bcc?value
-      trim-left:x:/@_bcc?value
-        chars:", "
+        trim-left:x:/@_cc?value
+          chars:", "
 
   /*
    * Checking if there exists a "reader widget" for email, at which point, we simply replace it, with a "reply widget".

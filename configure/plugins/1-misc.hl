@@ -42,3 +42,15 @@ Miscellaneous:sephia-misc-settings
       placeholder:Signature to use ...
       title:Signature to use, will be injected into every email you send ...
       innerValue:@"Got privacy? - https://gaiasoul.com"
+    button
+      innerValue:Check for emails
+      onclick
+
+        /*
+         * Fetching emails, and letting user know if there was any new emails.
+         */
+        sys42.utilities.execute-lambda-file:@SEPHIA/inbox/helpers/fetch.hl
+        if:x:/-?value
+          sys42.windows.info-tip:There was new emails for you to read
+        else
+          sys42.windows.info-tip:No new emails

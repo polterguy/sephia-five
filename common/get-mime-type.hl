@@ -20,14 +20,17 @@ split:x:/../*/file?value
   =:.
 switch:x:/@split/0/-?name
 
+  /*
+   * Text file types.
+   */
   case:txt
   case:md
     return
       text:plain
-  case:zip
-    return
-      application:zip
-        Content-Transfer-Encoding:binary
+
+  /*
+   * Image file types.
+   */
   case:png
     return
       image:png
@@ -41,6 +44,43 @@ switch:x:/@split/0/-?name
     return
       image:gif
         Content-Transfer-Encoding:binary
+  case:tif
+  case:tiff
+    return
+      image:tiff
+        Content-Transfer-Encoding:binary
+
+  /*
+   * Audio file types.
+   */
+  case:mp3
+    return
+      audio:mpeg3
+        Content-Transfer-Encoding:binary
+  case:wav
+    return
+      audio:wav
+        Content-Transfer-Encoding:binary
+  case:ogg
+    return
+      audio:ogg
+        Content-Transfer-Encoding:binary
+
+  /*
+   * Video file types.
+   */
+  case:mpeg
+    return
+      video:mpeg
+        Content-Transfer-Encoding:binary
+  case:ogv
+    return
+      video:ogg
+        Content-Transfer-Encoding:binary
+
+  /*
+   * Hyperlambda file types.
+   */
   case:hl
     return
       application:x-hyperlambda

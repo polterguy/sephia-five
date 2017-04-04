@@ -6,9 +6,9 @@
  */
 button
   class:button-clear
-  innerValue:@"<svg class=""sephia-icon""><use xlink:href=""{0}media/si-sprite.svg#si-evil-retweet""></use></svg>"
+  innerValue:@"<svg class=""sephia-icon""><use xlink:href=""{0}media/si-sprite.svg#si-entypo-reply-all""></use></svg>"
     :x:/@p5.io.unroll-path?value
-  title:Forward ...
+  title:Reply to all ...
   onclick
 
     /*
@@ -21,4 +21,4 @@ button
     eval-x:x:/+/*
     sys42.utilities.execute-lambda-file:@SEPHIA/send/respond.hl
       email-id:x:/@p5.web.widgets.property.get/*/*?value
-      is-forward:bool:true
+      is-reply-all:bool:true

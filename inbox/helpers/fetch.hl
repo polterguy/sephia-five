@@ -181,12 +181,12 @@ p5.pop3.get
               @emailid:x:/@for-each/@p5.mysql.insert/*/id?value
 
           /*
-           * Stuffing emails into "contact" and "recipient" tables.
+           * Stuffing emails into "contact" and "recipients" tables.
            */
           for-each:x:/@_dp/#/*(/To|/Cc|/Bcc)/*
 
             /*
-             * Used to hold "contact" database ID, for later insertion into "recipient" table.
+             * Used to hold "contact" database ID, for later insertion into "recipients" table.
              */
             _contact-id
 
@@ -244,7 +244,7 @@ p5.pop3.get
                 src:x:/@p5.mysql.select/0/*/id?value
 
             /*
-             * Inserting into "recipient" table.
+             * Inserting into "recipients" table.
              */
             p5.mysql.insert:@"insert into recipients (contactid, type, emailid) values (@contactid, @type, @emailid)"
               @contactid:x:/@_contact-id?value
