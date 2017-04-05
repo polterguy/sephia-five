@@ -190,8 +190,11 @@ Crypto:sephia-crypto-settings
         p5.web.widgets.property.set:sephia-settings-signature
           value:@"{0}
 
-{1}"
+Fingerprint; {1}
+
+{2}"
             :x:/@p5.web.widgets.property.get/*/*?value
+            :x:/../*/p5.web.widgets.property.get/[0,1]/*/*?value
             :x:/@p5.crypto.get-public-key?value
         sys42.windows.info-tip:PGP public key was appended into your signature.
         p5.web.widgets.property.set:x:/../*/_event?value

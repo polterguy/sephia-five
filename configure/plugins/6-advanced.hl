@@ -113,6 +113,7 @@ Advanced:sephia-advanced-settings
                   td
                     widgets
                       textarea
+                        readonly
                         rows:7
                         {innerValue}:x:/..if/*/p5.crypto.get-public-key?value
           create-widget:sephia-pgp-key-details-grid
