@@ -85,3 +85,10 @@ switch:x:/@split/0/-?name
     return
       application:x-hyperlambda
 
+  /*
+   * PGP keypair file.
+   */
+  case:asc
+    return
+      text:plain
+

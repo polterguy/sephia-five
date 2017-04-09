@@ -160,23 +160,20 @@ if:x:/../*/send-unencrypted?value
   not
 
   /*
-   * Listing all public PGP keys, and verifying all recipients of email have one.
+   * Verifying we have a public key for all recipients of email.
    */
-  p5.crypto.list-public-keys
+  p5.crypto.list-public-keys:x:/../*/p5.smtp.send/*/envelope/*(/To|/Cc|/Bcc)/*?value
 
   /*
    * Looping through to check that we have public certificates for all recipients.
    */
-  for-each:x:/../*/p5.smtp.send/*/envelope/*(/To|/Cc|/Bcc)/*?value
-    if:x:@"/@p5.crypto.list-public-keys/*/~{0}"
-      :"<{0}>"
-        :x:/@_dp?value
-      not
+  if:x:/@p5.crypto.list-public-keys/*?count
+    <:x:/../*/p5.smtp.send/*/envelope/*(/To|/Cc|/Bcc)/*?count
 
-      /*
-       * Missing public PGP certificate, returning false.
-       */
-      return:bool:false
+    /*
+     * Missing public PGP certificate, returning false.
+     */
+    return:bool:false
 
   /*
    * If we've come this far, we have public PGP keys for all recipients.

@@ -51,7 +51,7 @@ Advanced:sephia-advanced-settings
                   td
                     innerValue:Fingerprint
                   td
-                    {innerValue}:x:/*/fingerprint?value
+                    {innerValue}:x:?name
               tr
                 widgets
                   td
@@ -115,7 +115,7 @@ Advanced:sephia-advanced-settings
                       textarea
                         readonly
                         rows:7
-                        {innerValue}:x:/..if/*/p5.crypto.get-public-key?value
+                        {innerValue}:x:/..if/*/p5.crypto.get-public-key/*?value
           create-widget:sephia-pgp-key-details-grid
             parent:x:/../*/_event?value
             element:table
@@ -164,7 +164,17 @@ Advanced:sephia-advanced-settings
           p5.mysql.delete:@"delete from emails where username = @username"
             @username:x:/@whoami/*/username?value
         sys42.utilities.execute-lambda-file:@SEPHIA/inbox/set-title.hl
-        sys42.windows.info-tip:All your emails are now deleted
+
+        /*
+         * Deleting all of user's attachments.
+         */
+        list-files:~/documents/private/sephia/attachments/
+        delete-file:x:/@list-files/*?name
+
+        /*
+         * Info feedback to user.
+         */
+        sys42.windows.info-tip:All your emails (and attachments) are now deleted
 
     button
       innerValue:Delete all contacts and emails
@@ -180,7 +190,17 @@ Advanced:sephia-advanced-settings
           p5.mysql.delete:@"delete from contacts where username = @username"
             @username:x:/@whoami/*/username?value
         sys42.utilities.execute-lambda-file:@SEPHIA/inbox/set-title.hl
-        sys42.windows.info-tip:All your contacts and emails are now deleted
+
+        /*
+         * Deleting all of user's attachments.
+         */
+        list-files:~/documents/private/sephia/attachments/
+        delete-file:x:/@list-files/*?name
+
+        /*
+         * Info feedback to user.
+         */
+        sys42.windows.info-tip:All your emails, attachments and contacts are now deleted
 
     button
       innerValue:Delete your PGP keypair

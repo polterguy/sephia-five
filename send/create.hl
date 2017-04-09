@@ -157,7 +157,7 @@ create-widget
      * Maybe we could have extended this list slightly, but at least these files are definitely safe!
      */
     sys42.widgets.uploader
-      filter:hl|txt|md|zip|png|jpg|jpeg|gif
+      filter:hl|txt|md|zip|png|jpg|jpeg|gif|asc
       allow-multiple:true
       class:sephia-uploader
       clickable:false

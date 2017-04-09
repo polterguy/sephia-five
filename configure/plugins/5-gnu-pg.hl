@@ -85,8 +85,8 @@ GnuPG:sephia-gnupg-settings
           return
 
         .get-key
-          p5.crypto.get-key-details:x:/../*/_dn/#/*/fingerprint?value
-          p5.crypto.list-private-keys:x:/../*/_dn/#/*/fingerprint?value
+          p5.crypto.get-key-details:x:/../*/_dn/#?name
+          p5.crypto.list-private-keys:x:/../*/_dn/#?name
           if:x:/@p5.crypto.list-private-keys/*
             set:x:/../*/return/*/td/[0,1]/*?value
               src:pub/sec
@@ -103,7 +103,7 @@ GnuPG:sephia-gnupg-settings
             td
               innerValue:x:/@p5.crypto.get-key-details/*/*/strength?value
             td
-              innerValue:x:/@p5.crypto.get-key-details/*/*/fingerprint?value
+              innerValue:x:/@p5.crypto.get-key-details/*?name
             td
               innerValue:x:/@p5.html.html-encode?value
             td
@@ -117,7 +117,7 @@ GnuPG:sephia-gnupg-settings
                     /*
                      * Forward evaluated above.
                      */
-                    _fingerprint:x:/@p5.crypto.get-key-details/*/*/fingerprint?value
+                    _fingerprint:x:/@p5.crypto.get-key-details/*?name
 
                     /*
                      * Deleting key
@@ -149,7 +149,7 @@ GnuPG:sephia-gnupg-settings
                     /*
                      * Forward evaluated above.
                      */
-                    _fingerprint:x:/@p5.crypto.get-key-details/*/*/fingerprint?value
+                    _fingerprint:x:/@p5.crypto.get-key-details/*?name
 
                     /*
                      * Retrieving key, and downloading it to user's client.
@@ -158,8 +158,8 @@ GnuPG:sephia-gnupg-settings
                     p5.crypto.get-private-key:x:/@_fingerprint?value
                     set:x:/+?value
                       src:{0}{1}
-                        :x:/@p5.crypto.get-public-key?value.string
-                        :x:/@p5.crypto.get-private-key?value.string
+                        :x:/@p5.crypto.get-public-key/*?value
+                        :x:/@p5.crypto.get-private-key/*?value
                     _content
                     sys42.cms.download-content:x:/@_content?value
                       filename:keyring.asc
@@ -204,7 +204,7 @@ GnuPG:sephia-gnupg-settings
     label
       for:sephia-settings-search-for-keys
       innerValue:Search on Ubuntu keyserver for public key
-      style:"z-index:1;position:relative;"
+      style:"z-index:1;position:relative;margin-top:25px;"
     input:sephia-settings-search-for-keys
       type:search
       placeholder:Search for a PGP key here ...
@@ -224,7 +224,7 @@ GnuPG:sephia-gnupg-settings
 
     button:sephia-settings-search-for-keys-externally-button
       innerValue:Search
-      style:"width:20%;margin-left:5%;margin-bottom:50px;z-index:1;position:relative;"
+      style:"width:20%;margin-left:5%;z-index:1;position:relative;"
       onclick
 
         /*
@@ -304,9 +304,9 @@ GnuPG:sephia-gnupg-settings
                 td
                   {@eval}:x:/@_strip2
                 td
-                  {@eval}:x:/@_strip3
-                td
                   {@eval}:x:/@_encode
+                td
+                  {@eval}:x:/@_strip3
 
         /*
          * Creating widget with result.
@@ -358,27 +358,19 @@ GnuPG:sephia-gnupg-settings
           try
 
             /*
-             * Importing all public and private keys in key ring.
-             * First public keys.
+             * Importing all public and private keys in key ring, by invoking Active Event responsible for importing keyring
+             * from textual content.
              */
-            match:x:/@_arg?value
-              src:regex:"/-----BEGIN PGP PUBLIC KEY BLOCK-----.*-----END PGP PUBLIC KEY BLOCK-----/s"
-            for-each:x:/@match/*?name
-              p5.crypto.import-public-pgp-key:x:/@_dp?value
-
-            /*
-             * Then private keys.
-             */
-            match:x:/@_arg?value
-              src:regex:"/-----BEGIN PGP PRIVATE KEY BLOCK-----.*-----END PGP PRIVATE KEY BLOCK-----/s"
-            for-each:x:/@match/*?name
-              p5.crypto.import-private-pgp-key:x:/@_dp?value
+            gaiasoul.sephia.pgp.import.public-keyring-keys:x:/../*/_arg?value
+            gaiasoul.sephia.pgp.import.private-keyring-keys:x:/../*/_arg?value
 
             /*
              * Showing feedback to user.
              */
-            sys42.windows.info-tip:{0} key(s) were successfully imported
-              :x:/..try/**/match/*?count
+            sys42.windows.info-tip:{0} public key(s) and {1} private key(s) were successfully imported
+              :x:/..try/**/gaiasoul.sephia.pgp.import.public-keyring-keys/*?count
+              :x:/..try/**/gaiasoul.sephia.pgp.import.private-keyring-keys/*?count
+              class:info-window info-window-longer
 
           catch
 
@@ -395,7 +387,7 @@ GnuPG:sephia-gnupg-settings
     label
       for:sephia-settings-pgp-import-text
       innerValue:Import PGP key as text
-      style:"z-index:1;position:relative;"
+      style:"z-index:1;position:relative;margin-top:25px;"
     literal:sephia-settings-pgp-import-text
       element:textarea
       rows:7

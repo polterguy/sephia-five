@@ -61,7 +61,7 @@ Crypto:sephia-crypto-settings
              * There already is a keypair with the supplied email address, using that email address.
              */
             p5.web.widgets.property.set:sephia-settings-gpg-fingerprint
-              value:x:/@p5.crypto.list-private-keys/0/*/fingerprint?value
+              value:x:/@p5.crypto.list-private-keys/0?name
 
         /*
          * Checking if there's an accosiated key with user, somehow (due to having used previously created GnuPG key)
@@ -126,7 +126,7 @@ Crypto:sephia-crypto-settings
         p5.web.widgets.property.get:sephia-settings-gpg-fingerprint
           value
         p5.crypto.get-public-key:x:/@p5.web.widgets.property.get/*/*?value
-        p5.html.url-encode:x:/@p5.crypto.get-public-key?value
+        p5.html.url-encode:x:/@p5.crypto.get-public-key/*?value
 
         /*
          * HTTP POSTing key to Ubuntu key server
@@ -195,7 +195,7 @@ Fingerprint; {1}
 {2}"
             :x:/@p5.web.widgets.property.get/*/*?value
             :x:/../*/p5.web.widgets.property.get/[0,1]/*/*?value
-            :x:/@p5.crypto.get-public-key?value
+            :x:/@p5.crypto.get-public-key/*?value
         sys42.windows.info-tip:PGP public key was appended into your signature.
         p5.web.widgets.property.set:x:/../*/_event?value
           visible:false
@@ -323,7 +323,7 @@ with your key's value. Please <strong>click button again</strong> to start proce
              * Hiding all widgets that user should not be able to interact with anymore!
              */
             p5.web.widgets.property.set:sephia-settings-gpg-fingerprint
-              value:x:/@p5.crypto.list-private-keys/0/*/fingerprint?value
+              value:x:/@p5.crypto.list-private-keys/0?name
               disabled
             p5.web.widgets.property.set:sephia-settings-create-new-pgp-key-wrapper
               visible:false
