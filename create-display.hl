@@ -73,7 +73,7 @@ Message from server was '{0}'"
 /*
  * Creating header and "menu" row.
  */
-eval-x:x:/../*/create-widget/*/widgets/*/gaiasoul.camphora.widgets.grid-filter/*
+eval-x:x:/../*/create-widget/*/widgets/*/gaiasoul.sephia-five.widgets.grid-filter/*
 create-widget:sephia-header
   class:container
   widgets
@@ -96,7 +96,7 @@ create-widget:sephia-header
      *
      * Notice, we pass in "sephia-selector" CSS class to widget, to make it easy to style.
      */
-    gaiasoul.camphora.widgets.grid-filter
+    gaiasoul.sephia-five.widgets.grid-filter
       databind-event:sephia.inbox.databind
       search-accesskey:F
       class:row sephia-selector

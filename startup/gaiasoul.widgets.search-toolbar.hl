@@ -1,0 +1,340 @@
+
+/*
+ * Creating toolbar page/filter extension widget.
+ *
+ * This widget can be used in any places where an extension widget can be used, such as for instance [widgets]
+ * collections of other widgets, etc.
+ *
+ * Arguments;
+ *
+ * - [databind-event]      - Active Event to raise when whatever "datagrid" you've associated your toolbar with
+ *                           should be re-databound, due to e.g. "page" or "filter" criteria having changed.
+ *                           This event might receive zero or more of the following arguments;
+ *                           [filter] and [offset] being the "search query" and the "offset into dataset" to start
+ *                           showing results from.
+ * - [page-size]           - Size of your "page", meaning number of items to display at teh same time in your datagrid, defaults to 10.
+ * - [search-accesskey]    - Access key property for search textbox, default to F.
+ * - [class]               - Optionally declare an additional CSS class to be used on root widget, defaults to "camphora-grid-filter".
+ * - [search-class]        - Optionally declare an additional CSS class to be used on search textbox wrapper widget, default to "camphora-search".
+ * - [search-txt-class]    - Optionally declare an additional CSS class to be used on search textbox widget, no default value.
+ * - [buttons-class]       - Optionally declare an additional CSS class to be used on buttons wrapper widget,defaults to "camphora-buttons".
+ * - [buttons-btn-class]   - Optionally declare an additional CSS class to be used on buttons widget, no default value.
+ * - [search-text]         - Optional [innerValue] for search button, default to "Search".
+ * - [clear-text]          - Optional [innerValue] for clear button, default to "Clear".
+ * - [previous-text]       - Optional [innerValue] for previous button, default to "<".
+ * - [next-text]           - Optional [innerValue] for next button, defaults to ">".
+ * - [widgets]             - Additional widgets to append after the main button widgets, no defaults.
+ * - [auto-focus]          - If true, sets focus to filter textbox initially.
+ */
+create-event:gaiasoul.sephia-five.widgets.grid-filter
+
+  /*
+   * Defaults.
+   */
+  .defaults
+    class:camphora-grid-filter
+    page-size:int:10
+    search-class:camphora-search
+    search-txt-class:
+    buttons-class:camphora-buttons
+    buttons-btn-class:
+    search-text:Search
+    clear-text:Clear
+    previous-text:&lt;
+    next-text:&gt;
+    auto-focus:bool:false
+
+  /*
+   * Basic sanity check!
+   */
+  if:x:/../*/databind-event?value
+    not
+    throw:@"The [gaiasoul.camphora.widgets.search-toolbar] extension widget, requires at least a [databind-event] which it will raise 
+whenever the associated 'datagrid' needs to be re-databound"
+
+  /*
+   * Applying argument(s).
+   */
+  set:x:/../*/return/**(/databind-event)?name
+    src:x:/../*/databind-event?value
+  eval-x:x:/../*/return/**(/accesskey|/_page-size|/innerValue|/class)
+
+  /*
+   * Checking if a [widgets] was supplied.
+   */
+  if:x:/../*/widgets/*
+    add:x:/../*/return/*/container/*/widgets/*/container/[1,2]/*/widgets
+      src:x:/../*/widgets/*
+
+  /*
+   * Checking if a [auto-focus] is true.
+   */
+  if:x:/../*(/auto-focus|/.defaults/*/auto-focus)/$?value.bool
+    add:x:/../*/return/*/container/*/widgets/*/container/[0,1]/*/widgets/*/input
+      src
+        oninit
+          p5.web.send-javascript:@"p5.$('{0}').el.focus();"
+            :x:/../*/_event?value
+
+  /*
+   * Returning widget to caller.
+   */
+  return
+    container
+      class:x:/../*(/class|/.defaults/*/class)/$?value
+      _camphora-root
+      oninit
+
+        /*
+         * Making sure we trap carriage return, and click "search" button in "search" textbox.
+         * First including JavaScript, which maps between textbox and search button.
+         */
+        p5.web.widgets.find:x:/../*/_event?value
+          type:search
+        p5.web.widgets.find:x:/../*/_event?value
+          _search-button
+        p5.web.include-javascript:@"p5.sephia_toolbar_search_keypress_{0} = function(e) {{
+          if(e.keyCode == 13) {{
+            p5.$('{1}').raise('onclick');
+            return false;
+          }}
+        }}"
+          :x:/../*/p5.web.widgets.find/[0,1]/*/*?value
+          :x:/../*/p5.web.widgets.find/[1,2]/*/*?value
+
+        /*
+         * Then associating "onkeydown" DOM event with JavaScript function included above.
+         */
+        p5.web.widgets.property.set:x:/../*/p5.web.widgets.find/[0,1]/*/*?value
+          onkeypress:"return p5.sephia_toolbar_search_keypress_{0}(event);"
+            :x:/../*/p5.web.widgets.find/[0,1]/*/*?value
+
+      widgets
+
+        /*
+         * Search textbox.
+         */
+        container
+          class:x:/../*(/search-class|/.defaults/*/search-class)/$?value
+          widgets
+            input
+              type:search
+              class:x:/../*(/search-txt-class|/.defaults/*/search-txt-class)/$?value
+              placeholder:Search ...
+              accesskey:x:/../*/search-accesskey?value
+
+        container
+          class:x:/../*(/buttons-class|/.defaults/*/buttons-class)/$?value
+          _offset:0
+          widgets
+
+            /*
+             * Search button.
+             */
+            button
+              _search-button
+              class:x:/../*(/buttons-btn-class|/.defaults/*/buttons-btn-class)/$?value
+              innerValue:x:/../*(/search-text|/.defaults/*/search-text)/$?value
+              onclick
+
+                /*
+                 * Re-databinding datagrid, now with "search query".
+                 *
+                 * First getting search criteria as supplied by user.
+                 */
+                p5.web.widgets.find-first-ancestor-like:x:/../*/_event?value
+                  _camphora-root
+                p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
+                  type:search
+                p5.web.widgets.property.get:x:/@p5.web.widgets.find/*/*?value
+                  value
+
+                /*
+                 * Notice, the Active event invocation below [databind-event] is dynamically changed in accordance 
+                 * to [databind-event] argument supplied during creation of widget.
+                 */
+                eval-x:x:/+/*
+                databind-event
+                  filter:x:/@p5.web.widgets.property.get/*/*?value
+
+                /*
+                 * Then making sure we set "pager offset value" to zero.
+                 */
+                p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                  _offset
+                p5.web.widgets.property.set:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                  _offset:0
+
+                /*
+                 * To make it easier to search multiple times, we make sure we set focus to, 
+                 * and select all text in search textbox.
+                 */
+                p5.web.send-javascript:@"p5.$('{0}').el.focus();p5.$('{0}').el.select();"
+                  :x:/@p5.web.widgets.find/*/*?value
+
+            /*
+             * Clear button.
+             */
+            button
+              class:x:/../*(/buttons-btn-class|/.defaults/*/buttons-btn-class)/$?value
+              innerValue:x:/../*(/clear-text|/.defaults/*/clear-text)/$?value
+              onclick
+
+                /*
+                 * Re-databinding datagrid, now without filter.
+                 */
+                databind-event
+
+                /*
+                 * Setting search textbox content to empty.
+                 */
+                p5.web.widgets.find-first-ancestor-like:x:/../*/_event?value
+                  _camphora-root
+                p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
+                  type:search
+                p5.web.widgets.property.set:x:/@p5.web.widgets.find/*/*?value
+                  value:
+
+                /*
+                 * Setting current "offset" (page value) to zero.
+                 */
+                p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                  _offset
+                p5.web.widgets.property.set:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                  _offset:0
+
+                /*
+                 * To make it easier to search immediately, we make sure we set focus to, 
+                 * and select all text in search textbox.
+                 */
+                p5.web.send-javascript:@"p5.$('{0}').el.focus();"
+                  :x:/@p5.web.widgets.find/*/*?value
+
+            /*
+             * Previous "page" button.
+             */
+            button
+              class:x:/../*(/buttons-btn-class|/.defaults/*/buttons-btn-class)/$?value
+              innerValue:x:/../*(/previous-text|/.defaults/*/previous-text)/$?value
+              onclick
+
+                /*
+                 * Verifying offset is more than 0, and if so, decrementing by 19, and re-databinding grid.
+                 */
+                p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                  _offset
+                p5.web.widgets.property.get:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                  _offset
+                if:x:/@p5.web.widgets.property.get/*/*?value.int
+                  <=:int:0
+
+                  /*
+                   * At the beginning of dataset.
+                   */
+                  sys42.windows.info-tip:No more pages.
+                  return
+
+                /*
+                 * Subtracting number of items per page, and updating "offset" in ancestor widget.
+                 */
+                _page-size:x:/../*(/page-size|/.defaults/*/page-size)/$?value
+                -:x:/@p5.web.widgets.property.get/*/*?value.int
+                  _:x:/@_page-size?value
+                p5.web.widgets.property.set:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                  _offset:x:/@-?value.string
+
+                /*
+                 * Retrieving "search textbox" value.
+                 */
+                p5.web.widgets.find-first-ancestor-like:x:/../*/_event?value
+                  _camphora-root
+                p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
+                  type:search
+                p5.web.widgets.property.get:x:/@p5.web.widgets.find/*/*?value
+                  value
+
+                /*
+                 * Figuring out how to invoke [databind-event] passed in during creation of widget.
+                 * First checking if we need to pass in filter at all.
+                 */
+                if:x:/@p5.web.widgets.property.get/*/*?value
+
+                  /*
+                   * Fiter is necessary.
+                   */
+                  add:x:/../*/_signal/+
+                    src
+                      filter:x:/@p5.web.widgets.property.get/*/*?value
+
+                /*
+                 * Checking if we need to pass in offset
+                 */
+                if:x:/@-?value.int
+                  >:int:0
+
+                  /*
+                   * Offset is necessary.
+                   */
+                  add:x:/../*/_signal/+
+                    src
+                      offset:x:/@-?value.int
+
+                /*
+                 * Invoking (parametrized) [databind-event] event.
+                 */
+                eval-x:x:/+2/*
+                _signal
+                databind-event
+
+            /*
+             * Next "page" button.
+             */
+            button
+              class:x:/../*(/buttons-btn-class|/.defaults/*/buttons-btn-class)/$?value
+              innerValue:x:/../*(/next-text|/.defaults/*/next-text)/$?value
+              onclick
+
+                /*
+                 * Adding number of items per page, and updating "offset" in ancestor widget.
+                 */
+                _page-size:x:/../*(/page-size|/.defaults/*/page-size)/$?value
+                p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                  _offset
+                p5.web.widgets.property.get:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                  _offset
+                +:x:/@p5.web.widgets.property.get/*/*?value.int
+                  _:x:/@_page-size?value
+                p5.web.widgets.property.set:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                  _offset:x:/@+?value.string
+
+                /*
+                 * Retrieving "search textbox" value.
+                 */
+                p5.web.widgets.find-first-ancestor-like:x:/../*/_event?value
+                  _camphora-root
+                p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
+                  type:search
+                p5.web.widgets.property.get:x:/@p5.web.widgets.find/*/*?value
+                  value
+
+                /*
+                 * Figuring out how to invoke [databind-event] passed in during creation of widget.
+                 * First checking if we need to pass in filter at all.
+                 */
+                if:x:/@p5.web.widgets.property.get/*/*?value
+
+                  /*
+                   * Fiter is necessary.
+                   */
+                  add:x:/../*/_signal/+
+                    src
+                      filter:x:/@p5.web.widgets.property.get/*/*?value
+
+
+                /*
+                 * Invoking (parametrized) [databind-event] event.
+                 */
+                eval-x:x:/+2/*
+                _signal
+                databind-event
+                  offset:x:/@+?value.int

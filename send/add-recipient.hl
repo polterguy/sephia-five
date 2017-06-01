@@ -13,7 +13,7 @@
  * Forward declaring "return widget" to any who needs it.
  */
 p5.io.unroll-path:@SEPHIA/
-eval-x:x:/../**/_return-widget|/../*/create-widget/**/gaiasoul.camphora.widgets.grid-filter/*
+eval-x:x:/../**/_return-widget|/../*/create-widget/**/gaiasoul.sephia-five.widgets.grid-filter/*
 create-widget
   class:add-recipient-widget
   after:x:/../*/widget?value
@@ -28,7 +28,7 @@ create-widget
         /*
          * This is the "search and page" toolbar to filter and page in contacts.
          */
-        gaiasoul.camphora.widgets.grid-filter
+        gaiasoul.sephia-five.widgets.grid-filter
           databind-event:sephia.contacts.databind
           page-size:int:5
           search-accesskey:S
