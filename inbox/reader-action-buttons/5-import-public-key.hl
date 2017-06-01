@@ -45,7 +45,7 @@ select * from emails where id = @emailid and signature is not null)"
       else
 
         /*
-         * Checking if a PGP public key was embedded into email content ('pplain' text type part).
+         * Checking if a PGP public key was embedded into email content (in 'plain' text type part).
          */
         p5.mysql.select:@"select content from parts where type = 'plain' and emailid = @emailid and exists (
 select * from emails where id = @emailid and signature is not null) limit 1"
