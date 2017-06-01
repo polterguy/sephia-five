@@ -13,9 +13,9 @@ or [here](https://www.youtube.com/watch?v=lzRJGU2UrT0) for a deeper introduction
 First download [Phosphorus Five](https://github.com/polterguy/phosphorusfive) 
 and [Camphora-Five](https://github.com/polterguy/camphora-five). Then follow the recipe below
 
-* Put the main _"/sephia-five/"_ folder inside of your _"/phosphorusfive/core/p5.webapp/system42/apps/"_ folder
+* Put the main _"/sephia-five/"_ folder inside of your _"/phosphorusfive/core/p5.webapp/system42/apps/"_ folder. Important; Make sure the Sephia Five folder is called exactly _"sephia-five"_.
 * Create a MySQL database, and create a connection string in your web.config, and name it "sephia"
-* Install GnuPG, and create a keypair matching your email address
+* Install GnuPG (on Mac use GPG Keychain for instance)
 
 Restart your web server process, configure Sephia, and enjoy.
 
