@@ -1,0 +1,94 @@
+
+/*
+ * File responsible for starting Sephia Five, which means creating main widget, 
+ * and wire frame for displaying inbox etc.
+ */
+
+
+/*
+ * Including Micro, with Sea Breeze skin.
+ */
+p5.web.include-css-file:@MICRO/media/main.css
+p5.web.include-css-file:@MICRO/media/ext.css
+p5.web.include-css-file:@MICRO/media/skins/sea-breeze.css
+
+
+/*
+ * Clearing out anything previously added to page.
+ */
+clear-widget:cnt
+delete-widget-property:cnt
+  class
+
+
+/*
+ * Creating main content container.
+ */
+create-container-widget:main-container
+  class:container
+
+
+/*
+ * Retrieving user's settings, and making sure user has setup his account(s).
+ */
+p5.auth.my-settings.get
+if:x:/@p5.auth.my-settings.get/*/sephia
+  not
+
+  /*
+   * User has no settings, displaying settings form, and returning early.
+   * Making sure we hide main menu widget.
+   */
+  create-widget:initial-settings
+    parent:main-container
+    widgets
+      div
+        class:row air-top
+        widgets
+          div
+            class:col
+            widgets
+              sephia.widgets.settings
+  return
+
+
+/*
+ * Making sure we start email fetching thread.
+ */
+load-file:@SEPHIA/core/fetch-emails.hl
+eval:x:/-/*
+
+
+/*
+ * Opening inbox.
+ */
+load-file:@SEPHIA/inbox/show.hl
+eval:x:/-/*
+
+
+/*
+ * Creating main menu widget.
+ */
+create-widget:menu-container
+  position:0
+  class:container-fullscreen
+  widgets
+    micro.widgets.menu
+      items
+        Home
+          onclick
+            load-file:@SEPHIA/inbox/show.hl
+            eval:x:/-/*
+        Settings
+          onclick
+            clear-widget:main-container
+            create-widget:initial-settings
+              parent:main-container
+              widgets
+                div
+                  class:row air-top
+                  widgets
+                    div
+                      class:col
+                      widgets
+                        sephia.widgets.settings

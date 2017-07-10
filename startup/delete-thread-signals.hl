@@ -1,0 +1,5 @@
+
+/*
+ * Deletes all of our "thread signals" for all users.
+ */
+delete-data:x:/*/*/~sephia.core.thread-

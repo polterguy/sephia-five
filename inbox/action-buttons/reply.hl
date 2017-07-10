@@ -1,0 +1,6 @@
+
+/*
+ * Action button for replying to email
+ */
+button
+  innerValue:Reply

@@ -1,0 +1,354 @@
+
+/*
+ * File responsible for fetching emails.
+ *
+ * This will spawn of a new thread, which runs in the background "forever", or until an exception
+ * occurs. But it will only fork one new thread for each user in the system.
+ *
+ * This thread will run in the background, and fetch new emails form the user's POP3 server, then sleep
+ * for 5 seconds, before starting fetching emails again.
+ */
+
+
+/*
+ * Forking our retrieve emails thread, making sure we have only one thread for each user.
+ * This thread runs constantly in the background, and fetches new emails every n'th second from the users
+ * POP3 server.
+ */
+whoami
+select-data:x:/*/*/sephia.core.thread-{0}
+  :x:/@whoami/*/username?value
+if:x:/@select-data/*/*/has-thread?value
+
+  /*
+   * Fetcher thread already exists, returning early.
+   */
+  return:bool:true
+
+else-if:x:/@select-data/*/*
+
+  /*
+   * Old error message, deleting it.
+   */
+  delete-data:x:/*/*/sephia.core.thread-{0}
+    :x:/@whoami/*/username?value
+
+
+/*
+ * Passing in entire [whoami] to [fork] lambda.
+ */
+add:x:/../*/fork/*/.whoami
+  src:x:/@whoami/*
+
+
+/*
+ * Passing in user settings to [fork].
+ */
+p5.auth.my-settings.get
+add:x:/../*/fork/*/.settings
+  src:x:/@p5.auth.my-settings.get/*/sephia/*
+
+
+/*
+ * Storing the fact that fetcher thread exists, and forking a new retriever thread for user.
+ */
+set:x:/+/*?name
+  src:sephia.core.thread-{0}
+    :x:/@whoami/*/username?value
+insert-data
+  thread
+    has-thread:bool:true
+
+
+/*
+ * Creating an new worker thread, that basically runs "forever", or until an exception occurs.
+ */
+fork
+
+  /*
+   * Passed in above.
+   */
+  .whoami
+  .settings
+  p5.io.unroll-path:~/documents/private/sephia/attachments/
+  .users-home-folder:x:/-?value
+  eval-x:x:/-
+
+  /*
+   * If an exception occurs, we abort further fetching operations.
+   */
+  try
+
+    /*
+     * Neveer ending while loop, that will fetch emails from POP3 server "forever", or until an exception occurs.
+     */
+    while:bool:true
+
+      /*
+       * Fetching all the latest emails in an inner while loop, that doesn't sleep,
+       * to avoid using 5 seconds wait between fetching each new email batch.
+       */
+      while:bool:true
+        eval-x:x:/+/*|/+/*/decrypt/**
+        p5.pop3.get
+          server:x:/@.settings/*/pop3-server?value
+          port:x:/@.settings/*/pop3-port?value
+          ssl:x:/@.settings/*/pop3-ssl?value
+          username:x:/@.settings/*/pop3-username?value
+          password:x:/@.settings/*/pop3-password?value
+          attachment-folder:x:/.users-home-folder?value
+          count:20
+          decrypt
+            fingerprint:x:/@.settings/*/pgp-key?value
+              password:x:/@.settings/*/pgp-password?value
+          .onfinished
+
+            /*
+             * Storing emails in database.
+             */
+            p5.mysql.connect:[sephia]
+              p5.mysql.transaction.begin
+
+                /*
+                 * Stuffing emails into database, storing whether or not there were any new emails.
+                 */
+                for-each:x:/@p5.pop3.get/*/envelope
+
+                  /*
+                   * Checking if email has alread been fetched from POP server
+                   */
+                  p5.mysql.scalar:@"select count(*) from emails where mimeid = @mimeid"
+                    @mimeid:x:/@_dp/#?value
+                  if:x:/@p5.mysql.scalar?value
+                    >:long:0
+
+                    /*
+                     * Email has already been fetched.
+                     * No need to continue.
+                     */
+                    continue
+
+                  /*
+                   * Making sure we store the fact that we inserted a new email, such that we know if we should refresh the
+                   * datagrid or not.
+                   */
+                  set:x:/@_new-emails?value
+                    src:bool:true
+
+                  /*
+                   * Making sure we store the "from" database ID.
+                   */
+                  _from
+
+                  /*
+                   * Stuffing emails into "contact" table, but only the [From] header initially.
+                   * Rest of email addresses are handled further down.
+                   */
+                  p5.mysql.select:@"select name, id from contacts where email = @email and username = @username"
+                    @email:x:/@_dp/#/*/From/*?value
+                    @username:x:/@.whoami/*/username?value
+
+                  /*
+                   * Checking if entry exists.
+                   */
+                  if:x:/@p5.mysql.select/*?count
+                    =:int:0
+
+                    /*
+                     * Doesn't exist, inserting new entry.
+                     */
+                    p5.mysql.insert:@"insert into contacts (name, email, username) value (@name, @email, @username)"
+                      @name:x:/@_dp/#/*/From/0?name
+                      @email:x:/@_dp/#/*/From/0?value
+                      @username:x:/@.whoami/*/username?value
+                    set:x:/@_from?value
+                      src:x:/@p5.mysql.insert/*/id?value
+
+                  else-if:x:/@p5.mysql.select/0/*/name?name
+                    !=:x:/@_dp/#/*/From/*?name
+                    and:x:/@_dp/#/*/From/*?name
+                      !=:Anonymous
+
+                    /*
+                     * Exists, but name has been updated.
+                     * Notice, we do NOT update if name from POP3 server is "Anonymous".
+                     */
+                    p5.mysql.update:@"update contacts set name = @name where id = @id"
+                      @id:x:/@p5.mysql.select/0/*/id?value
+                      @name:x:/@_dp/#/*/From/*?name
+                    set:x:/@_from?value
+                      src:x:/@p5.mysql.select/0/*/id?value
+
+                  else
+
+                    /*
+                     * Exists, and there are no changes.
+                     */
+                    set:x:/@_from?value
+                      src:x:/@p5.mysql.select/0/*/id?value
+
+                  /*
+                   * Checking if email was signed/encrypted, and if so, making sure we pass in email of first signature to "email" table insertion.
+                   */
+                  _signature
+                  _fingerprint
+                  _encrypted:int:0
+                  if:x:/@_dp/#/*/*/signature/*?value
+                    set:x:/@_signature?value
+                      src:x:/@_dp/#/*/*/signature/0?name
+                    set:x:/@_fingerprint?value
+                      src:x:/@_dp/#/*/*/signature/0/0?value
+                  if:x:/@_dp/#/*/multipart/*/decryption-key
+                    set:x:/@_encrypted?value
+                      src:int:1
+
+                  /*
+                   * Now inserting into "email" table.
+                   */
+                  if:x:/@_dp/#/*/Subject?value
+                    not
+                    set:x:/@_dp/#/*/Subject?value
+                      src:
+                  p5.mysql.insert:@"insert into emails (subject, date, sender, username, isread, mimeid, signature, fingerprint, encrypted, type) values (@subject, @date, @sender, @username, 0, @mimeid, @signature, @fingerprint, @encrypted, 'received')"
+                    @subject:x:/@_dp/#/*/Subject?value
+                    @date:x:/@_dp/#/*/Date?value
+                    @sender:x:/@_from?value.uint
+                    @username:x:/@.whoami/*/username?value
+                    @mimeid:x:/@_dp/#?value
+                    @signature:x:/@_signature?value
+                    @fingerprint:x:/@_fingerprint?value
+                    @encrypted:x:/@_encrypted?value
+
+                  /*
+                   * Now inserting into "attachment" table.
+                   */
+                  for-each:x:/@_dp/#/**/filename
+                    p5.mysql.insert:@"insert into attachments (filename, prefix, folder, emailid) values (@filename, @prefix, @folder, @emailid)"
+                      @filename:x:/@_dp/#?value
+                      @prefix:x:/@_dp/#/*/prefix?value
+                      @folder:x:/@_dp/#/*/folder?value
+                      @emailid:x:/@for-each/@p5.mysql.insert/*/id?value
+
+                  /*
+                   * Now inserting into "part" table.
+                   */
+                  for-each:x:/@_dp/#/**/text/*/content/.
+                    p5.mysql.insert:@"insert into parts (type, content, emailid) values (@type, @content, @emailid)"
+                      @type:x:/@_dp/#?value
+                      @content:x:/@_dp/#/*/content?value
+                      @emailid:x:/@for-each/@p5.mysql.insert/*/id?value
+
+                  /*
+                   * Stuffing emails into "contact" and "recipients" tables.
+                   */
+                  for-each:x:/@_dp/#/*(/To|/Cc|/Bcc)/*
+
+                    /*
+                     * Used to hold "contact" database ID, for later insertion into "recipients" table.
+                     */
+                    _contact-id
+
+                    /*
+                     * Checking if contact exists in database "contact" table.
+                     */
+                    p5.mysql.select:@"select name, id from contacts where email = @email and username = @username"
+                      @email:x:/@_dp/#?value
+                      @username:x:/@.whoami/*/username?value
+
+                    /*
+                     * Checking if entry exists.
+                     */
+                    if:x:/@p5.mysql.select/*?count
+                      =:int:0
+
+                      /*
+                       * Doesn't exist, inserting new entry.
+                       * Making sure we default name to "Anonymous", unless explicitly given.
+                       */
+                      if:x:/@_dp/#?name
+                        =:
+                        or:x:/@_dp/#?name
+                          not
+                        set:x:/@_dp/#?name
+                          src:Anonymous
+                      p5.mysql.insert:@"insert into contacts (name, email, username) value (@name, @email, @username)"
+                        @name:x:/@_dp/#?name
+                        @email:x:/@_dp/#?value
+                        @username:x:/@.whoami/*/username?value
+                      set:x:/@_contact-id?value
+                        src:x:/@p5.mysql.insert/*/id?value
+
+                    else-if:x:/@p5.mysql.select/0/*/name?value
+                      !=:x:/@_dp/#?name
+                      and:x:/@_dp/#?name
+                        !=:
+                      and:x:/@_dp/#?name
+
+                      /*
+                       * Exists, but name has been updated.
+                       */
+                      p5.mysql.update:@"update contacts set name = @name where id = @id"
+                        @name:x:/@_dp/#?name
+                        @id:x:/@p5.mysql.select/0/*/id?value
+                      set:x:/@_contact-id?value
+                        src:x:/@p5.mysql.select/0/*/id?value
+
+                    else
+
+                      /*
+                       * Exists, and there are no changes.
+                       */
+                      set:x:/@_contact-id?value
+                        src:x:/@p5.mysql.select/0/*/id?value
+
+                    /*
+                     * Inserting into "recipients" table.
+                     */
+                    p5.mysql.insert:@"insert into recipients (contactid, type, emailid) values (@contactid, @type, @emailid)"
+                      @contactid:x:/@_contact-id?value
+                      @type:x:/@_dp/#/.?name
+                      @emailid:x:/@for-each/@p5.mysql.insert/*/id?value
+
+                /*
+                 * Commit database transaction.
+                 *
+                 * Notice, if we come this far, without exceptions, and the commit below succeeds, the [p5.pop3.get] event
+                 * will send the QUIT signal to the POP3 server, committing the transaction, registering emails as deleted on POP3 server.
+                 */
+                p5.mysql.transaction.commit
+
+            /*
+             * Checking if there was less than 20 messages fetched, at which point we break the inner [while] loop.
+             */
+            if:x:/@p5.pop3.get/*/envelope?count
+              <:int:20
+              break
+
+      /*
+       * Sleeping current thread for 5 seconds, before we start continute our outer [while], 
+       * which will start fetching again.
+       */
+      sleep:5000
+
+  catch
+
+    /*
+     * Deleting the fact that current user has a fetcher thread, 
+     * which he doesn't anymore, as we leave this catch.
+     */
+    delete-data:x:/*/*/sephia.core.thread-{0}
+      :x:/@.whoami/*/username?value
+
+
+    /*
+     * Storing error message in database.
+     */
+    set:x:/+2/*?name
+      src:sephia.core.thread-{0}
+        :x:/@.whoami/*/username?value
+    eval-x:x:/+/*/*
+    insert-data
+      thread
+        error:x:/@message?value
+        type:x:/@type?value
+        stack-trace:x:/@stack-trace?value

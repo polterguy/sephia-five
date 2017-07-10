@@ -1,180 +1,52 @@
 
 /*
- * Opens an email for reading.
- *
- * Expects [email-id] being ID of email from database.
- * Optionally pass in [after], being widget where the widget will be created after.
- * Optionally, also pass in [force], to force the email to be opened, even if it is already open.
- * This is necessary to allow our "discard reply" logic to work, allowing for the email to be re-opened,
- * even though it is already open, since it opens up the reader, before deleting the reply widget.
- *
- * Will create a widget, wrapping all relevant data for email, and inject into "reader widget" on page, allowing
- * user to reply to email if he wishes.
+ * Reads a single email.
+ * Expects [id] being email id to read.
  */
-
-
-
 
 
 /*
- * Loading all files from "reader-action-buttons" and assuming their some sort of widgets, and adding
- * them into our "input-group-btn" div widget as such.
+ * Checking if email is already opened in another widget.
  */
-list-files:@SEPHIA/inbox/reader-action-buttons/
-  filter:.hl
-load-file:x:/@list-files/*?name
-add:x:/../**/create-widget/**/div/*/class/=sephia-action-buttons/./*/widgets
-  src:x:/@load-file/*/*
-
-
-
-
-
-/*
- * Unrolling path, which is used later in action buttons, among other things.
- */
-p5.io.unroll-path:@SEPHIA/
-
-
-
-
-
-/*
- * Checking if email is already open.
- */
-p5.web.widgets.find:sephia-read-emails
-  _email-id:x:/../*/email-id?value.string
-if:x:/../*/force?value.bool
-  not
-  and:x:/@p5.web.widgets.find/*/*
+p5.web.widgets.find:main-container
+  .email-id:x:/../*/id?value
+if:x:/-/*/*?value
 
   /*
-   * Email has already been opened for reading.
-   *
-   * Simply scrolling email into view.
+   * Another widget is already showing this email, returning early.
    */
-  p5.web.send-javascript:@"p5.$('{0}').el.scrollIntoView();"
-    :x:/@p5.web.widgets.find/*/*?value
   return
 
 
-
-
-
 /*
- * Retrieving email with specified ID from database.
+ * Opens database and selects data for email.
  */
 p5.mysql.connect:[sephia]
-  whoami
 
   /*
-   * Retrieving attachments for email.
+   * Fetching attachments for email.
    */
-  p5.mysql.select:@"select * from attachments where emailid = @emailid"
-    @emailid:x:/../*/email-id?value
+  p5.mysql.select:@"select * from attachments where emailid = @id"
+    @id:x:/../*/id?value
 
   /*
-   * Applying attachments into the [widgets] collection of our "attachment widget".
-   *
-   * The [apply] Active Event, allows you to "braid" together a datasource, with a template, and put the results of
-   * this "braiding operation" into some destination node as children.
-   *
-   * Notice, only attachments matching our "whitelist" in regards to file extensions are legally allowed to be downloaded.
-   * This is to prevent users from downloading viruses, and other types of malware.
-   */
-  apply:x:/../**/div/*/class/=sephia-attachments/./*/widgets
-    src:x:/@p5.mysql.select/*
-    template
-      button
-        class:sephia-attachment button-outline
-        oninit
-
-          /*
-           * Making sure file extension is in "whitelist", otherwise preventing download of file.
-           * We do this by checking if file's extension is in our "supported MIME types"
-           */
-          {_filename}:x:/*/filename?value
-          eval-x:x:/+/*
-          sys42.utilities.execute-lambda-file:@SEPHIA/common/get-mime-type.hl
-            file:x:/@_filename?value
-          if:x:/@sys42.utilities.execute-lambda-file/*?count
-            =:int:0
-
-            /*
-             * File extension is not on our "whitelist".
-             */
-            sys42.utilities.add-css-classes:x:/../*/_event?value
-              class:sephia-sandboxed-attachment
-
-            /*
-             * Then replacing the original [onclick] Ajax event, with another lambda object, informing user that he
-             * cannot download this attachment.
-             */
-            p5.web.widgets.ajax-events.set:x:/../*/_event?value
-              onclick
-
-                /*
-                 * Warning user.
-                 */
-                sys42.windows.info-tip:@"Illegal file extension, attachment was sandboxed to avoid spreading virus"
-                  class:info-window info-window-error info-window-longer
-
-        onclick
-
-          /*
-           * "Databound" in above [apply].
-           *
-           * Thes nodes, wrapped with curly braces {}, are databound relative to the currently iterated datasource.
-           */
-          {_filename}:x:/*/filename?value
-          {_folder}:x:/*/folder?value
-          {_prefix}:x:/*/prefix?value
-
-          /*
-           * Letting the CMS "download event" do the heavy lifting ...
-           *
-           * Notice, the files are stored with different names, to make sure they each have a unique name, to avoid having
-           * a new attachment, with the same filename, overwrite a previously downloaded attachment, from another email.
-           * This is being done automatically in the [p5.pop3.get] Active Event.
-           *
-           * Hence, we must use a "prefix", "folder" in addition to "filename" to figure out the correct path to file.
-           *
-           * Notice, in case file has been physically deleted from disc, this invocation will throw an exception, 
-           * which we try to catch here.
-           */
-          try
-            eval-x:x:/+/*/filename
-            sys42.cms.download-file:{0}{1}{2}
-              :x:/@_folder?value
-              :x:/@_prefix?value
-              :x:/@_filename?value
-              filename:x:/@_filename?value
-          catch
-            sys42.windows.info-tip:Couldn't download file, message from system was; '{0}'
-              :x:/@message?value
-              class:info-window info-window-error info-window-longer
-
-        widgets
-          span
-            {innerValue}:x:/*/filename?value
-
-  /*
-   * Retrieving all recipients.
+   * Fetching all recipients for email.
    */
   p5.mysql.select:@"select name, email, type from contacts 
 inner join recipients on contacts.id = recipients.contactid
-where recipients.emailid = @emailid"
-    @emailid:x:/../*/email-id?value.string
+where recipients.emailid = @id"
+    @id:x:/../*/id?value
   _to
   _cc
   _bcc
 
   /*
    * Creating recipients list, and putting into adequate node above.
+   * This becomes a comma separated string for each of the above recipient types.
    */
   for-each:x:/@p5.mysql.select/*/*/type/=To/.
     set:x:/@_to?value
-      src:{0}, {1} <{2}>
+      src:{0}, {1} &lt;{2}&gt;
         :x:/@_to?value
         :x:/@_dp/#/*/name?value
         :x:/@_dp/#/*/email?value
@@ -183,7 +55,7 @@ where recipients.emailid = @emailid"
       chars:" ,"
   for-each:x:/@p5.mysql.select/*/*/type/=Cc/.
     set:x:/@_cc?value
-      src:{0}, {1} <{2}>
+      src:{0}, {1} &lt;{2}&gt;
         :x:/@_cc?value
         :x:/@_dp/#/*/name?value
         :x:/@_dp/#/*/email?value
@@ -192,7 +64,7 @@ where recipients.emailid = @emailid"
       chars:" ,"
   for-each:x:/@p5.mysql.select/*/*/type/=Bcc/.
     set:x:/@_bcc?value
-      src:{0}, {1} <{2}>
+      src:{0}, {1} &lt;{2}&gt;
         :x:/@_bcc?value
         :x:/@_dp/#/*/name?value
         :x:/@_dp/#/*/email?value
@@ -203,22 +75,16 @@ where recipients.emailid = @emailid"
   /*
    * Retrieving actual email.
    */
-  p5.mysql.select:@"select * from emails 
+  p5.mysql.select:@"select subject, date, signature, fingerprint, encrypted, type, name, email from emails 
 inner join contacts on emails.sender = contacts.id 
-where emails.id = @emailid"
-    @emailid:x:/../*/email-id?value
+where emails.id = @id"
+    @id:x:/../*/id?value
 
   /*
    * Making sure we set email as read in database.
    */
   p5.mysql.update:@"update emails set isread = 1 where id = @id"
-    @id:x:/../*/email-id?value
-
-  /*
-   * Making sure we set email as "read" in datagrid displaying email, in addition to displaying it as "open".
-   */
-  p5.web.widgets.find:sephia-datagrid
-    _email-id:x:/../*/email-id?value
+    @id:x:/../*/id?value
 
   /*
    * Storing fingerprint as string, for later reference.
@@ -230,37 +96,10 @@ where emails.id = @emailid"
         :x:/@p5.mysql.select/*/*/fingerprint?value
 
   /*
-   * Deleting "unread" CSS class from datagrid for given email.
+   * Selecting content of email.
    */
-  sys42.utilities.delete-css-classes:x:/@p5.web.widgets.find/*/*?value
-    class:sephia-unread
-
-  /*
-   * Adding "open" CSS class to email in datagrid.
-   */
-  sys42.utilities.add-css-classes:x:/@p5.web.widgets.find/*/*?value
-    class:sephia-open
-
-  /*
-   * Selecing part from "part" database table, prioritizing "plain" text.
-   *
-   * Notice, Sephia Five will prioritize "text/plain" MIME parts, and go to extreme lengths to avoid having to
-   * open up an HTML email.
-   *
-   * Only if an email is sent, without any "plain/text" MIME part, it will open up the HTML part, and when doing so, it
-   * will strip the HTML to an extreme amounts, to make 100% certain of that an adversary cannot in any ways inject
-   * a malicious piece of HTML/JS into your system.
-   *
-   * One weird consequence, is that among other things, we don't even display external images, since this might give
-   * a spammer, verification of that he has a correct email address.
-   *
-   * All JavaScript/style attributes, etc, etc, etc - are therefor completely stripped, in addition to images,
-   * possibly making the email difficult to read. However, this is done to never compromise security for convenience.
-   *
-   * If this is a problem, let your friends know that you only accept "plain/text" emails.
-   */
-  p5.mysql.select:@"select * from parts where emailid = @emailid"
-    @emailid:x:/../*/email-id?value
+  p5.mysql.select:@"select * from parts where emailid = @id"
+    @id:x:/../*/id?value
 
   /*
    * This part will contain the content to display to the user.
@@ -268,206 +107,148 @@ where emails.id = @emailid"
   _content
 
   /*
+   * Contains quoted parts.
+   */
+  _quote
+
+  /*
    * Checking if a "plain/text" part exists for this email.
    */
-  if:x:@"/@p5.mysql.select/*/*/type/""=plain"""
+  if:x:/@p5.mysql.select/*/*/type/=plain
 
     /*
-     * Plain text content exists for email.
-     *
-     * Preparing content, which implies exchanging URLs among other things.
+     * Plain part exists.
+     * Using regex to replace all URLs with hyperlinks.
      */
-    eval-x:x:/+/*
-    sys42.utilities.execute-lambda-file:@SEPHIA/inbox/helpers/prepare-plain.hl
-      content:x:@"/@p5.mysql.select/*/*/type/""=plain""/./*/content?value"
+    p5.html.html-encode:x:/@p5.mysql.select/*/*/type/=plain/./*/content?value
+    replace:x:/@p5.html.html-encode?value
+      src:regex:@"/((http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?)/c"
+      dest:"<a target='_blank' href='$1'>$1</a>"
+    split:x:/@replace?value
+      =:@"
+&gt;"
     set:x:/@_content?value
-      src:x:/@sys42.utilities.execute-lambda-file?value
-
-    /*
-     * Checking if email has a signature.
-     */
-    index-of:x:/@_content?value
-      src:"\r\n-- \r\n"
-    if:x:/@index-of/*?count
-      =:int:1
+      src:x:/@split/0?name
+    if:x:/@split/*?count
+      >:int:1
+      set:x:/@split/0
+      join:x:/@split/*?name
+        sep:@"
+&gt;"
+      set:x:/@_quote?value
+        src:@"
+&gt;{0}"
+          :x:/@join?value
+    else
 
       /*
-       * De-emphasizing signature, by putting it into special "container div" inside of content.
+       * No quoted parts, deleting "show quote button" and "quote content".
        */
-      split:x:/@_content?value
-        =:x:/@index-of/0?value
-      set:x:/@_content?value
-        src:@"{0}<div class=""sephia-signature"">{1}</div>"
-          :x:/@split/0?name
-          :x:/@split/1?name
+      set:x:/../*/create-widget/**/widgets/=content/*(/button|/p/*/.quote/.)
 
-    /*
-     * Replacing all multiple instances of CR/LF with single ones.
-     */
-    set:x:/@_content?value
-      replace:x:/@_content?value
-        src:regex:/(\r\n){3,}/
-        dest:"\r\n\r\n"
-
-  else-if:x:@"/@p5.mysql.select/*/*/type/""=html"""
-
-    /*
-     * No plain text content exists for email, but HTML content exists.
-     *
-     * Preparing content, which implies removing all potential malicious HTML etc.
-     */
-    eval-x:x:/+/*
-    sys42.utilities.execute-lambda-file:@SEPHIA/inbox/helpers/prepare-html.hl
-      content:x:@"/@p5.mysql.select/*/*/type/""=html""/./*/content?value"
-    set:x:/@_content?value
-      src:x:/@sys42.utilities.execute-lambda-file?value
-
-    /*
-     * Since there only existed an HTML part for this particular email, we warn the user with a modal window.
-     */
-    sys42.windows.info-tip:Only HTML view existed. To protect your privacy, and your system from virus, Sephia have significantly stripped the email
-      class:info-window info-window-longer info-window-error
-
-  /*
-   * Creating widget that opens email, making sure we unescape any HTML.
-   *
-   * Notice, in theory also subjects/names/emails might contain HTML, allowing the sender to inject malicious code into
-   * your system.
-   * Hence, we (to be sure) also HTML encode these parts of the email.
-   */
-  p5.html.html-encode:x:/@p5.mysql.select/@p5.mysql.select/*/*/subject?value
-  p5.html.html-encode:x:/@p5.mysql.select/@p5.mysql.select/*/*/email?value
-  p5.html.html-encode:x:/@p5.mysql.select/@p5.mysql.select/*/*/name?value
-  p5.html.html-encode:x:/@_to?value
-  p5.html.html-encode:x:/@_cc?value
-  p5.html.html-encode:x:/@_bcc?value
-  p5.types.date.format:x:/..p5.mysql.connect/*/p5.mysql.select/*/*/date?value
-    format:"ddd d. MMM yyyy - HH:mm"
-
-  /*
-   * Checking to see if an "after" argument was supplied, and if so, making sure we create the widget
-   * after that widget. Otherwise, simply appending the widget into "sephia-read-emails".
-   */
-  if:x:/../*/after?value
-    eval-x:x:/+/*/*
-    add:x:/..p5.mysql.connect/*/create-widget
-      src
-        after:x:/../*/after?value
   else
-    add:x:/..p5.mysql.connect/*/create-widget
+
+    /*
+     * Only HTML part exists.
+     * Stripping out everything that is considered "dangerous HTML".
+     */
+    p5.html.html2lambda:x:/@p5.mysql.select/*/*/type/=html/./*/content?value
+
+    /*
+     * Removing entire "head" part.
+     */
+    set:x:/@p5.html.html2lambda/*/*/head
+
+    /*
+     * Removing everything not in whitelist.
+     */
+    set:x:@"/@p5.html.html2lambda/*/**(!/body!/div!/table!/tr!/td!/th!/p!/span!/a!/strong!/br!/em!/img!/""\\#text""!/""\\@href"")"
+
+    /*
+     * Making sure we get "_blank" target for each hyperlink.
+     */
+    add:x:/@p5.html.html2lambda/*/**/a
       src
-        parent:sephia-read-emails
+        @target:_blank
 
-  /*
-   * Checking to see if we should hide some of the recipients types for email, due to that they're empty.
-   */
-  if:x:/@_to?value
-    not
-    set:x:/..p5.mysql.connect/*/create-widget/**/p/*/class/=~sephia-reader-to/.
-  if:x:/@_cc?value
-    not
-    set:x:/..p5.mysql.connect/*/create-widget/**/p/*/class/=~sephia-reader-cc/.
-  if:x:/@_bcc?value
-    not
-    set:x:/..p5.mysql.connect/*/create-widget/**/p/*/class/=~sephia-reader-bcc/.
+    /*
+     * Transforming back to HTML.
+     */
+    p5.html.lambda2html:x:/@p5.html.html2lambda/*/*/body/*(!/~@)
+    set:x:/@_content?value
+      src:x:/@p5.html.lambda2html?value
 
-  /*
-   * Checking to see if email was signed, and if not, making sure we render it unsigned.
-   */
-  if:x:/@_fingerprint?value
-    not
-    set:x:/@_fingerprint?value
-      src:unsigned
-
-  /*
-   * Finally, we can create our "reader widget".
-   *
-   * Creating wrapper for reading email, and injecting it into the main "reader root widget".
-   */
-  create-widget
-    _email-id:x:/@p5.mysql.select/@p5.mysql.select/*/*/id?value
-    class:sephia-email row
-    widgets
-
-      div
-        class:column
-        widgets
-
-          /*
-           * Input group for "action buttons" for email.
-           *
-           * Notice, this widget is dynamically populated according to all widgets in the "reader-action-buttons" folder.
-           */
-          div
-            class:sephia-action-buttons
-            widgets
-
-          /*
-           * Subject of email.
-           */
-          h4
-            class:sephia-reader-subject
-            innerValue:x:/@p5.mysql.connect/*/p5.html.html-encode/[0,1]?value
-
-          /*
-           * Body (content) of email.
-           */
-          p
-            class:sephia-reader-pre
-            innerValue:x:/@_content?value
-
-          /*
-           * All attachments in email.
-           */
-          div
-            class:sephia-attachments
-            widgets
-
-          /*
-           * Making sure we add a "clearfix" widget, since attachments have float CSS styles.
-           */
-          literal
-            element:div
-            class:clearfix
-
-          /*
-           * "Meta" data of email, date sent, who sent it, name and email, etc.
-           */
-          p
-            class:sephia-reader-meta
-            widgets
-              span
-                innerValue:"From - {0}"
-                  :x:/@p5.mysql.connect/*/p5.html.html-encode/[2,3]?value
-              span
-                innerValue:" &lt;{0}&gt; - "
-                  :x:/@p5.mysql.connect/*/p5.html.html-encode/[1,2]?value
-              span
-                innerValue:x:/@p5.types.date.format?value
-              span
-                innerValue:" - {0}"
-                  :x:/@_fingerprint?value
-
-          /*
-           * All recipients of email.
-           */
-          p
-            class:sephia-reader-recipients sephia-reader-to
-            innerValue:"To - {0}"
-              :x:/@p5.mysql.connect/*/p5.html.html-encode/[3,4]?value
-          p
-            class:sephia-reader-recipients sephia-reader-cc
-            innerValue:"Cc - {0}"
-              :x:/@p5.mysql.connect/*/p5.html.html-encode/[4,5]?value
-          p
-            class:sephia-reader-recipients sephia-reader-bcc
-            innerValue:"Bcc - {0}"
-              :x:/@p5.mysql.connect/*/p5.html.html-encode/[5,6]?value
-
-
+    /*
+     * No quoted parts, deleting "show quote button" and "quote content".
+     */
+    set:x:/../*/create-widget/**/widgets/=content/*(/button|/p/*/.quote/.)
 
 
 /*
- * Updating title of web page, to reflect unread emails.
+ * Loading all action buttons.
  */
-sys42.utilities.execute-lambda-file:@SEPHIA/inbox/set-title.hl
+list-files:@SEPHIA/inbox/action-buttons/
+  filter:.hl
+load-file:x:/-/*?name
+add:x:/../*/create-widget/**/widgets/=action-strip
+  src:x:/@load-file/*/*
+
+
+/*
+ * Creates actual widget showing email.
+ */
+create-widget
+  parent:main-container
+  class:row air-top
+  .email-id:x:/../*/id?value
+  widgets
+    div
+      class:col
+      style:"position:relative;"
+      widgets
+        a
+          href:#
+          role:button
+          innerValue:X
+          style:"position:absolute;top:15px;right:15px;font-size:1.5rem;"
+          onclick
+
+            /*
+             * Deleting widgets wrapping currently read email.
+             */
+            p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+              .email-id
+            delete-widget:x:/-/*/*?value
+
+        div
+          class:air-inner bg shaded rounded
+          widgets:content
+            h3
+              innerValue:x:/@p5.mysql.connect/*/p5.mysql.select/[2,3]/*/*/subject?value
+            div
+              style:"white-space:pre-wrap;"
+              innerValue:x:/@p5.mysql.connect/*/_content?value
+            button
+              innerValue:...
+              class:air-top
+              onclick
+
+                /*
+                 * Displays quoted parts of email.
+                 */
+                p5.web.widgets.get-parent:x:/../*/_event?value
+                p5.web.widgets.find:x:/-/*/*?value
+                  .quote
+                set-widget-property:x:/-/*/*?value
+                  visible:true
+                delete-widget:x:/../*/_event?value
+
+            p
+              .quote
+              style:"white-space:pre-wrap;"
+              visible:false
+              innerValue:x:/@p5.mysql.connect/*/_quote?value
+            div
+              class:right strip
+              widgets:action-strip
+

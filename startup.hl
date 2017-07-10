@@ -9,14 +9,19 @@
  */
 
 
-
-
-
 /*
- * Creating unrolling event for Sepia main folder.
+ * Creates the "path" Active Event that points to our "/sephia-five/" folder.
+ * This is done in such a way that we can install Sephia Five in any folder we wish.
  */
+split:x:/..?name
+  =:/
+set:x:/@split/0/-
+join:x:/@split/*?name
+  sep:/
+eval-x:x:/+/*
 create-event:p5.io.unroll-path.@SEPHIA
-  return:/system42/apps/sephia-five
+  return:/{0}
+    :x:/@join?value
 
 
 
@@ -25,4 +30,7 @@ create-event:p5.io.unroll-path.@SEPHIA
 /*
  * Evaluating all other startup scripts.
  */
-sys42.utilities.execute-lambda-folder:@SEPHIA/startup/
+list-files:@SEPHIA/startup/
+  filter:.hl
+load-file:x:/-/*?name
+eval:x:/-/*

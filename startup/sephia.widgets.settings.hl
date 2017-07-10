@@ -1,0 +1,392 @@
+
+/*
+ * Creates our "settings" widget
+ */
+create-event:sephia.widgets.settings
+
+  /*
+   * Retrieving settings and setting initial values
+   */
+  p5.auth.my-settings.get
+  .defaults
+    pop3-server:pop.gmail.com
+    pop3-port:995
+    pop3-ssl:bool:true
+    smtp-server:smtp.gmail.com
+    smtp-port:465
+    smtp-ssl:bool:true
+
+  /*
+   * Returning widget to caller.
+   */
+  eval-x:x:(/+/**/view/=databound/**/value|/+/**/input(/=sephia-settings-pgp-key|/=sephia-settings-pgp-password)/*/value)
+  return
+    container
+      widgets
+        input:sephia-settings-pgp-key
+          type:hidden
+          .data-field:pgp-key
+          value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pgp-key|/../*/.defaults/*/pgp-key)/[0,1]?value
+        micro.widgets.tab:sephia-settings-tab
+          class:micro-tab micro-tab-border
+          view:databound
+            name:Misc
+            widgets
+              div
+                class:row
+                widgets
+                  div
+                    class:col
+                    widgets
+                      label
+                        innerValue:Name and email
+              div
+                class:row
+                widgets
+                  div
+                    class:col-50
+                    widgets
+                      div
+                        class:strip fill
+                        widgets
+                          label
+                            for:sephia-settings-name
+                            innerValue:Your name
+                          input:sephia-settings-name
+                            .data-field:name
+                            type:text
+                            placeholder:Your name ...
+                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/name|/../*/.defaults/*/name)/[0,1]?value
+                            oninit
+                              micro.page.set-focus:sephia-settings-name
+                  div
+                    class:col-50
+                    widgets
+                      div
+                        class:strip fill
+                        widgets
+                          label
+                            for:sephia-settings-email
+                            innerValue:Your email
+                          input:sephia-settings-email
+                            .data-field:email
+                            type:text
+                            placeholder:Your email ...
+                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/email|/../*/.defaults/*/email)/[0,1]?value
+              div
+                class:row air-top
+                widgets
+                  div
+                    class:col
+                    widgets
+                      label
+                        for:sephia-settings-signature
+                        innerValue:Signature
+                      literal:sephia-settings-signature
+                        .data-field:signature
+                        class:fill
+                        element:textarea
+                        placeholder:Signature ...
+                        rows:7
+                        value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/signature|/../*/.defaults/*/signature)/[0,1]?value
+          view:databound
+            name:POP3
+            widgets
+              div
+                class:row
+                widgets
+                  div
+                    class:col
+                    widgets
+                      label
+                        innerValue:POP3 server settings
+              div
+                class:row
+                widgets
+                  div
+                    class:col-50
+                    widgets
+                      div
+                        class:strip fill
+                        widgets
+                          label
+                            innerValue:Server
+                            for:sephia-settings-pop3-server
+                          input:sephia-settings-pop3-server
+                            .data-field:pop3-server
+                            type:text
+                            placeholder:Server ...
+                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pop3-server|/../*/.defaults/*/pop3-server)/[0,1]?value
+                            oninit
+                              micro.page.set-focus:sephia-settings-pop3-server
+                  div
+                    class:col-50
+                    widgets
+                      div
+                        class:strip fill
+                        widgets
+                          label
+                            innerValue:Port
+                            for:sephia-settings-pop3-port
+                          input:sephia-settings-pop3-port
+                            type:number
+                            .data-field:pop3-port
+                            placeholder:Port ...
+                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pop3-port|/../*/.defaults/*/pop3-port)/[0,1]?value
+                          label
+                            for:sephia-settings-pop3-ssl
+                            innerValue:SSL
+                          span
+                            widgets
+                              input:sephia-settings-pop3-ssl
+                                .data-field:pop3-ssl
+                                type:checkbox
+                                checked
+              div
+                class:row air-top
+                widgets
+                  div
+                    class:col
+                    widgets
+                      label
+                        innerValue:POP3 username/password
+              div
+                class:row
+                widgets
+                  div
+                    class:col-50
+                    widgets
+                      div
+                        class:strip fill
+                        widgets
+                          label
+                            innerValue:Username
+                            for:sephia-settings-pop3-username
+                          input:sephia-settings-pop3-username
+                            .data-field:pop3-username
+                            type:text
+                            placeholder:Username ...
+                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pop3-username|/../*/.defaults/*/pop3-username)/[0,1]?value
+                  div
+                    class:col-50
+                    widgets
+                      div
+                        class:strip fill
+                        widgets
+                          label
+                            innerValue:Password
+                            for:sephia-settings-pop3-password
+                          input:sephia-settings-pop3-password
+                            type:password
+                            autocomplete:new-password
+                            .data-field:pop3-password
+                            placeholder:Password ...
+                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pop3-password|/../*/.defaults/*/pop3-password)/[0,1]?value
+          view:databound
+            name:SMTP
+            widgets
+              div
+                class:row
+                widgets
+                  div
+                    class:col
+                    widgets
+                      label
+                        innerValue:SMTP server settings
+              div
+                class:row
+                widgets
+                  div
+                    class:col-50
+                    widgets
+                      div
+                        class:strip fill
+                        widgets
+                          label
+                            innerValue:Server
+                            for:sephia-settings-smtp-server
+                          input:sephia-settings-smtp-server
+                            .data-field:smtp-server
+                            type:text
+                            placeholder:Server ...
+                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/smtp-server|/../*/.defaults/*/smtp-server)/[0,1]?value
+                            oninit
+                              micro.page.set-focus:sephia-settings-smtp-server
+                  div
+                    class:col-50
+                    widgets
+                      div
+                        class:strip fill
+                        widgets
+                          label
+                            innerValue:Port
+                            for:sephia-settings-smtp-port
+                          input:sephia-settings-smtp-port
+                            type:number
+                            .data-field:smtp-port
+                            placeholder:Port ...
+                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/smtp-port|/../*/.defaults/*/smtp-port)/[0,1]?value
+                          label
+                            for:sephia-settings-smtp-ssl
+                            innerValue:SSL
+                          span
+                            widgets
+                              input:sephia-settings-smtp-ssl
+                                .data-field:smtp-ssl
+                                type:checkbox
+                                checked
+              div
+                class:row air-top
+                widgets
+                  div
+                    class:col
+                    widgets
+                      label
+                        innerValue:SMTP username/password
+              div
+                class:row
+                widgets
+                  div
+                    class:col-50
+                    widgets
+                      div
+                        class:strip fill
+                        widgets
+                          label
+                            innerValue:Username
+                            for:sephia-settings-smtp-username
+                          input:sephia-settings-smtp-username
+                            .data-field:smtp-username
+                            type:text
+                            placeholder:Username ...
+                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/smtp-username|/../*/.defaults/*/smtp-username)/[0,1]?value
+                  div
+                    class:col-50
+                    widgets
+                      div
+                        class:strip fill
+                        widgets
+                          label
+                            innerValue:Password
+                            for:sephia-settings-smtp-password
+                          input:sephia-settings-smtp-password
+                            type:password
+                            autocomplete:new-password
+                            .data-field:smtp-password
+                            placeholder:Password ...
+                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/smtp-password|/../*/.defaults/*/smtp-password)/[0,1]?value
+          view
+            name:PGP
+            widgets
+              micro.widgets.grid:pgp-keys
+                class:striped hover
+                columns
+                  User ID
+                  Strength
+                  Created
+                  Expires
+                oninit
+
+                  /*
+                   * Listing all private keys, and databinding our grid 
+                   * towards the existing private keys.
+                   */
+                  p5.crypto.list-private-keys:@
+                  p5.crypto.get-key-details:x:/-/*?name
+                  for-each:x:/-/*
+                    add:x:/../*/micro.widgets.grid.databind
+                      src:item
+                    p5.types.date.format:x:/@_dp/#/*/creation-time?value
+                      format:"dd. MMM yyyy"
+                    p5.types.date.format:x:/@_dp/#/*/expires?value
+                      format:"dd. MMM yyyy"
+                    p5.html.html-encode:x:/@_dp/#/*/user-ids/0?value
+                    eval-x:x:/+/*/*
+                    add:x:/../*/micro.widgets.grid.databind/0/-
+                      src
+                        User ID:x:/@p5.html.html-encode?value
+                        Strength:x:/@_dp/#/*/strength?value
+                        Created:x:/..for-each/*/p5.types.date.format/[0,1]?value
+                        Expires:x:/..for-each/*/p5.types.date.format/[1,2]?value
+                    eval-x:x:/+/*/*/*/*/_fingerprint
+                    add:x:/../*/micro.widgets.grid.databind/0/-
+                      src
+                        .row
+
+                          /*
+                           * Handled to make sure we set the selected fingerprint into selected mode,
+                           * if the user has previously selected a PGP key in this tab view.
+                           */
+                          oninit
+                            _fingerprint:x:/@_dp/#?name
+                            if
+                              fetch:x:/0/0?value
+                                widget-exists:sephia-settings-pgp-key
+                              get-widget-property:sephia-settings-pgp-key
+                                value
+                              if:x:/@get-widget-property/*/*?value
+                                =:x:/@_fingerprint?value
+                                set-widget-property:x:/../*/_event?value
+                                  style:"background-color:rgba(128,128,255,.2);"
+
+                          /*
+                           * Handled to make user able to select a PGP key
+                           * by simply clicking the row associated with the key.
+                           *
+                           * The actual key fingerprint is stored in a hidden input 
+                           * element in the tab control itself, with a [.data-field] such that
+                           * when we later serialize form, we can easily retrieve the fingerprint
+                           * of the selected key.
+                           */
+                          onclick
+                            _fingerprint:x:/@_dp/#?name
+                            p5.web.widgets.get-parent:x:/../*/_event?value
+                            p5.web.widgets.get-children:x:/-/*/*?value
+                            delete-widget-property:x:/-/*/*?value
+                              style
+                            set-widget-property:x:/../*/_event?value
+                              style:"background-color:rgba(128,128,255,.2);"
+                            set-widget-property:sephia-settings-pgp-key
+                              value:x:/@_fingerprint?value
+
+                  /*
+                   * Now we can finally databind our grid towards the private 
+                   * PGP keys in GnuPG storage.
+                   */
+                  micro.widgets.grid.databind:pgp-keys
+              div
+                class:row air-top
+                widgets
+                  div
+                    class:col
+                    widgets
+                      div
+                        class:strip fill
+                        widgets
+                          label
+                            for:sephia-settings-pgp-password
+                            innerValue:Your GnuPG password
+                          input:sephia-settings-pgp-password
+                            .data-field:pgp-password
+                            type:password
+                            placeholder:Your PGP password ...
+                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pgp-password|/../*/.defaults/*/pgp-password)/[0,1]?value
+
+        div
+          class:right air-top
+          widgets
+            button
+              innerValue:Done
+              onclick
+
+                /*
+                 * Serializing all setting values, and storing in user settings.
+                 */
+                p5.web.widgets.get-parent:sephia-settings-tab
+                micro.form.serialize:x:/-/*/*?value
+                add:x:/+/*
+                  src:x:/@micro.form.serialize/*
+                p5.auth.my-settings.set
+                  sephia
+                load-file:@SEPHIA/core/launch.hl
+                eval:x:/-/*
