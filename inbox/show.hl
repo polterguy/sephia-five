@@ -11,6 +11,101 @@ clear-widget:main-container
 
 
 /*
+ * Creating filtering and paging widget toolbar at top of page.
+ */
+create-widget:sephia-search-wrapper
+  parent:main-container
+  .offset:0
+  class:row
+  widgets
+    div
+      class:col right
+      widgets
+        div
+          class:strip
+          style:"display:inline-block;"
+          widgets
+            input:sephia-search-inbox
+              type:text
+              class:smaller
+              placeholder:Search ...
+            button
+              innerValue:Search
+              onclick
+
+                /*
+                 * Retrieving filter condition and re-databinding inbox.
+                 */
+                get-widget-property:sephia-search-inbox
+                  value
+                load-file:@SEPHIA/inbox/databind.hl
+                eval-x:x:/+/*
+                eval:x:/-2/*
+                  filter:x:/@get-widget-property/*/*?value
+                micro.page.set-focus:sephia-search-inbox
+
+                /*
+                 * Making sure we reset "offset".
+                 */
+                set-widget-property:sephia-search-wrapper
+                  .offset:0
+
+            button
+              innerValue:&lt;
+              onclick
+
+                /*
+                 * Retrieving filter condition and re-databinding inbox, 
+                 * subtracting 15 from "offset".
+                 */
+                get-widget-property:sephia-search-wrapper
+                  .offset
+                if:x:/-/*/*?value.int
+                  =:int:0
+
+                  /*
+                   * Already at the beginning of dataset.
+                   */
+                  return
+
+                -:x:/@get-widget-property/*/*?value.int
+                  _:15
+                set-widget-property:sephia-search-wrapper
+                  .offset:x:/@-?value
+
+                get-widget-property:sephia-search-inbox
+                  value
+                load-file:@SEPHIA/inbox/databind.hl
+                eval-x:x:/+/*
+                eval:x:/-2/*
+                  filter:x:/@get-widget-property/*/*?value
+                  offset:x:/@-?value
+
+            button
+              innerValue:&gt;
+              onclick
+
+                /*
+                 * Retrieving filter condition and re-databinding inbox, 
+                 * adding 15 from "offset".
+                 */
+                get-widget-property:sephia-search-wrapper
+                  .offset
+                +:x:/@get-widget-property/*/*?value.int
+                  _:15
+                get-widget-property:sephia-search-inbox
+                  value
+                load-file:@SEPHIA/inbox/databind.hl
+                eval-x:x:/+/*
+                eval:x:/-2/*
+                  filter:x:/@get-widget-property/*/*?value
+                  offset:x:/@+?value
+                if:x:/-?value
+                  set-widget-property:sephia-search-wrapper
+                    .offset:x:/@+?value
+
+
+/*
  * Creating actual inbox datagrid widget.
  */
 create-widget

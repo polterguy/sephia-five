@@ -30,6 +30,7 @@ create-container-widget:main-container
 
 /*
  * Retrieving user's settings, and making sure user has setup his account(s).
+ * Notice, if user hasn't setup his account(s), we refuse him to open his inbox (for obvious reasons).
  */
 p5.auth.my-settings.get
 if:x:/@p5.auth.my-settings.get/*/sephia
@@ -54,15 +55,11 @@ if:x:/@p5.auth.my-settings.get/*/sephia
 
 /*
  * Making sure we start email fetching thread.
+ *
+ * This will create a thread for each user, that runs in the background,
+ * and constantly pulls new emails from the user's POP3 server.
  */
 load-file:@SEPHIA/core/fetch-emails.hl
-eval:x:/-/*
-
-
-/*
- * Opening inbox.
- */
-load-file:@SEPHIA/inbox/show.hl
 eval:x:/-/*
 
 
@@ -92,3 +89,10 @@ create-widget:menu-container
                       class:col
                       widgets
                         sephia.widgets.settings
+
+
+/*
+ * Opening inbox.
+ */
+load-file:@SEPHIA/inbox/show.hl
+eval:x:/-/*

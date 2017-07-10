@@ -4,3 +4,115 @@
  */
 button
   innerValue:Reply
+  style:"margin-bottom:0;"
+  onclick
+
+    /*
+     * Finding currently read email, to make sure we're able to inject
+     * reply widget into page just beneath reader widget, before we delete
+     * the reader widget itself.
+     */
+    p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+      .email-id
+    get-widget-property:x:/-/*/*?value
+      .email-id
+
+    /*
+     * Selecting email data from MySQL.
+     */
+    p5.mysql.connect:[sephia]
+      p5.mysql.select:@"select subject, email from emails inner join contacts on emails.sender = contacts.id where emails.id = @id"
+        @id:x:/@get-widget-property/*/*?value
+      p5.mysql.select:@"select content, type from parts where emailid = @id"
+        @id:x:/@get-widget-property/*/*?value
+
+    /*
+     * Making sure subject starts with "Re:"
+     */
+    if
+      fetch:x:/0/0?value
+        index-of:x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]/*/*/subject?value
+          src:"Re:"
+      !=:int:0
+      set:x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]/*/*/subject?value
+        src:"Re: {0}"
+          :x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]/*/*/subject?value
+
+    /*
+     * Quoting content of email.
+     */
+    _content
+    split:x:/@p5.mysql.connect/*/p5.mysql.select/[1,2]/*/*/type/=plain/./*/content?value
+      =:"\r\n"
+    join:x:/-/*?name
+      sep:@"
+&gt;"
+    set:x:/@_content?value
+      src:"&gt;{0}"
+        :x:/@join?value
+
+
+    /*
+     * Adding "To" recipient.
+     */
+    add:x:/+/*/*
+      src:x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]/*/*/email?value
+    add:x:/../*/create-widget/**/sephia.widgets.recipients
+      src
+        to
+
+
+    /*
+     * Creating actual reply widget.
+     */
+    create-widget
+      after:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+      class:row air-top
+      .email-id:x:/@get-widget-property/*/*?value
+      widgets
+        div
+          class:col
+          widgets
+            div
+              class:air-inner bg shaded rounded
+              widgets:content
+                input
+                  type:text
+                  class:fill
+                  placeholder:Subject ...
+                  value:x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]/*/*/subject?value
+                  oninit
+                    micro.page.set-focus:x:/../*/_event?value
+                literal
+                  element:textarea
+                  class:fill
+                  placeholder:Subject of email ...
+                  rows:20
+                  value:x:/@_content?value
+                sephia.widgets.recipients
+                div
+                  class:right
+                  widgets
+                    div
+                      class:strip
+                      style:"display:inline-block;"
+                      widgets
+                        button
+                          innerValue:Send
+                          style:"margin-bottom:0;"
+                        button
+                          innerValue:Discard
+                          style:"margin-bottom:0;"
+                          onclick
+
+                            /*
+                             * Deleting widgets wrapping currently read email.
+                             */
+                            p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                              .email-id
+                            delete-widget:x:/-/*/*?value
+
+    /*
+     * Deleting reader widget
+     */
+    delete-widget:x:/@p5.web.widgets.find-first-ancestor/*/*?value

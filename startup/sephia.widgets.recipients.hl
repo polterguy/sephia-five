@@ -1,0 +1,191 @@
+
+/*
+ * Creates our "recipient" widget.
+ */
+create-event:sephia.widgets.recipients
+
+  /*
+   * Adding us specified recipients.
+   */
+  join:x:/../*/to/*?name
+    sep:", "
+  eval-x:x:/+/*/*
+  add:x:/../*/return/**/.data-field/=to/.
+    src
+      value:x:/@join?value
+
+  /*
+   * Returning actual recipient widget to caller.
+   */
+  return
+    container
+      events
+
+        /*
+         * Common lambda event that shows contacts, and allows user to select
+         * email from list of contacts, and add to given [_arg] input widget.
+         */
+        sephia.contacts.find
+
+          /*
+           * Displaying contacts in a modal widget.
+           */
+          eval-x:x:/+/**/_widget
+          create-widgets
+            micro.widgets.modal:sephia-select-contact-modal
+              .recipients
+              class:micro-modal
+              widgets
+
+                /*
+                 * Search textbox wrapper.
+                 */
+                div
+                  class:right
+                  widgets
+                    div
+                      class:strip
+                      style:"display:inline-block;"
+                      widgets
+                        input:sephia-select-contact-filter
+                          type:text
+                          placeholder:Search ...
+                          oninit
+                            micro.page.set-focus:x:/../*/_event?value
+                        button
+                          innerValue:Search
+                          onclick
+
+                            /*
+                             * Retrieving search filter condition, and re-databinding grid.
+                             */
+                            get-widget-property:sephia-select-contact-filter
+                              value
+                            eval-x:x:/+/*
+                            sephia.contacts.find.databind
+                              filter:x:/@get-widget-property/*/*?value
+                            micro.page.set-focus:sephia-select-contact-filter
+
+                /*
+                 * Actual datagrid.
+                 */
+                micro.widgets.grid:sephia-select-contact-grid
+                  class:hover
+                  oninit
+
+                    /*
+                     * Initially databding grid without any filter.
+                     */
+                    sephia.contacts.find.databind
+
+                  events
+
+                    /*
+                     * Databinds contacts grid.
+                     * Optionally pass in [filter].
+                     */
+                    sephia.contacts.find.databind
+                      whoami
+                      p5.mysql.connect:[sephia]
+                        p5.mysql.select:@"select name, email from contacts where username = @username  and (name like @filter or email like @filter) limit 10"
+                          @username:x:/@whoami/*/username?value
+                          @filter:"%{0}%"
+                            :x:/../*/filter?value
+                      add:x:/+2
+                        src:x:/@p5.mysql.connect/*/p5.mysql.select/*
+                      add:x:/+/*
+                        src
+                          .row
+                            onclick
+
+                              /*
+                               * Fetching email from innerValue on "td" element, and adding it to specified widget [_arg]
+                               * during creation of grid.
+                               */
+                              _widget:x:/../*/_arg?value
+                              p5.web.widgets.get-children:x:/../*/_event?value
+                              get-widget-property:x:/-/0/1?value
+                                innerValue
+                              get-widget-property:x:/@_widget?value
+                                value
+                              _content
+                              set:x:/@_content?value
+                                src:"{0}, {1}"
+                                  :x:/../*/get-widget-property/[1,2]/*/*?value
+                                  :x:/../*/get-widget-property/[0,1]/*/*?value
+                              trim:x:/@_content?value
+                                chars:", "
+                              set-widget-property:x:/@_widget?value
+                                value:x:/@trim?value
+                              delete-widget:sephia-select-contact-modal
+                              micro.page.set-focus:x:/@_widget?value
+
+                      micro.widgets.grid.databind:sephia-select-contact-grid
+
+                div
+                  class:right air-top
+                  widgets
+                    button
+                      innerValue:Close
+                      onclick
+                        p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                          .recipients
+                        delete-widget:x:/-/*/*?value
+
+      class:row
+      widgets
+        div
+          class:col-50 strip fill
+          widgets
+            input
+              type:text
+              .data-field:to
+            button
+              innerValue:To
+              onclick
+
+                /*
+                 * Shows contacts window, and allows user to select 
+                 * a contact to add to recipient list.
+                 */
+                p5.web.widgets.get-parent:x:/../*/_event?value
+                p5.web.widgets.find:x:/-/*/*?value
+                  .data-field
+                sephia.contacts.find:x:/-/*/*?value
+
+        div
+          class:col-25 strip fill
+          widgets
+            input
+              type:text
+              .data-field:cc
+            button
+              innerValue:Cc
+              onclick
+
+                /*
+                 * Shows contacts window, and allows user to select 
+                 * a contact to add to recipient list.
+                 */
+                p5.web.widgets.get-parent:x:/../*/_event?value
+                p5.web.widgets.find:x:/-/*/*?value
+                  .data-field
+                sephia.contacts.find:x:/-/*/*?value
+        div
+          class:col-25 strip fill
+          widgets
+            input
+              type:text
+              .data-field:bcc
+            button
+              innerValue:Bc
+              onclick
+
+                /*
+                 * Shows contacts window, and allows user to select 
+                 * a contact to add to recipient list.
+                 */
+                p5.web.widgets.get-parent:x:/../*/_event?value
+                p5.web.widgets.find:x:/-/*/*?value
+                  .data-field
+                sephia.contacts.find:x:/-/*/*?value

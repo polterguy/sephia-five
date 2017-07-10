@@ -249,6 +249,10 @@ create-widget
               visible:false
               innerValue:x:/@p5.mysql.connect/*/_quote?value
             div
-              class:right strip
-              widgets:action-strip
+              class:right
+              widgets
+                div
+                  class:strip
+                  style:"display:inline-block;"
+                  widgets:action-strip
 

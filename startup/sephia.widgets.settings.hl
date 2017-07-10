@@ -5,9 +5,14 @@
 create-event:sephia.widgets.settings
 
   /*
-   * Retrieving settings and setting initial values
+   * Retrieving settings and setting initial values.
    */
   p5.auth.my-settings.get
+
+  /*
+   * Default values for settings.
+   * Notice, we're simply using GMail server settings here.
+   */
   .defaults
     pop3-server:pop.gmail.com
     pop3-port:995
@@ -17,18 +22,30 @@ create-event:sephia.widgets.settings
     smtp-ssl:bool:true
 
   /*
-   * Returning widget to caller.
+   * Returning widget to caller, making sure we forward evaluate properties.
    */
   eval-x:x:(/+/**/view/=databound/**/value|/+/**/input(/=sephia-settings-pgp-key|/=sephia-settings-pgp-password)/*/value)
   return
     container
       widgets
+
+        /*
+         * Hidden input element that stores the selected private PGP key's fingerprint.
+         */
         input:sephia-settings-pgp-key
           type:hidden
           .data-field:pgp-key
           value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pgp-key|/../*/.defaults/*/pgp-key)/[0,1]?value
+
+        /*
+         * Using a Micro tab widget to organize the different groups of settings.
+         */
         micro.widgets.tab:sephia-settings-tab
           class:micro-tab micro-tab-border
+
+          /*
+           * Misc. settings, name, email and signature.
+           */
           view:databound
             name:Misc
             widgets
@@ -89,6 +106,10 @@ create-event:sephia.widgets.settings
                         placeholder:Signature ...
                         rows:7
                         value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/signature|/../*/.defaults/*/signature)/[0,1]?value
+
+          /*
+           * POP3 settings.
+           */
           view:databound
             name:POP3
             widgets
@@ -182,6 +203,10 @@ create-event:sephia.widgets.settings
                             .data-field:pop3-password
                             placeholder:Password ...
                             value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pop3-password|/../*/.defaults/*/pop3-password)/[0,1]?value
+
+          /*
+           * SMTP settings.
+           */
           view:databound
             name:SMTP
             widgets
@@ -275,6 +300,10 @@ create-event:sephia.widgets.settings
                             .data-field:smtp-password
                             placeholder:Password ...
                             value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/smtp-password|/../*/.defaults/*/smtp-password)/[0,1]?value
+
+          /*
+           * PGP settings.
+           */
           view
             name:PGP
             widgets
@@ -372,11 +401,14 @@ create-event:sephia.widgets.settings
                             placeholder:Your PGP password ...
                             value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pgp-password|/../*/.defaults/*/pgp-password)/[0,1]?value
 
+        /*
+         * Save button, beneath our tab widget.
+         */
         div
           class:right air-top
           widgets
             button
-              innerValue:Done
+              innerValue:Save
               onclick
 
                 /*
