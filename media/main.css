@@ -1,0 +1,97 @@
+
+/*
+ * Main CSS file for Sephia Five.
+ */
+
+
+.micro-tab .micro-tab-views {
+    background:url(/micro/media/skins/serious/floating-cogs.svg)
+}
+
+.sephia-inbox {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.sephia-unread {
+    font-weight: bold;
+}
+
+.sephia-inbox td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sephia-inbox td:nth-child(1) {
+    width:200px;
+}
+
+.sephia-inbox td:nth-child(2) {
+    max-width:calc(100% - 450px)
+}
+
+.sephia-inbox td:nth-child(3) {
+    width:250px;
+}
+
+.sephia-inbox td:nth-child(1),
+.sephia-inbox th:nth-child(1),
+.sephia-inbox td:nth-child(3),
+.sephia-inbox th:nth-child(3) {
+    display: none;
+}
+
+@media screen and (min-width:800px) {
+    .sephia-inbox td:nth-child(1),
+    .sephia-inbox th:nth-child(1),
+    .sephia-inbox td:nth-child(3),
+    .sephia-inbox th:nth-child(3) {
+        display: table-cell;
+    }
+}
+
+table tbody tr td {
+    border-top:none;
+}
+
+.sephia-selected-row td:last-child::after {
+    content:" *";
+    font-weight:bold;
+}
+
+.sephia-selected-row td {
+    background-color:rgba(0,0,0,.01);
+}
+
+.sephia-attachments {
+    overflow:auto;
+}
+
+.sephia-attachment {
+    float: left;
+    margin-right: 15px;
+}
+
+.sephia-attachment button {
+    position:relative;
+    padding:25px 25px 25px 25px;
+    width:150px;
+    height:100px;
+    color:var(--form-txt-col);
+    background:var(--wid-light-col);
+    text-transform:none;
+    margin-bottom:15px !important;
+}
+
+.sephia-attachment button:hover, .sephia-attachment button:active, .sephia-attachment button:focus {
+    background:var(--wid-lighter-col);
+}
+
+.sephia-attachment button:after {
+    position:absolute;
+    top:5px;
+    right:5px;
+    content:"X";
+    color:rgba(0,0,0,.2);
+}

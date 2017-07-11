@@ -308,7 +308,7 @@ create-event:sephia.widgets.settings
             name:PGP
             widgets
               micro.widgets.grid:pgp-keys
-                class:striped hover
+                class:hover
                 columns
                   User ID
                   Strength
@@ -356,7 +356,7 @@ create-event:sephia.widgets.settings
                               if:x:/@get-widget-property/*/*?value
                                 =:x:/@_fingerprint?value
                                 set-widget-property:x:/../*/_event?value
-                                  style:"background-color:rgba(128,128,255,.2);"
+                                  class:sephia-selected-row
 
                           /*
                            * Handled to make user able to select a PGP key
@@ -372,9 +372,9 @@ create-event:sephia.widgets.settings
                             p5.web.widgets.get-parent:x:/../*/_event?value
                             p5.web.widgets.get-children:x:/-/*/*?value
                             delete-widget-property:x:/-/*/*?value
-                              style
+                              class
                             set-widget-property:x:/../*/_event?value
-                              style:"background-color:rgba(128,128,255,.2);"
+                              class:sephia-selected-row
                             set-widget-property:sephia-settings-pgp-key
                               value:x:/@_fingerprint?value
 
@@ -420,5 +420,5 @@ create-event:sephia.widgets.settings
                   src:x:/@micro.form.serialize/*
                 p5.auth.my-settings.set
                   sephia
-                load-file:@SEPHIA/core/launch.hl
+                load-file:@SEPHIA/launch.hl
                 eval:x:/-/*

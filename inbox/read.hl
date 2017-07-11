@@ -81,6 +81,51 @@ where emails.id = @id"
     @id:x:/../*/id?value
 
   /*
+   * This part will contain the background color of the reader, which
+   * depends upon whether or not the email was encrypted or not.
+   */
+  _bg
+  if:x:/@p5.mysql.select/*/*/encrypted?value.int
+    !=:int:0
+    and:x:/@p5.mysql.select/*/*/signature?value
+
+    /*
+     * Email was both encrypted and signed.
+     */
+    set:x:/@_bg?value
+      src:bg
+
+  else
+
+    /*
+     * Email was either not encrypted or not signed.
+     */
+    set:x:/@_bg?value
+      src:warning
+
+  /*
+   * This part will contain all the "meta content" for email (from, date, signed, encrypted, etc)
+   */
+  _meta
+  p5.types.date.format:x:/@p5.mysql.select/*/*/date?value
+    format:"dd. MMM yyyy, HH:mm"
+  set:x:/@_meta?value
+    src:"From: {0} &lt;{1}&gt; - Received: {2}"
+      :x:/@p5.mysql.select/*/*/name?value
+      :x:/@p5.mysql.select/*/*/email?value
+      :x:/@p5.types.date.format?value
+  if:x:/@p5.mysql.select/*/*/encrypted?value.int
+    !=:int:0
+    set:x:/@_meta?value
+      src:{0} - encrypted
+        :x:/@_meta?value
+  if:x:/@p5.mysql.select/*/*/signature?value
+    set:x:/@_meta?value
+      src:{0} - Signature - {1}
+        :x:/@_meta?value
+        :x:/@p5.mysql.select/*/*/signature?value
+
+  /*
    * Making sure we set email as read in database.
    */
   p5.mysql.update:@"update emails set isread = 1 where id = @id"
@@ -195,6 +240,19 @@ add:x:/../*/create-widget/**/widgets/=action-strip
 
 
 /*
+ * Making sure email is displayed as read in grid.
+ */
+p5.web.widgets.find-like:main-container
+  .row-email-id:x:/../*/id?value
+get-widget-property:x:/-/*/*?value
+  class
+if:x:/-/*/*?value
+  ~:sephia-unread
+  micro.css.toggle:x:/@p5.web.widgets.find-like/*/*?value
+    class:sephia-unread
+
+
+/*
  * Creates actual widget showing email.
  */
 create-widget
@@ -204,24 +262,10 @@ create-widget
   widgets
     div
       class:col
-      style:"position:relative;"
       widgets
-        a
-          href:#
-          role:button
-          innerValue:X
-          style:"position:absolute;top:15px;right:15px;font-size:1.5rem;"
-          onclick
-
-            /*
-             * Deleting widgets wrapping currently read email.
-             */
-            p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-              .email-id
-            delete-widget:x:/-/*/*?value
-
         div
-          class:air-inner bg shaded rounded
+          class:air-inner {0} shaded rounded
+            :x:/@p5.mysql.connect/*/_bg?value
           widgets:content
             h3
               innerValue:x:/@p5.mysql.connect/*/p5.mysql.select/[2,3]/*/*/subject?value
@@ -248,6 +292,10 @@ create-widget
               style:"white-space:pre-wrap;"
               visible:false
               innerValue:x:/@p5.mysql.connect/*/_quote?value
+            p
+              style:"color:rgba(0,0,0,.3);font-style:italic;"
+              class:air-top
+              innerValue:x:/@p5.mysql.connect/*/_meta?value
             div
               class:right
               widgets

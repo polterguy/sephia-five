@@ -57,7 +57,7 @@ button
      */
     add:x:/+/*/*
       src:x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]/*/*/email?value
-    add:x:/../*/create-widget/**/sephia.widgets.recipients
+    add:x:/../*/create-widget/**/sephia.widgets.compose/*/recipients
       src
         to
 
@@ -65,6 +65,7 @@ button
     /*
      * Creating actual reply widget.
      */
+    eval-x:x:/+/**/sephia.widgets.compose/*
     create-widget
       after:x:/@p5.web.widgets.find-first-ancestor/*/*?value
       class:row air-top
@@ -73,44 +74,10 @@ button
         div
           class:col
           widgets
-            div
-              class:air-inner bg shaded rounded
-              widgets:content
-                input
-                  type:text
-                  class:fill
-                  placeholder:Subject ...
-                  value:x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]/*/*/subject?value
-                  oninit
-                    micro.page.set-focus:x:/../*/_event?value
-                literal
-                  element:textarea
-                  class:fill
-                  placeholder:Subject of email ...
-                  rows:20
-                  value:x:/@_content?value
-                sephia.widgets.recipients
-                div
-                  class:right
-                  widgets
-                    div
-                      class:strip
-                      style:"display:inline-block;"
-                      widgets
-                        button
-                          innerValue:Send
-                          style:"margin-bottom:0;"
-                        button
-                          innerValue:Discard
-                          style:"margin-bottom:0;"
-                          onclick
-
-                            /*
-                             * Deleting widgets wrapping currently read email.
-                             */
-                            p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                              .email-id
-                            delete-widget:x:/-/*/*?value
+            sephia.widgets.compose
+              subject:x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]/*/*/subject?value
+              body:x:/@_content?value
+              recipients
 
     /*
      * Deleting reader widget

@@ -29,7 +29,8 @@ create-widget:sephia-search-wrapper
               type:text
               class:smaller
               placeholder:Search ...
-            button
+              onkeydown:@"if (event.keyCode == 13) {p5.$('sephia-search-inbox-button').raise('onclick');return false;}"
+            button:sephia-search-inbox-button
               innerValue:Search
               onclick
 
@@ -116,7 +117,7 @@ create-widget
       class:col
       widgets
         micro.widgets.grid:sephia-inbox
-          class:hover
+          class:hover sephia-inbox
 
 
 /*
