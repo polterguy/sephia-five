@@ -10,10 +10,10 @@ create-literal-widget:sephia-poller
   oninit
 
     /*
-     * Making sure we include the JavaScript poller when widget is initially created,
-     * to start our "poll towards server to check for new emails loop".
+     * Invoking checker initially, which will start our "loop".
      */
-    sephia.core.create-poller-javascript
+    p5.web.widgets.ajax-events.raise:x:/../*/_event?value
+      .oncheck
 
   events
 
@@ -22,7 +22,7 @@ create-literal-widget:sephia-poller
      * invoking our [.oncheck] below, after n seconds.
      */
     sephia.core.create-poller-javascript
-      p5.web.send-javascript:@"setTimeout(function(){p5.$('sephia-poller').raise('.oncheck')}, 1000);"
+      p5.web.send-javascript:@"setTimeout(function(){p5.$('sephia-poller').raise('.oncheck')}, 5000);"
 
   .oncheck
 
@@ -44,7 +44,7 @@ create-literal-widget:sephia-poller
     /*
      * Checking if thread is still running.
      */
-    if:x:/@lock/*/select-data/*/*/thread/running?value
+    if:x:/@lock/*/select-data/*/*/running?value
 
       /*
        * Thread is still running.
@@ -66,13 +66,25 @@ create-literal-widget:sephia-poller
        * Then we compare these values.
        */
       if:x:/@p5.mysql.connect/*/p5.mysql.select/*/*/mimeid?value
-        !=:x:/@p5.web.viewstate.get/*/*?value
+        !=:x:/@p5.web.viewstate.get/*?value
+        and:x:/@p5.web.viewstate.get/*?value
 
         /*
          * We have received at least one new email.
          */
         load-file:@SEPHIA/inbox/update-count.hl
         eval:x:/-/*
+
+        /*
+         * Notifying user.
+         */
+        micro.windows.info:You have new emails, click Inbox to see them.
+
+      /*
+       * Updating "last known email".
+       */
+      p5.web.viewstate.set:sephia.emails.last-known
+        src:x:/@p5.mysql.connect/*/p5.mysql.select/*/*/mimeid?value
 
       /*
        * Making sure we poll towards server again after some n seconds.

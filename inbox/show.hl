@@ -23,6 +23,24 @@ create-widget:sephia-search-wrapper
   parent:sephia-main-container
   .offset:0
   class:row
+  events
+
+    /*
+     * Re-databinds inbox, setting [filter] and [offset] to zero and blank.
+     */
+    sephia.inbox.open
+
+      /*
+       * Setting paging [offset] to zero and [filter] to "" 
+       * before re-databinding grid again.
+       */
+      set-widget-property:x:/../*/_event?value
+        .offset:0
+      set-widget-property:sephia-search-txt
+        value:
+      load-file:@SEPHIA/inbox/databind.hl
+      eval:x:/-/*
+
   widgets
     div
       class:col right

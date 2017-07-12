@@ -120,18 +120,39 @@ create-widget:sephia-menu-container
           onclick
 
             /*
-             * Opening up inbox.
+             * Showing inbox.
+             *
+             * Notice, if inbox is already open, we simply re-databind the grid of emails,
+             * to avoid clearing out any existingly read emails.
              */
-            load-file:@SEPHIA/inbox/show.hl
-            eval:x:/-/*
+            if
+              fetch:x:/0/0?value
+                widget-exists:sephia-inbox
+
+              /*
+               * Only re-databind grid.
+               */
+              sephia.inbox.open
+
+            else
+
+              /*
+               * Need to load up inbox again in its entirety.
+               */
+              load-file:@SEPHIA/inbox/show.hl
+              eval:x:/-/*
 
         Settings
           onclick
 
             /*
-             * Opening up settings.
+             * Clearing out everything in main container widget of app.
              */
             clear-widget:sephia-main-container
+
+            /*
+             * Opening up settings.
+             */
             create-widget:initial-settings
               parent:sephia-main-container
               widgets

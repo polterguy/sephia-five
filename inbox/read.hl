@@ -304,3 +304,12 @@ create-widget
                   style:"display:inline-block;"
                   widgets:action-strip
 
+
+
+
+
+/*
+ * Updating email count.
+ */
+load-file:@SEPHIA/inbox/update-count.hl
+eval:x:/-/*
