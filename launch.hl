@@ -14,6 +14,9 @@ p5.web.include-css-file:@MICRO/media/skins/serious.css
 p5.web.include-css-file:@SEPHIA/media/main.css
 
 
+
+
+
 /*
  * Making sure user has an attachment folder.
  */
@@ -21,6 +24,12 @@ if
   fetch:x:/0/0?value
     folder-exists:@SEPHIA-USER-ATTACHMENTS/
   not
+
+  /*
+   * Creating attachments folders, the "/tmp/" guy is for temporary attachments,
+   * for instance attachments uploaded during composing an email, that still haven't
+   * been sent, etc.
+   */
   create-folder:@SEPHIA-USER-ATTACHMENTS/
   create-folder:@SEPHIA-USER-ATTACHMENTS/tmp/
 
@@ -33,6 +42,9 @@ else
   delete-file:x:/-/*?name
 
 
+
+
+
 /*
  * Clearing out anything previously added to page.
  */
@@ -41,11 +53,17 @@ delete-widget-property:cnt
   class
 
 
+
+
+
 /*
  * Creating main content container.
  */
-create-container-widget:main-container
+create-container-widget:sephia-main-container
   class:container
+
+
+
 
 
 /*
@@ -61,7 +79,7 @@ if:x:/@p5.auth.my-settings.get/*/sephia
    * Making sure we hide main menu widget.
    */
   create-widget:initial-settings
-    parent:main-container
+    parent:sephia-main-container
     widgets
       div
         class:row air-top
@@ -71,6 +89,9 @@ if:x:/@p5.auth.my-settings.get/*/sephia
             widgets
               sephia.widgets.settings
   return
+
+
+
 
 
 /*
@@ -83,24 +104,36 @@ load-file:@SEPHIA/core/fetch-emails.hl
 eval:x:/-/*
 
 
+
+
+
 /*
  * Creating main menu widget.
  */
-create-widget:menu-container
+create-widget:sephia-menu-container
   position:0
   class:container-fullscreen
   widgets
     micro.widgets.menu
       items
-        Home
+        Inbox
           onclick
+
+            /*
+             * Opening up inbox.
+             */
             load-file:@SEPHIA/inbox/show.hl
             eval:x:/-/*
+
         Settings
           onclick
-            clear-widget:main-container
+
+            /*
+             * Opening up settings.
+             */
+            clear-widget:sephia-main-container
             create-widget:initial-settings
-              parent:main-container
+              parent:sephia-main-container
               widgets
                 div
                   class:row air-top
@@ -111,8 +144,22 @@ create-widget:menu-container
                         sephia.widgets.settings
 
 
+
+
+
 /*
  * Opening inbox.
  */
 load-file:@SEPHIA/inbox/show.hl
+eval:x:/-/*
+
+
+
+
+
+/*
+ * Creates widget that constantly polls server every n'th second to
+ * check if new emails have arrived.
+ */
+load-file:@SEPHIA/core/start-poller.hl
 eval:x:/-/*

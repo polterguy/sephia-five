@@ -57,7 +57,7 @@ lock:sephia.core.thread-creator-{0}
    * Passing in user's attachment folder to thread.
    */
   set:x:/..lock/*/fork/*/_users-home-folder?value
-    p5.io.unroll-path:@SEPHIA-USER-ATTACHMENTS
+    p5.io.unroll-path:@SEPHIA-USER-ATTACHMENTS/
 
 
   /*
@@ -203,21 +203,39 @@ lock:sephia.core.thread-creator-{0}
                     _fingerprint
                     _encrypted:int:0
                     if:x:/@_dp/#/*/*/signature/*?value
+
+                      /*
+                       * Email was cryptographically signed.
+                       * Storing both email and fingerprint of key used to sign email.
+                       */
                       set:x:/@_signature?value
                         src:x:/@_dp/#/*/*/signature/0?name
                       set:x:/@_fingerprint?value
                         src:x:/@_dp/#/*/*/signature/0/0?value
+
                     if:x:/@_dp/#/*/multipart/*/decryption-key
+
+                      /*
+                       * Email was encrypted.
+                       */
                       set:x:/@_encrypted?value
                         src:int:1
 
                     /*
-                     * Now inserting into "email" table.
+                     * Verifying that a subject was given by POP3 server.
                      */
                     if:x:/@_dp/#/*/Subject?value
                       not
+
+                      /*
+                       * No subject was given, adding empty string as default value.
+                       */
                       set:x:/@_dp/#/*/Subject?value
                         src:
+
+                    /*
+                     * Now we can insert email into database.
+                     */
                     p5.mysql.insert:@"insert into emails (subject, date, sender, username, isread, mimeid, signature, fingerprint, encrypted, type) values (@subject, @date, @sender, @username, 0, @mimeid, @signature, @fingerprint, @encrypted, 'received')"
                       @subject:x:/@_dp/#/*/Subject?value
                       @date:x:/@_dp/#/*/Date?value
@@ -272,14 +290,22 @@ lock:sephia.core.thread-creator-{0}
 
                         /*
                          * Doesn't exist, inserting new entry.
-                         * Making sure we default name to "Anonymous", unless explicitly given.
+                         * Making sure we default name to "Unknown", unless explicitly given.
                          */
                         if:x:/@_dp/#?name
                           =:
                           or:x:/@_dp/#?name
                             not
+
+                          /*
+                           * No name given, defaulting to "Unknown".
+                           */
                           set:x:/@_dp/#?name
-                            src:Anonymous
+                            src:Unknown
+
+                        /*
+                         * Inserting new contact.
+                         */
                         p5.mysql.insert:@"insert into contacts (name, email, username) value (@name, @email, @username)"
                           @name:x:/@_dp/#?name
                           @email:x:/@_dp/#?value
@@ -294,7 +320,7 @@ lock:sephia.core.thread-creator-{0}
                         and:x:/@_dp/#?name
 
                         /*
-                         * Exists, but name has been updated.
+                         * Exists, but sender has updated his name.
                          */
                         p5.mysql.update:@"update contacts set name = @name where id = @id"
                           @name:x:/@_dp/#?name
@@ -313,10 +339,10 @@ lock:sephia.core.thread-creator-{0}
                       /*
                        * Inserting into "recipients" table.
                        */
-                      p5.mysql.insert:@"insert into recipients (contactid, type, emailid) values (@contactid, @type, @emailid)"
+                      p5.mysql.insert:@"insert into recipients (contactid, type, emailid) values (@contactid, @type, @id)"
                         @contactid:x:/@_contact-id?value
                         @type:x:/@_dp/#/.?name
-                        @emailid:x:/@for-each/@p5.mysql.insert/*/id?value
+                        @id:x:/@for-each/@p5.mysql.insert/*/id?value
 
                   /*
                    * Commit database transaction.
@@ -328,13 +354,15 @@ lock:sephia.core.thread-creator-{0}
 
               /*
                * Checking if there was less than 20 messages fetched, at which point we break the inner [while] loop.
+               * If so, the thread will sleep for n seconds, before attempting to fetch new emails from POP3 server again.
+               * Iterating in a never ending loop like this.
                */
               if:x:/@p5.pop3.get/*/envelope?count
                 <:int:20
                 break
 
         /*
-         * Sleeping current thread for 5 seconds, before we start continute our outer [while], 
+         * Sleeping current thread for n seconds, before we start continute our outer [while], 
          * which will start fetching again.
          */
         sleep:10000
@@ -342,23 +370,28 @@ lock:sephia.core.thread-creator-{0}
     catch
 
       /*
-       * Deleting the fact that current user has a fetcher thread, 
-       * which he doesn't anymore, as we leave this catch.
+       * Making sure we lock the user until error mesage has been inserted into p5.data.
        */
-      delete-data:x:/*/*/sephia.core.thread-{0}
-        :x:/@.whoami/*/username?value
+      lock:sephia.core.thread-creator-{0}
+        :x:/@whoami/*/username?value
 
-
-      /*
-       * Storing error message in database.
-       */
-      set:x:/+2/*?name
-        src:sephia.core.thread-{0}
+        /*
+         * Deleting the fact that current user has a fetcher thread, 
+         * which he doesn't anymore, as we leave this catch.
+         */
+        delete-data:x:/*/*/sephia.core.thread-{0}
           :x:/@.whoami/*/username?value
-      eval-x:x:/+/*/*/*
-      insert-data
-        thread
-          error
-            message:x:/@message?value
-            type:x:/@type?value
-            stack-trace:x:/@stack-trace?value
+
+        /*
+         * Storing error message in database.
+         */
+        set:x:/+2/*?name
+          src:sephia.core.thread-{0}
+            :x:/@.whoami/*/username?value
+        eval-x:x:/+/*/*/*
+        insert-data
+          thread
+            error
+              message:x:/@message?value
+              type:x:/@type?value
+              stack-trace:x:/@stack-trace?value

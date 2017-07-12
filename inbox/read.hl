@@ -8,7 +8,7 @@
 /*
  * Checking if email is already opened in another widget.
  */
-p5.web.widgets.find:main-container
+p5.web.widgets.find:sephia-main-container
   .email-id:x:/../*/id?value
 if:x:/-/*/*?value
 
@@ -242,7 +242,7 @@ add:x:/../*/create-widget/**/widgets/=action-strip
 /*
  * Making sure email is displayed as read in grid.
  */
-p5.web.widgets.find-like:main-container
+p5.web.widgets.find-like:sephia-main-container
   .row-email-id:x:/../*/id?value
 get-widget-property:x:/-/*/*?value
   class
@@ -256,7 +256,7 @@ if:x:/-/*/*?value
  * Creates actual widget showing email.
  */
 create-widget
-  parent:main-container
+  parent:sephia-main-container
   class:row air-top
   .email-id:x:/../*/id?value
   widgets

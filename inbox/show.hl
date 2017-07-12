@@ -4,17 +4,23 @@
  */
 
 
+
+
+
 /*
  * Clearing main container.
  */
-clear-widget:main-container
+clear-widget:sephia-main-container
+
+
+
 
 
 /*
  * Creating filtering and paging widget toolbar at top of page.
  */
 create-widget:sephia-search-wrapper
-  parent:main-container
+  parent:sephia-main-container
   .offset:0
   class:row
   widgets
@@ -25,25 +31,37 @@ create-widget:sephia-search-wrapper
           class:strip
           style:"display:inline-block;"
           widgets
-            input:sephia-search-inbox
+
+            /*
+             * Text input for allowing user to search emails.
+             */
+            input:sephia-search-txt
               type:text
               class:smaller
               placeholder:Search ...
-              onkeydown:@"if (event.keyCode == 13) {p5.$('sephia-search-inbox-button').raise('onclick');return false;}"
-            button:sephia-search-inbox-button
+              onkeydown:@"if (event.keyCode == 13) {p5.$('sephia-search-btn').raise('onclick');return false;}"
+
+            /*
+             * Button to search inbox.
+             */
+            button:sephia-search-btn
               innerValue:Search
               onclick
 
                 /*
                  * Retrieving filter condition and re-databinding inbox.
                  */
-                get-widget-property:sephia-search-inbox
+                get-widget-property:sephia-search-txt
                   value
                 load-file:@SEPHIA/inbox/databind.hl
                 eval-x:x:/+/*
                 eval:x:/-2/*
                   filter:x:/@get-widget-property/*/*?value
-                micro.page.set-focus:sephia-search-inbox
+
+                /*
+                 * Making sure we set focus to search textbox.
+                 */
+                micro.page.set-focus:sephia-search-txt
 
                 /*
                  * Making sure we reset "offset".
@@ -51,6 +69,9 @@ create-widget:sephia-search-wrapper
                 set-widget-property:sephia-search-wrapper
                   .offset:0
 
+            /*
+             * Button to page to previous page.
+             */
             button
               innerValue:&lt;
               onclick
@@ -74,7 +95,7 @@ create-widget:sephia-search-wrapper
                 set-widget-property:sephia-search-wrapper
                   .offset:x:/@-?value
 
-                get-widget-property:sephia-search-inbox
+                get-widget-property:sephia-search-txt
                   value
                 load-file:@SEPHIA/inbox/databind.hl
                 eval-x:x:/+/*
@@ -82,6 +103,10 @@ create-widget:sephia-search-wrapper
                   filter:x:/@get-widget-property/*/*?value
                   offset:x:/@-?value
 
+
+            /*
+             * Button to page to next page.
+             */
             button
               innerValue:&gt;
               onclick
@@ -94,7 +119,7 @@ create-widget:sephia-search-wrapper
                   .offset
                 +:x:/@get-widget-property/*/*?value.int
                   _:15
-                get-widget-property:sephia-search-inbox
+                get-widget-property:sephia-search-txt
                   value
                 load-file:@SEPHIA/inbox/databind.hl
                 eval-x:x:/+/*
@@ -106,11 +131,14 @@ create-widget:sephia-search-wrapper
                     .offset:x:/@+?value
 
 
+
+
+
 /*
  * Creating actual inbox datagrid widget.
  */
 create-widget
-  parent:main-container
+  parent:sephia-main-container
   class:row
   widgets
     div
@@ -120,8 +148,21 @@ create-widget
           class:hover sephia-inbox
 
 
+
+
+
 /*
  * Databinding grid.
  */
 load-file:@SEPHIA/inbox/databind.hl
+eval:x:/-/*
+
+
+
+
+
+/*
+ * Updating email count.
+ */
+load-file:@SEPHIA/inbox/update-count.hl
 eval:x:/-/*

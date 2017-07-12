@@ -1,0 +1,129 @@
+
+/*
+ * Creates an (invisible) widget that constantly polls the server to check
+ * if new emails have arrived.
+ */
+
+create-literal-widget:sephia-poller
+  element:span
+  style:"display:none;"
+  oninit
+
+    /*
+     * Making sure we include the JavaScript poller when widget is initially created,
+     * to start our "poll towards server to check for new emails loop".
+     */
+    sephia.core.create-poller-javascript
+
+  events
+
+    /*
+     * Creates a JavaScript object that will poll towards the server, 
+     * invoking our [.oncheck] below, after n seconds.
+     */
+    sephia.core.create-poller-javascript
+      p5.web.send-javascript:@"setTimeout(function(){p5.$('sephia-poller').raise('.oncheck')}, 1000);"
+
+  .oncheck
+
+    /*
+     * Making sure we've got synchronized access to thread signal object.
+     *
+     * Notice, we try to keep our locks as short as possible!
+     */
+    whoami
+    lock:sephia.core.thread-creator-{0}
+      :x:/@whoami/*/username?value
+
+      /*
+       * Retrieving thread signal object.
+       */
+      select-data:x:/*/*/sephia.core.thread-{0}
+        :x:/@whoami/*/username?value
+
+    /*
+     * Checking if thread is still running.
+     */
+    if:x:/@lock/*/select-data/*/*/thread/running?value
+
+      /*
+       * Thread is still running.
+       *
+       * Now we must check if new emails have arrived from POP3 server.
+       * We do this by selecting the MIME ID of the newest email in database, and comparing it towards
+       * a ViewState value that tracks the last fetched email.
+       */
+      p5.mysql.connect:[sephia]
+        p5.mysql.select:@"select mimeid from emails where username = @username order by id desc limit 1"
+          @username:x:/@whoami/*/username?value
+
+      /*
+       * Then we retrieve the page value which wraps our "last known MIME ID".
+       */
+      p5.web.viewstate.get:sephia.emails.last-known
+
+      /*
+       * Then we compare these values.
+       */
+      if:x:/@p5.mysql.connect/*/p5.mysql.select/*/*/mimeid?value
+        !=:x:/@p5.web.viewstate.get/*/*?value
+
+        /*
+         * We have received at least one new email.
+         */
+        load-file:@SEPHIA/inbox/update-count.hl
+        eval:x:/-/*
+
+      /*
+       * Making sure we poll towards server again after some n seconds.
+       */
+      sephia.core.create-poller-javascript
+
+    else
+
+      /*
+       * Thread has stopped running, and contains an error exception message.
+       *
+       * Making sure we display error message to user, and asks him if he wants to try again,
+       * or alternatively simply close modal window, to try to resolve it himself, by e.g.
+       * modifying his settings, etc.
+       */
+      create-widgets
+        micro.widgets.modal:sephia-error-window
+          class:micro-modal
+          widgets
+            h3
+              innerValue:Oops!
+            p
+              innerValue:And error occurred, message from server was; '{0}'
+                :x:/@lock/*/select-data/*/*/error/*/message?value
+            div
+              class:right
+              widgets
+                div
+                  class:strip
+                  style:"display:inline-block;"
+                  widgets
+                    button
+                      innerValue:Try again
+                      onclick
+
+                        /*
+                         * Deleting error object, restarting thread worker, and closing modal widget.
+                         */
+                        whoami
+                        delete-data:x:/*/*/sephia.core.thread-{0}
+                          :x:/@whoami/*/username?value
+                        load-file:@SEPHIA/core/fetch-emails.hl
+                        eval:x:/-/*
+                        delete-widget:sephia-error-window
+                        sephia.core.create-poller-javascript
+
+                    button
+                      innerValue:Close
+                      onclick
+
+                        /*
+                         * Closing modal widget.
+                         */
+                        delete-widget:sephia-error-window
