@@ -17,6 +17,11 @@
     font-weight: bold;
 }
 
+.sephia-sent {
+    font-style:italic;
+    color:#e0e0e0;
+}
+
 .sephia-inbox td {
     overflow: hidden;
     text-overflow: ellipsis;

@@ -38,10 +38,11 @@ lock:sephia.core.thread-creator-{0}
    */
   select-data:x:/*/*/sephia.core.thread-{0}
     :x:/@whoami/*/username?value
-  if:x:/@select-data/*/*/thread?value
+  if:x:/@select-data/*?value
 
     /*
-     * Fetcher thread already exists, returning early.
+     * Fetcher thread already exists, or we have an unresolved errer, 
+     * regardless we are returning early.
      */
     return:bool:true
 

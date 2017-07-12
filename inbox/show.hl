@@ -27,19 +27,42 @@ create-widget:sephia-search-wrapper
 
     /*
      * Re-databinds inbox, setting [filter] and [offset] to zero and blank.
+     *
+     * If you supply [keep-page-filter] and set its value to true, then existing [filter] and [offset]
+     * will be kept as is, and used to re-databind grid.
      */
     sephia.inbox.open
 
       /*
-       * Setting paging [offset] to zero and [filter] to "" 
-       * before re-databinding grid again.
+       * Checking if caller requested that current page and filter should be kept.
        */
-      set-widget-property:x:/../*/_event?value
-        .offset:0
-      set-widget-property:sephia-search-txt
-        value:
-      load-file:@SEPHIA/inbox/databind.hl
-      eval:x:/-/*
+      if:x:/../*/keep-page-filter?value
+
+        /*
+         * Retrieving paging [offset] and [filter] before re-databinding grid again.
+         */
+        get-widget-property:x:/../*/_event?value
+          .offset
+        get-widget-property:sephia-search-txt
+          value
+        load-file:@SEPHIA/inbox/databind.hl
+        eval-x:x:/+/*
+        eval:x:/-2/*
+          offset:x:/..if/*/get-widget-property/[0,1]/*/*?value
+          filter:x:/..if/*/get-widget-property/[1,2]/*/*?value
+
+      else
+
+        /*
+         * Setting paging [offset] to zero and [filter] to "" 
+         * before re-databinding grid again.
+         */
+        set-widget-property:x:/../*/_event?value
+          .offset:0
+        set-widget-property:sephia-search-txt
+          value:
+        load-file:@SEPHIA/inbox/databind.hl
+        eval:x:/-/*
 
   widgets
     div
