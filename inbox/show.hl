@@ -1,270 +1,127 @@
 
 /*
- * Opens up the "inbox" of Sephia Five.
- *
- * Notice, the "inbox" contains all email, also sent emails.
- *
- * Optionally pass in [filter] and [offset] as criteria.
- *
- * [filter] will searchj for only emails matching the given [filter] one wy or another (from, content, subject etc)
- * having the search filter.
- *
- * [offset] is an integer number, meaning at which offset to display items from. For instance, if offset is 10, then
- * only the items between 10 and 20 (optionally) matching the given [filter] will be displayed.
- *
- * Default [filter] is empty, and default [offset] is 0.
+ * Shows our inbox for Sephia Five
  */
-
-
-
 
 
 /*
- * Opening up database connection, making sure we invoke [whoami], to use as criteria for "username" columns
- * in later SQLs.
+ * Clearing main container.
  */
-whoami
-p5.io.unroll-path:@SEPHIA/
-p5.auth.my-settings.get
-p5.mysql.connect:[sephia]
+clear-widget:main-container
 
-  /*
-   * Passing in criterias to file responsible for selecting items from the dabatase.
-   */
-  add:x:/+
-    src:x:/../*(/filter|/offset|/whoami)
-  sys42.utilities.execute-lambda-file:@SEPHIA/inbox/helpers/select-emails.hl
 
-  /*
-   * Updating count.
-   */
-  p5.mysql.scalar:@"select count(*) from emails where isread=0 and username = @username"
-    @username:x:/@whoami/*/username?value
-  p5.web.widgets.property.set:sephia-header-text
-    innerValue:@"Sephia Five <small title=""{1}"">{0} - {4} - {2} ({3})</small>"
-      :x:/@p5.auth.my-settings.get/*/sephia/*/name?value
-      :x:/@p5.auth.my-settings.get/*/sephia/*/email?value
-      :x:/@sys42.utilities.execute-lambda-file/*/count?value
-      :x:/@p5.mysql.scalar?value
-      :x:/@whoami/*/username?value
-
-  /*
-   * Looping through result from above file invocation.
-   */
-  for-each:x:/@sys42.utilities.execute-lambda-file/*/emails/*
-
-    /*
-     * CSS class for HTML table row, which differs is email is read, unread, has attachments, etc.
-     */
-    _class
-
-    /*
-     * Status of email, whether or not it was encrypted, contains attachments and was cryptographically signed, etc.
-     */
-    _status:
-
-    /*
-     * Checking if email has been read.
-     *
-     * Emails that are already read by user, are rendered with visual clues, indicating they have already been read.
-     */
-    if:x:/@_dp/#/*/isread?value.int
-      =:int:0
-      set:x:/@_class?value
-        src:{0} sephia-unread
-          :x:/@_class?value
-
-    /*
-     * Checking if email has been sent by user.
-     *
-     * Notice, we only have one single "inbox", which contains all emails, both those sent by user himself, and those
-     * received from others.
-     *
-     * Emails are rendered with visual clues though, indicating whether or not they've been sent by user himself, 
-     * received from others, etc.
-     */
-    if:x:/@_dp/#/*/type?value
-      =:sent
-      set:x:/@_class?value
-        src:{0} sephia-sent
-          :x:/@_class?value
-      add:x:/..for-each/*/create-widget/*/widgets/*/td/[0,1]
-        src
-          title:This email was sent by you!
-    else
-      add:x:/..for-each/*/create-widget/*/widgets/*/td/[0,1]
-        src
-          title:{0} &lt;{1}&gt;
-            :x:/@_dp/#/*/name?value
-            :x:/@_dp/#/*/email?value
-
-    /*
-     * Checking if email has attachments.
-     *
-     * We display visual clues for emails having attachments.
-     */
-    p5.mysql.scalar:@"select count(*) from attachments where emailid = @emailid"
-      @emailid:x:/@_dp/#/*/id?value
-    if:x:/@p5.mysql.scalar?value
-      >:long:0
-      set:x:/@_status?value
-        src:@"{0}<svg class=""sephia-icon""><use xlink:href=""{1}media/si-sprite.svg#si-ant-paper-clip""></use></svg>"
-          :x:/@_status?value
-          :x:/@p5.io.unroll-path?value
-
-    /*
-     * Checking if email is encrypted.
-     *
-     * We display visual clues for emails that are encrypted.
-     */
-    if:x:/@_dp/#/*/encrypted?value.int
-      =:int:1
-      set:x:/@_status?value
-        src:@"{0}<svg class=""sephia-icon""><use xlink:href=""{1}media/si-sprite.svg#si-evil-lock""></use></svg>"
-          :x:/@_status?value
-          :x:/@p5.io.unroll-path?value
-
-    /*
-     * Checking if email is signed.
-     *
-     * We display visual clues for emails that have been cryptographically signed.
-     */
-    if:x:/@_dp/#/*/signature?value
-      set:x:/@_status?value
-        src:@"{0}<svg class=""sephia-icon""><use xlink:href=""{1}media/si-sprite.svg#si-evil-pencil""></use></svg>"
-          :x:/@_status?value
-          :x:/@p5.io.unroll-path?value
-
-    /*
-     * Checking if email is already open.
-     *
-     * Notice, opened emails are rendered in our datagrid with "visual clues" to signal that they're already opened
-     * up for viewing.
-     *
-     * Opened email here, refer to emails that user is already reading, in the "reader" parts of Sephia Five.
-     */
-    p5.web.widgets.find:sephia-read-emails
-      _email-id:x:/@_dp/#/*/id?value
-    if:x:/@p5.web.widgets.find/*/*
-      set:x:/@_class?value
-        src:{0} sephia-open
-          :x:/@_class?value
-
-    /*
-     * Nicely formatting date.
-     */
-    p5.types.date.format:x:/@_dp/#/*/date?value
-      format:"ddd d. MMM yyyy - HH:mm"
-
-    /*
-     * Checking if from name exceeds 19 characters, and if so, right-"trimming" it down to 19.
-     */
-    _from
-    if
-      length:x:/@_dp/#/*/name?value
-      >:int:19
-      split:x:/@_dp/#/*/name?value
-        =:int:19
-      set:x:/@_from?value
-        src:{0} ...
-          :x:/@split/0?name
-    else
-      set:x:/@_from?value
-        src:x:/@_dp/#/*/name?value
-    set:x:/@_from?value
-      p5.html.html-encode:x:/@_from?value
-
-    /*
-     * Checking if subject length exceeds 57 characters, and if so, right-"trimming" it down to 57.
-     */
-    _subject
-    if
-      length:x:/@_dp/#/*/subject?value
-      >:int:57
-      split:x:/@_dp/#/*/subject?value
-        =:int:57
-      set:x:/@_subject?value
-        src:{0} ...
-          :x:/@split/0?name
-    else
-      set:x:/@_subject?value
-        src:x:/@_dp/#/*/subject?value
-    set:x:/@_subject?value
-      p5.html.html-encode:x:/@_subject?value
-
-    /*
-     * Checking if we have a custom class, and if so, making sure we add it to creation of row.
-     */
-    if:x:/@_class?value
-      trim:x:/@_class?value
-      eval-x:x:/+/*/*
-      add:x:/..for-each/*/create-widget
-        src
-          class:x:/@trim?value
-
-    /*
-     * Creating table row for email item, and inserting row widget into "table datagrid" for emails.
-     */
-    create-widget
-      parent:sephia-datagrid
-      element:tr
-      _email-id:x:/@_dp/#/*/id?value
-      role:button
-      onclick
-
-        /*
-         * Open email for reading, by invoking file responsible for doing such, passing in ID of email user wants to read.
-         */
-        p5.web.widgets.property.get:x:/../*/_event?value
-          _email-id
-        eval-x:x:/+/*
-        sys42.utilities.execute-lambda-file:@SEPHIA/inbox/read.hl
-          email-id:x:/@p5.web.widgets.property.get/*/*?value
-        sys42.windows.info-tip:Your email can be found at the bottom of the page
-
+/*
+ * Creating filtering and paging widget toolbar at top of page.
+ */
+create-widget:sephia-search-wrapper
+  parent:main-container
+  .offset:0
+  class:row
+  widgets
+    div
+      class:col right
       widgets
-
-        /*
-         * "From" column.
-         */
-        td
+        div
+          class:strip
+          style:"display:inline-block;"
           widgets
-            span
-              innerValue:x:/@_from?value
+            input:sephia-search-inbox
+              type:text
+              class:smaller
+              placeholder:Search ...
+              onkeydown:@"if (event.keyCode == 13) {p5.$('sephia-search-inbox-button').raise('onclick');return false;}"
+            button:sephia-search-inbox-button
+              innerValue:Search
+              onclick
 
-        /*
-         * "Subject" column.
-         */
-        td
-          innerValue:x:/@_subject?value
+                /*
+                 * Retrieving filter condition and re-databinding inbox.
+                 */
+                get-widget-property:sephia-search-inbox
+                  value
+                load-file:@SEPHIA/inbox/databind.hl
+                eval-x:x:/+/*
+                eval:x:/-2/*
+                  filter:x:/@get-widget-property/*/*?value
+                micro.page.set-focus:sephia-search-inbox
 
-        /*
-         * "Date" column.
-         *
-         * Notice, emails are not sorted by dates, since that might create "weird results", if sender's SMTP server
-         * is wrongly configured in regards to what time it it.
-         *
-         * Hence, sometimes, theoretically, an email with a newer date,might render after another email, being "older".
-         *
-         * This is because emails are rendered in the order they are received, which is more "correct" to use as ordering
-         * of emails.
-         */
-        td
-          widgets
-            span
-              innerValue:x:/@p5.types.date.format?value
+                /*
+                 * Making sure we reset "offset".
+                 */
+                set-widget-property:sephia-search-wrapper
+                  .offset:0
 
-        /*
-         * Status of email, whether or not it was encrypted, contains attachments, and was cryptographically signed, etc.
-         */
-        td
-          innerValue:x:/@_status?value
+            button
+              innerValue:&lt;
+              onclick
 
+                /*
+                 * Retrieving filter condition and re-databinding inbox, 
+                 * subtracting 15 from "offset".
+                 */
+                get-widget-property:sephia-search-wrapper
+                  .offset
+                if:x:/-/*/*?value.int
+                  =:int:0
 
+                  /*
+                   * Already at the beginning of dataset.
+                   */
+                  return
 
+                -:x:/@get-widget-property/*/*?value.int
+                  _:15
+                set-widget-property:sephia-search-wrapper
+                  .offset:x:/@-?value
+
+                get-widget-property:sephia-search-inbox
+                  value
+                load-file:@SEPHIA/inbox/databind.hl
+                eval-x:x:/+/*
+                eval:x:/-2/*
+                  filter:x:/@get-widget-property/*/*?value
+                  offset:x:/@-?value
+
+            button
+              innerValue:&gt;
+              onclick
+
+                /*
+                 * Retrieving filter condition and re-databinding inbox, 
+                 * adding 15 from "offset".
+                 */
+                get-widget-property:sephia-search-wrapper
+                  .offset
+                +:x:/@get-widget-property/*/*?value.int
+                  _:15
+                get-widget-property:sephia-search-inbox
+                  value
+                load-file:@SEPHIA/inbox/databind.hl
+                eval-x:x:/+/*
+                eval:x:/-2/*
+                  filter:x:/@get-widget-property/*/*?value
+                  offset:x:/@+?value
+                if:x:/-?value
+                  set-widget-property:sephia-search-wrapper
+                    .offset:x:/@+?value
 
 
 /*
- * Updating title of web page, to reflect unread emails.
+ * Creating actual inbox datagrid widget.
  */
-sys42.utilities.execute-lambda-file:@SEPHIA/inbox/set-title.hl
+create-widget
+  parent:main-container
+  class:row
+  widgets
+    div
+      class:col
+      widgets
+        micro.widgets.grid:sephia-inbox
+          class:hover sephia-inbox
+
+
+/*
+ * Databinding grid.
+ */
+load-file:@SEPHIA/inbox/databind.hl
+eval:x:/-/*

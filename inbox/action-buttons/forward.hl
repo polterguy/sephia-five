@@ -1,0 +1,7 @@
+
+/*
+ * Action button for replying to email
+ */
+button
+  innerValue:Forward
+  style:"margin-bottom:0;"

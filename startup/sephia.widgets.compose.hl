@@ -1,0 +1,213 @@
+
+/*
+ * Extension widget for composing an email.
+ * Optionally you can pass in [subject], [body], [recipients][to], [recipients][cc] and [recipients][bcc].
+ */
+create-event:sephia.widgets.compose
+
+  /*
+   * Checking if we've got public cryptography keys for all recipients.
+   * First checking if we have any recipients.
+   */
+  _bg
+  if:x:/../*/recipients/*/*?count
+    >:int:0
+
+    /*
+     * Then listing public cryptography keys matching recipients list, and making sure count equals
+     * the total number of recipients in email.
+     */
+    p5.crypto.list-public-keys:x:/../*/recipients/*/*?name
+    if:x:/@p5.crypto.list-public-keys/*?count
+      =:x:/../*/recipients/*/*?count
+
+      /*
+       * Email can be encrypted.
+       */
+      set:x:/@_bg?value
+        src:bg
+
+    else
+
+      /*
+       * Email can not be encrypted.
+       */
+      set:x:/@_bg?value
+        src:warning
+
+  /*
+   * Including JavaScript necessary to handle files.
+   */
+  p5.web.include-javascript:@"
+p5.sephia_upload_files = function(e) {
+  var files = e.target.files;
+  for(var i = 0; i < files.length; i++) {
+    var reader = new FileReader();
+    reader.onload = (function(file) {
+      return function(data) {
+        p5.$(e.target.id).raise('.onupload', {
+          onbefore:function(pars,evt) {
+            pars.push(['sephia-file-name', file.name], ['sephia-file-content', data.target.result.split('base64,')[1]]);
+          }
+        });
+      }
+    })(files[i]);
+    reader.readAsDataURL(files[i]);
+  }
+}
+"
+
+  /*
+   * Returning actual widget to caller.
+   */
+  eval-x:x:/+2/**/widgets/=content/*(/input|/literal)/*/value|/+2/*/*/class
+  add:x:/+/**/sephia.widgets.recipients
+    src:x:/../*/recipients/*
+  return
+    div
+      class:air-inner shaded rounded {0}
+        :x:/@_bg?value
+      widgets:content
+
+        /*
+         * Subject of reply.
+         */
+        input
+          type:text
+          class:fill
+          placeholder:Subject ...
+          .data-field:subject
+          value:x:/../*/subject?value
+          oninit
+
+            /*
+             * Settings initial focus to "subject" of email.
+             */
+            micro.page.set-focus:x:/../*/_event?value
+
+        /*
+         * Body of reply.
+         */
+        literal
+          element:textarea
+          class:fill
+          placeholder:Subject of email ...
+          .data-field:body
+          rows:20
+          value:x:/../*/body?value
+
+        /*
+         * Wrapper for attachments.
+         */
+        container
+          class:sephia-attachments
+
+        /*
+         * Our "select recipient" extension widget.
+         */
+        sephia.widgets.recipients
+
+        /*
+         * Button strip at bottom for "send", "discard", etc.
+         */
+        div
+          class:right
+          widgets
+            div
+              class:strip
+              style:"display:inline-block;"
+              widgets
+                button
+                  innerValue:Send
+                  style:"margin-bottom:0;"
+                  onclick
+
+                    /*
+                     * Sending email.
+                     */
+                    p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                      .email-id
+                    micro.form.serialize:x:/-/*/*?value
+                    set:x:/@micro.form.serialize/*/body?value
+                      p5.html.html-decode:x:/@micro.form.serialize/*/body?value
+                    for-each:x:/@micro.form.serialize/*/attachment
+                      eval-x:x:/+/*/*
+                      add:x:/../*/sephia.send-email/*/attachments
+                        src
+                          file:@SEPHIA-USER-ATTACHMENTS/tmp/{0}
+                            :x:/@_dp/#?value
+                    add:x:/+
+                      src:x:/@micro.form.serialize/*(!/attachment!/no-data)
+                    sephia.send-email
+                      attachments
+
+                    /*
+                     * Deleting widgets wrapping currently reply to email widget.
+                     */
+                    p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                      .email-id
+                    delete-widget:x:/-/*/*?value
+
+                input
+                  style:"display:none;"
+                  type:file
+                  multiple
+                  class:inputFile
+                  .data-field:no-data
+                  .onupload
+
+                    /*
+                     * Retrieving the file name and its content, and saving it to disc.
+                     */
+                    p5.web.post.get:sephia-file-name
+                    p5.web.post.get:sephia-file-content
+                    p5.string.decode-base64:x:/-/*?value
+                    save-file:@SEPHIA-USER-ATTACHMENTS/tmp/{0}
+                      :x:/../*/p5.web.post.get/[0,1]/*?value
+                      src:x:/@p5.string.decode-base64?value
+
+                    /*
+                     * Creating widget wrapping attachment.
+                     */
+                    p5.web.widgets.find-first-ancestor-like:x:/../*/_event?value
+                      class:air-inner
+                    p5.web.widgets.find-first:x:/-/*/*?value
+                      class:sephia-attachments
+                    create-widget
+                      class:sephia-attachment
+                      parent:x:/@p5.web.widgets.find-first/*/*?value
+                      widgets
+                        input
+                          type:hidden
+                          .data-field:attachment
+                          value:x:/../*/p5.web.post.get/[0,1]/*?value
+                        button
+                          innerValue:x:/../*/p5.web.post.get/[0,1]/*?value
+                          onclick
+
+                            /*
+                             * Deleting file from tmp folder, and deleting widget.
+                             */
+                            p5.web.widgets.get-parent:x:/../*/_event?value
+                            micro.form.serialize:x:/-/*/*?value
+                            delete-file:@SEPHIA-USER-ATTACHMENTS/tmp/{0}
+                              :x:/@micro.form.serialize/*?value
+                            delete-widget:x:/@p5.web.widgets.get-parent/*/*?value
+
+                  onchange:"p5.sephia_upload_files(event);"
+
+                button
+                  innerValue:Add attachment
+                  style:"margin-bottom:0;"
+                  onclick:@"document.querySelector('.inputFile').click();return false;"
+                button
+                  innerValue:Discard
+                  style:"margin-bottom:0;"
+                  onclick
+
+                    /*
+                     * Deleting widgets wrapping currently reply to email widget.
+                     */
+                    p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                      .email-id
+                    delete-widget:x:/-/*/*?value

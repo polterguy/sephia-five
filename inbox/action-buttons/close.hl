@@ -1,0 +1,16 @@
+
+/*
+ * Action button for closing reader.
+ */
+button
+  innerValue:Close
+  style:"margin-bottom:0;"
+  onclick
+
+    /*
+     * Deleting widgets wrapping currently read email.
+     */
+    p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+      .email-id
+    delete-widget:x:/-/*/*?value
+

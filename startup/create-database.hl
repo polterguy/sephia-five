@@ -1,6 +1,8 @@
 
 /*
- * Creating database if it doesn't exist, assuming connection string in web.config exists, and is named "sephia".
+ * Creating database if it doesn't exist, 
+ * assuming connection string in web.config exists, 
+ * and its name is "sephia".
  */
 p5.mysql.connect:[sephia]
   p5.mysql.execute:@"

@@ -1,418 +1,97 @@
 
 /*
  * Main CSS file for Sephia Five.
- *
- * The two (complementary) colors we are using as the basic colors here are; #d1e8f0 and #f0dbd1
  */
 
 
-
-/*
- * Main root selector for "everything".
- */
-.sephia {
-    margin-bottom:150px;
-}
-.sephia .sephia-brand a {
-    color:#d1e8f0;
-}
-.sephia .sephia-brand small {
-    font-size:.4em;
-    color:rgba(0,0,0,.1);
-}
-@media (max-width:413px) {
-    .sephia .sephia-brand a h1 {
-        font-size:1.5em;
-    }
-}
-@media (max-width:415px) {
-    .sephia .sephia-brand a h1 small {
-        display:none;
-    }
+.micro-tab .micro-tab-views {
+    background:url(/micro/media/skins/serious/floating-cogs.svg)
 }
 
-
-
-/*
- * Global overrides.
- */
-.sephia input,
-.sephie button,
-.sephia textarea {
-    font-family: 'Roboto', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
-    font-weight: 300;
-    letter-spacing: .01em;
-    line-height: 1.6em;
-    font-size:1em;
-}
-.sephia select.sephia-select {
-    font-family: 'Roboto', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
-    font-weight: 300;
-    letter-spacing: .01em;
-    line-height: 1.6em;
-    font-size:1em;
-}
-.sephia textarea {
-    height:initial;
-}
-.sephia button.button-clear:hover svg {
-    fill:rgba(0,0,0,1);
-}
-.sephia button {
-    background-color:#d1e8f0;
-    border-color:#c1d8e0;
-}
-.sephia button:hover,
-.sephia button:active,
-.sephia button:focus {
-    background-color:#b1c8d0;
-}
-.sephia button.button-clear {
-    background-color:transparent;
-    border-color:transparent;
-    padding:0 10px 0 10px;
-}
-@media (max-width:800px) {
-    .row .column[class*=" column-"] {
-        max-width: 100%;
-    }
-}
-@media (max-width:1100px) {
-    .sephia button {
-        padding:0 10px 0 10px;
-    }
-}
-@media (max-width:359px) {
-    .sephia button {
-        padding:0 5px 0 5px;
-    }
+.sephia-inbox {
+    width: 100%;
+    table-layout: fixed;
 }
 
-
-
-/*
- * CSS classes for "sephia toolbar/selector".
- */
-.sephia .sephia-selector button svg {
-    fill:#999;
+.sephia-unread {
+    font-weight: bold;
 }
 
-
-
-/*
- * Including only the bare minimum parts from CMS main stuff, that we'll need.
- */
-@keyframes animate-info-feedback {
-    0% {
-        opacity:0;
-        margin-top:-100px;
-        background:#ffffff;
-    }
-    7% {
-        opacity:1;
-        margin-top:0;
-    }
-    10% {
-        background:#f0f000;
-    }
-    20% {
-        background:#fff5eb;
-    }
-    80% {
-        opacity:1;
-        margin-top:0;
-    }
-    100% {
-        opacity:0;
-        margin-top:-500px;
-    }
-}
-.info-window {
-    background:#fff5eb;
-    max-width:300px;
-    position:fixed;
-    top:0px;
-    left:0;
-    color:#9d9b97;
-    padding:5px 25px 0 25px;
-    border-radius:0 0 15px 0;
-    z-index:1020;
-    animation-name:animate-info-feedback;
-    animation-duration:3s;
-    animation-fill-mode:forwards;
-}
-.info-window-longer {
-    animation-duration: 6s;
-}
-.info-window-even-longer {
-    animation-duration: 15s;
-}
-.info-window-error {
-    color:#e55;
-}
-.info-window-warning {
-    color:#ea5;
+.sephia-inbox td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-
-
-/*
- * Inbox "datagrid".
- */
-.sephia table.sephia-inbox tr td {
-    cursor:pointer;
-    color:#555;
-}
-.sephia table.sephia-inbox tr.sephia-unread {
-    font-weight:bold;
-}
-.sephia table.sephia-inbox tr.sephia-sent td {
-    color:#ccc;
-}
-.sephia table.sephia-inbox tr.sephia-open td {
-    font-style:italic;
-}
-.sephia table.sephia-inbox tr:hover td {
-    background-color:#fff5eb;
-}
-.sephia .sephia-icon {
-    width:20px;
-    height:20px;
-    float:right;
-    fill:rgba(0,0,0,.15);
-}
-.sephia .sephia-inbox .sephia-icon {
-    margin-left:5px;
-}
-@media (max-width:800px) {
-    .sephia table.sephia-inbox thead tr th:nth-child(1),
-    .sephia table.sephia-inbox thead tr th:nth-child(4),
-    .sephia table.sephia-inbox tbody tr td:nth-child(1),
-    .sephia table.sephia-inbox tbody tr td:nth-child(4) {
-        display:none
-    }
-}
-@media (max-width:600px) {
-    .sephia table.sephia-inbox thead tr th,
-    .sephia table.sephia-inbox tbody tr td:nth-child(3) {
-        display:none
-    }
-}
-
-
-
-/*
- * A single email being read.
- */
-.sephia .sephia-email {
-    margin-top:150px;
-    position:relative;
-    border-radius:5px;
-    box-shadow:3px 3px 6px rgba(0,0,0,.2);
-    padding:55px 45px 55px 45px;
-}
-@media (max-width:800px) {
-    .sephia .sephia-email {
-        margin-top:50px;
-    }
-}
-.sephia .sephia-email:first-child {
-    margin-top:50px;
-}
-.sephia .sephia-action-buttons {
-    position:absolute;
-    top:15px;
-    right:10px;
-}
-.sephia .sephia-action-buttons button {
-    margin-left:5px;
-}
-.sephia .sephia-reader-subject {
-}
-.sephia .sephia-reader-pre {
-    white-space:pre-wrap;
-}
-.sephia .sephia-signature {
-    white-space:pre-wrap;
-    color:rgba(0,0,0,.2);
-}
-.sephia .sephia-signature a {
-    color:rgba(0,0,255,.2);
-}
-.sephia .sephia-sandboxed-html {
-}
-.sephia .sephia-attachment {
-    margin-right:15px;
-}
-.sephia .sephia-attachment:hover {
-    color:#555;
-}
-.sephia .sephia-sandboxed-attachment {
-    opacity:.2;
-}
-.sephia .sephia-reader-recipients {
-    color:rgba(0,0,0,.3);
-    font-style:italic;
-    font-size:0.8em;
-    margin-bottom:0;
-}
-.sephia .sephia-reader-meta {
-    color:rgba(0,0,0,.3);
-    font-style:italic;
-    font-size:.8em;
-    margin-bottom:0;
-}
-
-
-
-/*
- * Create email styles (new, reply and forward)
- */
-.sephia .sephia-email-compose {
-    margin-top:150px;
-    position:relative;
-    border-radius:5px;
-    box-shadow:3px 3px 6px rgba(0,0,0,.2);
-    padding:55px 45px 75px 45px;
-}
-.sephia .sephia-email-compose:first-child {
-    margin-top:50px;
-}
-.sephia .sephia-email-compose input,
-.sephia .sephia-email-compose textarea,
-.sephia .sephia-email-compose button {
-    z-index:2;
-    position:relative;
-}
-.sephia .sephia-recipient {
-    padding-right:35px;
-}
-.sephia .sephia-add-recipient-btn {
-    margin-top:-54px;
-    margin-right:-5px;
-}
-.sephia .sephia-open-recipient>input:first-child {
-    background-color:rgba(0,255,0,.05);
-}
-.sephia .sephia-open-recipient .sephia-add-recipient-btn {
-    display:none;
-}
-
-
-
-/*
- * Uploader styles, for drag and drop of attachments.
- */
-.sephia .sephia-uploader {
-    position:absolute;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-}
-
-
-
-/*
- * Adding attachments to a composed email.
- */
-.sephia .sephia-add-attachment {
-    margin-right:15px;
-}
-.sephia .sephia-delete-attachment {
-    float:right;
-    padding-top:2px;
-    margin-right:-5px;
-    transition:color .5s, transform ease-in .5s;
-}
-.sephia .sephia-delete-attachment:hover {
-    transition:color .5s, transform ease-in .5s;
-    color:Red;
-    transform:rotate(45deg);
-}
-
-
-
-/*
- * Add recipients to email styles.
- */
-@keyframes animate-roll-down {
-    0% {
-        transform:scale(1,0);
-        opacity:0;
-    }
-    100% {
-        transform:scale(1,1);
-        opacity:1;
-    }
-}
-.sephia .add-recipient-widget {
-    z-index:2;
-    position:relative;
-    animation-name:animate-roll-down;
-    animation-duration:.5s;
-    animation-fill-mode:forwards;
-    overflow:hidden;
-}
-.sephia .sephia-recipient-table {
-    margin-top:15px;
-}
-.sephia .sephia-recipient-table tr {
-    cursor:pointer;
-}
-.sephia .sephia-recipient-table tr:hover td {
-    background-color:#fff5eb;
-}
-.sephia .sephia-recipient-table tr:nth-child(1) td {
-    border-top:none;
-}
-.sephia .sephia-recipient-table tr:nth-child(5) td {
-    border-bottom:none;
-}
-.sephia .sephia-add-recipient-button button {
-    margin-right:5px;
-}
-
-
-
-/*
- * Action buttons for compose email.
- */
-.sephia .sephia-reply-action-buttons {
-    position:absolute;
-    bottom:10px;
-    right:25px;
+.sephia-inbox td:nth-child(1) {
     width:200px;
 }
-.sephia .sephia-reply-action-buttons button {
-    margin-left:25px;
+
+.sephia-inbox td:nth-child(2) {
+    max-width:calc(100% - 450px)
 }
-.sephia .sephia-reply-action-buttons button svg {
-    fill:#999
+
+.sephia-inbox td:nth-child(3) {
+    width:250px;
 }
-@media (max-width:1100px) {
-    .sephia .sephia-reply-action-buttons {
-        right:35px;
+
+.sephia-inbox td:nth-child(1),
+.sephia-inbox th:nth-child(1),
+.sephia-inbox td:nth-child(3),
+.sephia-inbox th:nth-child(3) {
+    display: none;
+}
+
+@media screen and (min-width:800px) {
+    .sephia-inbox td:nth-child(1),
+    .sephia-inbox th:nth-child(1),
+    .sephia-inbox td:nth-child(3),
+    .sephia-inbox th:nth-child(3) {
+        display: table-cell;
     }
 }
 
+table tbody tr td {
+    border-top:none;
+}
 
-.sephia table.sephia-smaller-table tr td {
-    padding:2px;
-    font-size:.8em;
+.sephia-selected-row td:last-child::after {
+    content:" *";
+    font-weight:bold;
 }
-.sephia table.sephia-smaller-table tr td button {
-    height:30px;
-    line-height:30px;
-    font-size:.8em;
-    margin-bottom:0;
+
+.sephia-selected-row td {
+    background-color:rgba(0,0,0,.01);
 }
-.sephia table.sephia-small-table tr td {
-    padding:2px;
+
+.sephia-attachments {
+    overflow:auto;
 }
-.sephia .sephia-key-search-results tr {
-    cursor:pointer;
+
+.sephia-attachment {
+    float: left;
+    margin-right: 15px;
 }
-.sephia .sephia-key-search-results tr:hover td {
-    background-color:#fff5eb;
+
+.sephia-attachment button {
+    position:relative;
+    padding:25px 25px 25px 25px;
+    width:150px;
+    height:100px;
+    color:var(--form-txt-col);
+    background:var(--wid-light-col);
+    text-transform:none;
+    margin-bottom:15px !important;
+}
+
+.sephia-attachment button:hover, .sephia-attachment button:active, .sephia-attachment button:focus {
+    background:var(--wid-lighter-col);
+}
+
+.sephia-attachment button:after {
+    position:absolute;
+    top:5px;
+    right:5px;
+    content:"X";
+    color:rgba(0,0,0,.2);
 }
