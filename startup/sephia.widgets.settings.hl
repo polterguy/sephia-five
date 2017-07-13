@@ -356,7 +356,7 @@ create-event:sephia.widgets.settings
                               if:x:/@get-widget-property/*/*?value
                                 =:x:/@_fingerprint?value
                                 set-widget-property:x:/../*/_event?value
-                                  class:sephia-selected-row
+                                  class:selected
 
                           /*
                            * Handled to make user able to select a PGP key
@@ -374,7 +374,7 @@ create-event:sephia.widgets.settings
                             delete-widget-property:x:/-/*/*?value
                               class
                             set-widget-property:x:/../*/_event?value
-                              class:sephia-selected-row
+                              class:selected
                             set-widget-property:sephia-settings-pgp-key
                               value:x:/@_fingerprint?value
 

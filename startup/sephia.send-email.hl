@@ -139,11 +139,6 @@ create-event:sephia.send-email
           text:plain
             content:x:/../*/body?value
 
-  /*
-   * Notifying user that email was successfully sent.
-   */
-  micro.windows.info:Email was successfully sent
-
 
 
 
@@ -226,7 +221,7 @@ create-event:sephia.send-email._save-envelope
        */
       _encrypt:int:0
       if:x:/../*/envelope/*/body/*/multipart/*/encrypt
-        set:x/@_encrypt?value
+        set:x:/@_encrypt?value
           src:int:1
 
       /*

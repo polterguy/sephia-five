@@ -4,49 +4,79 @@
  */
 
 
+/*
+ * Overridden to create some cogs while in settings form.
+ */
 .micro-tab .micro-tab-views {
     background:url(/micro/media/skins/serious/floating-cogs.svg)
 }
 
+.sephia-icon-button {
+    padding:0;
+}
+.sephia-icon-button span {
+    border:none;
+    font-size:1.4rem;
+}
+
+/*
+ * Making sure table layout of inbox becomes fixed width.
+ */
 .sephia-inbox {
     width: 100%;
     table-layout: fixed;
 }
 
+/*
+ * An unread email in inbox grid.
+ */
 .sephia-unread {
     font-weight: bold;
 }
 
+
+/*
+ * A sent email in inbox grid.
+ */
 .sephia-sent {
     font-style:italic;
     color:#e0e0e0;
 }
 
+
+/*
+ * Making sure text in cells of inbox table behaves correctly.
+ */
 .sephia-inbox td {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-
 .sephia-inbox td:nth-child(1) {
     width:200px;
 }
-
 .sephia-inbox td:nth-child(2) {
     max-width:calc(100% - 450px)
 }
-
 .sephia-inbox td:nth-child(3) {
     width:250px;
 }
-
 .sephia-inbox td:nth-child(1),
 .sephia-inbox th:nth-child(1),
 .sephia-inbox td:nth-child(3),
 .sephia-inbox th:nth-child(3) {
     display: none;
 }
+.sephia-inbox tbody tr td {
+    border-top: none;
+    padding:5px;
+}
 
+
+/*
+ * Overrides to make sure all cells displays, but only
+ * if width of viewport exceeds 800px.
+ */
 @media screen and (min-width:800px) {
     .sephia-inbox td:nth-child(1),
     .sephia-inbox th:nth-child(1),
@@ -56,28 +86,17 @@
     }
 }
 
-table tbody tr td {
-    border-top:none;
-}
 
-.sephia-selected-row td:last-child::after {
-    content:" *";
-    font-weight:bold;
-}
-
-.sephia-selected-row td {
-    background-color:rgba(0,0,0,.01);
-}
-
+/*
+ * Attachments in reader.
+ */
 .sephia-attachments {
     overflow:auto;
 }
-
 .sephia-attachment {
     float: left;
     margin-right: 15px;
 }
-
 .sephia-attachment button {
     position:relative;
     padding:25px 25px 25px 25px;
@@ -88,11 +107,9 @@ table tbody tr td {
     text-transform:none;
     margin-bottom:15px !important;
 }
-
 .sephia-attachment button:hover, .sephia-attachment button:active, .sephia-attachment button:focus {
     background:var(--wid-lighter-col);
 }
-
 .sephia-attachment button:after {
     position:absolute;
     top:5px;

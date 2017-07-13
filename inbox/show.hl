@@ -85,8 +85,10 @@ create-widget:sephia-search-wrapper
             /*
              * Button to search inbox.
              */
-            button:sephia-search-btn
-              innerValue:Search
+            literal:sephia-search-btn
+              element:button
+              innerValue:@"<span class=""icon-search""></span>"
+              title:Search inbox
               onclick
 
                 /*
@@ -114,7 +116,8 @@ create-widget:sephia-search-wrapper
              * Button to page to previous page.
              */
             button
-              innerValue:&lt;
+              innerValue:@"<span class=""icon-chevron-left""></span>"
+              title:Previous page
               onclick
 
                 /*
@@ -149,7 +152,8 @@ create-widget:sephia-search-wrapper
              * Button to page to next page.
              */
             button
-              innerValue:&gt;
+              innerValue:@"<span class=""icon-chevron-right""></span>"
+              title:Next page
               onclick
 
                 /*
@@ -170,6 +174,48 @@ create-widget:sephia-search-wrapper
                 if:x:/-?value
                   set-widget-property:sephia-search-wrapper
                     .offset:x:/@+?value
+
+
+            /*
+             * Button to open settings.
+             */
+            button
+              innerValue:@"<span class=""icon-wrench""></span>"
+              title:Opens settings
+              onclick
+
+                /*
+                 * Clearing out everything in main container widget of app.
+                 */
+                clear-widget:sephia-main-container
+
+                /*
+                 * Opening up settings.
+                 */
+                create-widget:initial-settings
+                  parent:sephia-main-container
+                  widgets
+                    div
+                      class:row air-top
+                      widgets
+                        div
+                          class:col
+                          widgets
+                            sephia.widgets.settings
+
+
+            /*
+             * Button to reload inbox starting from first page.
+             */
+            button
+              innerValue:@"<span class=""icon-home""></span>"
+              title:Open inbox again from beginning
+              onclick
+
+                /*
+                 * Refreshing inbox.
+                 */
+                sephia.inbox.open
 
 
 

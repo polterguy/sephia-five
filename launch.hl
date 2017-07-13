@@ -6,11 +6,20 @@
 
 
 /*
- * Including Micro, with Sea Breeze skin.
+ * Including Micro, with Serious skin and adding Awesome Fonts.
  */
 p5.web.include-css-file:@MICRO/media/main.css
 p5.web.include-css-file:@MICRO/media/ext.css
+p5.web.include-css-file:@MICRO/media/fonts.css
 p5.web.include-css-file:@MICRO/media/skins/serious.css
+
+
+
+
+
+/*
+ * Including main CSS file for Sephia.
+ */
 p5.web.include-css-file:@SEPHIA/media/main.css
 
 
@@ -102,67 +111,6 @@ if:x:/@p5.auth.my-settings.get/*/sephia
  */
 load-file:@SEPHIA/core/fetch-emails.hl
 eval:x:/-/*
-
-
-
-
-
-/*
- * Creating main menu widget.
- */
-create-widget:sephia-menu-container
-  position:0
-  class:container-fullscreen
-  widgets
-    micro.widgets.menu
-      items
-        Inbox
-          onclick
-
-            /*
-             * Showing inbox.
-             *
-             * Notice, if inbox is already open, we simply re-databind the grid of emails,
-             * to avoid clearing out any existingly read emails.
-             */
-            if
-              fetch:x:/0/0?value
-                widget-exists:sephia-inbox
-
-              /*
-               * Only re-databind grid.
-               */
-              sephia.inbox.open
-
-            else
-
-              /*
-               * Need to load up inbox again in its entirety.
-               */
-              load-file:@SEPHIA/inbox/show.hl
-              eval:x:/-/*
-
-        Settings
-          onclick
-
-            /*
-             * Clearing out everything in main container widget of app.
-             */
-            clear-widget:sephia-main-container
-
-            /*
-             * Opening up settings.
-             */
-            create-widget:initial-settings
-              parent:sephia-main-container
-              widgets
-                div
-                  class:row air-top
-                  widgets
-                    div
-                      class:col
-                      widgets
-                        sephia.widgets.settings
 
 
 

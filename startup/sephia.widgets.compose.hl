@@ -124,29 +124,62 @@ p5.sephia_upload_files = function(e) {
 
                     /*
                      * Sending email.
+                     *
+                     * Making sure we wrap attempt in try/catch block, to give user friendly error messages.
                      */
-                    p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                      .email-id
-                    micro.form.serialize:x:/-/*/*?value
-                    set:x:/@micro.form.serialize/*/body?value
-                      p5.html.html-decode:x:/@micro.form.serialize/*/body?value
-                    for-each:x:/@micro.form.serialize/*/attachment
-                      eval-x:x:/+/*/*
-                      add:x:/../*/sephia.send-email/*/attachments
-                        src
-                          file:@SEPHIA-USER-ATTACHMENTS/tmp/{0}
-                            :x:/@_dp/#?value
-                    add:x:/+
-                      src:x:/@micro.form.serialize/*(!/attachment!/no-data)
-                    sephia.send-email
-                      attachments
+                    try
 
-                    /*
-                     * Deleting widgets wrapping currently reply to email widget.
-                     */
-                    p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                      .email-id
-                    delete-widget:x:/-/*/*?value
+                      p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                        .email-id
+                      micro.form.serialize:x:/-/*/*?value
+                      set:x:/@micro.form.serialize/*/body?value
+                        p5.html.html-decode:x:/@micro.form.serialize/*/body?value
+                      for-each:x:/@micro.form.serialize/*/attachment
+                        eval-x:x:/+/*/*
+                        add:x:/../*/sephia.send-email/*/attachments
+                          src
+                            file:@SEPHIA-USER-ATTACHMENTS/tmp/{0}
+                              :x:/@_dp/#?value
+                      add:x:/+
+                        src:x:/@micro.form.serialize/*(!/attachment!/no-data)
+                      sephia.send-email
+                        attachments
+
+                      /*
+                       * Notifying user that email was successfully sent.
+                       */
+                      micro.windows.info:Email was successfully sent
+
+                      /*
+                       * Deleting widgets wrapping currently reply to email widget.
+                       */
+                      p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                        .email-id
+                      delete-widget:x:/-/*/*?value
+
+                    catch
+
+                      /*
+                       * Oops, displaying error to user in a modal widget!
+                       */
+                      create-widgets
+                        micro.widgets.modal:sephia-error-modal-widget
+                          class:micro-modal micro-modal-smaller
+                          widgets
+                            h3
+                              innerValue:Oops!
+                            p
+                              innerValue:Oops, email could not be sent. Message from system was; '{0}'
+                                :x:/../*/catch/*/message?value
+                            div
+                              class:right
+                              widgets
+                                button
+                                  innerValue:OK
+                                  oninit
+                                    micro.page.set-focus:x:/../*/_event?value
+                                  onclick
+                                    delete-widget:sephia-error-modal-widget
 
                 input
                   style:"display:none;"
