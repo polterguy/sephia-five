@@ -72,7 +72,7 @@ create-event:sephia.send-email
     /*
      * Figuring out MIME type for file.
      */
-    sephia.get-mime-type:x:/@_dp/#?value
+    sephia.core._get-mime-type:x:/@_dp/#?value
 
     /*
      * Adding file as returned from above invocation.
@@ -80,7 +80,7 @@ create-event:sephia.send-email
      * And hence, file will not be attached in email.
      */
     add:x:/../*/p5.smtp.send/*/*/*/multipart/=mixed
-      src:x:/@sephia.get-mime-type/*
+      src:x:/@sephia.core._get-mime-type/*
 
   /*
    * Cleaning up arguments (removing unused To, Cc, Bcc fields, among other things).

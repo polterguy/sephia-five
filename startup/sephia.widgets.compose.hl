@@ -2,8 +2,18 @@
 /*
  * Extension widget for composing an email.
  * Optionally you can pass in [subject], [body], [recipients][to], [recipients][cc] and [recipients][bcc].
+ *
+ * You can also optionally pass in [.onclose] and [.onsend] lambda callbacks, which will be invoked when
+ * email composer is closed and/or email is sent, in addition to [class], which will be the root class
+ * of the composer.
  */
 create-event:sephia.widgets.compose
+
+  /*
+   * Default values for arguments not supplied.
+   */
+  .defaults
+    class:air-inner
 
   /*
    * Checking if we've got public cryptography keys for all recipients.
@@ -36,7 +46,7 @@ create-event:sephia.widgets.compose
         src:warning
 
   /*
-   * Including JavaScript necessary to handle files.
+   * Including JavaScript necessary to handle uploading of attachments.
    */
   p5.web.include-javascript:@"
 p5.sephia_upload_files = function(e) {
@@ -58,15 +68,27 @@ p5.sephia_upload_files = function(e) {
 "
 
   /*
+   * Adding lambda callbacks for both [.onclose] and [.onsend].
+   */
+  add:x:/../*/return/*/div/*/.onsend
+    src:x:/../*/.onsend/*
+  add:x:/../*/return/*/div/*/.onclose
+    src:x:/../*/.onclose/*
+
+  /*
    * Returning actual widget to caller.
    */
-  eval-x:x:/+2/**/widgets/=content/*(/input|/literal)/*/value|/+2/*/*/class
-  add:x:/+/**/sephia.widgets.recipients
+  eval-x:x:/../*/return/**/widgets/=content/*(/input|/literal)/*/value|/+2/*/*/class
+  add:x:/../*/return/**/sephia.widgets._recipients
     src:x:/../*/recipients/*
   return
     div
-      class:air-inner shaded rounded {0}
+      .onsend
+      .onclose
+      .email-composer
+      class:{0} {1}
         :x:/@_bg?value
+        :x:(/../*/class|/@.defaults/*/class)/$?value
       widgets:content
 
         /*
@@ -105,7 +127,7 @@ p5.sephia_upload_files = function(e) {
         /*
          * Our "select recipient" extension widget.
          */
-        sephia.widgets.recipients
+        sephia.widgets._recipients
 
         /*
          * Button strip at bottom for "send", "discard", etc.
@@ -129,38 +151,49 @@ p5.sephia_upload_files = function(e) {
                      */
                     try
 
+                      /*
+                       * Finding root composer widget, and serializing all form elements within it.
+                       */
                       p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                        .email-id
+                        .email-composer
                       micro.form.serialize:x:/-/*/*?value
+
+                      /*
+                       * Making sure we HTML decode the body.
+                       */
                       set:x:/@micro.form.serialize/*/body?value
                         p5.html.html-decode:x:/@micro.form.serialize/*/body?value
+
+                      /*
+                       * Looping through each attachment specified by user.
+                       */
                       for-each:x:/@micro.form.serialize/*/attachment
                         eval-x:x:/+/*/*
-                        add:x:/../*/sephia.send-email/*/attachments
+                        add:x:/..try/*/sephia.send-email/*/attachments
                           src
                             file:@SEPHIA-USER-ATTACHMENTS/tmp/{0}
                               :x:/@_dp/#?value
+
+                      /*
+                       * Invoking Active Event responsible for sending email, passing in arguments
+                       * from above serialization invocation.
+                       */
                       add:x:/+
                         src:x:/@micro.form.serialize/*(!/attachment!/no-data)
                       sephia.send-email
                         attachments
 
                       /*
-                       * Notifying user that email was successfully sent.
+                       * Invoking specified [.onclose] and [.onsend] lambda objects given during creation of widget.
                        */
-                      micro.windows.info:Email was successfully sent
-
-                      /*
-                       * Deleting widgets wrapping currently reply to email widget.
-                       */
-                      p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                        .email-id
-                      delete-widget:x:/-/*/*?value
+                      p5.web.widgets.ajax-events.raise:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                        .onsend
+                        .onclose
 
                     catch
 
                       /*
-                       * Oops, displaying error to user in a modal widget!
+                       * Oops, displaying error to user in a modal widget.
                        */
                       create-widgets
                         micro.widgets.modal:sephia-error-modal-widget
@@ -185,12 +218,13 @@ p5.sephia_upload_files = function(e) {
                   style:"display:none;"
                   type:file
                   multiple
-                  class:inputFile
+                  class:sephiaAttachmentFileInput
                   .data-field:no-data
                   .onupload
 
                     /*
-                     * Retrieving the file name and its content, and saving it to disc.
+                     * Retrieving the file name and its content, and saving it to user's 
+                     * temporary attachment folder.
                      */
                     p5.web.post.get:sephia-file-name
                     p5.web.post.get:sephia-file-content
@@ -200,12 +234,18 @@ p5.sephia_upload_files = function(e) {
                       src:x:/@p5.string.decode-base64?value
 
                     /*
-                     * Creating widget wrapping attachment.
+                     * Creating widget wrapping attachment, first making sure we find main attachment
+                     * wrapper widget.
                      */
                     p5.web.widgets.find-first-ancestor-like:x:/../*/_event?value
-                      class:air-inner
+                      .email-composer
                     p5.web.widgets.find-first:x:/-/*/*?value
                       class:sephia-attachments
+
+                    /*
+                     * Creating widget wrapping given attachment, such that it will be automatically serialized
+                     * when form is serialized.
+                     */
                     create-widget
                       class:sephia-attachment
                       parent:x:/@p5.web.widgets.find-first/*/*?value
@@ -219,7 +259,7 @@ p5.sephia_upload_files = function(e) {
                           onclick
 
                             /*
-                             * Deleting file from tmp folder, and deleting widget.
+                             * Deleting file from tmp folder, and deleting widget wrapping attachment.
                              */
                             p5.web.widgets.get-parent:x:/../*/_event?value
                             micro.form.serialize:x:/-/*/*?value
@@ -232,15 +272,16 @@ p5.sephia_upload_files = function(e) {
                 button
                   innerValue:Add attachment
                   style:"margin-bottom:0;"
-                  onclick:@"document.querySelector('.inputFile').click();return false;"
+                  onclick:@"document.querySelector('.sephiaAttachmentFileInput').click();return false;"
                 button
                   innerValue:Discard
                   style:"margin-bottom:0;"
                   onclick
 
                     /*
-                     * Deleting widgets wrapping currently reply to email widget.
+                     * Invoking specified [.onclose] lambda object given during creation of widget.
                      */
                     p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                      .email-id
-                    delete-widget:x:/-/*/*?value
+                      .email-composer
+                    p5.web.widgets.ajax-events.raise:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                      .onclose

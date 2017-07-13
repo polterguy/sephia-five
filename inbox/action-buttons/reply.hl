@@ -34,12 +34,16 @@ button
         index-of:x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]/*/*/subject?value
           src:"Re:"
       !=:int:0
+
+      /*
+       * Subject didn't start with "Re:", prepending "Re: " in front of it.
+       */
       set:x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]/*/*/subject?value
         src:"Re: {0}"
           :x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]/*/*/subject?value
 
     /*
-     * Quoting content of email.
+     * Quoting content of email by appending a ">" in front of each line in email content.
      */
     _content
     split:x:/@p5.mysql.connect/*/p5.mysql.select/[1,2]/*/*/type/=plain/./*/content?value
@@ -74,10 +78,30 @@ button
         div
           class:col
           widgets
+
+            /*
+             * This is the actual "composer" widget, which allows user to compose/reply/etc an email.
+             */
             sephia.widgets.compose
               subject:x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]/*/*/subject?value
               body:x:/@_content?value
               recipients
+              class:air-inner shaded rounded
+              .onclose
+
+                /*
+                 * Simply deleting main wrapper widget.
+                 */
+                p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                  .email-id
+                delete-widget:x:/-/*/*?value
+
+              .onsend
+
+                /*
+                 * Notifying user.
+                 */
+                micro.windows.info:Email was successfully sent
 
     /*
      * Deleting reader widget

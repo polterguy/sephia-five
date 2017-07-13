@@ -96,7 +96,7 @@ if:x:/@p5.auth.my-settings.get/*/sephia
           div
             class:col
             widgets
-              sephia.widgets.settings
+              sephia.widgets._settings
   return
 
 

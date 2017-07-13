@@ -2,7 +2,7 @@
 /*
  * Creates our "settings" widget
  */
-create-event:sephia.widgets.settings
+create-event:sephia.widgets._settings
 
   /*
    * Retrieving settings and setting initial values.

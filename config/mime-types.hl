@@ -1,0 +1,78 @@
+
+/*
+ * Configuration file for legal MIME types according to file extension.
+ *
+ * Notice, if you wish to change the list of supported file types, according to their extensions, this is the place where you'd
+ * configure such a thing.
+ */
+
+
+/*
+ * Plain text types of extensions.
+ */
+txt
+  text:plain
+md
+  text:plain
+
+
+/*
+ * Supported images types.
+ */
+png
+  image:png
+    Content-Transfer-Encoding:binary
+jpg
+  image:jpeg
+    Content-Transfer-Encoding:binary
+jpeg
+  image:jpeg
+    Content-Transfer-Encoding:binary
+gif
+  image:gif
+    Content-Transfer-Encoding:binary
+tif
+  image:tiff
+    Content-Transfer-Encoding:binary
+tiff
+  image:tiff
+    Content-Transfer-Encoding:binary
+
+
+/*
+ * Supported audio types.
+ */
+mp3
+  audio:mpeg3
+    Content-Transfer-Encoding:binary
+wav
+  audio:wav
+    Content-Transfer-Encoding:binary
+ogg
+  audio:ogg
+    Content-Transfer-Encoding:binary
+
+
+/*
+ * Plain video types.
+ */
+mpeg
+  video:mpeg
+    Content-Transfer-Encoding:binary
+ogv
+  video:ogg
+    Content-Transfer-Encoding:binary
+
+
+/*
+ * Hyperlambda.
+ */
+hl
+  application:x-hyperlambda
+
+
+/*
+ * Public PGP key.
+ */
+asc
+  text:plain

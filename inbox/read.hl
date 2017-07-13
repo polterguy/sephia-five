@@ -93,7 +93,7 @@ where emails.id = @id"
      * Email was both encrypted and signed.
      */
     set:x:/@_bg?value
-      src:bg
+      src:success
 
   else
 

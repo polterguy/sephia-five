@@ -2,7 +2,7 @@
 /*
  * Creates our "recipient" widget.
  */
-create-event:sephia.widgets.recipients
+create-event:sephia.widgets._recipients
 
   /*
    * Adding us specified recipients.
@@ -19,6 +19,8 @@ create-event:sephia.widgets.recipients
    */
   return
     container
+      oninit
+        sephia.contacts._changed:x:/../*/_event?value
       class:row
       widgets
         div
@@ -319,12 +321,31 @@ create-event:sephia.contacts._changed
    * emails we've currently got in our list of recipients (all field, To, Cc and Bcc).
    */
   p5.web.widgets.find-first-ancestor-like:x:/../*/_arg?value
-    class:air-inner
+    .email-composer
   p5.web.widgets.find:x:/-/*/*?value
     .recipient
   get-widget-property:x:/-/*/*?value
     value
-  join:x:/-/*/*?value
+  if:x:/-/*/*?value
+    =:
+
+    /*
+     * There is no text in any of the recipients textbox input fields.
+     * Defaulting to "success".
+     */
+    get-widget-property:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
+      class
+    if:x:/-/*/*?value
+      !~:success
+      micro.css.toggle:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
+        class:success
+    if:x:/-/*/*?value
+      ~:warning
+      micro.css.toggle:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
+        class:warning
+    return
+
+  join:x:/@get-widget-property/*/*?value
     sep:,
   trim:x:/-?value
     chars:,
@@ -347,9 +368,9 @@ create-event:sephia.contacts._changed
     get-widget-property:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
       class
     if:x:/-/*/*?value
-      !~:emphasized
+      !~:success
       micro.css.toggle:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
-        class:emphasized warning
+        class:success warning
 
   else
 
@@ -359,6 +380,6 @@ create-event:sephia.contacts._changed
     get-widget-property:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
       class
     if:x:/-/*/*?value
-      ~:emphasized
+      ~:success
       micro.css.toggle:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
-        class:emphasized warning
+        class:success warning

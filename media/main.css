@@ -11,14 +11,6 @@
     background:url(/micro/media/skins/serious/floating-cogs.svg)
 }
 
-.sephia-icon-button {
-    padding:0;
-}
-.sephia-icon-button span {
-    border:none;
-    font-size:1.4rem;
-}
-
 /*
  * Making sure table layout of inbox becomes fixed width.
  */
