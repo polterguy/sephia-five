@@ -5,12 +5,32 @@
 create-event:sephia.widgets._recipients
 
   /*
-   * Adding us specified recipients.
+   * Adding specified recipients, first [to].
    */
   join:x:/../*/to/*?name
     sep:", "
   eval-x:x:/+/*/*
   add:x:/../*/return/**/.data-field/=to/.
+    src
+      value:x:/@join?value
+
+  /*
+   * Then [cc].
+   */
+  join:x:/../*/cc/*?name
+    sep:", "
+  eval-x:x:/+/*/*
+  add:x:/../*/return/**/.data-field/=cc/.
+    src
+      value:x:/@join?value
+
+  /*
+   * Then [bcc].
+   */
+  join:x:/../*/bcc/*?name
+    sep:", "
+  eval-x:x:/+/*/*
+  add:x:/../*/return/**/.data-field/=bcc/.
     src
       value:x:/@join?value
 
@@ -40,6 +60,7 @@ create-event:sephia.widgets._recipients
 
             button
               innerValue:To
+              title:Add to recipient
               onclick
 
                 /*
@@ -68,6 +89,7 @@ create-event:sephia.widgets._recipients
 
             button
               innerValue:Cc
+              title:Add cc recipient
               onclick
 
                 /*
@@ -94,7 +116,8 @@ create-event:sephia.widgets._recipients
                 sephia.contacts._changed:x:/../*/_event?value
 
             button
-              innerValue:Bc
+              innerValue:Bcc
+              title:Add bcc recipient
               onclick
 
                 /*
@@ -326,7 +349,11 @@ create-event:sephia.contacts._changed
     .recipient
   get-widget-property:x:/-/*/*?value
     value
-  if:x:/-/*/*?value
+  join:x:/-/*/*?value
+    sep:,
+  trim:x:/-?value
+    chars:,
+  if:x:/-?value
     =:
 
     /*
@@ -335,11 +362,11 @@ create-event:sephia.contacts._changed
      */
     get-widget-property:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
       class
-    if:x:/-/*/*?value
+    if:x:/@get-widget-property/*/*?value
       !~:success
       micro.css.toggle:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
         class:success
-    if:x:/-/*/*?value
+    if:x:/@get-widget-property/*/*?value
       ~:warning
       micro.css.toggle:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
         class:warning

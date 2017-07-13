@@ -242,7 +242,6 @@ create-widget:sephia-search-wrapper
                          * This is the actual "composer" widget, which allows user to compose/reply/etc an email.
                          */
                         sephia.widgets.compose
-                          class:air-inner shaded rounded
                           .onclose
 
                             /*

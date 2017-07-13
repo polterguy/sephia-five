@@ -5,7 +5,7 @@
  * Requires [subject], [body], [to] and optionally [cc] and [bcc], which all should be a comma separated list of emails.
  * Optionally pass in [attachments] as collections of attachments to send with email.
  */
-create-event:sephia.send-email
+create-event:sephia.core.send-email
 
   /*
    * Retrieving settings for currently logged in user.
@@ -70,9 +70,25 @@ create-event:sephia.send-email
   for-each:x:/../*/attachments/*
 
     /*
+     * Copy file into attachment folder, 
+     * and figuring out new path for file from attachments folder.
+     */
+    p5.types.guid.new
+    split:x:/@_dp/#?value
+      =:/
+    copy-file:x:/@_dp/#?value
+      dest:@SEPHIA-USER-ATTACHMENTS/{0}-{1}
+        :x:/@p5.types.guid.new?value
+        :x:/@split/0/-?name
+
+    /*
      * Figuring out MIME type for file.
      */
-    sephia.core._get-mime-type:x:/@_dp/#?value
+    eval-x:x:/+/*
+    sephia.core._get-mime-type
+      folder:@SEPHIA-USER-ATTACHMENTS/
+      file:x:/@split/0/-?name
+      prefix:x:/@p5.types.guid.new?value
 
     /*
      * Adding file as returned from above invocation.
@@ -81,6 +97,19 @@ create-event:sephia.send-email
      */
     add:x:/../*/p5.smtp.send/*/*/*/multipart/=mixed
       src:x:/@sephia.core._get-mime-type/*
+
+    /*
+     * Checking if file was supported, and if so, we add it up 
+     * to [sephia.core.send-email._save-envelope] invocation below.
+     */
+    if:x:/@sephia.core._get-mime-type/*
+      eval-x:x:/+/*/*/*
+      add:x:/../*/sephia.core.send-email._save-envelope
+        src
+          file
+            folder:@SEPHIA-USER-ATTACHMENTS/
+            filename:x:/@split/0/-?name
+            prefix:x:/@p5.types.guid.new?value
 
   /*
    * Cleaning up arguments (removing unused To, Cc, Bcc fields, among other things).
@@ -115,13 +144,17 @@ create-event:sephia.send-email
   /*
    * Saves entire outgoing [envelope] to database.
    */
-  add:x:/../*/sephia.send-email._save-envelope
+  add:x:/../*/sephia.core.send-email._save-envelope
     src:x:/../*/p5.smtp.send/*/envelope
-  sephia.send-email._save-envelope
+  sephia.core.send-email._save-envelope
 
   /*
    * Sending email.
    */
+  create-widget
+    element:pre
+    innerValue:x:/..
+  return
   p5.smtp.send
     server:x:/@p5.auth.my-settings.get/*/sephia/*/smtp-server?value
     port:x:/@p5.auth.my-settings.get/*/sephia/*/smtp-port?value
@@ -147,8 +180,11 @@ create-event:sephia.send-email
  * Saves outgoing [envelope] to database.
  *
  * Expects [envelope] as argument, being entire SMTP envelope.
+ *
+ * Also expects (outside of envelope) one [file] object for each attachment, having [filename], [prefix] and [folders]
+ * as arguments.
  */
-create-event:sephia.send-email._save-envelope
+create-event:sephia.core.send-email._save-envelope
 
   /*
    * Open database connection.
@@ -198,7 +234,7 @@ create-event:sephia.send-email._save-envelope
         =:int:0
 
         /*
-         * Inserting "self" (sender) into "contact" table in database.
+         * Inserting "self" (sender) into "contacts" table in database.
          */
         p5.auth.my-settings.get
         p5.mysql.insert:@"insert into contacts (name, email, username) values (@name, @email, @username)"
@@ -264,10 +300,11 @@ create-event:sephia.send-email._save-envelope
        * Inserting into "attachments" table in database.
        */
       for-each:x:/../*/file
+        p5.io.unroll-path:x:/@_dp/#/*/folder?value
         p5.mysql.insert:@"insert into attachments (filename, prefix, folder, emailid) values (@filename, @prefix, @folder, @emailid)"
           @filename:x:/@_dp/#/*/filename?value
           @prefix:x:/@_dp/#/*/prefix?value
-          @folder:x:/@_dp/#/*/folder?value
+          @folder:x:/@p5.io.unroll-path?value
           @emailid:x:/@p5.mysql.insert/@p5.mysql.insert/@p5.mysql.insert/*/id?value
 
       /*

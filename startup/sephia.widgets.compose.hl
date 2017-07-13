@@ -16,36 +16,6 @@ create-event:sephia.widgets.compose
     class:air-inner
 
   /*
-   * Checking if we've got public cryptography keys for all recipients.
-   * First checking if we have any recipients.
-   */
-  _bg
-  if:x:/../*/recipients/*/*?count
-    >:int:0
-
-    /*
-     * Then listing public cryptography keys matching recipients list, and making sure count equals
-     * the total number of recipients in email.
-     */
-    p5.crypto.list-public-keys:x:/../*/recipients/*/*?name
-    if:x:/@p5.crypto.list-public-keys/*?count
-      =:x:/../*/recipients/*/*?count
-
-      /*
-       * Email can be encrypted.
-       */
-      set:x:/@_bg?value
-        src:bg
-
-    else
-
-      /*
-       * Email can not be encrypted.
-       */
-      set:x:/@_bg?value
-        src:warning
-
-  /*
    * Including JavaScript necessary to handle uploading of attachments.
    */
   p5.web.include-javascript:@"
@@ -76,19 +46,103 @@ p5.sephia_upload_files = function(e) {
     src:x:/../*/.onclose/*
 
   /*
-   * Returning actual widget to caller.
+   * Adding contens of [oninit], if specified.
    */
-  eval-x:x:/../*/return/**/widgets/=content/*(/input|/literal)/*/value|/+2/*/*/class
+  add:x:/../*/return/*/div/*/oninit
+    src:x:/../*/oninit/*
+
+  /*
+   * Adding recipients to recipients widget.
+   */
   add:x:/../*/return/**/sephia.widgets._recipients
     src:x:/../*/recipients/*
+
+  /*
+   * Adding attachments supplied by caller to email.
+   */
+  for-each:x:/../*/attachment
+    eval-x:x:/+/*/*/*
+    add:x:/../*/return/*/div/*/oninit
+      src
+        sephia.widgets.composer._add-attachment:x:/../*/_event?value
+          filename:x:/@_dp/#?value
+
+  /*
+   * Returning actual widget to caller.
+   */
+  eval-x:x:/../*/return/**/widgets/=content/*(/input|/literal)/*/value|/../*/return/*/*/class
   return
     div
+      oninit
+
+        /*
+         * In case widget is used from other apps, we make sure we include the necessary CSS files here.
+         */
+        p5.web.include-css-file:@MICRO/media/main.css
+        p5.web.include-css-file:@MICRO/media/ext.css
+        p5.web.include-css-file:@MICRO/media/fonts.css
+        p5.web.include-css-file:@SEPHIA/media/main.css
+
       .onsend
       .onclose
       .email-composer
-      class:{0} {1}
-        :x:/@_bg?value
-        :x:(/../*/class|/@.defaults/*/class)/$?value
+      class:x:(/../*/class|/@.defaults/*/class)/$?value
+      events
+
+        /*
+         * Adds an attachment to your email.
+         *
+         * Requires [filename] as argument.
+         */
+        sephia.widgets.composer._add-attachment
+
+          /*
+           * Verifying this is our instance.
+           */
+          if:x:/../*/_arg?value
+            !=:x:/../*/_event?value
+
+            /*
+             * Not our instance, returning early.
+             */
+            return
+
+          /*
+           * Finding main attachment wrapper widget for instance.
+           */
+          p5.web.widgets.find-first:x:/../*/_event?value
+            class:sephia-attachments
+
+          /*
+           * Figuring out filename, without path.
+           */
+          split:x:/../*/filename?value
+            =:/
+
+          /*
+           * Creating widget wrapping given attachment, such that it will be automatically serialized
+           * when form is serialized.
+           */
+          create-widget
+            class:sephia-attachment
+            parent:x:/@p5.web.widgets.find-first/*/*?value
+            widgets
+              input
+                type:hidden
+                .data-field:attachment
+                value:x:/../*/filename?value
+              button
+                innerValue:x:/@split/0/-?name
+                onclick
+
+                  /*
+                   * Deleting file from tmp folder, and deleting widget wrapping attachment.
+                   */
+                  p5.web.widgets.get-parent:x:/../*/_event?value
+                  micro.form.serialize:x:/-/*/*?value
+                  delete-file:x:/@micro.form.serialize/*/attachment?value
+                  delete-widget:x:/@p5.web.widgets.get-parent/*/*?value
+
       widgets:content
 
         /*
@@ -115,7 +169,7 @@ p5.sephia_upload_files = function(e) {
           class:fill
           placeholder:Subject of email ...
           .data-field:body
-          rows:20
+          rows:15
           value:x:/../*/body?value
 
         /*
@@ -140,8 +194,9 @@ p5.sephia_upload_files = function(e) {
               style:"display:inline-block;"
               widgets
                 button
-                  innerValue:Send
+                  innerValue:@"<span class=""icon-send""></span>"
                   style:"margin-bottom:0;"
+                  title:Send email
                   onclick
 
                     /*
@@ -169,10 +224,9 @@ p5.sephia_upload_files = function(e) {
                        */
                       for-each:x:/@micro.form.serialize/*/attachment
                         eval-x:x:/+/*/*
-                        add:x:/..try/*/sephia.send-email/*/attachments
+                        add:x:/..try/*/sephia.core.send-email/*/attachments
                           src
-                            file:@SEPHIA-USER-ATTACHMENTS/tmp/{0}
-                              :x:/@_dp/#?value
+                            file:x:/@_dp/#?value
 
                       /*
                        * Invoking Active Event responsible for sending email, passing in arguments
@@ -180,7 +234,7 @@ p5.sephia_upload_files = function(e) {
                        */
                       add:x:/+
                         src:x:/@micro.form.serialize/*(!/attachment!/no-data)
-                      sephia.send-email
+                      sephia.core.send-email
                         attachments
 
                       /*
@@ -234,48 +288,28 @@ p5.sephia_upload_files = function(e) {
                       src:x:/@p5.string.decode-base64?value
 
                     /*
-                     * Creating widget wrapping attachment, first making sure we find main attachment
-                     * wrapper widget.
+                     * Adding attachment to email.
                      */
-                    p5.web.widgets.find-first-ancestor-like:x:/../*/_event?value
+                    p5.web.widgets.find-first-ancestor:x:/../*/_event?value
                       .email-composer
-                    p5.web.widgets.find-first:x:/-/*/*?value
-                      class:sephia-attachments
-
-                    /*
-                     * Creating widget wrapping given attachment, such that it will be automatically serialized
-                     * when form is serialized.
-                     */
-                    create-widget
-                      class:sephia-attachment
-                      parent:x:/@p5.web.widgets.find-first/*/*?value
-                      widgets
-                        input
-                          type:hidden
-                          .data-field:attachment
-                          value:x:/../*/p5.web.post.get/[0,1]/*?value
-                        button
-                          innerValue:x:/../*/p5.web.post.get/[0,1]/*?value
-                          onclick
-
-                            /*
-                             * Deleting file from tmp folder, and deleting widget wrapping attachment.
-                             */
-                            p5.web.widgets.get-parent:x:/../*/_event?value
-                            micro.form.serialize:x:/-/*/*?value
-                            delete-file:@SEPHIA-USER-ATTACHMENTS/tmp/{0}
-                              :x:/@micro.form.serialize/*?value
-                            delete-widget:x:/@p5.web.widgets.get-parent/*/*?value
+                    eval-x:x:/+/*/*
+                    add:x:/../*/sephia.widgets.composer._add-attachment
+                      src
+                        filename:@SEPHIA-USER-ATTACHMENTS/tmp/{0}
+                          :x:/../*/p5.web.post.get/[0,1]/*?value
+                    sephia.widgets.composer._add-attachment:x:/@p5.web.widgets.find-first-ancestor/*/*?value
 
                   onchange:"p5.sephia_upload_files(event);"
 
                 button
-                  innerValue:Add attachment
+                  innerValue:@"<span class=""icon-folder-open-o""></span>"
                   style:"margin-bottom:0;"
+                  title:Add attachments
                   onclick:@"document.querySelector('.sephiaAttachmentFileInput').click();return false;"
                 button
-                  innerValue:Discard
+                  innerValue:@"<span class=""icon-trash-o""></span>"
                   style:"margin-bottom:0;"
+                  title:Discard email
                   onclick
 
                     /*
