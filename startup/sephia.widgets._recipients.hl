@@ -1,6 +1,11 @@
 
 /*
  * Creates our "recipient" widget.
+ *
+ * Will allow the user to search through his contacts, and add new recipients to his email.
+ *
+ * Optionally pass in [to], [cc] and [bcc] as initial recipients of email.
+ * These are collections of email addresses, where the email address is stored as the name of the node.
  */
 create-event:sephia.widgets._recipients
 
@@ -40,7 +45,13 @@ create-event:sephia.widgets._recipients
   return
     container
       oninit
+
+        /*
+         * Invoking this guy initially to set the CSS classes correct for the
+         * parent widget according to whether or not email can be sent encrypted or not.
+         */
         sephia.contacts._changed:x:/../*/_event?value
+
       class:row
       widgets
         div
@@ -134,7 +145,7 @@ create-event:sephia.widgets._recipients
 
 
 /*
- * Common lambda event that shows contacts, and allows user to select
+ * Active Event that shows contacts, and allows user to select
  * email from list of contacts, and add to given [_arg] input widget.
  */
 create-event:sephia.contacts._find
@@ -167,7 +178,7 @@ create-event:sephia.contacts._find
                   oninit
 
                     /*
-                     * Setting initial focus to textbox.
+                     * Setting initial focus to search textbox.
                      */
                     micro.page.set-focus:x:/../*/_event?value
 
@@ -181,7 +192,7 @@ create-event:sephia.contacts._find
                     get-widget-property:sephia-select-contact-filter
                       value
                     eval-x:x:/+/*
-                    sephia.contacts.find.databind
+                    sephia.contacts.find._databind
                       filter:x:/@get-widget-property/*/*?value
                     micro.page.set-focus:sephia-select-contact-filter
 
@@ -217,7 +228,7 @@ create-event:sephia.contacts._find
                     get-widget-property:sephia-select-contact-filter
                       value
                     eval-x:x:/+/*
-                    sephia.contacts.find.databind
+                    sephia.contacts.find._databind
                       filter:x:/@get-widget-property/*/*?value
                       offset:x:/@-?value
 
@@ -236,7 +247,7 @@ create-event:sephia.contacts._find
                     get-widget-property:sephia-select-contact-filter
                       value
                     eval-x:x:/+/*
-                    sephia.contacts.find.databind
+                    sephia.contacts.find._databind
                       filter:x:/@get-widget-property/*/*?value
                       offset:x:/@+?value
                     if:x:/-?value
@@ -253,7 +264,7 @@ create-event:sephia.contacts._find
             /*
              * Initially databding grid without any filter.
              */
-            sephia.contacts.find.databind
+            sephia.contacts.find._databind
 
           events
 
@@ -261,7 +272,7 @@ create-event:sephia.contacts._find
              * Databinds contacts grid.
              * Optionally pass in [filter].
              */
-            sephia.contacts.find.databind
+            sephia.contacts.find._databind
               .defaults
                 offset:0
               whoami

@@ -1,5 +1,13 @@
 
 /*
  * Deletes all of our "thread signals" for all users.
+ *
+ * These "thread signals" are used to communicate between threads.
+ * For instance, each user has a "POP3 fetch emails thread", which runs in the background,
+ * and constantly fetches new emails from the user's POP3 server, and puts them into your
+ * MySQL database instance.
+ *
+ * This file, which is evaluated when the server starts, deletes all of the "thread signals"
+ * from your p5.data database.
  */
 delete-data:x:/*/*/~sephia.core.thread-

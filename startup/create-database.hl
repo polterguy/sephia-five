@@ -1,8 +1,13 @@
 
 /*
- * Creating database if it doesn't exist, 
- * assuming connection string in web.config exists, 
+ * Creating database schema if it doesn't exist, assuming connection string in web.config exists, 
  * and its name is "sephia".
+ *
+ * Notice, you will need to have access to a MySQL database, and you must have declared its
+ * connection string in your web.config file with the name of "sephia".
+ *
+ * However, you don't need to create the schema for your database, this file will automatically
+ * do that for you, unless the tables have already been created.
  */
 p5.mysql.connect:[sephia]
   p5.mysql.execute:@"

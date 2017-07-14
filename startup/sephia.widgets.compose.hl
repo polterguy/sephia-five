@@ -136,11 +136,18 @@ p5.sephia_upload_files = function(e) {
                 onclick
 
                   /*
-                   * Deleting file from tmp folder, and deleting widget wrapping attachment.
+                   * Deleting widget wrapping attachment.
+                   *
+                   * Notice, we can't delete the actual file here, since it might
+                   * not necessarily be an uploaded attachment, but rather a file from
+                   * anywhere else within the root folder of P5.
+                   *
+                   * However, if file was in user's temp attachment folder, it will be deleted
+                   * the next time user refreshes his page, or starts Sephia Five, hence
+                   * we don't need to delete it.
                    */
                   p5.web.widgets.get-parent:x:/../*/_event?value
                   micro.form.serialize:x:/-/*/*?value
-                  delete-file:x:/@micro.form.serialize/*/attachment?value
                   delete-widget:x:/@p5.web.widgets.get-parent/*/*?value
 
       widgets:content

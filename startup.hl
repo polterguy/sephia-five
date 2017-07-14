@@ -4,14 +4,14 @@
  *
  * This file is evaluated every time the server restarts, or the web server process is recycled for any reasons.
  *
- * This file simply creates an "IO environment variable", allowing us to more easily access the main 
+ * This file simply creates a couple of "IO environment variables", allowing us to more easily access the main 
  * Sephia application folder, in addition to evaluating all Hyperlambda files inside the "/startup/" folder.
  */
 
 
 /*
  * Creates the "path" Active Event that points to our "/sephia-five/" folder.
- * This is done in such a way that we can install Sephia Five in any folder we wish.
+ * This is done in such a way that we can put Sephia Five into any folder we wish.
  */
 split:x:/..?name
   =:/
