@@ -156,8 +156,7 @@ create-event:sephia.contacts._find
   eval-x:x:/+/**/_widget
   create-widgets
     micro.widgets.modal:sephia-select-contact-modal
-      .recipients
-      class:micro-modal
+      class:micro-modal micro-modal-smaller
       widgets
 
         /*
@@ -183,7 +182,8 @@ create-event:sephia.contacts._find
                     micro.page.set-focus:x:/../*/_event?value
 
                 button:sephia-search-contacts-button
-                  innerValue:Search
+                  innerValue:@"<span class=""icon-search""></span>"
+                  title:Search for contact
                   onclick
 
                     /*
@@ -203,7 +203,8 @@ create-event:sephia.contacts._find
                       .offset:0
 
                 button
-                  innerValue:&lt;
+                  innerValue:@"<span class=""icon-chevron-left""></span>"
+                  title:Go to previous page
                   onclick
 
                     /*
@@ -233,7 +234,8 @@ create-event:sephia.contacts._find
                       offset:x:/@-?value
 
                 button
-                  innerValue:&gt;
+                  innerValue:@"<span class=""icon-chevron-right""></span>"
+                  title:Go to next page
                   onclick
 
                     /*
@@ -254,11 +256,21 @@ create-event:sephia.contacts._find
                       set-widget-property:sephia-contacts-search-wrapper
                         .offset:x:/@+?value
 
+                button:sephia-search-contacts-close-btn
+                  innerValue:@"<span class=""icon-close""></span>"
+                  title:Close window
+                  onclick
+
+                    /*
+                     * Closing modal "searchj for contact" window.
+                     */
+                    delete-widget:sephia-select-contact-modal
+
         /*
          * Actual datagrid.
          */
         micro.widgets.grid:sephia-select-contact-grid
-          class:hover
+          class:hover air-bottom
           oninit
 
             /*
@@ -270,7 +282,7 @@ create-event:sephia.contacts._find
 
             /*
              * Databinds contacts grid.
-             * Optionally pass in [filter].
+             * Optionally pass in [filter] and [offset].
              */
             sephia.contacts.find._databind
               .defaults
@@ -291,25 +303,42 @@ create-event:sephia.contacts._find
                 =:int:0
 
                 /*
-                 * No result, returning early.
+                 * No result, returning early, returning "failure" since grid was never in fact databound.
                  */
                 return:bool:false
 
+              /*
+               * Adding row to grid databind invocation.
+               */
               add:x:/+2
                 src:x:/@p5.mysql.connect/*/p5.mysql.select/*
               add:x:/+/*
                 src
                   .row
+
+                    /*
+                     * Making sure row becomes clickable, to allow user to select a contact
+                     * by clicking the row.
+                     */
                     onclick
 
                       /*
                        * Fetching email from innerValue on "td" element, and adding it to specified widget [_arg]
                        * during creation of grid.
+                       * [_widget] was forward evaluated above.
                        */
                       _widget:x:/../*/_arg?value
+
+                      /*
+                       * Finding email from second td cell's innerValue.
+                       */
                       p5.web.widgets.get-children:x:/../*/_event?value
                       get-widget-property:x:/-/0/1?value
                         innerValue
+
+                      /*
+                       * Appending email to text input widget's value, making sure we separate all emails with ",".
+                       */
                       get-widget-property:x:/@_widget?value
                         value
                       _content
@@ -317,27 +346,40 @@ create-event:sephia.contacts._find
                         src:"{0}, {1}"
                           :x:/../*/get-widget-property/[1,2]/*/*?value
                           :x:/../*/get-widget-property/[0,1]/*/*?value
+
+                      /*
+                       * Trimming away excessive ",", before we set widget's value to include also
+                       * the newly added email address.
+                       */
                       trim:x:/@_content?value
                         chars:", "
                       set-widget-property:x:/@_widget?value
                         value:x:/@trim?value
+
+                      /*
+                       * Deleting entire modal widget wrapping "search for contact", and
+                       * setting focus to widget which now should contact the newly added email address.
+                       */
                       delete-widget:sephia-select-contact-modal
                       micro.page.set-focus:x:/@_widget?value
+
+                      /*
+                       * Manually triggering [onchange] for widget, which will update main
+                       * composer widget's CSS classes according to whether or not email can be encrypted
+                       * or not.
+                       */
                       p5.web.widgets.ajax-events.raise:x:/@_widget?value
                         onchange
 
+              /*
+               * Databinding contacts grid, which now should be populated according to above logic.
+               */
               micro.widgets.grid.databind:sephia-select-contact-grid
-              return:bool:true
 
-        div
-          class:right air-top
-          widgets
-            button:sephia-search-contacts-close-btn
-              innerValue:Close
-              onclick
-                p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                  .recipients
-                delete-widget:x:/-/*/*?value
+              /*
+               * Returning true to caller to signal that we were able to databind grid.
+               */
+              return:bool:true
 
 
 

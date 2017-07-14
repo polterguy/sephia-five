@@ -1,6 +1,6 @@
 
 /*
- * Creates our "settings" widget
+ * Creates our "settings" widget.
  */
 create-event:sephia.widgets._settings
 
@@ -318,18 +318,41 @@ create-event:sephia.widgets._settings
 
                   /*
                    * Listing all private keys, and databinding our grid 
-                   * towards the existing private keys.
+                   * towards all existing private keys from GnuPG database.
+                   *
+                   * Making sure we only list keys that have an "@" in their User IDs, to
+                   * only list keys that seems to be intended for sending emails.
                    */
                   p5.crypto.list-private-keys:@
+
+                  /*
+                   * Getting the details of all keys listed from above, which we will
+                   * use when databinding the grid containing all private PGP keys, before
+                   * we loop through each key and add it up to our databind invocation below.
+                   */
                   p5.crypto.get-key-details:x:/-/*?name
                   for-each:x:/-/*
+
+                    /*
+                     * Adding item, and formatting both the creation and expires date nicely for
+                     * displaying in our grid.
+                     */
                     add:x:/../*/micro.widgets.grid.databind
                       src:item
                     p5.types.date.format:x:/@_dp/#/*/creation-time?value
                       format:"dd. MMM yyyy"
                     p5.types.date.format:x:/@_dp/#/*/expires?value
                       format:"dd. MMM yyyy"
+
+                    /*
+                     * User IDs normally contains angle brackets, hence we must HTML encode the User ID
+                     * before we can display it to the user.
+                     */
                     p5.html.html-encode:x:/@_dp/#/*/user-ids/0?value
+
+                    /*
+                     * Adding each cell to our grid, making sure we forward evaluate their values.
+                     */
                     eval-x:x:/+/*/*
                     add:x:/../*/micro.widgets.grid.databind/0/-
                       src
@@ -337,6 +360,10 @@ create-event:sephia.widgets._settings
                         Strength:x:/@_dp/#/*/strength?value
                         Created:x:/..for-each/*/p5.types.date.format/[0,1]?value
                         Expires:x:/..for-each/*/p5.types.date.format/[1,2]?value
+
+                    /*
+                     * Making sure our grid rows becomes clickable.
+                     */
                     eval-x:x:/+/*/*/*/*/_fingerprint
                     add:x:/../*/micro.widgets.grid.databind/0/-
                       src
@@ -345,18 +372,30 @@ create-event:sephia.widgets._settings
                           /*
                            * Handled to make sure we set the selected fingerprint into selected mode,
                            * if the user has previously selected a PGP key in this tab view.
+                           *
+                           * This is done by setting a hidden field's value to the fingerprint of the
+                           * key the user has previously selected.
                            */
                           oninit
+
+                            /*
+                             * Forward evaluated above.
+                             */
                             _fingerprint:x:/@_dp/#?name
-                            if
-                              fetch:x:/0/0?value
-                                widget-exists:sephia-settings-pgp-key
-                              get-widget-property:sephia-settings-pgp-key
-                                value
-                              if:x:/@get-widget-property/*/*?value
-                                =:x:/@_fingerprint?value
-                                set-widget-property:x:/../*/_event?value
-                                  class:selected
+
+                            /*
+                             * Checking if this is the active PGP key.
+                             */
+                            get-widget-property:sephia-settings-pgp-key
+                              value
+                            if:x:/@get-widget-property/*/*?value
+                              =:x:/@_fingerprint?value
+
+                              /*
+                               * Making sure "tr" row becomes "selected".
+                               */
+                              set-widget-property:x:/../*/_event?value
+                                class:selected
 
                           /*
                            * Handled to make user able to select a PGP key
@@ -368,21 +407,46 @@ create-event:sephia.widgets._settings
                            * of the selected key.
                            */
                           onclick
+
+                            /*
+                             * Forward evaluated above.
+                             */
                             _fingerprint:x:/@_dp/#?name
+
+                            /*
+                             * Removing the "selected" class on all rows in grid.
+                             */
                             p5.web.widgets.get-parent:x:/../*/_event?value
                             p5.web.widgets.get-children:x:/-/*/*?value
                             delete-widget-property:x:/-/*/*?value
                               class
+
+                            /*
+                             * Adding the "selected" class on currently clicked row.
+                             */
                             set-widget-property:x:/../*/_event?value
                               class:selected
+
+                            /*
+                             * Settings the value of our hidden input field to the fingerprint
+                             * of the currently clicked key.
+                             */
                             set-widget-property:sephia-settings-pgp-key
                               value:x:/@_fingerprint?value
+
+                            /*
+                             * Notifying user that he'll probably need to update his 
+                             * PGP key passphrase, and setting focus to passphrase textbox.
+                             */
+                            micro.windows.info:You'll probably need to update your key passphrase
+                            micro.page.set-focus:sephia-settings-pgp-password
 
                   /*
                    * Now we can finally databind our grid towards the private 
                    * PGP keys in GnuPG storage.
                    */
                   micro.widgets.grid.databind:pgp-keys
+
               div
                 class:row air-top
                 widgets
@@ -394,7 +458,7 @@ create-event:sephia.widgets._settings
                         widgets
                           label
                             for:sephia-settings-pgp-password
-                            innerValue:Your GnuPG password
+                            innerValue:Key password
                           input:sephia-settings-pgp-password
                             .data-field:pgp-password
                             type:password
@@ -407,18 +471,43 @@ create-event:sephia.widgets._settings
         div
           class:right air-top
           widgets
-            button
-              innerValue:Save
-              onclick
+            div
+              class:strip
+              style:"display:inline-block;"
+              widgets
 
                 /*
-                 * Serializing all setting values, and storing in user settings.
+                 * Save button at the bottom of form, beneath the tab widget.
                  */
-                p5.web.widgets.get-parent:sephia-settings-tab
-                micro.form.serialize:x:/-/*/*?value
-                add:x:/+/*
-                  src:x:/@micro.form.serialize/*
-                p5.auth.my-settings.set
-                  sephia
-                load-file:@SEPHIA/launch.hl
-                eval:x:/-/*
+                button
+                  innerValue:Save
+                  onclick
+
+                    /*
+                     * Serializing all setting values, and storing in user settings.
+                     */
+                    p5.web.widgets.get-parent:sephia-settings-tab
+                    micro.form.serialize:x:/-/*/*?value
+                    add:x:/+/*
+                      src:x:/@micro.form.serialize/*
+                    p5.auth.my-settings.set
+                      sephia
+
+                    /*
+                     * Re-launches Sephia for simplicity.
+                     */
+                    load-file:@SEPHIA/launch.hl
+                    eval:x:/-/*
+
+                /*
+                 * Close button that will close settings without updating them.
+                 */
+                button
+                  innerValue:Close
+                  onclick
+
+                    /*
+                     * Re-launches Sephia for simplicity.
+                     */
+                    load-file:@SEPHIA/launch.hl
+                    eval:x:/-/*
