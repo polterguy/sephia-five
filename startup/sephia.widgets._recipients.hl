@@ -44,6 +44,7 @@ create-event:sephia.widgets._recipients
    */
   return
     container
+      class:sephia-compose-recipients
       oninit
 
         /*
@@ -55,10 +56,11 @@ create-event:sephia.widgets._recipients
       class:row
       widgets
         div
-          class:col-50 strip fill
+          class:col-50 strip fill sephia-compose-to-wrapper
           widgets
             input
               type:text
+              class:sephia-compose-recipients-to
               .data-field:to
               .recipient
               onchange
@@ -71,6 +73,7 @@ create-event:sephia.widgets._recipients
 
             button
               innerValue:To
+              class:sephia-compose-recipients-to-btn
               title:Add to recipient
               onclick
 
@@ -84,10 +87,11 @@ create-event:sephia.widgets._recipients
                 sephia.contacts._find:x:/-/*/*?value
 
         div
-          class:col-25 strip fill
+          class:col-25 strip fill sephia-compose-cc-wrapper
           widgets
             input
               type:text
+              class:sephia-compose-recipients-cc
               .data-field:cc
               .recipient
               onchange
@@ -100,6 +104,7 @@ create-event:sephia.widgets._recipients
 
             button
               innerValue:Cc
+              class:sephia-compose-recipients-cc-btn
               title:Add cc recipient
               onclick
 
@@ -112,10 +117,11 @@ create-event:sephia.widgets._recipients
                   .data-field
                 sephia.contacts._find:x:/-/*/*?value
         div
-          class:col-25 strip fill
+          class:col-25 strip fill sephia-compose-bcc-wrapper
           widgets
             input
               type:text
+              class:sephia-compose-recipients-bcc
               .data-field:bcc
               .recipient
               onchange
@@ -128,6 +134,7 @@ create-event:sephia.widgets._recipients
 
             button
               innerValue:Bcc
+              class:sephia-compose-recipients-bcc-btn
               title:Add bcc recipient
               onclick
 
@@ -156,22 +163,23 @@ create-event:sephia.contacts._find
   eval-x:x:/+/**/_widget
   create-widgets
     micro.widgets.modal:sephia-select-contact-modal
-      class:micro-modal micro-modal-smaller
+      class:micro-modal micro-modal-smaller sephia-compose-search-contacts
       widgets
 
         /*
          * Search textbox wrapper.
          */
         div:sephia-contacts-search-wrapper
-          class:right
+          class:right sephia-compose-search-contacts-search-wrapper
           .offset:0
           widgets
             div
-              class:strip
+              class:strip sephia-compose-search-contacts-inner-search-wrapper
               style:"display:inline-block;"
               widgets
                 input:sephia-select-contact-filter
                   type:text
+                  class:sephia-compose-search-contacts-textbox
                   placeholder:Search ...
                   onkeydown:@"if (event.keyCode == 13) {p5.$('sephia-search-contacts-button').raise('onclick');return false;} else if (event.keyCode == 27) {p5.$('sephia-search-contacts-close-btn').raise('onclick');return false;}"
                   oninit
@@ -183,6 +191,7 @@ create-event:sephia.contacts._find
 
                 button:sephia-search-contacts-button
                   innerValue:@"<span class=""icon-search""></span>"
+                  class:sephia-compose-search-contacts-search-btn
                   title:Search for contact
                   onclick
 
@@ -204,6 +213,7 @@ create-event:sephia.contacts._find
 
                 button
                   innerValue:@"<span class=""icon-chevron-left""></span>"
+                  class:sephia-compose-search-contacts-go-previous-btn
                   title:Go to previous page
                   onclick
 
@@ -235,6 +245,7 @@ create-event:sephia.contacts._find
 
                 button
                   innerValue:@"<span class=""icon-chevron-right""></span>"
+                  class:sephia-compose-search-contacts-go-next-btn
                   title:Go to next page
                   onclick
 
@@ -258,6 +269,7 @@ create-event:sephia.contacts._find
 
                 button:sephia-search-contacts-close-btn
                   innerValue:@"<span class=""icon-close""></span>"
+                  class:sephia-compose-search-contacts-close-btn
                   title:Close window
                   onclick
 
@@ -270,7 +282,7 @@ create-event:sephia.contacts._find
          * Actual datagrid.
          */
         micro.widgets.grid:sephia-select-contact-grid
-          class:hover air-bottom
+          class:hover air-bottom sephia-compose-search-contacts-grid
           oninit
 
             /*
@@ -283,6 +295,10 @@ create-event:sephia.contacts._find
             /*
              * Databinds contacts grid.
              * Optionally pass in [filter] and [offset].
+             *
+             * Notice, since this is a modal window, and there can only be one at the time,
+             * we don't need to verify the invocation is to the current widget, since there
+             * can only be one at the time.
              */
             sephia.contacts.find._databind
               .defaults
@@ -303,7 +319,8 @@ create-event:sephia.contacts._find
                 =:int:0
 
                 /*
-                 * No result, returning early, returning "failure" since grid was never in fact databound.
+                 * No result, returning early since grid was never in fact databound.
+                 * Signaling the fact that grid was never databound to caller.
                  */
                 return:bool:false
 
@@ -411,7 +428,38 @@ create-event:sephia.contacts._changed
 
     /*
      * There is no text in any of the recipients textbox input fields.
-     * Defaulting to "success".
+     * Defaulting to "warning".
+     */
+    get-widget-property:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
+      class
+    if:x:/@get-widget-property/*/*?value
+      ~:success
+      micro.css.toggle:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
+        class:success
+    if:x:/@get-widget-property/*/*?value
+      !~:warning
+      micro.css.toggle:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
+        class:warning
+    return
+
+  trim:x:/@join?value
+    chars:,
+  split:x:/-?value
+    =:,
+    =:" "
+
+  /*
+   * Checking if all recipients have a public PGP key.
+   */
+  p5.crypto.list-public-keys:x:/@split/*?name
+  if:x:/-/*?count
+    =:x:/@split/*/$?count
+    or:x:/@split/*/$?count
+      =:int:0
+
+    /*
+     * We have public PGP keys for all recipients, or there are no
+     * recipients declared for composer.
      */
     get-widget-property:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
       class
@@ -423,43 +471,19 @@ create-event:sephia.contacts._changed
       ~:warning
       micro.css.toggle:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
         class:warning
-    return
-
-  join:x:/@get-widget-property/*/*?value
-    sep:,
-  trim:x:/-?value
-    chars:,
-  split:x:/-?value
-    =:,
-    =:" "
-
-  /*
-   * Checking if all recipients have a public PGP key.
-   */
-  p5.crypto.list-public-keys:x:/-/*?name
-  if:x:/-/*?count
-    =:x:/@split/*/$?count
-    or:x:/@split/*/$?count
-      =:int:0
-
-    /*
-     * We have public PGP keys for all recipients.
-     */
-    get-widget-property:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
-      class
-    if:x:/-/*/*?value
-      !~:success
-      micro.css.toggle:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
-        class:success warning
 
   else
 
     /*
-     * We do not have public PGP keys for all recipients.
+     * We do *NOT* have public PGP keys for all recipients.
      */
     get-widget-property:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
       class
-    if:x:/-/*/*?value
+    if:x:/@get-widget-property/*/*?value
       ~:success
       micro.css.toggle:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
-        class:success warning
+        class:success
+    if:x:/@get-widget-property/*/*?value
+      !~:warning
+      micro.css.toggle:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
+        class:warning

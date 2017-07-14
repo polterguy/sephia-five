@@ -120,10 +120,11 @@ where emails.id = @id"
       src:{0} - encrypted
         :x:/@_meta?value
   if:x:/@p5.mysql.select/*/*/signature?value
+    p5.html.html-encode:x:/@p5.mysql.select/*/*/signature?value
     set:x:/@_meta?value
       src:{0} - Signature - {1}
         :x:/@_meta?value
-        :x:/@p5.mysql.select/*/*/signature?value
+        :x:/@p5.html.html-encode?value
 
   /*
    * Making sure we set email as read in database.

@@ -12,17 +12,26 @@ create-event:sephia.core.send-email
   /*
    * Sanity check, we'll need [subject], [body] and at least one [to] recipient,
    * otherwise we'll throw an exception.
+   * First checking if [subject] exists.
    */
   if:x:/../*/subject?value
     not
     or:x:/../*/subject?value
       =:
     throw:No subject for email!
+
+  /*
+   * Then checking if [body] exists.
+   */
   if:x:/../*/body?value
     not
     or:x:/../*/body?value
       =:
     throw:No body for email!
+
+  /*
+   * Then checking if [to] exists.
+   */
   if:x:/../*/to?value
     not
     or:x:/../*/to?value
@@ -199,6 +208,23 @@ and add support for "".{1}"" file extensions if you wish to allow these types of
           email:x:/@_dp/#?value
 
   /*
+   * Then checking if email should be signed.
+   */
+  if:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-key?value
+    and:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-key?value
+      !=:
+
+    /*
+     * Email should be signed.
+     */
+    eval-x:x:/+/*/*/**
+    add:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart
+      src
+        sign
+          fingerprint:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-key?value
+            password:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-password?value
+
+  /*
    * Forward evaluating entire SMTP invocation.
    */
   eval-x:x:/../*/p5.smtp.send/**
@@ -319,13 +345,33 @@ create-event:sephia.core.send-email._save-envelope
           src:int:1
 
       /*
+       * Checking if email is signed.
+       */
+      _signature
+      _fingerprint
+      if:x:/../*/envelope/*/body/*/multipart/*/sign
+
+        /*
+         * Retrieving PGP key's fingerprint, and doing lookup into 
+         * GnuPG database to find its User ID, making sure we store both signature and fingerprint
+         * of key as we insert our email into database.
+         * Notice, we do a [to-upper] conversion of fingerprint, to make sure we store all
+         * fingerprints the same way.
+         */
+        set:x:/@_fingerprint?value
+          to-upper:x:/../*/envelope/*/body/*/multipart/*/sign/*/fingerprint?value
+        p5.crypto.get-key-details:x:/../*/envelope/*/body/*/multipart/*/sign/*/fingerprint?value
+        set:x:/@_signature?value
+          src:x:/@p5.crypto.get-key-details/*/*/user-ids/0?value
+
+      /*
        * Inserting into "email" table in database.
        * Using new Guid as "mimeid".
        */
       p5.types.guid.new
       p5.types.date.now
         local:true
-      p5.mysql.insert:@"insert into emails (subject, date, sender, username, isread, mimeid, signature, encrypted, type) values (@subject, @date, @sender, @username, 1, @mimeid, @signature, @encrypted, 'sent')"
+      p5.mysql.insert:@"insert into emails (subject, date, sender, username, isread, mimeid, signature, fingerprint, encrypted, type) values (@subject, @date, @sender, @username, 1, @mimeid, @signature, @fingerprint, @encrypted, 'sent')"
         @subject:x:/../*/envelope/*/Subject?value
         @date:x:/@p5.types.date.now?value
         @sender:x:/@_sender?value
@@ -333,7 +379,8 @@ create-event:sephia.core.send-email._save-envelope
         @mimeid:unknown-{0}
           :x:/@p5.types.guid.new?value.string
         @encrypted:x:/@_encrypt?value
-        @signature:x:/../*/envelope/*/Sender/*?value
+        @signature:x:/@_signature?value
+        @fingerprint:x:/@_fingerprint?value
 
       /*
        * Inserting into "part" table in database.

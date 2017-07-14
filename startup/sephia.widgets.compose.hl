@@ -1,11 +1,26 @@
 
 /*
  * Extension widget for composing an email.
+ *
  * Optionally you can pass in [subject], [body], [recipients][to], [recipients][cc] and [recipients][bcc].
+ * All recipients arguments is a list of email addresses, where the email address is expected to be found
+ * as the name of the node.
  *
  * You can also optionally pass in [.onclose] and [.onsend] lambda callbacks, which will be invoked when
  * email composer is closed and/or email is sent, in addition to [class], which will be the root class
  * of the composer.
+ *
+ * This widget will allow the user to compose an email, and send it, allowing the user to lookup contacts
+ * from the contacts database, etc. When the email is sent, it will be serialized as "sent" in Sephia's database.
+ *
+ * The class of the main root widget will be modified to contain either "warning" or "success" according to whether or
+ * not email can be sent encrypted or not.
+ *
+ * Notice, caller is reponsible for making sure the necessary CSS files are included on the page.
+ * By default, this widget requires Micro CSS, preferably with a skin, in addition to the main CSS file
+ * for Sephia Five. However, this could probably be changed as you see fit, if you want another type of styling
+ * for your widget.
+ * All major elements on widget has CSS classes which you can hook into, if you wish to style it yourself.
  */
 create-event:sephia.widgets.compose
 
@@ -17,6 +32,9 @@ create-event:sephia.widgets.compose
 
   /*
    * Including JavaScript necessary to handle uploading of attachments.
+   *
+   * This is done in an Ajax request invoking [.onupload] on a input element
+   * on form which is actually hidden, and exclusively handled using JavaScript.
    */
   p5.web.include-javascript:@"
 p5.sephia_upload_files = function(e) {
@@ -74,15 +92,6 @@ p5.sephia_upload_files = function(e) {
   return
     div
       oninit
-
-        /*
-         * In case widget is used from other apps, we make sure we include the necessary CSS files here.
-         */
-        p5.web.include-css-file:@MICRO/media/main.css
-        p5.web.include-css-file:@MICRO/media/ext.css
-        p5.web.include-css-file:@MICRO/media/fonts.css
-        p5.web.include-css-file:@SEPHIA/media/main.css
-
       .onsend
       .onclose
       .email-composer
@@ -111,7 +120,7 @@ p5.sephia_upload_files = function(e) {
            * Finding main attachment wrapper widget for instance.
            */
           p5.web.widgets.find-first:x:/../*/_event?value
-            class:sephia-attachments
+            class:sephia-compose-attachments
 
           /*
            * Figuring out filename, without path.
@@ -157,7 +166,7 @@ p5.sephia_upload_files = function(e) {
          */
         input
           type:text
-          class:fill
+          class:fill sephia-compose-subject
           placeholder:Subject ...
           .data-field:subject
           value:x:/../*/subject?value
@@ -173,7 +182,7 @@ p5.sephia_upload_files = function(e) {
          */
         literal
           element:textarea
-          class:fill
+          class:fill sephia-compose-body
           placeholder:Subject of email ...
           .data-field:body
           rows:15
@@ -183,26 +192,36 @@ p5.sephia_upload_files = function(e) {
          * Wrapper for attachments.
          */
         container
-          class:sephia-attachments
+          class:sephia-compose-attachments
 
         /*
          * Our "select recipient" extension widget.
+         *
+         * This is the widget that allows the user to add recipients to his email.
+         * This is being done by displaying three textbox input elements for "to", "cc" and "bcc",
+         * and allowing user to append to these widgets, by doing a lookup into his or her "contacts"
+         * database, and/or typing into the textbox adding a new email to the list of recipients.
          */
         sephia.widgets._recipients
 
         /*
-         * Button strip at bottom for "send", "discard", etc.
+         * Button strip at bottom for "send", "add attachment", "discard", etc.
          */
         div
-          class:right
+          class:right sephia-compose-footer
           widgets
             div
               class:strip
               style:"display:inline-block;"
               widgets
+
+                /*
+                 * Send button.
+                 */
                 button
                   innerValue:@"<span class=""icon-send""></span>"
                   style:"margin-bottom:0;"
+                  class:sephia-compose-send
                   title:Send email
                   onclick
 
@@ -275,6 +294,10 @@ p5.sephia_upload_files = function(e) {
                                   onclick
                                     delete-widget:sephia-error-modal-widget
 
+                /*
+                 * Hidden file input element, handled through JavaScript, that allows user
+                 * to add attachments to his email.
+                 */
                 input
                   style:"display:none;"
                   type:file
@@ -308,14 +331,25 @@ p5.sephia_upload_files = function(e) {
 
                   onchange:"p5.sephia_upload_files(event);"
 
+                /*
+                 * Add attachment button.
+                 *
+                 * Will trigger the above "file" input element's "open and browse for local files" popup.
+                 */
                 button
                   innerValue:@"<span class=""icon-folder-open-o""></span>"
                   style:"margin-bottom:0;"
+                  class:sephia-compose-add-attachment
                   title:Add attachments
                   onclick:@"document.querySelector('.sephiaAttachmentFileInput').click();return false;"
+
+                /*
+                 * Discard email button.
+                 */
                 button
                   innerValue:@"<span class=""icon-trash-o""></span>"
                   style:"margin-bottom:0;"
+                  class:sephia-compose-discard-email
                   title:Discard email
                   onclick
 

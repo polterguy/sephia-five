@@ -1,6 +1,10 @@
 
 /*
  * Creates our "settings" widget.
+ *
+ * Will create a settings form, from where the user can change his personal settings, such as his POP3
+ * server, username, password, etc.
+ * Takes no arguments.
  */
 create-event:sephia.widgets._settings
 
