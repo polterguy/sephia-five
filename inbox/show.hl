@@ -54,7 +54,7 @@ create-widget:sephia-search-wrapper
       else
 
         /*
-         * Setting paging [offset] to zero and [filter] to "" 
+         * Setting paging [offset] to zero and [filter] to "",
          * before re-databinding grid again.
          */
         set-widget-property:x:/../*/_event?value
@@ -213,9 +213,18 @@ create-widget:sephia-search-wrapper
               onclick
 
                 /*
-                 * Refreshing inbox.
+                 * Refreshing inbox, and makes sure we have a "fetch emails from POP3 server worker thread".
+                 *
+                 * The latter we do, since sometimes an error is created in the POP3 worker thread, which user
+                 * might choose to avoid clicking "Resolve" for, at which point the worker POP3 thread is
+                 * simply stopped and not restarted, while user for instance goes through his settings, etc.
+                 *
+                 * Since the "fetch-emails.hl" file will make sure there only exists one thread for each user, this
+                 * has no negative consequences if the thread already exists.
                  */
                 sephia.inbox.open
+                load-file:@SEPHIA/core/fetch-emails.hl
+                eval:x:/-/*
 
             /*
              * Button to compose a new email.

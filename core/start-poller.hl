@@ -91,7 +91,27 @@ create-literal-widget:sephia-poller
        */
       sephia.core.create-poller-javascript
 
-    else
+      /*
+       * Zeroing out "thread count" to make sure thread doesn't stop running.
+       */
+      update-data:x:/*/*/sephia.core.thread-{0}/*/running/*/count?value
+        :x:/@whoami/*/username?value
+        src:int:0
+
+    else-if:x:/@lock/*/select-data/*/*/restart?value
+
+      /*
+       * Thread was stopped and should be restarted for some reasons.
+       *
+       * Might be because settings was changed for instance.
+       */
+      delete-data:x:/*/*/sephia.core.thread-{0}
+        :x:/@whoami/*/username?value
+      load-file:@SEPHIA/core/fetch-emails.hl
+      eval:x:/-/*
+      sephia.core.create-poller-javascript
+
+    else-if:x:/@lock/*/select-data/*/*/error?value
 
       /*
        * Thread has stopped running, and contains an error exception message.

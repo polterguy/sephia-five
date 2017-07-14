@@ -665,7 +665,24 @@ Feel free to do something else in the meantime, and come back here later to see 
                       sephia
 
                     /*
-                     * Re-launches Sephia for simplicity.
+                     * Notice, before we can re-relaunch inbox, we must signal any fetcher threads that they should restart,
+                     * to update settings.
+                     */
+                    whoami
+                    lock:sephia.core.thread-creator-{0}
+                      :x:/@whoami/*/username?value
+                      delete-data:x:/*/*/sephia.core.thread-{0}
+                        :x:/@whoami/*/username?value
+                      eval-x:x:/+/*
+                      set:x:/+/*?name
+                        src:sephia.core.thread-{0}
+                          :x:/@whoami/*/username?value
+                      insert-data
+                        thread
+                          restart:bool:true
+
+                    /*
+                     * Re-launches inbox for simplicity.
                      */
                     load-file:@SEPHIA/launch.hl
                     eval:x:/-/*

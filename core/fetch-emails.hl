@@ -3,10 +3,17 @@
  * File responsible for fetching emails.
  *
  * This will spawn of a new thread, which runs in the background "forever", or until an exception
- * occurs. But it will only fork one new thread for each user in the system.
+ * occurs, or user closes his browser window. But it will only fork one new thread for each user in the system.
  *
- * This thread will run in the background, and fetch new emails form the user's POP3 server, then sleep
- * for 5 seconds, before starting fetching emails again.
+ * This thread will run in the background, and fetch new emails from the user's POP3 server, then sleep
+ * for n seconds, before starting fetching emails again.
+ *
+ * It will iterate like this for 5 times, and then simply "die off" unless some other parts of the
+ * program has zero'ed its counter, which is stored in p5.data.
+ *
+ * Notice, it works in combination with the "start-poller.hl" file, which will create a timeout JavaScript
+ * object, that polls the server every n seconds, which zeroes out the iteration counter, while it checks 
+ * for new emails.
  */
 
 
@@ -28,6 +35,8 @@ whoami
 
 /*
  * Making sure there's only one thread at the time that tries to create a user "worker thread".
+ * Otherwise in theory we could have multiple GUI threads evaluating this file, which would 
+ * create multiple "fetcher worker threads".
  */
 lock:sephia.core.thread-creator-{0}
   :x:/@whoami/*/username?value
@@ -78,6 +87,7 @@ lock:sephia.core.thread-creator-{0}
   insert-data
     thread
       running:bool:true
+        count:int:0
 
 
   /*
@@ -98,10 +108,29 @@ lock:sephia.core.thread-creator-{0}
     try
 
       /*
-       * Neveer ending while loop, that will fetch emails from POP3 server "forever", or until an exception occurs.
-       * It will basically iterate once, wait for n seconds, and start iterating again
+       * "Neveer ending while loop", that will fetch emails from POP3 server "forever", or until an exception occurs.
+       * It will basically iterate once, wait for n seconds, and start iterating again.
+       * It will not iterate more than 5 times though, unless som client has polled the server for new emails.
+       * This avoids having multiple background threads, for users no longer connected to their inbox.
        */
       while:bool:true
+
+        /*
+         * Checking if another thread told us to stop.
+         */
+        select-data:x:/*/*/sephia.core.thread-{0}
+          :x:/@.whoami/*/username?value
+        if:x:/@select-data/*/*/restart?value
+          or:x:/@select-data/*/*/running/*/count?value.int
+            >=:int:5
+
+          /*
+           * Thread should be stopped and restarted for some reasons, or there has not been a client
+           * polling the server for information for more than 5 iterations, which means thread is no longer needed.
+           */
+          delete-data:x:/*/*/sephia.core.thread-{0}
+            :x:/@.whoami/*/username?value
+          return
 
         /*
          * Fetching all the latest emails in an inner while loop, that doesn't sleep,
@@ -203,7 +232,7 @@ lock:sephia.core.thread-creator-{0}
                     _signature
                     _fingerprint
                     _encrypted:int:0
-                    if:x:/@_dp/#/*/*/signature/*?value
+                    if:x:/@_dp/#/*/multipart/*/signature/*?value
 
                       /*
                        * Email was cryptographically signed.
@@ -367,6 +396,18 @@ lock:sephia.core.thread-creator-{0}
          * which will start fetching again.
          */
         sleep:10000
+
+        /*
+         * Updating iteration count.
+         */
+        select-data:x:/*/*/sephia.core.thread-{0}/*/running/*/count?value
+          :x:/@.whoami/*/username?value
+        if:x:/-/*?value
+          +:x:/@select-data/*?value.int
+            _:int:1
+          update-data:x:/*/*/sephia.core.thread-{0}/*/running/*/count?value
+            :x:/@.whoami/*/username?value
+            src:x:/@+?value
 
     catch
 
