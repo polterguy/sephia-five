@@ -330,11 +330,36 @@ create-event:sephia.widgets._settings
                   p5.crypto.list-private-keys:@
 
                   /*
+                   * Hiding grid of keys and password wrapper if no private keys exists.
+                   */
+                  if:x:/@p5.crypto.list-private-keys/*?count
+                    =:int:0
+
+                    /*
+                     * No private keys in GnuPG database.
+                     */
+                    set-widget-property:pgp-keys
+                      visible:false
+                    set-widget-property:sephia-settings-pgp-pwd-wrapper
+                      visible:false
+                    return
+
+                  else
+
+                    /*
+                     * To be sure we re-display widgets again, we explicitly invoke set visible.
+                     */
+                    set-widget-property:pgp-keys
+                      visible:true
+                    set-widget-property:sephia-settings-pgp-pwd-wrapper
+                      visible:true
+
+                  /*
                    * Getting the details of all keys listed from above, which we will
                    * use when databinding the grid containing all private PGP keys, before
                    * we loop through each key and add it up to our databind invocation below.
                    */
-                  p5.crypto.get-key-details:x:/-/*?name
+                  p5.crypto.get-key-details:x:/@p5.crypto.list-private-keys/*?name
                   for-each:x:/-/*
 
                     /*
@@ -451,7 +476,7 @@ create-event:sephia.widgets._settings
                    */
                   micro.widgets.grid.databind:pgp-keys
 
-              div
+              div:sephia-settings-pgp-pwd-wrapper
                 class:row air-top
                 widgets
                   div
@@ -462,12 +487,154 @@ create-event:sephia.widgets._settings
                         widgets
                           label
                             for:sephia-settings-pgp-password
-                            innerValue:Key password
+                            innerValue:Password
                           input:sephia-settings-pgp-password
                             .data-field:pgp-password
                             type:password
                             placeholder:Your PGP password ...
                             value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pgp-password|/../*/.defaults/*/pgp-password)/[0,1]?value
+              div
+                class:row
+                widgets
+                  div
+                    class:col right
+                    widgets
+                      button
+                        style:"margin-bottom:0;"
+                        innerValue:Create new PGP key ...
+                        onclick
+
+                          /*
+                           * Shows a modal window, allowing user to start creation of a new PGP keypair.
+                           *
+                           * Retrieving settings user has already filled out, to use as initial suggestion for
+                           * name and email part of key-creation process.
+                           */
+                          p5.web.widgets.get-parent:sephia-settings-tab
+                          micro.form.serialize:x:/-/*/*?value
+                          eval-x:x:/+/*/*/*/micro.widgets.wizard-form/*/text/*/value
+                          create-widgets
+                            micro.widgets.modal:sephia-create-pgp-key-modal
+                              class:micro-modal micro-modal-smaller
+                              widgets
+                                h3
+                                  innerValue:Create new PGP keypair
+                                micro.widgets.wizard-form:sephia-create-new-pgp-key
+                                  text:sephia-key-name
+                                    .data-field:name
+                                    info:Name
+                                    value:x:/@micro.form.serialize/*/name?value
+                                    oninit
+                                      micro.page.set-focus:x:/../*/_event?value
+                                  text:sephia-key-email
+                                    .data-field:email
+                                    info:Email
+                                    value:x:/@micro.form.serialize/*/email?value
+                                  text:sephia-key-password
+                                    .data-field:password
+                                    info:Password
+                                    type:password
+                                    autocomplete:new-password
+                                  text:sephia-key-name-password-repeat
+                                    .data-field:password-repeat
+                                    info:Repeat
+                                    type:password
+                                    autocomplete:new-password
+                                  radio-group
+                                    .data-field:strength
+                                    options
+                                      1024bit
+                                        .data-value:1024
+                                        title:Should only be used for testing purposes, but will be created very fast
+                                      2048bit
+                                        .data-value:2048
+                                        title:Should only be used for testing purposes, but will be created fast
+                                      4096bit
+                                        .data-value:4096
+                                        checked
+                                        title:Recommended, but might take several minutes to create
+                                      8192bit
+                                        .data-value:8192
+                                        title:Might take a very very long time to create!! Overkill!!
+                                  br
+                                  label
+                                    for:sephia-key-seed
+                                    innerValue:Seed
+                                  textarea:sephia-key-seed
+                                    .data-field:seed
+                                    info:Some optional random text to seed the random number generator. Just type in a random sequence of characters here ...
+                                  div
+                                    class:right
+                                    style:"clear:both;"
+                                    widgets
+                                      button
+                                        innerValue:Create ...
+                                        onclick
+
+                                          /*
+                                           * Serializing form data and using it to create a new PGP keypair.
+                                           */
+                                          micro.form.serialize:sephia-create-new-pgp-key
+
+                                          /*
+                                           * Verifying that passwords are a match.
+                                           */
+                                          if:x:/@micro.form.serialize/*/password?value
+                                            !=:x:/@micro.form.serialize/*/password-repeat?value
+
+                                            /*
+                                             * Passwords didn't match.
+                                             */
+                                            p5.web.widgets.find-first-like
+                                              class:micro-modal-content
+                                            eval-x:x:/+/*
+                                            micro.windows.info:Your passwords are not matching
+                                              parent:x:/@p5.web.widgets.find-first-like/*/*?value
+                                              class:micro-windows-info micro-windows-info-error
+                                            return
+
+                                          /*
+                                           * Forking a new thread, having PGP keypair created on worker thread.
+                                           */
+                                          add:x:/../*/fork/*/.settings
+                                            src:x:/@micro.form.serialize/*
+                                          fork
+                                            .settings
+                                            p5.crypto.create-pgp-keypair
+                                              identity:{0} <{1}>
+                                                :x:/@.settings/*/name?value
+                                                :x:/@.settings/*/email?value
+                                              password:x:/@.settings/*/password?value
+                                              seed:x:/@.settings/*/seed?value
+                                              strength:x:/@.settings/*/strength?value
+
+                                          /*
+                                           * Deleting modal widget.
+                                           */
+                                          delete-widget:sephia-create-pgp-key-modal
+
+                                          /*
+                                           * Providing feedback to user.
+                                           */
+                                          create-widgets
+                                            micro.widgets.modal:sephia-create-new-pgp-key-info
+                                              class:micro-modal micro-modal-smaller
+                                              widgets
+                                                h3
+                                                  innerValue:Information
+                                                p
+                                                  innerValue:@"Notice, this might take some few minutes, depending upon your key size. 
+Feel free to do something else in the meantime, and come back here later to see if it's done a couple of minutes from now."
+                                                div
+                                                  class:right
+                                                  widgets
+                                                    button
+                                                      innerValue:OK
+                                                      oninit
+                                                        micro.page.set-focus:x:/../*/_event?value
+                                                      onclick
+                                                        delete-widget:sephia-create-new-pgp-key-info
+
 
         /*
          * Save button, beneath our tab widget.
