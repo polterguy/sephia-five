@@ -26,11 +26,14 @@ p5.mysql.connect:[sephia]
 
   /*
    * Selecting 15 newest emails.
+   *
+   * Notice, we do not order by date, since dates might sometimes be local, and/or slightly offsets - Hence,
+   * we order our emails by "id" descendingly, which should always bring in the most recent email at the top.
    */
-  p5.mysql.select:@"select emails.id, subject, date, isread, type, contacts.email, contacts.name from emails inner join contacts on contacts.id = emails.sender 
+  p5.mysql.select:@"select emails.id, subject, date, encrypted, signature, fingerprint, isread, type, contacts.email, contacts.name from emails inner join contacts on contacts.id = emails.sender 
 where emails.username = @username and (subject like @filter or contacts.name like @filter or contacts.email like @filter 
 or exists (select * from parts where content like @filter and parts.emailid = emails.id))
-order by date desc limit 15 offset @offset"
+order by id desc limit 15 offset @offset"
     @username:x:/@whoami/*/username?value
     @offset:x:(/../*/offset|/../*/.defaults/*/offset)/$?value.int
     @filter:%{0}%
@@ -43,71 +46,131 @@ order by date desc limit 15 offset @offset"
     =:int:0
     return:bool:false
 
-
-
-
-
-/*
- * Creating rows for our grid databind operation below.
- */
-for-each:x:/@p5.mysql.connect/*/p5.mysql.select/*
-
   /*
-   * Creating CSS class of row according to status of currently iterated email.
+   * Creating rows for our grid databind operation below.
    */
-  _class
-  if:x:/@_dp/#/*/type?value
-    =:sent
+  for-each:x:/@p5.mysql.connect/*/p5.mysql.select/*
 
     /*
-     * This email was sent by currently logged in user.
+     * Creating CSS class of row according to status of currently iterated email.
      */
-    set:x:/@_class?value
-      src:{0} sephia-sent
-        :x:/@_class?value
+    _class
+    if:x:/@_dp/#/*/type?value
+      =:sent
 
-  else-if:x:/@_dp/#/*/isread?value.int
-    =:int:0
+      /*
+       * This email was sent by currently logged in user.
+       */
+      set:x:/@_class?value
+        src:{0} sephia-sent
+          :x:/@_class?value
+
+    else-if:x:/@_dp/#/*/isread?value.int
+      =:int:0
+
+      /*
+       * This email is still unread.
+       */
+      set:x:/@_class?value
+        src:{0} sephia-unread
+          :x:/@_class?value
+
+    if:x:/@_dp/#/*/encrypted?value.int
+      =:int:1
+
+      /*
+       * This email was sent encrypted.
+       */
+      set:x:/@_class?value
+        src:{0} sephia-encrypted
+          :x:/@_class?value
+
+    if:x:/@_dp/#/*/fingerprint?value
+      and:x:/@_dp/#/*/fingerprint?value
+        !=:
+
+      /*
+       * This email was sent signed.
+       */
+      set:x:/@_class?value
+        src:{0} sephia-signed
+          :x:/@_class?value
 
     /*
-     * This email is still unread.
+     * Nicely formatting the date, and cleaning up CSS class.
      */
+    p5.types.date.format:x:/@_dp/#/*/date?value
+      format:"d. MMM yyyy - HH:mm"
     set:x:/@_class?value
-      src:{0} sephia-unread
-        :x:/@_class?value
+      trim:x:/@_class?value
 
-  /*
-   * Nicely formatting the date, and cleaning up class.
-   */
-  p5.types.date.format:x:/@_dp/#/*/date?value
-    format:"d. MMM yyyy - HH:mm"
-  set:x:/@_class?value
-    trim:x:/@_class?value
+    /*
+     * Adding signed icon, if we should.
+     */
+    if:x:/@_dp/#/*/fingerprint?value
+      and:x:/@_dp/#/*/fingerprint?value
+        !=:
+      add:x:/..for-each/*/add/**/Date/*/widgets/*/div/*/widgets
+        src
+          literal
+            element:span
+            class:icon-paw
 
-  /*
-   * Forward evaluating arguments, and creating our row.
-   */
-  eval-x:x:/+/*/*/*|/+/*/*/*/.row/*(/*/*/id|/title|/class|/.row-email-id)
-  add:x:/../*/micro.widgets.grid.databind
-    src
-      item
-        .row
-          title:x:/@_dp/#/*/email?value
-          class:x:/@_class?value
-          .row-email-id:x:/@_dp/#/*/id?value
-          onclick
+    /*
+     * Checking if email has attachments.
+     */
+    p5.mysql.scalar:@"select count(*) from attachments where emailid = @id"
+      @id:x:/@_dp/#/*/id?value
+    if:x:/@p5.mysql.scalar?value.int
+      >:int:0
+      add:x:/..for-each/*/add/**/Date/*/widgets/*/div/*/widgets
+        src
+          literal
+            element:span
+            class:icon-paperclip
 
-            /*
-             * Executing file responsible for reading a single email.
-             */
-            load-file:@SEPHIA/inbox/read.hl
-            eval-x:x:/+/*
-            eval:x:/-2/*
-              id:x:/@_dp/#/*/id?value
 
-        Name:x:/@_dp/#/*/name?value
-        Subject:x:/@_dp/#/*/subject?value
-        Date:x:/@p5.types.date.format?value
+    /*
+     * Adding encrypted icon, if we should.
+     */
+    if:x:/@_dp/#/*/encrypted?value.int
+      !=:int:0
+      add:x:/..for-each/*/add/**/Date/*/widgets/*/div/*/widgets
+        src
+          literal
+            element:span
+            class:icon-lock
+
+    /*
+     * Forward evaluating arguments, and creating our row.
+     */
+    eval-x:x:/+/*/*/*|/+/*/*/*/Date/**|/+/*/*/*/.row/*(/*/*/id|/title|/class|/.row-email-id)
+    add:x:/../*/micro.widgets.grid.databind
+      src
+        item
+          .row
+            title:x:/@_dp/#/*/email?value
+            class:x:/@_class?value
+            .row-email-id:x:/@_dp/#/*/id?value
+            onclick
+
+              /*
+               * Executing file responsible for reading a single email.
+               */
+              load-file:@SEPHIA/inbox/read.hl
+              eval-x:x:/+/*
+              eval:x:/-2/*
+                id:x:/@_dp/#/*/id?value
+
+          Name:x:/@_dp/#/*/name?value
+          Subject:x:/@_dp/#/*/subject?value
+          Date
+            widgets
+              span
+                innerValue:x:/@p5.types.date.format?value
+              div
+                class:sephia-status
+                widgets
 
 
 /*

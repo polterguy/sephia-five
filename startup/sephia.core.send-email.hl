@@ -230,11 +230,10 @@ and add support for "".{1}"" file extensions if you wish to allow these types of
   eval-x:x:/../*/p5.smtp.send/**
 
   /*
-   * Saves entire outgoing [envelope] to database.
+   * Storing entire outgoing [envelope] to [_save-envelope].
    */
   add:x:/../*/sephia.core.send-email._save-envelope
     src:x:/../*/p5.smtp.send/*/envelope
-  sephia.core.send-email._save-envelope
 
   /*
    * Sending email.
@@ -255,6 +254,11 @@ and add support for "".{1}"" file extensions if you wish to allow these types of
         multipart:mixed
           text:plain
             content:x:/../*/body?value
+
+  /*
+   * Saves entire outgoing [envelope] to database.
+   */
+  sephia.core.send-email._save-envelope
 
 
 

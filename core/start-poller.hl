@@ -22,7 +22,7 @@ create-literal-widget:sephia-poller
      * invoking our [.oncheck] below, after n seconds.
      */
     sephia.core.create-poller-javascript
-      p5.web.send-javascript:@"setTimeout(function(){p5.$('sephia-poller').raise('.oncheck')}, 5000);"
+      p5.web.send-javascript:@"setTimeout(function(){p5.$('sephia-poller').raise('.oncheck')}, 10000);"
 
   .oncheck
 
@@ -103,7 +103,7 @@ create-literal-widget:sephia-poller
       /*
        * Thread was stopped and should be restarted for some reasons.
        *
-       * Might be because settings was changed for instance.
+       * Might be caused by for instance that the user's settings was changed.
        */
       delete-data:x:/*/*/sephia.core.thread-{0}
         :x:/@whoami/*/username?value
@@ -111,7 +111,7 @@ create-literal-widget:sephia-poller
       eval:x:/-/*
       sephia.core.create-poller-javascript
 
-    else-if:x:/@lock/*/select-data/*/*/error?value
+    else-if:x:/@lock/*/select-data/*/*/error
 
       /*
        * Thread has stopped running, and contains an error exception message.

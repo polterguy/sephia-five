@@ -144,7 +144,7 @@ lock:sephia.core.thread-creator-{0}
             ssl:x:/@.settings/*/pop3-ssl?value
             username:x:/@.settings/*/pop3-username?value
             password:x:/@.settings/*/pop3-password?value
-            attachment-folder:x:/_users-home-folder?value
+            attachment-folder:x:/@_users-home-folder?value
             count:20
             decrypt
               fingerprint:x:/@.settings/*/pgp-key?value
@@ -277,7 +277,7 @@ lock:sephia.core.thread-creator-{0}
                       @encrypted:x:/@_encrypted?value
 
                     /*
-                     * Now inserting into "attachment" table.
+                     * Now inserting into "attachments" table.
                      */
                     for-each:x:/@_dp/#/**/filename
                       p5.mysql.insert:@"insert into attachments (filename, prefix, folder, emailid) values (@filename, @prefix, @folder, @emailid)"

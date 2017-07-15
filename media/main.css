@@ -20,12 +20,36 @@
 }
 
 /*
+ * Wrapper for status icons that shows if email was encrypted, signed, etc.
+ */
+.sephia-status {
+    float:right;
+    color:#e0e0e0;
+}
+.sephia-status span {
+    margin-left:2px;
+}
+
+/*
  * An unread email in inbox grid.
  */
 .sephia-unread {
     font-weight: bold;
 }
 
+/*
+ * An encrypted email in inbox grid.
+ * Notice, we don't care for these, since we add icons to last column anyways.
+ */
+.sephia-encrypted {
+}
+
+/*
+ * A cryptographically signed email in inbox grid.
+ * Notice, we don't care for these, since we add icons to last column anyways.
+ */
+.sephia-signed {
+}
 
 /*
  * A sent email in inbox grid.
@@ -82,6 +106,19 @@
 /*
  * Attachments in reader.
  */
+.sephia-inbox-attachments {
+}
+.sephia-inbox-attachment {
+    background:linear-gradient(#ffffff, #ddffdd);
+}
+.sephia-inbox-illegal-attachment {
+    background: linear-gradient(#ffffff, #ffdddd);
+    opacity:.3;
+}
+
+/*
+ * Attachments in composer.
+ */
 .sephia-compose-attachments {
     overflow:auto;
 }
@@ -91,13 +128,10 @@
 }
 .sephia-attachment button {
     position:relative;
-    padding:25px 25px 25px 25px;
-    width:150px;
-    height:100px;
-    color:var(--form-txt-col);
-    background:var(--wid-light-col);
+    background:linear-gradient(#ffffff, #ddffdd);
     text-transform:none;
     margin-bottom:15px !important;
+    padding-right:25px;
 }
 .sephia-attachment button:hover, .sephia-attachment button:active, .sephia-attachment button:focus {
     background:var(--wid-lighter-col);

@@ -14,6 +14,18 @@ create-event:sephia.widgets._settings
   p5.auth.my-settings.get
 
   /*
+   * Verifying key user has declared to use in his settings actually exists, and if not, 
+   * removing it from settings object, such that it doesn't become saved in user's settings.
+   *
+   * Otherwise it would be impossible to remove a key that doesn't exist in GnuPG database.
+   */
+  p5.crypto.list-private-keys:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-key?value
+  if:x:/-/*?count
+    =:int:0
+    set:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-key
+    set:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-password
+
+  /*
    * Default values for settings.
    * Notice, we're simply using GMail server settings here.
    */
@@ -589,6 +601,23 @@ create-event:sephia.widgets._settings
                                               class:micro-modal-content
                                             eval-x:x:/+/*
                                             micro.windows.info:Your passwords are not matching
+                                              parent:x:/@p5.web.widgets.find-first-like/*/*?value
+                                              class:micro-windows-info micro-windows-info-error
+                                            return
+
+                                          /*
+                                           * Verifying that a password was given.
+                                           */
+                                          if:x:/@micro.form.serialize/*/password?value
+                                            =:
+
+                                            /*
+                                             * No password was given.
+                                             */
+                                            p5.web.widgets.find-first-like
+                                              class:micro-modal-content
+                                            eval-x:x:/+/*
+                                            micro.windows.info:You must supply a password
                                               parent:x:/@p5.web.widgets.find-first-like/*/*?value
                                               class:micro-windows-info micro-windows-info-error
                                             return
