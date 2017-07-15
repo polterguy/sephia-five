@@ -1,0 +1,8 @@
+
+/*
+ * Evaluates all files in the "private" folder.
+ */
+list-files:@SEPHIA/startup/private/
+  filter:.hl
+load-file:x:/-/*?name
+eval:x:/-/*
