@@ -296,7 +296,7 @@ where emails.id = @id"
 /*
  * Loading all action buttons.
  */
-list-files:@SEPHIA/inbox/action-buttons/
+list-files:@SEPHIA/inbox/read-email-action-buttons/
   filter:.hl
 load-file:x:/-/*?name
 add:x:/../*/create-widget/**/widgets/=action-strip
