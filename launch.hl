@@ -1,19 +1,29 @@
 
 /*
- * File responsible for starting Sephia Five, which means creating main widget, 
+ * File responsible for starting Sephia Five, which means creating the main widget, 
  * and wire frame for displaying inbox etc.
+ *
+ * Notice, it will first force the user to setup his POP3 and SMTP settings, unless
+ * he has already done so.
  */
 
 
 /*
  * Checking if user is attempting to download a file, such as an attachment etc.
+ *
+ * When the user tries to download an attachment, the attachment he tries to download,
+ * will be stored in a session variable, and the page will be reloaded.
+ * Here we check for that session variable, and if it exist, we simply serve that file,
+ * for then to delete the session variable.
  */
 p5.web.session.get:sephia.core.file-download
 if:x:/@p5.web.session.get/*/*
 
   /*
+   * User has requested to download a file.
+   *
    * Deleting session variable, echoing file, and returning early, 
-   * making sure we get the HTTP headers correctly.
+   * making sure we get the HTTP "Content-Disposition" header correctly.
    */
   p5.web.header.set:Content-Disposition
     src:@"attachment; filename=""{0}"""
@@ -27,7 +37,7 @@ if:x:/@p5.web.session.get/*/*
 
 
 /*
- * Including Micro, with Serious skin and adding Awesome Fonts.
+ * Including Micro, with Serious skin, and adding Awesome Fonts.
  */
 p5.web.include-css-file:@MICRO/media/main.css
 p5.web.include-css-file:@MICRO/media/ext.css
@@ -49,6 +59,12 @@ p5.web.include-css-file:@SEPHIA/media/main.css
 
 /*
  * Making sure user has an attachment folder.
+ *
+ * The first time the user opens Sephia, it will automatically create the user's
+ * attachment folder, in addition to a temporary folder where uploaded attachments will
+ * be temporary stored, before the email is sent.
+ *
+ * Every time the user starts Sephia, this temporary attachment folder will be emptied.
  */
 if
   fetch:x:/0/0?value
@@ -76,7 +92,8 @@ else
 
 
 /*
- * Clearing out anything previously added to page.
+ * Clearing out anything previously added to page, to make sure we start
+ * out Sephia with a blank slate.
  */
 clear-widget:cnt
 delete-widget-property:cnt
@@ -88,6 +105,11 @@ delete-widget-property:cnt
 
 /*
  * Creating main content container.
+ *
+ * This is the place where "everything" is stored in Sephia, and is used to display
+ * the inbox, Sephia's settings, emails the user is reading, etc, etc, etc.
+ *
+ * Notice, we only use one "container" widget from Micro for everything related to Sephia.
  */
 create-container-widget:sephia-main-container
   class:container
@@ -98,7 +120,9 @@ create-container-widget:sephia-main-container
 
 /*
  * Retrieving user's settings, and making sure user has setup his account(s).
- * Notice, if user hasn't setup his account(s), we refuse him to open his inbox (for obvious reasons).
+ *
+ * Notice, if user hasn't setup his account(s), we won't allow him to open his inbox,
+ * but force him through setting up his settings, such as POP3, SMTP, PGP settings, etc.
  */
 p5.auth.my-settings.get
 if:x:/@p5.auth.my-settings.get/*/sephia
@@ -106,9 +130,8 @@ if:x:/@p5.auth.my-settings.get/*/sephia
 
   /*
    * User has no settings, displaying settings form, and returning early.
-   * Making sure we hide main menu widget.
    */
-  create-widget:initial-settings
+  create-widget
     parent:sephia-main-container
     widgets
       div
@@ -118,6 +141,10 @@ if:x:/@p5.auth.my-settings.get/*/sephia
             class:col
             widgets
               sephia.widgets._settings
+
+  /*
+   * Returning early to avoid evaluating the rest of this file.
+   */
   return
 
 
@@ -138,7 +165,7 @@ eval:x:/-/*
 
 
 /*
- * Opening inbox.
+ * Creating inbox widget.
  */
 load-file:@SEPHIA/inbox/create-inbox.hl
 eval:x:/-/*

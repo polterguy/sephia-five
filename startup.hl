@@ -29,6 +29,9 @@ create-event:p5.io.unroll-path.@SEPHIA
 
 /*
  * Creating environment variable pointing to user's attachment folder.
+ *
+ * Notice, we store all attachments in user's private document folder, which means that
+ * these attachments are only available for the user himself, or a root account.
  */
 create-event:p5.io.unroll-path.@SEPHIA-USER-ATTACHMENTS
   return:~/documents/private/sephia/attachments

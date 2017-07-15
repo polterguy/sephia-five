@@ -698,13 +698,13 @@ Feel free to do something else in the meantime, and come back here later to see 
                      * to update settings.
                      */
                     whoami
-                    lock:sephia.core.thread-creator-{0}
+                    lock:sephia.core.thread-creator-signal-object-{0}
                       :x:/@whoami/*/username?value
-                      delete-data:x:/*/*/sephia.core.thread-{0}
+                      delete-data:x:/*/*/sephia.core.thread-signal-object-{0}
                         :x:/@whoami/*/username?value
                       eval-x:x:/+/*
                       set:x:/+/*?name
-                        src:sephia.core.thread-{0}
+                        src:sephia.core.thread-signal-object-{0}
                           :x:/@whoami/*/username?value
                       insert-data
                         thread

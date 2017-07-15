@@ -2,8 +2,8 @@
 /*
  * Configuration file for legal MIME types according to file extension.
  *
- * Notice, if you wish to change the list of supported file types, according to their extensions, this is the place where you'd
- * configure such a thing.
+ * Notice, if you wish to change the list of legal attachment file types, according to their extensions, 
+ * this is the place where you'd configure such a thing.
  */
 
 

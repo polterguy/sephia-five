@@ -192,7 +192,7 @@ create-widget:sephia-search-wrapper
                 /*
                  * Opening up settings.
                  */
-                create-widget:initial-settings
+                create-widget
                   parent:sephia-main-container
                   widgets
                     div

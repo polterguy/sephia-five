@@ -1,0 +1,78 @@
+
+/*
+ * Invoked when an error occurs while "POP3 worker thread" was unsuccessfully trying to
+ * fetch emails from POP3 server.
+ *
+ * Expects [message], [stack-trace] and [type].
+ */
+
+create-widgets
+  micro.widgets.modal:sephia-error-window
+    class:micro-modal
+    widgets
+      h3
+        innerValue:Oops!
+      p
+        innerValue:And error of type '{0}'occurred, message from server was; '{1}'
+          :x:/../*/type?value
+          :x:/../*/message?value
+      p
+        innerValue:Hint, it might help to modify your settings ...
+      div
+        class:right
+        widgets
+          div
+            class:strip
+            style:"display:inline-block;"
+            widgets
+              button
+                innerValue:Dismiss and restart
+                onclick
+
+                  /*
+                   * Deleting error object, restarting thread worker, and closing modal widget.
+                   */
+                  whoami
+                  delete-data:x:/*/*/sephia.core.thread-signal-object-{0}
+                    :x:/@whoami/*/username?value
+                  load-file:@SEPHIA/core/create-pop3-user-thread.hl
+                  eval:x:/-/*
+                  delete-widget:sephia-error-window
+                  sephia.core.create-poller-javascript
+
+              button
+                innerValue:Dismiss
+                onclick
+
+                  /*
+                   * Closing modal widget.
+                   */
+                  delete-widget:sephia-error-window
+
+              button
+                innerValue:Open settings
+                onclick
+
+                  /*
+                   * Closing modal widget.
+                   */
+                  delete-widget:sephia-error-window
+
+                  /*
+                   * Clearing out everything in main container widget of app.
+                   */
+                  clear-widget:sephia-main-container
+
+                  /*
+                   * Opening up settings.
+                   */
+                  create-widget
+                    parent:sephia-main-container
+                    widgets
+                      div
+                        class:row air-top
+                        widgets
+                          div
+                            class:col
+                            widgets
+                              sephia.widgets._settings

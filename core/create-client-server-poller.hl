@@ -2,15 +2,26 @@
 /*
  * Creates an (invisible) widget that constantly polls the server to check
  * if new emails have arrived.
+ *
+ * This widget will create a timer function in JavaScript, that checks the server every n'th second,
+ * to see if new emails have arrived. It will constantly run in the background, and notify the user
+ * through a "bubble" window if new emails have arrived.
+ *
+ * If the POP3 "user thread" throws an exception, it will also display that exception to the user.
+ *
+ * This file also resets the "count" which is incremented once for each POP3 check operation in our "user thread",
+ * which unless it is reset before it reaches "5", will allow the "POP3 user thread" to simply stop, by finishing its work.
  */
 
 create-literal-widget:sephia-poller
   element:span
-  style:"display:none;"
+  style:"display:none; !important"
   oninit
 
     /*
      * Invoking checker initially, which will start our "loop".
+     *
+     * We do this by simply invoking the [.oncheck] Ajax event for our widget.
      */
     p5.web.widgets.ajax-events.raise:x:/../*/_event?value
       .oncheck
@@ -27,18 +38,20 @@ create-literal-widget:sephia-poller
   .oncheck
 
     /*
-     * Making sure we've got synchronized access to thread signal object.
-     *
-     * Notice, we try to keep our locks as short as possible!
+     * We'll need this later to parametrize some of our invocations below.
      */
     whoami
-    lock:sephia.core.thread-creator-{0}
+
+    /*
+     * Making sure we have synchronised access to the "thread signal object".
+     */
+    lock:sephia.core.thread-signal-object-{0}
       :x:/@whoami/*/username?value
 
       /*
-       * Retrieving thread signal object.
+       * Retrieving the thread signal object from p5.data.
        */
-      select-data:x:/*/*/sephia.core.thread-{0}
+      select-data:x:/*/*/sephia.core.thread-signal-object-{0}
         :x:/@whoami/*/username?value
 
     /*
@@ -92,11 +105,17 @@ create-literal-widget:sephia-poller
       sephia.core.create-poller-javascript
 
       /*
-       * Zeroing out "thread count" to make sure thread doesn't stop running.
+       * Making sure we have synchronised access to our "thread signal object".
        */
-      update-data:x:/*/*/sephia.core.thread-{0}/*/running/*/count?value
+      lock:sephia.core.thread-signal-object-{0}
         :x:/@whoami/*/username?value
-        src:int:0
+
+        /*
+         * Zeroing out "thread count" to make sure thread doesn't stop running.
+         */
+        update-data:x:/*/*/sephia.core.thread-signal-object-{0}/*/running/*/count?value
+          :x:/@whoami/*/username?value
+          src:int:0
 
     else-if:x:/@lock/*/select-data/*/*/restart?value
 
@@ -105,7 +124,7 @@ create-literal-widget:sephia-poller
        *
        * Might be caused by for instance that the user's settings was changed.
        */
-      delete-data:x:/*/*/sephia.core.thread-{0}
+      delete-data:x:/*/*/sephia.core.thread-signal-object-{0}
         :x:/@whoami/*/username?value
       load-file:@SEPHIA/core/create-pop3-user-thread.hl
       eval:x:/-/*
@@ -116,46 +135,11 @@ create-literal-widget:sephia-poller
       /*
        * Thread has stopped running, and contains an error exception message.
        *
-       * Making sure we display error message to user, and asks him if he wants to try again,
-       * or alternatively simply close modal window, to try to resolve it himself, by e.g.
-       * modifying his settings, etc.
+       * Invoking our "error handler".
        */
-      create-widgets
-        micro.widgets.modal:sephia-error-window
-          class:micro-modal
-          widgets
-            h3
-              innerValue:Oops!
-            p
-              innerValue:And error occurred, message from server was; '{0}'
-                :x:/@lock/*/select-data/*/*/error/*/message?value
-            div
-              class:right
-              widgets
-                div
-                  class:strip
-                  style:"display:inline-block;"
-                  widgets
-                    button
-                      innerValue:Try again
-                      onclick
-
-                        /*
-                         * Deleting error object, restarting thread worker, and closing modal widget.
-                         */
-                        whoami
-                        delete-data:x:/*/*/sephia.core.thread-{0}
-                          :x:/@whoami/*/username?value
-                        load-file:@SEPHIA/core/create-pop3-user-thread.hl
-                        eval:x:/-/*
-                        delete-widget:sephia-error-window
-                        sephia.core.create-poller-javascript
-
-                    button
-                      innerValue:Close
-                      onclick
-
-                        /*
-                         * Closing modal widget.
-                         */
-                        delete-widget:sephia-error-window
+      load-file:@SEPHIA/core/handle-pop3-error.hl
+      eval-x:x:/+/*
+      eval:x:/-2/*
+        message:x:/@lock/*/select-data/*/*/error/*/message?value
+        stack-trace:x:/@lock/*/select-data/*/*/error/*/stack-trace?value
+        type:x:/@lock/*/select-data/*/*/error/*/type?value
