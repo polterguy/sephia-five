@@ -16,7 +16,7 @@ create-event:sephia.core._get-mime-type
    */
   split:x:/../*/filename?value
     =:.
-  load-file:@SEPHIA/config/mime-types.hl
+  load-file:@SEPHIA/config/legal-mime-types.hl
   if:x:/@load-file/*/*/{0}
     :x:/@split/0/-?name
 

@@ -130,7 +130,7 @@ if:x:/@p5.auth.my-settings.get/*/sephia
  * This will create a thread for each user, that runs in the background,
  * and constantly pulls new emails from the user's POP3 server.
  */
-load-file:@SEPHIA/core/fetch-emails.hl
+load-file:@SEPHIA/core/create-pop3-user-thread.hl
 eval:x:/-/*
 
 
@@ -140,7 +140,7 @@ eval:x:/-/*
 /*
  * Opening inbox.
  */
-load-file:@SEPHIA/inbox/show.hl
+load-file:@SEPHIA/inbox/create-inbox.hl
 eval:x:/-/*
 
 
@@ -151,5 +151,5 @@ eval:x:/-/*
  * Creates widget that constantly polls server every n'th second to
  * check if new emails have arrived.
  */
-load-file:@SEPHIA/core/start-poller.hl
+load-file:@SEPHIA/core/create-client-server-poller.hl
 eval:x:/-/*

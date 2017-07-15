@@ -11,7 +11,7 @@
  * It will iterate like this for 5 times, and then simply "die off" unless some other parts of the
  * program has zero'ed its counter, which is stored in p5.data.
  *
- * Notice, it works in combination with the "start-poller.hl" file, which will create a timeout JavaScript
+ * Notice, it works in combination with the "create-client-server-poller.hl" file, which will create a timeout JavaScript
  * object, that polls the server every n seconds, which zeroes out the iteration counter, while it checks 
  * for new emails.
  */
@@ -50,8 +50,7 @@ lock:sephia.core.thread-creator-{0}
   if:x:/@select-data/*?value
 
     /*
-     * Fetcher thread already exists, or we have an unresolved errer, 
-     * regardless we are returning early.
+     * Fetcher thread already has been created, one way or another, hence we return early.
      */
     return:bool:true
 
@@ -117,9 +116,15 @@ lock:sephia.core.thread-creator-{0}
 
         /*
          * Checking if another thread told us to stop.
+         * First retrieving "signal object".
          */
         select-data:x:/*/*/sephia.core.thread-{0}
           :x:/@.whoami/*/username?value
+
+        /*
+         * Then checking if we have exceeded our iteration count, 
+         * or some parts of our program has told our thread to restart.
+         */
         if:x:/@select-data/*/*/restart?value
           or:x:/@select-data/*/*/running/*/count?value.int
             >=:int:5
@@ -398,11 +403,15 @@ lock:sephia.core.thread-creator-{0}
         sleep:10000
 
         /*
-         * Updating iteration count.
+         * Updating iteration count, if it exists.
          */
         select-data:x:/*/*/sephia.core.thread-{0}/*/running/*/count?value
           :x:/@.whoami/*/username?value
         if:x:/-/*?value
+
+          /*
+           * We have an iteration count, which means we must increment it by one.
+           */
           +:x:/@select-data/*?value.int
             _:int:1
           update-data:x:/*/*/sephia.core.thread-{0}/*/running/*/count?value

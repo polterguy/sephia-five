@@ -72,7 +72,7 @@ create-literal-widget:sephia-poller
         /*
          * We have received at least one new email.
          */
-        load-file:@SEPHIA/inbox/update-count.hl
+        load-file:@SEPHIA/inbox/update-page-title.hl
         eval:x:/-/*
 
         /*
@@ -107,7 +107,7 @@ create-literal-widget:sephia-poller
        */
       delete-data:x:/*/*/sephia.core.thread-{0}
         :x:/@whoami/*/username?value
-      load-file:@SEPHIA/core/fetch-emails.hl
+      load-file:@SEPHIA/core/create-pop3-user-thread.hl
       eval:x:/-/*
       sephia.core.create-poller-javascript
 
@@ -146,7 +146,7 @@ create-literal-widget:sephia-poller
                         whoami
                         delete-data:x:/*/*/sephia.core.thread-{0}
                           :x:/@whoami/*/username?value
-                        load-file:@SEPHIA/core/fetch-emails.hl
+                        load-file:@SEPHIA/core/create-pop3-user-thread.hl
                         eval:x:/-/*
                         delete-widget:sephia-error-window
                         sephia.core.create-poller-javascript

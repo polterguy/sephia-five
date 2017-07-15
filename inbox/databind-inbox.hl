@@ -157,7 +157,7 @@ order by id desc limit 15 offset @offset"
               /*
                * Executing file responsible for reading a single email.
                */
-              load-file:@SEPHIA/inbox/read.hl
+              load-file:@SEPHIA/inbox/read-email.hl
               eval-x:x:/+/*
               eval:x:/-2/*
                 id:x:/@_dp/#/*/id?value

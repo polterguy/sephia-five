@@ -178,7 +178,7 @@ create-event:sephia.core.send-email
       /*
        * Trying to give user a sane and readable error message.
        */
-      throw:@"File ""{0}"" is not supported by Sephia Five. Modify your ""/config/mime-types.hl"" configuration file,
+      throw:@"File ""{0}"" is not supported by Sephia Five. Modify your ""/config/legal-mime-types.hl"" configuration file,
 and add support for "".{1}"" file extensions if you wish to allow these types of files."
         :x:/@split/@split/0/-?name
         :x:/@split/0/-?name

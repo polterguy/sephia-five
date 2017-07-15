@@ -378,5 +378,5 @@ create-widget
 /*
  * Updating email count.
  */
-load-file:@SEPHIA/inbox/update-count.hl
+load-file:@SEPHIA/inbox/update-page-title.hl
 eval:x:/-/*

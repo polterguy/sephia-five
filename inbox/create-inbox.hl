@@ -45,7 +45,7 @@ create-widget:sephia-search-wrapper
           .offset
         get-widget-property:sephia-search-txt
           value
-        load-file:@SEPHIA/inbox/databind.hl
+        load-file:@SEPHIA/inbox/databind-inbox.hl
         eval-x:x:/+/*
         eval:x:/-2/*
           offset:x:/..if/*/get-widget-property/[0,1]/*/*?value
@@ -61,7 +61,7 @@ create-widget:sephia-search-wrapper
           .offset:0
         set-widget-property:sephia-search-txt
           value:
-        load-file:@SEPHIA/inbox/databind.hl
+        load-file:@SEPHIA/inbox/databind-inbox.hl
         eval:x:/-/*
 
   widgets
@@ -96,7 +96,7 @@ create-widget:sephia-search-wrapper
                  */
                 get-widget-property:sephia-search-txt
                   value
-                load-file:@SEPHIA/inbox/databind.hl
+                load-file:@SEPHIA/inbox/databind-inbox.hl
                 eval-x:x:/+/*
                 eval:x:/-2/*
                   filter:x:/@get-widget-property/*/*?value
@@ -141,7 +141,7 @@ create-widget:sephia-search-wrapper
 
                 get-widget-property:sephia-search-txt
                   value
-                load-file:@SEPHIA/inbox/databind.hl
+                load-file:@SEPHIA/inbox/databind-inbox.hl
                 eval-x:x:/+/*
                 eval:x:/-2/*
                   filter:x:/@get-widget-property/*/*?value
@@ -166,7 +166,7 @@ create-widget:sephia-search-wrapper
                   _:15
                 get-widget-property:sephia-search-txt
                   value
-                load-file:@SEPHIA/inbox/databind.hl
+                load-file:@SEPHIA/inbox/databind-inbox.hl
                 eval-x:x:/+/*
                 eval:x:/-2/*
                   filter:x:/@get-widget-property/*/*?value
@@ -219,11 +219,11 @@ create-widget:sephia-search-wrapper
                  * might choose to avoid clicking "Resolve" for, at which point the worker POP3 thread is
                  * simply stopped and not restarted, while user for instance goes through his settings, etc.
                  *
-                 * Since the "fetch-emails.hl" file will make sure there only exists one thread for each user, this
+                 * Since the "create-pop3-user-thread.hl" file will make sure there only exists one thread for each user, this
                  * has no negative consequences if the thread already exists.
                  */
                 sephia.inbox.open
-                load-file:@SEPHIA/core/fetch-emails.hl
+                load-file:@SEPHIA/core/create-pop3-user-thread.hl
                 eval:x:/-/*
 
             /*
@@ -291,7 +291,7 @@ create-widget
 /*
  * Databinding grid.
  */
-load-file:@SEPHIA/inbox/databind.hl
+load-file:@SEPHIA/inbox/databind-inbox.hl
 eval:x:/-/*
 
 
@@ -301,5 +301,5 @@ eval:x:/-/*
 /*
  * Updating email count.
  */
-load-file:@SEPHIA/inbox/update-count.hl
+load-file:@SEPHIA/inbox/update-page-title.hl
 eval:x:/-/*
