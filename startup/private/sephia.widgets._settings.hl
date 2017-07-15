@@ -698,10 +698,22 @@ Feel free to do something else in the meantime, and come back here later to see 
                      * to update settings.
                      */
                     whoami
+
+                    /*
+                     * Making sure we synchronise access to thread signal object.
+                     */
                     lock:sephia.core.thread-creator-signal-object-{0}
                       :x:/@whoami/*/username?value
+
+                      /*
+                       * Deleting old thread signal object.
+                       */
                       delete-data:x:/*/*/sephia.core.thread-signal-object-{0}
                         :x:/@whoami/*/username?value
+
+                      /*
+                       * Creating a new thread signal object, that informs thread to restart.
+                       */
                       eval-x:x:/+/*
                       set:x:/+/*?name
                         src:sephia.core.thread-signal-object-{0}

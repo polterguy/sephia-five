@@ -6,6 +6,10 @@
  * Expects [message], [stack-trace] and [type].
  */
 
+
+/*
+ * Creating actual error message.
+ */
 create-widgets
   micro.widgets.modal:sephia-error-window
     class:micro-modal
@@ -13,7 +17,7 @@ create-widgets
       h3
         innerValue:Oops!
       p
-        innerValue:And error of type '{0}'occurred, message from server was; '{1}'
+        innerValue:And error of type '{0}' occurred, message from server was; '{1}'
           :x:/../*/type?value
           :x:/../*/message?value
       p

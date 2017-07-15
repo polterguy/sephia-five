@@ -15,6 +15,7 @@ if:x:/-/*/*?value
   /*
    * Another widget is already showing this email, returning early.
    */
+  micro.windows.info:This email is already open
   return
 
 
@@ -72,13 +73,48 @@ p5.mysql.connect:[sephia]
 
       /*
        * Attachment does not have a legal file extension.
+       *
+       * Warning user, before we allow him to download the file.
        */
       add:x:/..for-each/*/add/*/src/*/button
         src
           class:sephia-inbox-attachment sephia-inbox-illegal-attachment
           onclick
-            micro.windows.info:Sorry, these types of attachments are not allowed in Sephia Five
+
+            /*
+             * Displaying an information bubble, warning user about that file is not considered
+             * safe, asking him if he is really sure he wants to download the file.
+             */
+            eval-x:x:/+/**/_widget
+            micro.windows.info:These files are not considered safe, are you sure you wish to download it?
               class:micro-windows-info micro-windows-info-error
+              widgets
+                button
+                  innerValue:Yes
+                  style:"margin-bottom:0;margin-left:15px;"
+                  onclick
+
+                    /*
+                     * Forward evaluated above.
+                     */
+                    _widget:x:/../*/_event?value
+
+                    /*
+                     * Downloading file anyway.
+                     */
+                    get-widget-property:x:/../*/_widget?value
+                      .folder
+                      .prefix
+                      .filename
+                    eval-x:x:/+/*/*/*
+                    p5.web.session.set:sephia.core.file-download
+                      src
+                        file
+                          folder:x:/@get-widget-property/*/*/.folder?value
+                          prefix:x:/@get-widget-property/*/*/.prefix?value
+                          filename:x:/@get-widget-property/*/*/.filename?value
+                    p5.web.reload-location
+                
 
     /*
      * Adding button to reader for currently iterated attachment.
