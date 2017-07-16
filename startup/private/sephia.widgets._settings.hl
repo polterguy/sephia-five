@@ -394,13 +394,16 @@ create-event:sephia.widgets._settings
                     /*
                      * Adding each cell to our grid, making sure we forward evaluate their values.
                      */
-                    eval-x:x:/+/*/*
+                    eval-x:x:/+/*/**
                     add:x:/../*/micro.widgets.grid.databind/0/-
                       src
                         User ID:x:/@p5.html.html-encode?value
                         Strength:x:/@_dp/#/*/strength?value
                         Created:x:/..for-each/*/p5.types.date.format/[0,1]?value
                         Expires:x:/..for-each/*/p5.types.date.format/[1,2]?value
+                        .row
+                          title:"Fingerprint:{0}"
+                            :x:/@_dp/#?name
 
                     /*
                      * Making sure our grid rows becomes clickable.
@@ -552,6 +555,12 @@ create-event:sephia.widgets._settings
                                     info:Repeat
                                     type:password
                                     autocomplete:new-password
+                                  label
+                                    for:sephia-key-seed
+                                    innerValue:Seed
+                                  textarea:sephia-key-seed
+                                    .data-field:seed
+                                    info:Some optional random text to seed the random number generator. Just type in a random sequence of characters here ...
                                   radio-group
                                     .data-field:strength
                                     options
@@ -569,12 +578,10 @@ create-event:sephia.widgets._settings
                                         .data-value:8192
                                         title:Might take a very very long time to create!! Overkill!!
                                   br
-                                  label
-                                    for:sephia-key-seed
-                                    innerValue:Seed
-                                  textarea:sephia-key-seed
-                                    .data-field:seed
-                                    info:Some optional random text to seed the random number generator. Just type in a random sequence of characters here ...
+                                  checkbox
+                                    .data-field:submit
+                                    info:Submit to key servers
+                                    checked
                                   div
                                     class:right
                                     style:"clear:both;"
@@ -636,7 +643,15 @@ create-event:sephia.widgets._settings
                                               add:x:/../*/fork/*/.settings
                                                 src:x:/@micro.form.serialize/*
                                               fork
+
+                                                /*
+                                                 * Settings for our keypair, added before fork is created.
+                                                 */
                                                 .settings
+
+                                                /*
+                                                 * Creating keypair.
+                                                 */
                                                 p5.crypto.create-pgp-keypair
                                                   identity:{0} <{1}>
                                                     :x:/@.settings/*/name?value
@@ -644,6 +659,12 @@ create-event:sephia.widgets._settings
                                                   password:x:/@.settings/*/password?value
                                                   seed:x:/@.settings/*/seed?value
                                                   strength:x:/@.settings/*/strength?value
+
+                                                /*
+                                                 * Submitting public key to Ubuntu's key server, but only if user told us to do so.
+                                                 */
+                                                if:x:/@.settings/*/submit?value
+                                                  sephia.core._submit-public-key:x:/@p5.crypto.create-pgp-keypair/*/fingerprint?value
 
                                               /*
                                                * Deleting modal widget.

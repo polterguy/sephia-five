@@ -34,6 +34,12 @@ create-widget:sephia-search-wrapper
     sephia.inbox.open
 
       /*
+       * Making sure we clean out notification viewstate variable, such that when user gets new
+       * emails, he'll be notified.
+       */
+      p5.web.viewstate.set:sephia.core.has-notified-user-of-new-emails
+
+      /*
        * Checking if caller requested that current page and filter should be kept.
        */
       if:x:/../*/keep-page-filter?value

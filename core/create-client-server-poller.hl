@@ -89,9 +89,21 @@ create-literal-widget:sephia-poller
         eval:x:/-/*
 
         /*
-         * Notifying user.
+         * Notifying user, but making sure we don't "go berserk" when notifying him.
          */
-        micro.windows.info:You have new emails, click Inbox to see them.
+        p5.web.viewstate.get:sephia.core.has-notified-user-of-new-emails
+        if:x:/-/*?value
+          not
+
+          /*
+           * User has not been notified previously of that he has new email, making sure we do so.
+           */
+          p5.web.viewstate.set:sephia.core.has-notified-user-of-new-emails
+            src:bool:true
+          micro.windows.info:You have new emails, click your inbox to see them.
+            class:micro-windows-info success
+            onclick
+              sephia.inbox.open
 
       /*
        * Updating "last known email".
