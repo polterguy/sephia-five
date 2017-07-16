@@ -107,6 +107,7 @@
  * Attachments in reader.
  */
 .sephia-inbox-attachments {
+    margin-top:1rem;
 }
 .sephia-inbox-attachment {
     background:linear-gradient(#ffffff, #ddffdd);

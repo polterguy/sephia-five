@@ -12,7 +12,7 @@
  */
 create-widgets
   micro.widgets.modal:sephia-error-window
-    class:micro-modal
+    class:micro-modal micro-modal-smaller
     widgets
       h3
         innerValue:Oops!

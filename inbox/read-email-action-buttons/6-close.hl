@@ -3,7 +3,8 @@
  * Action button for closing reader.
  */
 button
-  innerValue:Close
+  innerValue:@"<span class=""icon-close""></span>"
+  title:Close reader
   style:"margin-bottom:0;"
   onclick
 

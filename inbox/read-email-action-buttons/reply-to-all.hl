@@ -1,7 +1,0 @@
-
-/*
- * Action button for replying to email
- */
-button
-  innerValue:Reply to all
-  style:"margin-bottom:0;"

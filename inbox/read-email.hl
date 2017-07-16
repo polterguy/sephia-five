@@ -203,42 +203,83 @@ where emails.id = @id"
       src:warning
 
   /*
-   * This part will contain all the "meta content" for email (from, date, signed, encrypted, etc)
+   * This part will contain some of the "meta content" for email, more specifically who sent the email.
    */
-  _meta
-  p5.types.date.format:x:/@p5.mysql.select/*/*/date?value
-    format:"dd. MMM yyyy, HH:mm"
-  set:x:/@_meta?value
-    src:"From: {0} &lt;{1}&gt; - Received: {2}"
+  _meta1
+  set:x:/@_meta1?value
+    src:"From: {0} &lt;{1}&gt;"
       :x:/@p5.mysql.select/*/*/name?value
       :x:/@p5.mysql.select/*/*/email?value
+
+  /*
+   * This part will contain some more of the "meta content" for email, more specifically when it was sent.
+   */
+  _meta2
+  p5.types.date.format:x:/@p5.mysql.select/*/*/date?value
+    format:"dddd, d. MMMM yyyy, HH:mm"
+  set:x:/@_meta2?value
+    src:"Sent: {0}"
       :x:/@p5.types.date.format?value
+
+  /*
+   * This part will contain some more of the "meta content" for email, more specifically if email was sent encrypted.
+   */
+  _meta3
   if:x:/@p5.mysql.select/*/*/encrypted?value.int
     !=:int:0
-    set:x:/@_meta?value
-      src:{0} - encrypted
-        :x:/@_meta?value
+
+    /*
+     * Email was sent encrypted.
+     */
+    set:x:/@_meta3?value
+      src:Email was sent encrypted
+
+  else
+
+    /*
+     * Email was not encrypted
+     */
+    set:x:/@_meta3?value
+      src:Email was not encrypted
+
+  /*
+   * This part will contain some more of the "meta content" for email, more specifically if email was cryptographically signed.
+   */
+  _meta4
   if:x:/@p5.mysql.select/*/*/signature?value
+
+    /*
+     * Email was cryptographically signed, making sure we HTML encode the signature User ID.
+     */
     p5.html.html-encode:x:/@p5.mysql.select/*/*/signature?value
-    set:x:/@_meta?value
-      src:{0} - Signature - {1}
-        :x:/@_meta?value
+    set:x:/@_meta4?value
+      src:"Signed by: {0} - {1}"
         :x:/@p5.html.html-encode?value
-
-  /*
-   * Making sure we set email as read in database.
-   */
-  p5.mysql.update:@"update emails set isread = 1 where id = @id"
-    @id:x:/../*/id?value
-
-  /*
-   * Storing fingerprint as string, for later reference.
-   */
-  _fingerprint
-  if:x:/@p5.mysql.select/*/*/fingerprint?value
-    set:x:/@_fingerprint?value
-      src:" Fingerprint: '{0}'"
         :x:/@p5.mysql.select/*/*/fingerprint?value
+
+  else
+
+    /*
+     * Email was not cryptographically signed
+     */
+    set:x:/@_meta4?value
+      src:Email was not cryptographically signed
+
+  /*
+   * This part will contain all recipients of the email.
+   */
+  _meta5:@"Recipients: <ul style=""color:rgba(0,0,0,.3)"">"
+  p5.mysql.select:@"select contacts.name, contacts.email from recipients inner join contacts on contacts.id = recipients.contactid where recipients.emailid = @id"
+    @id:x:/../*/id?value
+  for-each:x:/@p5.mysql.select/*
+    set:x:/@_meta5?value
+      src:"{0}<li> {1} &lt;{2}&gt;</li>"
+        :x:/@_meta5?value
+        :x:/@_dp/#/*/name?value
+        :x:/@_dp/#/*/email?value
+  set:x:/@_meta5?value
+    src:{0}</ul>
+      :x:/@_meta5?value
 
   /*
    * Selecting content of email.
@@ -329,6 +370,13 @@ where emails.id = @id"
     set:x:/../*/create-widget/**/widgets/=content/*(/button|/p/*/.quote/.)
 
 
+  /*
+   * Making sure we set email as read in database.
+   */
+  p5.mysql.update:@"update emails set isread = 1 where id = @id"
+    @id:x:/../*/id?value
+
+
 /*
  * Loading all action buttons.
  */
@@ -367,11 +415,30 @@ create-widget
           class:air-inner {0} shaded rounded
             :x:/@p5.mysql.connect/*/_bg?value
           widgets:content
+
+            /*
+             * Displays header of email.
+             */
             h3
               innerValue:x:/@p5.mysql.connect/*/p5.mysql.select/[2,3]/*/*/subject?value
+
+            /*
+             * Displays body of email.
+             */
             div
               style:"white-space:pre-wrap;"
               innerValue:x:/@p5.mysql.connect/*/_content?value
+
+            /*
+             * Displays attachments of email.
+             */
+            container
+              class:sephia-inbox-attachments
+              widgets:attachments
+
+            /*
+             * Allows user to show "quoted parts" of email.
+             */
             button
               innerValue:...
               class:air-top
@@ -387,18 +454,73 @@ create-widget
                   visible:true
                 delete-widget:x:/../*/_event?value
 
+            /*
+             * Displays quoted parts of email.
+             *
+             * This part is initially hidden.
+             */
             p
               .quote
               style:"white-space:pre-wrap;"
               visible:false
               innerValue:x:/@p5.mysql.connect/*/_quote?value
-            p
-              style:"color:rgba(0,0,0,.3);font-style:italic;"
-              class:air-top
-              innerValue:x:/@p5.mysql.connect/*/_meta?value
+
+            /*
+             * Container wrapping "meta data" of email.
+             *
+             * This parts is initially shown invisible, and only displayed when user clicks the action button
+             * that explicitly says he wants to see these parts.
+             */
             container
-              class:sephia-inbox-attachments
-              widgets:attachments
+              visible:false
+              .meta-data
+              widgets
+
+                /*
+                 * A simple separator between the email content, and its meta data.
+                 */
+                hr
+                  style:"margin-top:1rem;"
+
+                /*
+                 * Displays additional "meta data" about email, more specifically the date email was sent.
+                 */
+                p
+                  style:"color:rgba(0,0,0,.3);font-style:italic;margin-bottom:0;"
+                  innerValue:x:/@p5.mysql.connect/*/_meta2?value
+
+                /*
+                 * Displays email "meta data", more specifically who sent the email.
+                 */
+                p
+                  style:"color:rgba(0,0,0,.3);font-style:italic;margin-bottom:0;"
+                  innerValue:x:/@p5.mysql.connect/*/_meta1?value
+
+                /*
+                 * Displays additional "meta data" about email, more specifically if email was sent encrypted.
+                 */
+                p
+                  style:"color:rgba(0,0,0,.3);font-style:italic;margin-bottom:0;"
+                  innerValue:x:/@p5.mysql.connect/*/_meta3?value
+
+                /*
+                 * Displays additional "meta data" about email, more specifically if email was cryptographically signed.
+                 */
+                p
+                  style:"color:rgba(0,0,0,.3);font-style:italic;margin-bottom:0;"
+                  innerValue:x:/@p5.mysql.connect/*/_meta4?value
+
+                /*
+                 * Displays additional "meta data" about email, more specifically all recipients.
+                 */
+                p
+                  style:"color:rgba(0,0,0,.3);font-style:italic;"
+                  class:air-top
+                  innerValue:x:/@p5.mysql.connect/*/_meta5?value
+
+            /*
+             * "Action strip" containing all buttons for actions user can do with email, such as "Reply", "Forward", "Delete", etc.
+             */
             div
               class:right
               widgets
@@ -412,7 +534,7 @@ create-widget
 
 
 /*
- * Updating email count.
+ * Updating page title, since we now (probably) have read one more email.
  */
 load-file:@SEPHIA/inbox/update-page-title.hl
 eval:x:/-/*

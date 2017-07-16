@@ -3,8 +3,39 @@
  * Action button for replying to email
  */
 button
-  innerValue:Reply
+  innerValue:@"<span class=""icon-mail-reply""></span>"
+  title:Reply to email
   style:"margin-bottom:0;"
+  oninit
+
+    /*
+     * Figuring out ID of email we're reading, to make sure we hide this button, in case the
+     * email was sent by the user himself (in "outbox" that is).
+     */
+    p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+      .email-id
+    get-widget-property:x:/-/*/*?value
+      .email-id
+
+    /*
+     * Selecting email data from MySQL.
+     */
+    p5.mysql.connect:[sephia]
+
+      /*
+       * Checking if email was sent by user.
+       */
+      p5.mysql.scalar:@"select type from emails where emails.id = @id"
+        @id:x:/@get-widget-property/*/*?value
+      if:x:/@p5.mysql.scalar?value
+        =:sent
+
+        /*
+         * This email was sent by user himself, and hence replying to it makes no sense.
+         */
+        set-widget-property:x:/../*/_event?value
+          visible:false
+
   onclick
 
     /*
@@ -50,10 +81,16 @@ button
       =:"\r\n"
     join:x:/-/*?name
       sep:@"
-&gt;"
+>"
     set:x:/@_content?value
-      src:"&gt;{0}"
+      src:">{0}"
         :x:/@join?value
+
+    /*
+     * HTML encoding content
+     */
+    set:x:/@_content?value
+      p5.html.html-encode:x:/@_content?value
 
 
     /*

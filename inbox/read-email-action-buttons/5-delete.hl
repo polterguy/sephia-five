@@ -3,7 +3,8 @@
  * Action button for deleting email.
  */
 button
-  innerValue:Delete
+  innerValue:@"<span class=""icon-trash""></span>"
+  title:Delete email
   style:"margin-bottom:0;"
   onclick
 
@@ -68,14 +69,6 @@ button
                   button
                     innerValue:No
                     onclick
-
-                      /*
-                       * Deleting widgets wrapping currently read email.
-                       */
-                      _widget:x:/../*/_event?value
-                      p5.web.widgets.find-first-ancestor:x:/../*/_widget?value
-                        .email-id
-                      delete-widget:x:/-/*/*?value
 
                       /*
                        * Deleting modal confirmation widget.

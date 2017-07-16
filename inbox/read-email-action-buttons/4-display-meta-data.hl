@@ -1,0 +1,21 @@
+
+/*
+ * Action button for closing reader.
+ */
+button
+  innerValue:@"<span class=""icon-eye""></span>"
+  title:Display meta data for email
+  style:"margin-bottom:0;"
+  onclick
+
+    /*
+     * Deleting widgets wrapping currently read email.
+     */
+    p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+      .email-id
+    p5.web.widgets.find:x:/-/*/*?value
+      .meta-data
+    set-widget-property:x:/-/*/*?value
+      visible:true
+    delete-widget:x:/../*/_event?value
+

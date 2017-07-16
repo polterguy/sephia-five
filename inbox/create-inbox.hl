@@ -177,6 +177,29 @@ create-widget:sephia-search-wrapper
 
 
             /*
+             * Button to reload inbox starting from first page.
+             */
+            button
+              innerValue:@"<span class=""icon-home""></span>"
+              title:Open inbox again from beginning
+              onclick
+
+                /*
+                 * Refreshing inbox, and makes sure we have a "fetch emails from POP3 server worker thread".
+                 *
+                 * The latter we do, since sometimes an error is created in the POP3 worker thread, which user
+                 * might choose to avoid clicking "Resolve" for, at which point the worker POP3 thread is
+                 * simply stopped and not restarted, while user for instance goes through his settings, etc.
+                 *
+                 * Since the "create-pop3-user-thread.hl" file will make sure there only exists one thread for each user, this
+                 * has no negative consequences if the thread already exists.
+                 */
+                sephia.inbox.open
+                load-file:@SEPHIA/core/create-pop3-user-thread.hl
+                eval:x:/-/*
+
+
+            /*
              * Button to open settings.
              */
             button
@@ -203,36 +226,14 @@ create-widget:sephia-search-wrapper
                           widgets
                             sephia.widgets._settings
 
-
-            /*
-             * Button to reload inbox starting from first page.
-             */
-            button
-              innerValue:@"<span class=""icon-home""></span>"
-              title:Open inbox again from beginning
-              onclick
-
-                /*
-                 * Refreshing inbox, and makes sure we have a "fetch emails from POP3 server worker thread".
-                 *
-                 * The latter we do, since sometimes an error is created in the POP3 worker thread, which user
-                 * might choose to avoid clicking "Resolve" for, at which point the worker POP3 thread is
-                 * simply stopped and not restarted, while user for instance goes through his settings, etc.
-                 *
-                 * Since the "create-pop3-user-thread.hl" file will make sure there only exists one thread for each user, this
-                 * has no negative consequences if the thread already exists.
-                 */
-                sephia.inbox.open
-                load-file:@SEPHIA/core/create-pop3-user-thread.hl
-                eval:x:/-/*
-
             /*
              * Button to compose a new email.
              */
             literal
               element:button
+              style:"padding-left:35px;padding-right:35px;"
               innerValue:@"<span class=""icon-envelope""></span>"
-              title:Search inbox
+              title:Compose new email
               onclick
 
                 /*
