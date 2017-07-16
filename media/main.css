@@ -111,6 +111,7 @@
 }
 .sephia-inbox-attachment {
     background:linear-gradient(#ffffff, #ddffdd);
+    margin-right:1rem;
 }
 .sephia-inbox-illegal-attachment {
     background: linear-gradient(#ffffff, #ffdddd);
@@ -143,4 +144,36 @@
     right:5px;
     content:"X";
     color:rgba(0,0,0,.2);
+}
+@keyframes sephia-composer-ajax-wait {
+    0% {
+        opacity: 0;
+    }
+    15% {
+        opacity:0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+.sephia-composer-ajax-wait {
+    display: block !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,.7);
+    z-index: 1000;
+    animation-name: sephia-composer-ajax-wait;
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+}
+.sephia-composer-ajax-wait h1 {
+    display:block;
+    width:300px;
+    margin-left:auto;
+    margin-right:auto;
+    margin-top:25%;
+    color:#fdfdfd;
 }

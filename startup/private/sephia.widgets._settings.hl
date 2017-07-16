@@ -579,90 +579,111 @@ create-event:sephia.widgets._settings
                                     class:right
                                     style:"clear:both;"
                                     widgets
-                                      button
-                                        innerValue:Create ...
-                                        onclick
+                                      div
+                                        class:strip
+                                        style:"display:inline-block;"
+                                        widgets
 
                                           /*
-                                           * Serializing form data and using it to create a new PGP keypair.
+                                           * Button that will create the user's PGP keypair.
                                            */
-                                          micro.form.serialize:sephia-create-new-pgp-key
+                                          button
+                                            innerValue:Create
+                                            onclick
 
-                                          /*
-                                           * Verifying that passwords are a match.
-                                           */
-                                          if:x:/@micro.form.serialize/*/password?value
-                                            !=:x:/@micro.form.serialize/*/password-repeat?value
+                                              /*
+                                               * Serializing form data and using it to create a new PGP keypair.
+                                               */
+                                              micro.form.serialize:sephia-create-new-pgp-key
 
-                                            /*
-                                             * Passwords didn't match.
-                                             */
-                                            p5.web.widgets.find-first-like
-                                              class:micro-modal-content
-                                            eval-x:x:/+/*
-                                            micro.windows.info:Your passwords are not matching
-                                              parent:x:/@p5.web.widgets.find-first-like/*/*?value
-                                              class:micro-windows-info micro-windows-info-error
-                                            return
+                                              /*
+                                               * Verifying that passwords are a match.
+                                               */
+                                              if:x:/@micro.form.serialize/*/password?value
+                                                !=:x:/@micro.form.serialize/*/password-repeat?value
 
-                                          /*
-                                           * Verifying that a password was given.
-                                           */
-                                          if:x:/@micro.form.serialize/*/password?value
-                                            =:
+                                                /*
+                                                 * Passwords didn't match.
+                                                 */
+                                                p5.web.widgets.find-first-like
+                                                  class:micro-modal-content
+                                                eval-x:x:/+/*
+                                                micro.windows.info:Your passwords are not matching
+                                                  parent:x:/@p5.web.widgets.find-first-like/*/*?value
+                                                  class:micro-windows-info micro-windows-info-error
+                                                return
 
-                                            /*
-                                             * No password was given.
-                                             */
-                                            p5.web.widgets.find-first-like
-                                              class:micro-modal-content
-                                            eval-x:x:/+/*
-                                            micro.windows.info:You must supply a password
-                                              parent:x:/@p5.web.widgets.find-first-like/*/*?value
-                                              class:micro-windows-info micro-windows-info-error
-                                            return
+                                              /*
+                                               * Verifying that a password was given.
+                                               */
+                                              if:x:/@micro.form.serialize/*/password?value
+                                                =:
 
-                                          /*
-                                           * Forking a new thread, having PGP keypair created on worker thread.
-                                           */
-                                          add:x:/../*/fork/*/.settings
-                                            src:x:/@micro.form.serialize/*
-                                          fork
-                                            .settings
-                                            p5.crypto.create-pgp-keypair
-                                              identity:{0} <{1}>
-                                                :x:/@.settings/*/name?value
-                                                :x:/@.settings/*/email?value
-                                              password:x:/@.settings/*/password?value
-                                              seed:x:/@.settings/*/seed?value
-                                              strength:x:/@.settings/*/strength?value
+                                                /*
+                                                 * No password was given.
+                                                 */
+                                                p5.web.widgets.find-first-like
+                                                  class:micro-modal-content
+                                                eval-x:x:/+/*
+                                                micro.windows.info:You must supply a password
+                                                  parent:x:/@p5.web.widgets.find-first-like/*/*?value
+                                                  class:micro-windows-info micro-windows-info-error
+                                                return
 
-                                          /*
-                                           * Deleting modal widget.
-                                           */
-                                          delete-widget:sephia-create-pgp-key-modal
+                                              /*
+                                               * Forking a new thread, having PGP keypair created on worker thread.
+                                               */
+                                              add:x:/../*/fork/*/.settings
+                                                src:x:/@micro.form.serialize/*
+                                              fork
+                                                .settings
+                                                p5.crypto.create-pgp-keypair
+                                                  identity:{0} <{1}>
+                                                    :x:/@.settings/*/name?value
+                                                    :x:/@.settings/*/email?value
+                                                  password:x:/@.settings/*/password?value
+                                                  seed:x:/@.settings/*/seed?value
+                                                  strength:x:/@.settings/*/strength?value
 
-                                          /*
-                                           * Providing feedback to user.
-                                           */
-                                          create-widgets
-                                            micro.widgets.modal:sephia-create-new-pgp-key-info
-                                              class:micro-modal micro-modal-smaller
-                                              widgets
-                                                h3
-                                                  innerValue:Information
-                                                p
-                                                  innerValue:@"Notice, this might take some few minutes, depending upon your key size. 
-Feel free to do something else in the meantime, and come back here later to see if it's done a couple of minutes from now."
-                                                div
-                                                  class:right
+                                              /*
+                                               * Deleting modal widget.
+                                               */
+                                              delete-widget:sephia-create-pgp-key-modal
+
+                                              /*
+                                               * Providing feedback to user.
+                                               */
+                                              create-widgets
+                                                micro.widgets.modal:sephia-create-new-pgp-key-info
+                                                  class:micro-modal micro-modal-smaller
                                                   widgets
-                                                    button
-                                                      innerValue:OK
-                                                      oninit
-                                                        micro.page.set-focus:x:/../*/_event?value
-                                                      onclick
-                                                        delete-widget:sephia-create-new-pgp-key-info
+                                                    h3
+                                                      innerValue:Information
+                                                    p
+                                                      innerValue:@"Notice, this might take some few minutes, depending upon your key size. 
+    Feel free to do something else in the meantime, and come back here later to see if it's done a couple of minutes from now."
+                                                    div
+                                                      class:right
+                                                      widgets
+                                                        button
+                                                          innerValue:OK
+                                                          oninit
+                                                            micro.page.set-focus:x:/../*/_event?value
+                                                          onclick
+                                                            delete-widget:sephia-create-new-pgp-key-info
+
+                                          /*
+                                           * Button that will close the modal widget.
+                                           */
+                                          button
+                                            innerValue:Close
+                                            title:Close window
+                                            onclick
+
+                                              /*
+                                               * Simply closing modal widget.
+                                               */
+                                              delete-widget:sephia-create-pgp-key-modal
 
 
         /*
@@ -721,6 +742,29 @@ Feel free to do something else in the meantime, and come back here later to see 
                       insert-data
                         thread
                           restart:bool:true
+
+                    /*
+                     * Updating contacts table with email matching current user, making sure its name becomes correct.
+                     */
+                    p5.mysql.connect:[sephia]
+                      p5.mysql.update:@"update contacts set name = @name where email = @email and username = @username"
+                        @name:x:/@micro.form.serialize/*/name?value
+                        @email:x:/@micro.form.serialize/*/email?value
+                        @username:x:/@whoami/*/username?value
+
+                      /*
+                       * Verifying something was indeed updated, and if not, making sure we insert a new record.
+                       */
+                      if:x:/@p5.mysql.update?value.int
+                        =:int:0
+
+                        /*
+                         * Nothing was updated, hence we'll need to insert a new record.
+                         */
+                        p5.mysql.insert:@"insert into contacts (name, email, username) values (@name, @email, @username)"
+                          @name:x:/@micro.form.serialize/*/name?value
+                          @email:x:/@micro.form.serialize/*/email?value
+                          @username:x:/@whoami/*/username?value
 
                     /*
                      * Re-launches inbox for simplicity.

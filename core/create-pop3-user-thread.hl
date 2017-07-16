@@ -221,9 +221,11 @@ fork
 
                   else-if:x:/@p5.mysql.select/0/*/name?name
                     !=:x:/@_dp/#/*/From/*?name
+                    and:x:/@_dp/#/*/From/*?name
+                      !=:
 
                     /*
-                     * Exists, but name has been updated.
+                     * Exists, but name has been changed.
                      */
                     p5.mysql.update:@"update contacts set name = @name where id = @id"
                       @id:x:/@p5.mysql.select/0/*/id?value
@@ -301,7 +303,7 @@ fork
                       @emailid:x:/@for-each/@p5.mysql.insert/*/id?value
 
                   /*
-                   * Now inserting into "part" table.
+                   * Now inserting all "parts" into "parts" table.
                    */
                   for-each:x:/@_dp/#/**/text/*/content/.
                     p5.mysql.insert:@"insert into parts (type, content, emailid) values (@type, @content, @emailid)"

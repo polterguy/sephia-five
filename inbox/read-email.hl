@@ -409,7 +409,7 @@ create-widget
   .email-id:x:/../*/id?value
   widgets
     div
-      class:col
+      class:col-100
       widgets
         div
           class:air-inner {0} shaded rounded
@@ -426,7 +426,7 @@ create-widget
              * Displays body of email.
              */
             div
-              style:"white-space:pre-wrap;"
+              style:"white-space:pre-wrap;width:100%;overflow:hidden;"
               innerValue:x:/@p5.mysql.connect/*/_content?value
 
             /*
@@ -538,3 +538,12 @@ create-widget
  */
 load-file:@SEPHIA/inbox/update-page-title.hl
 eval:x:/-/*
+
+
+
+
+
+/*
+ * Informing user he has to scroll to the bottom of the page to find his email.
+ */
+micro.windows.info:Your email can be found at the bottom of the page

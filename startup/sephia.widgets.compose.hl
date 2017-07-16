@@ -92,6 +92,28 @@ p5.sephia_upload_files = function(e) {
   return
     div
       oninit
+
+        /*
+         * Intercepting [onclick] of "Send" button to create an Ajax "wait window", since this action can take some time.
+         */
+        p5.web.include-javascript:@"
+p5.sephia_send_email = function(e) {
+  var obsc = document.createElement('div');
+  obsc.id = 'sephia-composer-obscurer';
+  obsc.className = 'sephia-composer-ajax-wait';
+  var header = document.createElement('h1');
+  var cnt = document.createTextNode('Please wait ...');
+  header.appendChild(cnt);
+  obsc.appendChild(header);
+  document.body.appendChild(obsc);
+  p5.$(e.currentTarget.id).raise('.onclick', {
+    onsuccess:function(){
+      var obsc = p5.$('sephia-composer-obscurer').el;
+      obsc.parentElement.removeChild(obsc);
+    }});
+  e.stopPropagation();
+  return false;
+}"
       .onsend
       .onclose
       .email-composer
@@ -223,7 +245,8 @@ p5.sephia_upload_files = function(e) {
                   style:"margin-bottom:0;"
                   class:sephia-compose-send
                   title:Send email
-                  onclick
+                  onclick:@"return p5.sephia_send_email(event);"
+                  .onclick
 
                     /*
                      * Sending email.
@@ -307,10 +330,26 @@ p5.sephia_upload_files = function(e) {
                   .onupload
 
                     /*
-                     * Retrieving the file name and its content, and saving it to user's 
-                     * temporary attachment folder.
+                     * Retrieving the file name, and verifying it's a legal extension.
                      */
                     p5.web.post.get:sephia-file-name
+                    eval-x:x:/+/*
+                    sephia.core._get-mime-type
+                      filename:x:/@p5.web.post.get/*?value
+                    if:x:/-/*
+                      not
+
+                      /*
+                       * File's extension are not a legal type of attachment in Sephia.
+                       */
+                      micro.windows.info:'{0}' is not a legal file type in Sephia Five
+                        :x:/@p5.web.post.get/*?value
+                        class:micro-windows-info micro-windows-info-error
+                      return
+
+                    /*
+                     * Base64 decoding file content, and saving it to user's temporary attachment folder.
+                     */
                     p5.web.post.get:sephia-file-content
                     p5.string.decode-base64:x:/-/*?value
                     save-file:@SEPHIA-USER-ATTACHMENTS/tmp/{0}
@@ -347,7 +386,7 @@ p5.sephia_upload_files = function(e) {
                  * Discard email button.
                  */
                 button
-                  innerValue:@"<span class=""icon-trash-o""></span>"
+                  innerValue:@"<span class=""icon-close""></span>"
                   style:"margin-bottom:0;"
                   class:sephia-compose-discard-email
                   title:Discard email
