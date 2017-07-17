@@ -2,8 +2,14 @@
 /*
  * Extension widget that creates the widget that displays the body of an email.
  *
- * Expects rows from "parts" MySQL table, which it will intelligently parse, and return either
- * an iframe for (if HTML view exists) or a pre-formatted div for (if only text view exists).
+ * Expects [row] from "parts" MySQL table, which it will intelligently parse, and return either
+ * an iframe for or a pre-formatted div for, depending upon which views that exists, and which
+ * type of view user prefers according to his settings.
+ *
+ * If email is rendered as HTML, all potential malicious HTML tags are stripped according to
+ * the whitelist definition that can be found in "/config/html-whitelist.hl".
+ *
+ * If email is rendered as plain text, 
  */
 create-event:sephia.widgets._email-body
 
@@ -13,23 +19,74 @@ create-event:sephia.widgets._email-body
   .signal
 
   /*
-   * Figuring out if there exists an HTML view, which we will prioritize.
+   * Retrieving user's settings to figure out which type of email content he prefers.
    */
-  if:x:/@.signal/--(!/_arg)/*/type/=html
+  _type
+  p5.auth.my-settings.get
+  if:x:/@p5.auth.my-settings.get/*/sephia/*/preferred-content-type?value
+    =:html
+    and:x:/@.signal/--(!/_arg)/*/type/=html
 
     /*
-     * HTML view exists, returning content wrapped in "iframe", 
-     * making sure we eliminate any dangerous JavaScript first.
+     * User prefers HTML emails, and there exists an HTML view for email.
      */
-    p5.html.html2lambda:x:/@.signal/--(!/_arg)/*/type/=html/./*/content?value
+    set:x:/@_type?value
+      src:html
+
+  else-if:x:/@p5.auth.my-settings.get/*/sephia/*/preferred-content-type?value
+    =:plain
+    and:x:/@.signal/--(!/_arg)/*/type/=plain
+
+    /*
+     * User prefers plain text emails, and there exists a plain text view for email.
+     */
+    set:x:/@_type?value
+      src:plain
+
+  else-if:x:/@.signal/--(!/_arg)/*/type/=html
+
+    /*
+     * User prefers plain text emails, but only HTML exists.
+     */
+    set:x:/@_type?value
+      src:html
+
+  else-if:x:/@.signal/--(!/_arg)/*/type/=plain
+
+    /*
+     * User prefers HTML emails, but only plain text exists.
+     */
+    set:x:/@_type?value
+      src:plain
+
+  else
+
+    /*
+     * We have no idea how to display this email...!!
+     */
+    return
+      literal
+        element:div
+        innerValue:@"<p>Sephia Five couldn't display this email, since it container neither any HTML nor plain text views!</p>"
+
+  /*
+   * Figuring out if there exists an HTML view, which we will prioritize.
+   */
+  if:x:/@_type?value
+    =:html
+
+    /*
+     * Rendering HTML view, making sure we eliminate any dangerous JavaScript first.
+     */
+    html2lambda:x:/@.signal/--(!/_arg)/*/type/=html/./*/content?value
 
     /*
      * Removing everything not in whitelist.
      *
-     * This is done by dynamically creating an expression that removes everything from our above [p5.html.html2lambda]
+     * This is done by dynamically creating an expression that removes everything from our above [html2lambda]
      * object, which is not explicitly mentioned in our "html-whitelist.hl" configuration file.
      */
-    _exp:/@p5.html.html2lambda/**(
+    _exp:/@html2lambda/**(
     load-file:@SEPHIA/config/html-whitelist.hl
 
     /*
@@ -60,21 +117,21 @@ create-event:sephia.widgets._email-body
       src:x:/@_exp?value.x
 
     /*
-     * This invocation, which is dynamically created, will remove everything not in our whitelist.
+     * This invocation, which is dynamically created, and will remove everything not in our whitelist.
      */
     set
 
     /*
      * Making sure we get "_blank" target for each hyperlink, unless another target is explicitly defined.
      */
-    add:x:@"/@p5.html.html2lambda/*/**/a"
+    add:x:@"/@html2lambda/*/**/a"
       src
         @target:_blank
 
     /*
      * Transforming back to HTML.
      */
-    p5.html.lambda2html:x:/@p5.html.html2lambda/*
+    lambda2html:x:/@html2lambda/*
 
     /*
      * Returning extension widget wrapping "iframe" back to caller.
@@ -88,16 +145,26 @@ create-event:sephia.widgets._email-body
 
         // Making sure iframe's height becomes "automatic".
         onload:@"this.style.height=this.contentWindow.document.body.scrollHeight + 'px';"
-        srcdoc:x:/@p5.html.lambda2html?value
+        srcdoc:x:/@lambda2html?value
 
-  else-if:x:/@.signal/--(!/_arg)/*/type/=plain
+  else
 
     /*
-     * Only plain text view exists.
+     * HTML encoding email to avoid HTML tag injection.
+     */
+    p5.html.html-encode:x:/@.signal/--(!/_arg)/*/type/=plain/./*/content?value
+
+    /*
+     * Making sure we transform all URLs in email to become clickable hyperlinks.
+     */
+    sephia.core._create-hyperlinks:x:/@p5.html.html-encode?value
+
+    /*
+     * Returning pre-formatted "div" element wrapping content of email.
      */
     eval-x:x:/+/*/*
     return
       literal
         element:div
         style:"white-space:pre-wrap;width:100%;overflow:hidden;"
-        innerValue::x:/@.signal/--(!/_arg)/*/type/=plain/./*/content?value
+        innerValue:x:/@sephia.core._create-hyperlinks?value

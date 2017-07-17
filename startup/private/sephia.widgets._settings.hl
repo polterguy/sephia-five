@@ -41,6 +41,15 @@ create-event:sephia.widgets._settings
     smtp-port:465
     smtp-ssl:bool:true
     signature:x:/@load-file/*/*?value
+    preferred-content-type:html
+
+  /*
+   * Making sure we check the correct "perferred content type" radio button.
+   */
+  add:x:/../*/return/**/input/*/type/=radio/./*/.data-field/=preferred-content-type/./*/.data-value/={0}/.
+    :x:(/../*/p5.auth.my-settings.get/*/sephia/*/preferred-content-type|/../*/.defaults/*/preferred-content-type)/$?value
+    src
+      checked
 
   /*
    * Returning widget to caller, making sure we forward evaluate properties.
@@ -112,6 +121,7 @@ create-event:sephia.widgets._settings
                             type:text
                             placeholder:Your email ...
                             value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/email|/../*/.defaults/*/email)/$?value
+
               div
                 class:row air-top
                 widgets
@@ -128,6 +138,28 @@ create-event:sephia.widgets._settings
                         placeholder:Signature ...
                         rows:7
                         value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/signature|/../*/.defaults/*/signature)/$?value
+              div
+                class:row
+                widgets
+                  div
+                    class:col
+                    widgets
+                      input:sephia-setting-prefer-html
+                        type:radio
+                        .data-field:preferred-content-type
+                        .data-value:html
+                        name:sephia-preferred-content-type
+                      label
+                        for:sephia-setting-prefer-html
+                        innerValue:Prefer HTML emails
+                      input:sephia-setting-prefer-plain
+                        type:radio
+                        .data-field:preferred-content-type
+                        .data-value:plain
+                        name:sephia-preferred-content-type
+                      label
+                        for:sephia-setting-prefer-plain
+                        innerValue:Prefer plain text emails
 
           /*
            * POP3 settings.
@@ -798,6 +830,11 @@ create-event:sephia.widgets._settings
                      */
                     load-file:@SEPHIA/launch.hl
                     eval:x:/-/*
+
+                    /*
+                     * Giving user feedback
+                     */
+                    micro.windows.info:Your settings was successfully saved
 
                 /*
                  * Close button that will close settings without updating them.
