@@ -231,6 +231,7 @@ and add support for "".{1}"" file extensions if you wish to allow these types of
    * Checking if caller specified he wanted to have Markdown created.
    */
   if:x:/../*/markdown?value
+    =:bool:true
 
     /*
      * Creating Markdown out of email content to use as HTML view.

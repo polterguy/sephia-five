@@ -17,6 +17,19 @@ clear-widget:sephia-main-container
 
 
 /*
+ * Checking if user likes to compose emails using Markdown
+ */
+p5.auth.my-settings.get
+if:x:/@p5.auth.my-settings.get/*/sephia/*/markdown-composer
+  add:x:/../*/create-widget/**/sephia.widgets.compose
+    src
+      markdown-composer:bool:true
+
+
+
+
+
+/*
  * Creating filtering and paging widget toolbar at top of page.
  */
 create-widget:sephia-search-wrapper
@@ -261,7 +274,6 @@ create-widget:sephia-search-wrapper
                          * its content from Markdown to HTML.
                          */
                         sephia.widgets.compose
-                          markdown:bool:true
                           .onclose
 
                             /*

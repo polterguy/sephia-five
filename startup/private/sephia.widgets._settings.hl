@@ -42,6 +42,7 @@ create-event:sephia.widgets._settings
     smtp-ssl:bool:true
     signature:x:/@load-file/*/*?value
     preferred-content-type:html
+    markdown-composer:bool:true
 
   /*
    * Making sure we check the correct "perferred content type" radio button.
@@ -50,6 +51,13 @@ create-event:sephia.widgets._settings
     :x:(/../*/p5.auth.my-settings.get/*/sephia/*/preferred-content-type|/../*/.defaults/*/preferred-content-type)/$?value
     src
       checked
+
+  /*
+   * Checking if user wants to compose emails using Markdown.
+   */
+  if:x:(/../*/p5.auth.my-settings.get/*/sephia/*/markdown-composer|/../*/.defaults/*/markdown-composer)/$?value
+    add:x:/../*/return/**/input/*/type/=checkbox/./*/.data-field/=markdown-composer/.
+      src:checked
 
   /*
    * Returning widget to caller, making sure we forward evaluate properties.
@@ -144,6 +152,19 @@ create-event:sephia.widgets._settings
                   div
                     class:col
                     widgets
+                      input:sephia-settings-compose-markdown
+                        type:checkbox
+                        .data-field:markdown-composer
+                      label
+                        for:sephia-settings-compose-markdown
+                        innerValue:I'd like to compose emails using Markdown
+                        title:Is only valid when composing new emails, not when replying to emails, or forwarding emails
+              div
+                class:row
+                widgets
+                  div
+                    class:col
+                    widgets
                       input:sephia-setting-prefer-html
                         type:radio
                         .data-field:preferred-content-type
@@ -151,7 +172,7 @@ create-event:sephia.widgets._settings
                         name:sephia-preferred-content-type
                       label
                         for:sephia-setting-prefer-html
-                        innerValue:Prefer HTML emails
+                        innerValue:I prefer to read HTML emails
                       input:sephia-setting-prefer-plain
                         type:radio
                         .data-field:preferred-content-type
@@ -159,7 +180,7 @@ create-event:sephia.widgets._settings
                         name:sephia-preferred-content-type
                       label
                         for:sephia-setting-prefer-plain
-                        innerValue:Prefer plain text emails
+                        innerValue:I prefer to read plain text emails
 
           /*
            * POP3 settings.

@@ -10,7 +10,7 @@
  * email composer is closed and/or email is sent, in addition to [class], which will be the root class
  * of the composer.
  *
- * If you wish, you can also supply a [markdown] argument, and set its value to "true", at which point
+ * If you wish, you can also supply a [markdown-composer] argument, and set its value to "true", at which point
  * the email will be sent also as HTML, where the HTML will be created by converting the email's text content
  * to Markdown.
  *
@@ -33,7 +33,7 @@ create-event:sephia.widgets.compose
    */
   .defaults
     class:air-inner
-    markdown:bool:false
+    markdown-composer:bool:false
 
   /*
    * Including JavaScript necessary to handle uploading of attachments.
@@ -300,7 +300,7 @@ p5.sephia_send_email = function(e) {
                       add:x:/+
                         src:x:/@micro.form.serialize/*(!/attachment!/no-data)
                       sephia.core.send-email
-                        markdown:x:(/../*/markdown|/../*/.defaults/*/markdown)/$?value
+                        markdown:x:(/../*/markdown-composer|/../*/.defaults/*/markdown-composer)/$?value
                         attachments
 
                       /*
