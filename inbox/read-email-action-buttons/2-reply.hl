@@ -74,17 +74,27 @@ button
           :x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]/*/*/subject?value
 
     /*
-     * Quoting content of email by appending a ">" in front of each line in email content.
+     * Will contain the "massaged content" from email.
      */
     _content
-    split:x:/@p5.mysql.connect/*/p5.mysql.select/[1,2]/*/*/type/=plain/./*/content?value
-      =:"\r\n"
-    join:x:/-/*?name
-      sep:@"
->"
+
+    /*
+     * Removing signature from email's content.
+     */
     set:x:/@_content?value
-      src:">{0}"
-        :x:/@join?value
+      fetch:x:/0/0?name
+        split:x:/@p5.mysql.connect/*/p5.mysql.select/[1,2]/*/*/type/=plain/./*/content?value
+          =:"\r\n-- \r\n"
+
+    /*
+     * Quoting content of email by appending a ">" in front of each line in email content.
+     */
+    replace:x:/@_content?value
+      src:"\r\n"
+      dest:"\r\n> "
+    set:x:/@_content?value
+      src:"> {0}"
+        :x:/@replace?value
 
     /*
      * HTML encoding content
@@ -120,6 +130,7 @@ button
              * This is the actual "composer" widget, which allows user to compose/reply/etc an email.
              */
             sephia.widgets.compose
+              markdown-composer:bool:true
               subject:x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]/*/*/subject?value
               body:x:/@_content?value
               recipients

@@ -361,6 +361,14 @@ create-widget
         div
           class:air-inner {0} shaded rounded
             :x:/@p5.mysql.connect/*/_bg?value
+          oninit
+
+            /*
+             * Making sure we scroll reader into view.
+             */
+            p5.web.send-javascript:@"p5.$('{0}').el.scrollIntoView(true);"
+              :x:/../*/_event?value
+
           widgets:content
 
             /*
@@ -557,12 +565,3 @@ create-widget
  */
 load-file:@SEPHIA/inbox/update-page-title.hl
 eval:x:/-/*
-
-
-
-
-
-/*
- * Informing user he has to scroll to the bottom of the page to find his email.
- */
-micro.windows.info:Your email can be found at the bottom of the page

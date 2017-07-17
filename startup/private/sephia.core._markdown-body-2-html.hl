@@ -40,6 +40,6 @@ create-event:sephia.core._markdown-body-2-html
   /*
    * User had a signature - Returning both Markdown and signature as pre-formatted.
    */
-  return:"{0}\r\n<pre>-- \r\n{1}</pre>"
+  return:"{0}\r\n<pre style=\"opacity:.3;\">-- \r\n{1}</pre>"
     :x:/../*/sephia.core._create-hyperlinks/[0,1]?value
     :x:/@sephia.core._create-hyperlinks?value

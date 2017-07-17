@@ -9,7 +9,8 @@
  * If email is rendered as HTML, all potential malicious HTML tags are stripped according to
  * the whitelist definition that can be found in "/config/html-whitelist.hl".
  *
- * If email is rendered as plain text, 
+ * If email is rendered as plain text, then content is HTML encoded to avoid injecting malicious HTML,
+ * but all URLs in email is converted into clickable hyperlinks.
  */
 create-event:sephia.widgets._email-body
 
@@ -127,6 +128,30 @@ create-event:sephia.widgets._email-body
     add:x:@"/@html2lambda/*/**/a"
       src
         @target:_blank
+
+    /*
+     * Making sure we include our default CSS stylesheet file for viewing HTML emails.
+     */
+    p5.io.unroll-path:@SEPHIA/
+    p5.io.unroll-path:@MICRO/
+    eval-x:x:/+/*/*/*
+    insert-before:x:/@html2lambda/0
+      src
+        link
+          @rel:stylesheet
+          @type:text/css
+          @href:"{0}media/main.css"
+            :x:/@p5.io.unroll-path?value
+        link
+          @rel:stylesheet
+          @type:text/css
+          @href:"{0}media/skins/serious.css"
+            :x:/@p5.io.unroll-path?value
+        link
+          @rel:stylesheet
+          @type:text/css
+          @href:"{0}media/email-reader.css"
+            :x:/@p5.io.unroll-path/@p5.io.unroll-path?value
 
     /*
      * Transforming back to HTML.

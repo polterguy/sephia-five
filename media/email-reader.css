@@ -1,0 +1,16 @@
+
+/*
+ * CSS file injected into email reader iframe, to create some sane default styling for email content.
+ *
+ * Notice, this CSS file is only injected into iframe created when user is reading an HTML email.
+ */
+
+pre {
+    background:none;
+    padding-left:0;
+}
+
+blockquote {
+    font-size:1rem;
+    margin-left:1rem;
+}
