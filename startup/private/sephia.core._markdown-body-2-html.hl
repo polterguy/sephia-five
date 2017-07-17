@@ -1,0 +1,45 @@
+
+/*
+ * Creates standard email HTML from the given [_arg] Markdown content.
+ */
+create-event:sephia.core._markdown-body-2-html
+
+  /*
+   * Splitting up signature, such that we can have it displayed as pre-formatted.
+   */
+  split:x:/../*/_arg?value
+    =:"\r\n-- \r\n"
+
+  /*
+   * Converting content of email (minus signature) to Markdown.
+   */
+  markdown2html:x:/-/0?name
+
+  /*
+   * Converting all hyperlinks within email that are not explicitly set to hyperlinks to such.
+   * Notice, this invocation will ignore any hyperlinks already created by our above [markdown2html] invocation.
+   */
+  sephia.core._create-hyperlinks:x:/@markdown2html?value
+
+  /*
+   * Checking if user actually had a signature in his email.
+   */
+  if:x:/@split/*?count
+    =:int:1
+
+    /*
+     * User didn't have any signature, returning raw markdown with hyperlink conversion.
+     */
+    return:x:/@sephia.core._create-hyperlinks?value
+
+  /*
+   * Converting URLs in signature to real hyperlinks.
+   */
+  sephia.core._create-hyperlinks:x:/@split/0/-?name
+
+  /*
+   * User had a signature - Returning both Markdown and signature as pre-formatted.
+   */
+  return:"{0}\r\n<pre>-- \r\n{1}</pre>"
+    :x:/../*/sephia.core._create-hyperlinks/[0,1]?value
+    :x:/@sephia.core._create-hyperlinks?value

@@ -1,0 +1,103 @@
+
+/*
+ * Extension widget that creates the widget that displays the body of an email.
+ *
+ * Expects rows from "parts" MySQL table, which it will intelligently parse, and return either
+ * an iframe for (if HTML view exists) or a pre-formatted div for (if only text view exists).
+ */
+create-event:sephia.widgets._email-body
+
+  /*
+   * Signal node, to be able to easily find arguments.
+   */
+  .signal
+
+  /*
+   * Figuring out if there exists an HTML view, which we will prioritize.
+   */
+  if:x:/@.signal/--(!/_arg)/*/type/=html
+
+    /*
+     * HTML view exists, returning content wrapped in "iframe", 
+     * making sure we eliminate any dangerous JavaScript first.
+     */
+    p5.html.html2lambda:x:/@.signal/--(!/_arg)/*/type/=html/./*/content?value
+
+    /*
+     * Removing everything not in whitelist.
+     *
+     * This is done by dynamically creating an expression that removes everything from our above [p5.html.html2lambda]
+     * object, which is not explicitly mentioned in our "html-whitelist.hl" configuration file.
+     */
+    _exp:/@p5.html.html2lambda/**(
+    load-file:@SEPHIA/config/html-whitelist.hl
+
+    /*
+     * Looping through each item in whitelist.
+     */
+    for-each:x:/-/*/*
+
+      /*
+       * Appending this node as a "not to be removed" type of node the the above [_exp].
+       */
+      set:x:/@_exp?value
+        src:{0}!/\{1}
+          :x:/@_exp?value
+          :x:/@_dp/#?name
+
+    /*
+     * Adding our trailing parantheses ")" to the above dynamically created expression.
+     */
+    set:x:/@_exp?value
+      src:{0})
+        :x:/@_exp?value
+
+    /*
+     * Transforming our above [_exp] to an expression, and setting the results as the value of our second
+     * [set] below.
+     */
+    set:x:/+?value
+      src:x:/@_exp?value.x
+
+    /*
+     * This invocation, which is dynamically created, will remove everything not in our whitelist.
+     */
+    set
+
+    /*
+     * Making sure we get "_blank" target for each hyperlink, unless another target is explicitly defined.
+     */
+    add:x:@"/@p5.html.html2lambda/*/**/a"
+      src
+        @target:_blank
+
+    /*
+     * Transforming back to HTML.
+     */
+    p5.html.lambda2html:x:/@p5.html.html2lambda/*
+
+    /*
+     * Returning extension widget wrapping "iframe" back to caller.
+     */
+    eval-x:x:/+/*/*
+    return
+      literal
+        element:iframe
+        seamless
+        class:sephia-iframe-reader
+
+        // Making sure iframe's height becomes "automatic".
+        onload:@"this.style.height=this.contentWindow.document.body.scrollHeight + 'px';"
+        srcdoc:x:/@p5.html.lambda2html?value
+
+  else-if:x:/@.signal/--(!/_arg)/*/type/=plain
+
+    /*
+     * Only plain text view exists.
+     */
+    eval-x:x:/+/*/*
+    return
+      literal
+        element:div
+        style:"white-space:pre-wrap;width:100%;overflow:hidden;"
+        innerValue::x:/@.signal/--(!/_arg)/*/type/=plain/./*/content?value

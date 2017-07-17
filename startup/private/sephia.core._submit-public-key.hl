@@ -13,15 +13,20 @@ create-event:sephia.core._submit-public-key
   p5.html.url-encode:x:/@p5.crypto.get-public-key/*?value
 
   /*
-   * HTTP POSTing key to Ubuntu key server
+   * Loading key server configuration setting.
    */
-  p5.http.post:"http://keyserver.ubuntu.com/pks/add"
+  load-file:@SEPHIA/config/key-server.hl
+
+  /*
+   * HTTP POST'ing public key to key server.
+   */
+  p5.http.post:x:/@load-file/*/* ?value
     Content-Type:application/x-www-form-urlencoded
     content:"keytext={0}"
       :x:/@p5.html.url-encode?value
 
   /*
-   * Checking status, and giving user feedback about operation.
+   * Checking status.
    */
   if:x:/@p5.http.post/*/result/*/status?value
     !=:OK

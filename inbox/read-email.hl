@@ -288,87 +288,10 @@ where emails.id = @id"
     @id:x:/../*/id?value
 
   /*
-   * This part will contain the content to display to the user.
+   * Adding all views that exists into [sephia.widgets._email-body]
    */
-  _content
-
-  /*
-   * Contains quoted parts.
-   */
-  _quote
-
-  /*
-   * Checking if a "plain/text" part exists for this email.
-   */
-  if:x:/@p5.mysql.select/*/*/type/=plain
-
-    /*
-     * Plain part exists.
-     * Using regex to replace all URLs with hyperlinks.
-     */
-    p5.html.html-encode:x:/@p5.mysql.select/*/*/type/=plain/./*/content?value
-    replace:x:/@p5.html.html-encode?value
-      src:regex:@"/((http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?)/c"
-      dest:"<a target='_blank' href='$1'>$1</a>"
-    split:x:/@replace?value
-      =:@"
-&gt;"
-    set:x:/@_content?value
-      src:x:/@split/0?name
-    if:x:/@split/*?count
-      >:int:1
-      set:x:/@split/0
-      join:x:/@split/*?name
-        sep:@"
-&gt;"
-      set:x:/@_quote?value
-        src:@"
-&gt;{0}"
-          :x:/@join?value
-    else
-
-      /*
-       * No quoted parts, deleting "show quote button" and "quote content".
-       */
-      set:x:/../*/create-widget/**/widgets/=content/*(/button|/p/*/.quote/.)
-
-  else
-
-    /*
-     * Only HTML part exists.
-     * Stripping out everything that is considered "dangerous HTML".
-     */
-    p5.html.html2lambda:x:/@p5.mysql.select/*/*/type/=html/./*/content?value
-
-    /*
-     * Removing entire "head" part.
-     */
-    set:x:/@p5.html.html2lambda/*/*/head
-
-    /*
-     * Removing everything not in whitelist.
-     */
-    set:x:@"/@p5.html.html2lambda/*/**(!/body!/div!/table!/tr!/td!/th!/p!/span!/a!/strong!/br!/em!/img!/""\\#text""!/""\\@href"")"
-
-    /*
-     * Making sure we get "_blank" target for each hyperlink.
-     */
-    add:x:/@p5.html.html2lambda/*/**/a
-      src
-        @target:_blank
-
-    /*
-     * Transforming back to HTML.
-     */
-    p5.html.lambda2html:x:/@p5.html.html2lambda/*/*/body/*(!/~@)
-    set:x:/@_content?value
-      src:x:/@p5.html.lambda2html?value
-
-    /*
-     * No quoted parts, deleting "show quote button" and "quote content".
-     */
-    set:x:/../*/create-widget/**/widgets/=content/*(/button|/p/*/.quote/.)
-
+  add:x:/../*/create-widget/**/sephia.widgets._email-body
+    src:x:/@p5.mysql.select/*
 
   /*
    * Making sure we set email as read in database.
@@ -425,9 +348,7 @@ create-widget
             /*
              * Displays body of email.
              */
-            div
-              style:"white-space:pre-wrap;width:100%;overflow:hidden;"
-              innerValue:x:/@p5.mysql.connect/*/_content?value
+            sephia.widgets._email-body
 
             /*
              * Displays attachments of email.
@@ -435,35 +356,6 @@ create-widget
             container
               class:sephia-inbox-attachments
               widgets:attachments
-
-            /*
-             * Allows user to show "quoted parts" of email.
-             */
-            button
-              innerValue:...
-              class:air-top
-              onclick
-
-                /*
-                 * Displays quoted parts of email.
-                 */
-                p5.web.widgets.get-parent:x:/../*/_event?value
-                p5.web.widgets.find:x:/-/*/*?value
-                  .quote
-                set-widget-property:x:/-/*/*?value
-                  visible:true
-                delete-widget:x:/../*/_event?value
-
-            /*
-             * Displays quoted parts of email.
-             *
-             * This part is initially hidden.
-             */
-            p
-              .quote
-              style:"white-space:pre-wrap;"
-              visible:false
-              innerValue:x:/@p5.mysql.connect/*/_quote?value
 
             /*
              * Container wrapping "meta data" of email.

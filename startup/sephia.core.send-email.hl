@@ -6,6 +6,9 @@
  * Optionally pass in [attachments] as collections of attachments to send with email.
  *
  * [to], [cc] and [bcc] should be comma separated list of emails.
+ *
+ * You can also pass in [markdown] and set its value to "true", at which point the email will also create an alternate
+ * HTML view, created by converting its text content to markdown.
  */
 create-event:sephia.core.send-email
 
@@ -147,7 +150,7 @@ create-event:sephia.core.send-email
       /*
        * First adding file to [p5.smtp.send].
        */
-      add:x:/../*/p5.smtp.send/*/*/*/multipart/=mixed
+      add:x:/../*/p5.smtp.send/*/*/*/multipart
         src:x:/@sephia.core._get-mime-type/*
 
       /*
@@ -225,6 +228,40 @@ and add support for "".{1}"" file extensions if you wish to allow these types of
             password:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-password?value
 
   /*
+   * Checking if caller specified he wanted to have Markdown created.
+   */
+  if:x:/../*/markdown?value
+
+    /*
+     * Creating Markdown out of email content to use as HTML view.
+     */
+    sephia.core._markdown-body-2-html:x:/../*/body?value
+
+    /*
+     * Adding an alternate view of type HTML, using the email's text content
+     * converted from Markdown as its content.
+     */
+    eval-x:x:/+/*/*/*/*
+    add:x:/../*/p5.smtp.send/**/multipart
+      src
+        multipart:alternative
+          text:plain
+            content:x:/../*/body?value
+          text:html
+            content:x:/@sephia.core._markdown-body-2-html?value
+
+  else
+
+    /*
+     * No alternative view is to be created.
+     */
+    eval-x:x:/+/*/*/*
+    add:x:/../*/p5.smtp.send/**/multipart
+      src
+        text:plain
+          content:x:/../*/body?value
+
+  /*
    * Forward evaluating entire SMTP invocation.
    */
   eval-x:x:/../*/p5.smtp.send/**
@@ -252,8 +289,6 @@ and add support for "".{1}"" file extensions if you wish to allow these types of
       Bcc
       body
         multipart:mixed
-          text:plain
-            content:x:/../*/body?value
 
   /*
    * Saves entire outgoing [envelope] to database.
@@ -387,11 +422,23 @@ create-event:sephia.core.send-email._save-envelope
         @fingerprint:x:/@_fingerprint?value
 
       /*
-       * Inserting into "part" table in database.
+       * Inserting into "parts" table in database.
        */
       p5.mysql.insert:@"insert into parts (type, content, emailid) values ('plain', @content, @emailid)"
-        @content:x:/../*/envelope/*/body/**/text/[0,1]/*/content?value
+        @content:x:/../*/envelope/*/body/**/text/=plain/*/content?value
         @emailid:x:/@p5.mysql.insert/@p5.mysql.insert/*/id?value
+
+      /*
+       * Checking if HTML view was given.
+       */
+      if:x:/../*/envelope/*/body/**/text/=html/*/content?value
+
+        /*
+         * Inserting also alternative HTML view.
+         */
+        p5.mysql.insert:@"insert into parts (type, content, emailid) values ('html', @content, @emailid)"
+          @content:x:/../*/envelope/*/body/**/text/=html/*/content?value
+          @emailid:x:/@p5.mysql.insert/@p5.mysql.insert/@p5.mysql.insert/*/id?value
 
       /*
        * Inserting into "recipients" table in database.

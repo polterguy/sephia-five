@@ -27,8 +27,12 @@ create-event:sephia.widgets._settings
 
   /*
    * Default values for settings.
+   *
    * Notice, we're simply using GMail server settings here.
+   * The [signature] we're fetching from our configuration file.
    */
+  load-file:@SEPHIA/config/default-signature.hl
+  eval-x:x:/+/*/signature
   .defaults
     pop3-server:pop.gmail.com
     pop3-port:995
@@ -36,6 +40,7 @@ create-event:sephia.widgets._settings
     smtp-server:smtp.gmail.com
     smtp-port:465
     smtp-ssl:bool:true
+    signature:x:/@load-file/*/*?value
 
   /*
    * Returning widget to caller, making sure we forward evaluate properties.
@@ -43,6 +48,7 @@ create-event:sephia.widgets._settings
   eval-x:x:(/+/**/view/=databound/**/value|/+/**/input(/=sephia-settings-pgp-key|/=sephia-settings-pgp-password)/*/value)
   return
     container
+      class:sephia-settings
       widgets
 
         /*
@@ -51,7 +57,7 @@ create-event:sephia.widgets._settings
         input:sephia-settings-pgp-key
           type:hidden
           .data-field:pgp-key
-          value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pgp-key|/../*/.defaults/*/pgp-key)/[0,1]?value
+          value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pgp-key|/../*/.defaults/*/pgp-key)/$?value
 
         /*
          * Using a Micro tab widget to organize the different groups of settings.
@@ -89,7 +95,7 @@ create-event:sephia.widgets._settings
                             .data-field:name
                             type:text
                             placeholder:Your name ...
-                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/name|/../*/.defaults/*/name)/[0,1]?value
+                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/name|/../*/.defaults/*/name)/$?value
                             oninit
                               micro.page.set-focus:sephia-settings-name
                   div
@@ -105,7 +111,7 @@ create-event:sephia.widgets._settings
                             .data-field:email
                             type:text
                             placeholder:Your email ...
-                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/email|/../*/.defaults/*/email)/[0,1]?value
+                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/email|/../*/.defaults/*/email)/$?value
               div
                 class:row air-top
                 widgets
@@ -121,7 +127,7 @@ create-event:sephia.widgets._settings
                         element:textarea
                         placeholder:Signature ...
                         rows:7
-                        value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/signature|/../*/.defaults/*/signature)/[0,1]?value
+                        value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/signature|/../*/.defaults/*/signature)/$?value
 
           /*
            * POP3 settings.
@@ -153,7 +159,7 @@ create-event:sephia.widgets._settings
                             .data-field:pop3-server
                             type:text
                             placeholder:Server ...
-                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pop3-server|/../*/.defaults/*/pop3-server)/[0,1]?value
+                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pop3-server|/../*/.defaults/*/pop3-server)/$?value
                             oninit
                               micro.page.set-focus:sephia-settings-pop3-server
                   div
@@ -169,7 +175,7 @@ create-event:sephia.widgets._settings
                             type:number
                             .data-field:pop3-port
                             placeholder:Port ...
-                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pop3-port|/../*/.defaults/*/pop3-port)/[0,1]?value
+                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pop3-port|/../*/.defaults/*/pop3-port)/$?value
                           label
                             for:sephia-settings-pop3-ssl
                             innerValue:SSL
@@ -203,7 +209,7 @@ create-event:sephia.widgets._settings
                             .data-field:pop3-username
                             type:text
                             placeholder:Username ...
-                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pop3-username|/../*/.defaults/*/pop3-username)/[0,1]?value
+                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pop3-username|/../*/.defaults/*/pop3-username)/$?value
                   div
                     class:col-50
                     widgets
@@ -218,7 +224,7 @@ create-event:sephia.widgets._settings
                             autocomplete:new-password
                             .data-field:pop3-password
                             placeholder:Password ...
-                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pop3-password|/../*/.defaults/*/pop3-password)/[0,1]?value
+                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pop3-password|/../*/.defaults/*/pop3-password)/$?value
 
           /*
            * SMTP settings.
@@ -250,7 +256,7 @@ create-event:sephia.widgets._settings
                             .data-field:smtp-server
                             type:text
                             placeholder:Server ...
-                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/smtp-server|/../*/.defaults/*/smtp-server)/[0,1]?value
+                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/smtp-server|/../*/.defaults/*/smtp-server)/$?value
                             oninit
                               micro.page.set-focus:sephia-settings-smtp-server
                   div
@@ -266,7 +272,7 @@ create-event:sephia.widgets._settings
                             type:number
                             .data-field:smtp-port
                             placeholder:Port ...
-                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/smtp-port|/../*/.defaults/*/smtp-port)/[0,1]?value
+                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/smtp-port|/../*/.defaults/*/smtp-port)/$?value
                           label
                             for:sephia-settings-smtp-ssl
                             innerValue:SSL
@@ -300,7 +306,7 @@ create-event:sephia.widgets._settings
                             .data-field:smtp-username
                             type:text
                             placeholder:Username ...
-                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/smtp-username|/../*/.defaults/*/smtp-username)/[0,1]?value
+                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/smtp-username|/../*/.defaults/*/smtp-username)/$?value
                   div
                     class:col-50
                     widgets
@@ -315,7 +321,7 @@ create-event:sephia.widgets._settings
                             autocomplete:new-password
                             .data-field:smtp-password
                             placeholder:Password ...
-                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/smtp-password|/../*/.defaults/*/smtp-password)/[0,1]?value
+                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/smtp-password|/../*/.defaults/*/smtp-password)/$?value
 
           /*
            * PGP settings.
@@ -507,7 +513,7 @@ create-event:sephia.widgets._settings
                             .data-field:pgp-password
                             type:password
                             placeholder:Your PGP password ...
-                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pgp-password|/../*/.defaults/*/pgp-password)/[0,1]?value
+                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pgp-password|/../*/.defaults/*/pgp-password)/$?value
               div
                 class:row
                 widgets

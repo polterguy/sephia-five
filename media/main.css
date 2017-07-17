@@ -7,8 +7,8 @@
 /*
  * Overridden to create some cogs while in settings form.
  */
-.micro-tab .micro-tab-views {
-    background:url(/micro/media/skins/serious/floating-cogs.svg)
+.sephia-settings .micro-tab .micro-tab-views {
+    background: url(/micro/media/skins/serious/floating-cogs.svg);
 }
 
 /*
@@ -100,6 +100,13 @@
     .sephia-inbox th:nth-child(3) {
         display: table-cell;
     }
+}
+
+.sephia-iframe-reader {
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+    border:none;
 }
 
 

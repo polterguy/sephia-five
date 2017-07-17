@@ -10,6 +10,10 @@
  * email composer is closed and/or email is sent, in addition to [class], which will be the root class
  * of the composer.
  *
+ * If you wish, you can also supply a [markdown] argument, and set its value to "true", at which point
+ * the email will be sent also as HTML, where the HTML will be created by converting the email's text content
+ * to Markdown.
+ *
  * This widget will allow the user to compose an email, and send it, allowing the user to lookup contacts
  * from the contacts database, etc. When the email is sent, it will be serialized as "sent" in Sephia's database.
  *
@@ -29,6 +33,7 @@ create-event:sephia.widgets.compose
    */
   .defaults
     class:air-inner
+    markdown:bool:false
 
   /*
    * Including JavaScript necessary to handle uploading of attachments.
@@ -86,9 +91,14 @@ p5.sephia_upload_files = function(e) {
           filename:x:/@_dp/#?value
 
   /*
+   * Necessary to figure out user's signature, which is consumed further down.
+   */
+  p5.auth.my-settings.get
+
+  /*
    * Returning actual widget to caller.
    */
-  eval-x:x:/../*/return/**/widgets/=content/*(/input|/literal)/*/value|/../*/return/*/*/class
+  eval-x:x:/../*/return/**/widgets/=content/*(/input|/literal)/*/value|/../*/return/*/*/class|/../*/return/**/sephia.core.send-email/*/markdown
   return
     div
       oninit
@@ -205,10 +215,16 @@ p5.sephia_send_email = function(e) {
         literal
           element:textarea
           class:fill sephia-compose-body
-          placeholder:Subject of email ...
+          placeholder:Content ...
           .data-field:body
           rows:15
-          value:x:/../*/body?value
+          value:@"{0}
+
+
+-- 
+{1}"
+            :x:/../*/body?value
+            :x:/@p5.auth.my-settings.get/*/sephia/*/signature?value
 
         /*
          * Wrapper for attachments.
@@ -284,6 +300,7 @@ p5.sephia_send_email = function(e) {
                       add:x:/+
                         src:x:/@micro.form.serialize/*(!/attachment!/no-data)
                       sephia.core.send-email
+                        markdown:x:(/../*/markdown|/../*/.defaults/*/markdown)/$?value
                         attachments
 
                       /*

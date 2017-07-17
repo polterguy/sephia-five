@@ -1,0 +1,5 @@
+
+/*
+ * Configuration file for which PGP key server to use.
+ */
+key-server:"http://keyserver.ubuntu.com/pks/add"
