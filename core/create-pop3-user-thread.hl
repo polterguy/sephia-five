@@ -179,7 +179,7 @@ fork
                   /*
                    * Checking if email has alread been fetched from POP server
                    */
-                  p5.mysql.scalar:@"select count(*) from emails where mimeid = @mimeid"
+                  p5.mysql.scalar:@"select count(*) from emails where mimeid = @mimeid and type = 'received'"
                     @mimeid:x:/@_dp/#?value
                   if:x:/@p5.mysql.scalar?value
                     >:long:0
@@ -282,7 +282,7 @@ fork
                   /*
                    * Now we can insert email into database.
                    */
-                  p5.mysql.insert:@"insert into emails (subject, date, sender, username, isread, mimeid, signature, fingerprint, encrypted, type) values (@subject, @date, @sender, @username, 0, @mimeid, @signature, @fingerprint, @encrypted, 'received')"
+                  p5.mysql.insert:@"insert into emails (subject, date, sender, username, isread, mimeid, signature, fingerprint, encrypted, type, inreplyto) values (@subject, @date, @sender, @username, 0, @mimeid, @signature, @fingerprint, @encrypted, 'received', @inreplyto)"
                     @subject:x:/@_dp/#/*/Subject?value
                     @date:x:/@_dp/#/*/Date?value
                     @sender:x:/@_from?value.uint
@@ -291,6 +291,7 @@ fork
                     @signature:x:/@_signature?value
                     @fingerprint:x:/@_fingerprint?value
                     @encrypted:x:/@_encrypted?value
+                    @inreplyto:x:/@_dp/#/*/In-Reply-To?value
 
                   /*
                    * Now inserting into "attachments" table.

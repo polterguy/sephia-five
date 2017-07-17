@@ -14,8 +14,11 @@
  * the email will be sent also as HTML, where the HTML will be created by converting the email's text content
  * to Markdown.
  *
+ * You can optionally supply a [headers] collection, which is a generic collection of additional MIME headers
+ * to send your email with.
+ *
  * This widget will allow the user to compose an email, and send it, allowing the user to lookup contacts
- * from the contacts database, etc. When the email is sent, it will be serialized as "sent" in Sephia's database.
+ * from the contacts database, etc. When the email is sent, it will be stored as "sent" in Sephia's database.
  *
  * The class of the main root widget will be modified to contain either "warning" or "success" according to whether or
  * not email can be sent encrypted or not.
@@ -94,6 +97,12 @@ p5.sephia_upload_files = function(e) {
    * Necessary to figure out user's signature, which is consumed further down.
    */
   p5.auth.my-settings.get
+
+  /*
+   * Making sure we add any additional MIME headers requested by user.
+   */
+  add:x:/../*/return/**/sephia.core.send-email/*/headers
+    src:x:/../*/headers/*
 
   /*
    * Returning actual widget to caller.
@@ -300,6 +309,7 @@ p5.sephia_send_email = function(e) {
                       add:x:/+
                         src:x:/@micro.form.serialize/*(!/attachment!/no-data)
                       sephia.core.send-email
+                        headers
                         markdown:x:(/../*/markdown-composer|/../*/.defaults/*/markdown-composer)/$?value
                         attachments
 

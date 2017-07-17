@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS `emails` (
   `fingerprint` VARCHAR(256) NULL,
   `encrypted` int(11) unsigned NOT NULL,
   `type` varchar(45) NOT NULL,
+  `inreplyto` varchar(2048),
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`),
   KEY `email_sender_idx` (`sender`),

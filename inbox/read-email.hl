@@ -1,7 +1,11 @@
 
 /*
  * Reads a single email.
+ *
  * Expects [id] being email id to read.
+ * Optionally, pass in [after], being a widget ID of another email being currently read, at
+ * which this email's reader widget will be injected just afterwards in the DOM hierarchy.
+ * Otherwise, email will be opened up at the 'bottom' of screen.
  */
 
 
@@ -174,7 +178,7 @@ where recipients.emailid = @id"
   /*
    * Retrieving actual email.
    */
-  p5.mysql.select:@"select subject, date, signature, fingerprint, encrypted, type, name, email from emails 
+  p5.mysql.select:@"select emails.id, subject, date, signature, fingerprint, encrypted, type, mimeid, name, email from emails 
 inner join contacts on emails.sender = contacts.id 
 where emails.id = @id"
     @id:x:/../*/id?value
@@ -266,20 +270,29 @@ where emails.id = @id"
       src:Email was not cryptographically signed
 
   /*
+   * This part will contain some more of the "meta content" for email, more specifically its MIME ID.
+   */
+  _meta5
+  set:x:/@_meta5?value
+    src:"Message ID: {0}"
+      :x:/@p5.mysql.select/*/*/mimeid?value
+
+  /*
    * This part will contain all recipients of the email.
    */
-  _meta5:@"Recipients: <ul style=""color:rgba(0,0,0,.3)"">"
-  p5.mysql.select:@"select contacts.name, contacts.email from recipients inner join contacts on contacts.id = recipients.contactid where recipients.emailid = @id"
+  _meta6:@"Recipients: <ul style=""color:rgba(0,0,0,.3)"">"
+  p5.mysql.select:@"select contacts.name, contacts.email, recipients.type from recipients inner join contacts on contacts.id = recipients.contactid where recipients.emailid = @id"
     @id:x:/../*/id?value
   for-each:x:/@p5.mysql.select/*
-    set:x:/@_meta5?value
-      src:"{0}<li> {1} &lt;{2}&gt;</li>"
-        :x:/@_meta5?value
+    set:x:/@_meta6?value
+      src:"{0}<li>{3} - {1} &lt;{2}&gt;</li>"
+        :x:/@_meta6?value
         :x:/@_dp/#/*/name?value
         :x:/@_dp/#/*/email?value
-  set:x:/@_meta5?value
+        :x:/@_dp/#/*/type?value
+  set:x:/@_meta6?value
     src:{0}</ul>
-      :x:/@_meta5?value
+      :x:/@_meta6?value
 
   /*
    * Selecting content of email.
@@ -324,10 +337,21 @@ if:x:/-/*/*?value
 
 
 /*
+ * Checking if we had an [after] argument.
+ */
+if:x:/../*/after?value
+  add:x:/../*/create-widget
+    src:x:/../*/after
+else
+  add:x:/../*/create-widget
+    src
+      parent:sephia-main-container
+
+
+/*
  * Creates actual widget showing email.
  */
 create-widget
-  parent:sephia-main-container
   class:row air-top
   .email-id:x:/../*/id?value
   widgets
@@ -375,18 +399,18 @@ create-widget
                   style:"margin-top:1rem;"
 
                 /*
-                 * Displays additional "meta data" about email, more specifically the date email was sent.
-                 */
-                p
-                  style:"color:rgba(0,0,0,.3);font-style:italic;margin-bottom:0;"
-                  innerValue:x:/@p5.mysql.connect/*/_meta2?value
-
-                /*
                  * Displays email "meta data", more specifically who sent the email.
                  */
                 p
                   style:"color:rgba(0,0,0,.3);font-style:italic;margin-bottom:0;"
                   innerValue:x:/@p5.mysql.connect/*/_meta1?value
+
+                /*
+                 * Displays additional "meta data" about email, more specifically the date email was sent.
+                 */
+                p
+                  style:"color:rgba(0,0,0,.3);font-style:italic;margin-bottom:0;"
+                  innerValue:x:/@p5.mysql.connect/*/_meta2?value
 
                 /*
                  * Displays additional "meta data" about email, more specifically if email was sent encrypted.
@@ -403,12 +427,115 @@ create-widget
                   innerValue:x:/@p5.mysql.connect/*/_meta4?value
 
                 /*
+                 * Displays additional "meta data" about email, more specifically its MIME ID.
+                 */
+                p
+                  style:"color:rgba(0,0,0,.3);font-style:italic;margin-bottom:0;"
+                  innerValue:x:/@p5.mysql.connect/*/_meta5?value
+
+                /*
                  * Displays additional "meta data" about email, more specifically all recipients.
                  */
                 p
                   style:"color:rgba(0,0,0,.3);font-style:italic;"
                   class:air-top
-                  innerValue:x:/@p5.mysql.connect/*/_meta5?value
+                  innerValue:x:/@p5.mysql.connect/*/_meta6?value
+
+                /*
+                 * Displays additional "meta data" about email, more specifically "In-Reply-To" parts.
+                 */
+                p
+                  style:"color:rgba(0,0,0,.3);"
+                  class:air-top
+                  .id:x:/@p5.mysql.connect/*/p5.mysql.select/[2,3]/*/*/id?value
+                  oninit
+
+                    /*
+                     * Checking if email was a reply to some other message, and if not, hiding widget.
+                     */
+                    get-widget-property:x:/../*/_event?value
+                      .id
+                    p5.mysql.connect:[sephia]
+                      p5.mysql.select:@"select type, inreplyto from emails where id = @id"
+                        @id:x:/@get-widget-property/*/*?value
+                      if:x:/@p5.mysql.select/*?count
+                        =:int:0
+
+                        /*
+                         * Email was not a reply.
+                         * Hiding widget and returning early.
+                         */
+                        set-widget-property:x:/../*/_event?value
+                          visible:false
+                        return
+
+                      /*
+                       * Now checking 'type' of currently read email, and if it is 'sent', 
+                       * we're looking for a 'received' email with the given 'inreplyto' MIME id.
+                       * Otherwise we're looking for a 'sent' email with the given 'inreplyto' MIME id.
+                       * Defaulting to 'sent'.
+                       */
+                      _type:sent
+                      if:x:/@p5.mysql.select/*/*/type?value
+                        =:sent
+                        set:x:/@_type?value
+                          src:received
+
+                      /*
+                       * Now fetching given email from database with the specified MIME id of 'inreplyto'.
+                       *
+                       * Notice, since email in theory could have been sent to multiple recipents in the same 
+                       * MySQL database (sharing the same Sephia installation) - We need to parametrize SQL with username.
+                       */
+                      whoami
+                      p5.mysql.select:@"select id from emails where mimeid = @mimeid and username = @username"
+                        @mimeid:x:/./@p5.mysql.select/*/*/inreplyto?value
+                        @username:x:/@whoami/*/username?value
+
+                      /*
+                       * Verifying we actually have this email, and if not, simply hiding widget.
+                       */
+                      if:x:/@p5.mysql.select/*?count.int
+                        =:int:0
+
+                        /*
+                         * We don't have this email in our database.
+                         * Hiding widget and returning early.
+                         */
+                        set-widget-property:x:/../*/_event?value
+                          visible:false
+                        return
+
+                      /*
+                       * Finding link button, and setting its [.id] property to inreplyto's database ID.
+                       */
+                      p5.web.widgets.find:x:/../*/_event?value
+                        .id-link
+                      set-widget-property:x:/-/*/*?value
+                        .id-link:x:/@p5.mysql.select/*/*/id?value
+
+                  widgets
+                    span
+                      innerValue:"Email was a reply to the "
+                    a
+                      href:#
+                      .id-link
+                      role:button
+                      innerValue:following email
+                      onclick
+
+                        /*
+                         * Retrieving ID of email, and opening up, such that it is opened just beneath currently read email.
+                         */
+                        p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                          .email-id
+                        get-widget-property:x:/../*/_event?value
+                          .id-link
+                        load-file:@SEPHIA/inbox/read-email.hl
+                        eval-x:x:/+/*
+                        eval:x:/-2/*
+                          id:x:/@get-widget-property/*/*?value
+                          after:x:/@p5.web.widgets.find-first-ancestor/*/*?value
 
             /*
              * "Action strip" containing all buttons for actions user can do with email, such as "Reply", "Forward", "Delete", etc.

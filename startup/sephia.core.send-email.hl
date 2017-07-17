@@ -9,6 +9,9 @@
  *
  * You can also pass in [markdown] and set its value to "true", at which point the email will also create an alternate
  * HTML view, created by converting its text content to markdown.
+ *
+ * In addition, you can create any number of additional MIME headers for your email, by putting them as key/value
+ * items inside of a [headers] collection.
  */
 create-event:sephia.core.send-email
 
@@ -263,6 +266,12 @@ and add support for "".{1}"" file extensions if you wish to allow these types of
           content:x:/../*/body?value
 
   /*
+   * Adding any additional MIME headers specified by caller.
+   */
+  add:x:/../*/p5.smtp.send/*/envelope
+    src:x:/../*/headers/*
+
+  /*
    * Forward evaluating entire SMTP invocation.
    */
   eval-x:x:/../*/p5.smtp.send/**
@@ -290,6 +299,12 @@ and add support for "".{1}"" file extensions if you wish to allow these types of
       Bcc
       body
         multipart:mixed
+
+  /*
+   * Making sure we update MessageId accordingly.
+   */
+  set:x:/../*/sephia.core.send-email._save-envelope/*/envelope?value
+    src:x:/@p5.smtp.send/*/envelope?value
 
   /*
    * Saves entire outgoing [envelope] to database.
@@ -406,21 +421,19 @@ create-event:sephia.core.send-email._save-envelope
 
       /*
        * Inserting into "email" table in database.
-       * Using new Guid as "mimeid".
        */
-      p5.types.guid.new
       p5.types.date.now
         local:true
-      p5.mysql.insert:@"insert into emails (subject, date, sender, username, isread, mimeid, signature, fingerprint, encrypted, type) values (@subject, @date, @sender, @username, 1, @mimeid, @signature, @fingerprint, @encrypted, 'sent')"
+      p5.mysql.insert:@"insert into emails (subject, date, sender, username, isread, mimeid, signature, fingerprint, encrypted, type, inreplyto) values (@subject, @date, @sender, @username, 1, @mimeid, @signature, @fingerprint, @encrypted, 'sent', @inreplyto)"
         @subject:x:/../*/envelope/*/Subject?value
         @date:x:/@p5.types.date.now?value
         @sender:x:/@_sender?value
         @username:x:/@whoami/*/username?value
-        @mimeid:unknown-{0}
-          :x:/@p5.types.guid.new?value.string
+        @mimeid:x:/../*/envelope?value
         @encrypted:x:/@_encrypt?value
         @signature:x:/@_signature?value
         @fingerprint:x:/@_fingerprint?value
+        @inreplyto:x:/../*/envelope/*/In-Reply-To?value
 
       /*
        * Inserting into "parts" table in database.
