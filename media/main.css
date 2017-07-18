@@ -201,8 +201,8 @@
     font-size:1.7rem;
 }
 .sephia-email-reader .warning:after {
-    content:'\f071';
+    content:'\f119';
 }
 .sephia-email-reader .success:after {
-    content:'\f023';
+    content:'\f118';
 }

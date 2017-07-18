@@ -37,6 +37,33 @@ p5.mysql.connect:[sephia]
   for-each:x:/@p5.mysql.select/*
 
     /*
+     * Checking if this is a public PGP key.
+     */
+    if:x:/@_dp/#/*/filename?value
+      =:public-key.pgp
+
+      /*
+       * This is a public PGP key attached by another Sephia system.
+       * Asking user if he wants to import the key.
+       *
+       * But first making sure this email is of type "received".
+       */
+      p5.mysql.select:@"select type, sender from emails where id = @id"
+        @id:x:/../*/id?value
+      if:x:/@p5.mysql.select/*/*/type?value
+        =:received
+
+        /*
+         * This is a "received" email.
+         */
+        eval-x:x:/+/*/contact
+        sephia.windows._import-key-file:{0}{1}{2}
+          :x:/@_dp/#/*/folder?value
+          :x:/@_dp/#/*/prefix?value
+          :x:/@_dp/#/*/filename?value
+          contact:x:/@p5.mysql.select/*/*/sender?value
+
+    /*
      * Checking if this is a legal attachment.
      */
     eval-x:x:/+/*
@@ -178,7 +205,7 @@ where recipients.emailid = @id"
   /*
    * Retrieving actual email.
    */
-  p5.mysql.select:@"select emails.id, subject, date, signature, fingerprint, encrypted, type, mimeid, name, email from emails 
+  p5.mysql.select:@"select emails.id, subject, date, signature, emails.fingerprint, encrypted, type, mimeid, name, email from emails 
 inner join contacts on emails.sender = contacts.id 
 where emails.id = @id"
     @id:x:/../*/id?value

@@ -17,6 +17,8 @@ CREATE TABLE IF NOT EXISTS `contacts` (
   `name` varchar(1024) COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(1024) COLLATE utf8mb4_unicode_ci NOT NULL,
   `username` varchar(45) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `fingerprint` VARCHAR(256) NULL,
+  `isverified` int unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -195,7 +195,7 @@ and add support for "".{1}"" file extensions if you wish to allow these types of
   set:x:/../*/p5.smtp.send/*/*(/Cc|/Bcc)(!/*/.)
 
   /*
-   * Adding cryptography keys for all recipients
+   * Adding cryptography keys for all recipients,
    * if we can find public PGP keys for all recipients.
    */
   p5.crypto.list-public-keys:x:/../*/p5.smtp.send/*/*(/To|/Cc|/Bcc)/*?value
@@ -215,20 +215,45 @@ and add support for "".{1}"" file extensions if you wish to allow these types of
 
   /*
    * Then checking if email should be signed.
+   *
+   * Notice, if email is to be signed, we automatically attach the public PGP key
+   * for the user as an attachment.
    */
   if:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-key?value
     and:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-key?value
       !=:
 
     /*
-     * Email should be signed.
+     * Email should (possibly) be signed.
+     * Before we know for sure, we must check up if the private PGP key exists in GnuPG database.
      */
-    eval-x:x:/+/*/*/**
-    add:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart
-      src
-        sign
-          fingerprint:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-key?value
-            password:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-password?value
+    p5.crypto.list-private-keys:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-key?value
+    if:x:/-/*
+
+      /*
+       * Private key exists in GnuPG database.
+       */
+      eval-x:x:/+/*/*/**
+      add:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart
+        src
+          sign
+            fingerprint:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-key?value
+              password:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-password?value
+
+      /*
+       * Automatically attaching public PGP key as an attachment to email.
+       *
+       * Notice, we simply include it as an inline attachment, and we don't bother
+       * to store the fact that we attached it into our database.
+       */
+      p5.crypto.get-public-key:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-key?value
+      eval-x:x:/+/*/*/*/content
+      add:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart
+        src
+          application:pgp-key
+            Content-Disposition:attachment; filename=public-key.pgp
+            Content-Transfer-Encoding:7bit
+            content:x:/@p5.crypto.get-public-key/*?value
 
   /*
    * Checking if caller specified he wanted to have Markdown created.

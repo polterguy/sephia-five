@@ -30,7 +30,7 @@ p5.mysql.connect:[sephia]
    * Notice, we do not order by date, since dates might sometimes be local, and/or slightly offsets - Hence,
    * we order our emails by "id" descendingly, which should always bring in the most recent email at the top.
    */
-  p5.mysql.select:@"select emails.id, subject, date, encrypted, signature, fingerprint, isread, type, contacts.email, contacts.name from emails inner join contacts on contacts.id = emails.sender 
+  p5.mysql.select:@"select emails.id, subject, date, encrypted, signature, emails.fingerprint, isread, type, contacts.email, contacts.name from emails inner join contacts on contacts.id = emails.sender 
 where emails.username = @username and (subject like @filter or contacts.name like @filter or contacts.email like @filter 
 or exists (select * from parts where content like @filter and parts.emailid = emails.id))
 order by id desc limit 15 offset @offset"
