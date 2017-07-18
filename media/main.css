@@ -185,6 +185,24 @@
     color:#fdfdfd;
 }
 
-.warning, .success {
-    background:inherit;
+.sephia-email-reader {
+    position:relative;
+}
+
+.sephia-email-reader .warning, .sephia-email-reader .success {
+    background: inherit;
+}
+.sephia-email-reader .warning:after, .sephia-email-reader .success:after {
+    font-family:'icomoon' !important;
+    position:absolute;
+    top:5px;
+    right:9px;
+    color:#ddd;
+    font-size:1.7rem;
+}
+.sephia-email-reader .warning:after {
+    content:'\f071';
+}
+.sephia-email-reader .success:after {
+    content:'\f023';
 }

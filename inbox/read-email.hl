@@ -356,7 +356,7 @@ create-widget
   .email-id:x:/../*/id?value
   widgets
     div
-      class:col-100
+      class:col-100 sephia-email-reader
       widgets
         div
           class:air-inner {0} shaded rounded
