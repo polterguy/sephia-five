@@ -575,7 +575,7 @@ create-event:sephia.widgets._settings
                     widgets
                       button
                         style:"margin-bottom:0;"
-                        innerValue:Create new PGP key ...
+                        innerValue:Create new PGP key pair ...
                         onclick
 
                           /*
@@ -757,7 +757,7 @@ create-event:sephia.widgets._settings
                                            */
                                           button
                                             innerValue:Close
-                                            title:Close window
+                                            title:Close window without creating a PGP keypair
                                             onclick
 
                                               /*
@@ -782,6 +782,7 @@ create-event:sephia.widgets._settings
                  */
                 button
                   innerValue:Save
+                  title:Saves your settings and closes this form
                   onclick
 
                     /*
@@ -862,6 +863,7 @@ create-event:sephia.widgets._settings
                  */
                 button
                   innerValue:Close
+                  title:Close settings without saving your changes
                   onclick
 
                     /*
