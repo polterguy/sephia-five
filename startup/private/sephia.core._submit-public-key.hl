@@ -18,11 +18,18 @@ create-event:sephia.core._submit-public-key
   load-file:@SEPHIA/config/key-server.hl
 
   /*
-   * HTTP POST'ing public key to key server.
+   * HTTP POST/PUT'ing public key to key server, making sure we use the
+   * right HTTP verb, and that we are adding the "keytext" correctly as 
+   * an argument to our HTTP REST invocation.
    */
-  p5.http.post:x:/@load-file/*/* ?value
-    Content-Type:application/x-www-form-urlencoded
-    content:"keytext={0}"
+  add:x:/../*/p5.http.xxx
+    src:x:/@load-file/*/*/upload-key-url/*(!/http-verb!/key-arg-name)
+  set:x:/../*/p5.http.xxx?name
+    src:p5.http.{0}
+      :x:/@load-file/*/*/upload-key-url/*/http-verb?value
+  p5.http.xxx:x:/@load-file/*/*/upload-key-url?value
+    content:"{0}={1}"
+      :x:/@load-file/*/*/upload-key-url/*/key-arg-name?value
       :x:/@p5.html.url-encode?value
 
   /*

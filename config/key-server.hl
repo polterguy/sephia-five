@@ -1,5 +1,14 @@
 
 /*
  * Configuration file for which PGP key server to use.
+ *
+ * The value of node is the URL to use to publish your key.
+ * The [http-verb] is the HTTP verb to use when adding your key, which probably is either "post" or "put".
+ * The [key-arg-name] is which argument name to use for your key when creating your HTTP post/put request.
+ *
+ * All other arguments are added to the HTTP request invocation as HTTP headers, as they are.
  */
-key-server:"http://keyserver.ubuntu.com/pks/add"
+upload-key-url:"http://keyserver.ubuntu.com/pks/add"
+  http-verb:post
+  key-arg-name:keytext
+  Content-Type:application/x-www-form-urlencoded
