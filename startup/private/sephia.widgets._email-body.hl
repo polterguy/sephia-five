@@ -135,7 +135,7 @@ create-event:sephia.widgets._email-body
     p5.io.unroll-path:@SEPHIA/
     p5.io.unroll-path:@MICRO/
     eval-x:x:/+/*/*/*
-    insert-before:x:/@html2lambda/0
+    insert-before:x:/@html2lambda(/**/head/0(!/~@)|/0)/[0,1]
       src
         link
           @rel:stylesheet

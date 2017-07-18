@@ -11,6 +11,59 @@ pre {
 }
 
 blockquote {
-    font-size:1rem;
-    margin-left:1rem;
+    font-size: 1rem;
+    margin-left: 1rem;
+}
+.sephia-five-email blockquote {
+    padding:1rem;
+    border-radius:var(--border-radius);
+    box-shadow:2px 2px 3px rgba(0,0,0,.2);
+    margin-right:3px;
+    position:relative;
+}
+
+/*
+ * Then every even-odd inwards branch gets different colors to give visual clues about who said what.
+ */
+.sephia-five-email>blockquote,
+.sephia-five-email>blockquote>blockquote>blockquote,
+.sephia-five-email>blockquote>blockquote>blockquote>blockquote>blockquote,
+.sephia-five-email>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote {
+    /* You said */
+    background-color: #fcfcfc;
+}
+.sephia-five-email>blockquote:after,
+.sephia-five-email>blockquote>blockquote>blockquote:after,
+.sephia-five-email>blockquote>blockquote>blockquote>blockquote>blockquote:after,
+.sephia-five-email>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote:after {
+    /* You said */
+    content:'You said';
+    position:absolute;
+    bottom:5px;
+    right:5px;
+    color:#ccc;
+    font-size:.8rem;
+    font-style:italic;
+}
+
+
+.sephia-five-email>blockquote>blockquote,
+.sephia-five-email>blockquote>blockquote>blockquote>blockquote,
+.sephia-five-email>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote,
+.sephia-five-email>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote {
+    /* The other party said */
+    background-color: #ffffff;
+}
+.sephia-five-email>blockquote>blockquote:after,
+.sephia-five-email>blockquote>blockquote>blockquote>blockquote:after,
+.sephia-five-email>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote:after,
+.sephia-five-email>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote:after {
+    /* The other party said */
+    content:'The other party said';
+    position:absolute;
+    bottom:5px;
+    right:5px;
+    color:#ccc;
+    font-size:.8rem;
+    font-style:italic;
 }

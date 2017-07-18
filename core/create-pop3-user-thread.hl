@@ -210,8 +210,19 @@ fork
                     =:int:0
 
                     /*
-                     * Doesn't exist, inserting new entry.
+                     * Doesn't exist, inserting new entry, making sure we add a "default name" unless one was explicitly given.
                      */
+                    if:x:/@_dp/#/*/From/0?name
+                      =:
+
+                      /*
+                       * Name was empty, defaulting name to left parts of email.
+                       */
+                      split:x:/@_dp/#/*/From/0?value
+                        =:@
+                      set:x:/@_dp/#/*/From/0?name
+                        src:x:/@split/0?name
+
                     p5.mysql.insert:@"insert into contacts (name, email, username) value (@name, @email, @username)"
                       @name:x:/@_dp/#/*/From/0?name
                       @email:x:/@_dp/#/*/From/0?value
@@ -225,7 +236,7 @@ fork
                       !=:
 
                     /*
-                     * Exists, but name has been changed.
+                     * Exists, but name has been changed, and name given is not empty ("").
                      */
                     p5.mysql.update:@"update contacts set name = @name where id = @id"
                       @id:x:/@p5.mysql.select/0/*/id?value

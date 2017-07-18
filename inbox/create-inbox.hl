@@ -245,6 +245,23 @@ create-widget:sephia-search-wrapper
                           widgets
                             sephia.widgets._settings
 
+
+            /*
+             * Button to log out of Sephia.
+             */
+            button
+              innerValue:@"<span class=""icon-key""></span>"
+              title:Log out of Sephia
+              onclick
+
+                /*
+                 * Signing out of Sephia, making sure we clean up before we do.
+                 */
+                list-files:@SEPHIA-USER-ATTACHMENTS/tmp/
+                delete-files:x:/-/*?name
+                logout
+                p5.web.reload-location
+
             /*
              * Button to compose a new email.
              */

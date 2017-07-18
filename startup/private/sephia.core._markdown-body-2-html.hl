@@ -28,9 +28,11 @@ create-event:sephia.core._markdown-body-2-html
     =:int:1
 
     /*
-     * User didn't have any signature, returning raw markdown with hyperlink conversion.
+     * User didn't have any signature, returning raw markdown with hyperlink conversion,
+     * making sure we "braid it" into our "wrapper HTML" template.
      */
-    return:x:/@sephia.core._create-hyperlinks?value
+    sephia.core._markdown-body-2-html._wrap:x:/@sephia.core._create-hyperlinks?value
+    return:x:/-?value
 
   /*
    * Converting URLs in signature to real hyperlinks.
@@ -38,8 +40,35 @@ create-event:sephia.core._markdown-body-2-html
   sephia.core._create-hyperlinks:x:/@split/0/-?name
 
   /*
-   * User had a signature - Returning both Markdown and signature as pre-formatted.
+   * User had a signature.
+   *
+   * Returning both Markdown and signature as pre-formatted,
+   * making sure we "braid" everything inside our "wrapper HTML" template.
    */
-  return:"{0}\r\n<pre style=\"opacity:.3;\">-- \r\n{1}</pre>"
+  sephia.core._markdown-body-2-html._wrap:"{0}\r\n<pre style=\"opacity:.3;\">-- \r\n{1}</pre>"
     :x:/../*/sephia.core._create-hyperlinks/[0,1]?value
-    :x:/@sephia.core._create-hyperlinks?value
+    :x:/../*/sephia.core._create-hyperlinks/[1,2]?value
+  return:x:/-?value
+
+
+
+
+
+/*
+ * Will wrap the email content given as [_arg] inside of its "standard HTML template".
+ */
+create-event:sephia.core._markdown-body-2-html._wrap
+
+  return:@"<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset=""utf-8"">
+    <title>Sephia Five email</title>
+  </head>
+  <body>
+    <div class=""sephia-five-email"">
+      {0}
+    </div>
+  </body>
+</html>"
+    :x:/../*/_arg?value

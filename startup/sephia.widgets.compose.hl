@@ -288,7 +288,7 @@ p5.sephia_send_email = function(e) {
                       micro.form.serialize:x:/-/*/*?value
 
                       /*
-                       * Making sure we HTML decode the body.
+                       * Making sure we HTML decode the body, and add our custom HTML wrappers surrounding email.
                        */
                       set:x:/@micro.form.serialize/*/body?value
                         p5.html.html-decode:x:/@micro.form.serialize/*/body?value
