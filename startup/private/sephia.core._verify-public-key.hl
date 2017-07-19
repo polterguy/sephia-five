@@ -1,0 +1,46 @@
+
+/*
+ * Verifies that the given [fingerprint] public PGP key indeed belongs to the given [contact] database ID.
+ *
+ * Arguments
+ *
+ * - [fingerprint] PGP key's fingerprint that you wish to verify
+ * - [contact] ID for contact from database
+ *
+ * Will update the "contacts" database, and set the "isverified" property for the given contact to 1,
+ * in addition to signing the public key with the user's private key, and upload the signed key to a key server,
+ * according to the configuration settings of Sephia.
+ */
+create-event:sephia.core._verify-public-key
+
+  /*
+   * Signing contact's public key, with user's private key.
+   */
+  p5.auth.my-settings.get
+  p5.crypto.sign-public-key:x:/../*/fingerprint?value
+    private-key:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-key?value
+    password:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-password?value
+
+  /*
+   * Submitting public key to key server, now signed.
+   */
+  sephia.core._submit-public-key:x:/../*/fingerprint?value
+
+  /*
+   * Then updating "contacts" table, but only if submitting
+   * key to key server was a success.
+   */
+  if:x:/@sephia.core._submit-public-key?value
+
+    /*
+     * Submitting key to key server was a success.
+     */
+    p5.mysql.connect:[sephia]
+      p5.mysql.update:@"update contacts set isverified = 1 where id = @id"
+        @id:x:/../*/contact?value
+
+  /*
+   * The above invocation returns true if successful, making sure we return
+   * that return value to caller.
+   */
+  return:x:/@sephia.core._submit-public-key?value

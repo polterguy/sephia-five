@@ -434,6 +434,12 @@ create-event:sephia.widgets._settings
                   for-each:x:/-/*
 
                     /*
+                     * To have a uniform way of displaying keys, we make sure they're always displayed as UPPERS.
+                     */
+                    set:x:/@_dp/#?name
+                      to-upper:x:/@_dp/#?name
+
+                    /*
                      * Adding item, and formatting both the creation and expires date nicely for
                      * displaying in our grid.
                      */
@@ -723,7 +729,17 @@ create-event:sephia.widgets._settings
                                                  * Submitting public key to Ubuntu's key server, but only if user told us to do so.
                                                  */
                                                 if:x:/@.settings/*/submit?value
+
+                                                  /*
+                                                   * This even returns false if it was unsuccessful in submitting the key.
+                                                   */
                                                   sephia.core._submit-public-key:x:/@p5.crypto.create-pgp-keypair/*/fingerprint?value
+                                                  if:x:/-?value
+                                                    not
+
+                                                    /*
+                                                     * TODO: Implement some sort of cross threading general error support signal.
+                                                     */
 
                                               /*
                                                * Deleting modal widget.
@@ -828,8 +844,9 @@ create-event:sephia.widgets._settings
                      * Updating contacts table with email matching current user, making sure its name becomes correct.
                      */
                     p5.mysql.connect:[sephia]
-                      p5.mysql.update:@"update contacts set name = @name where email = @email and username = @username"
+                      p5.mysql.update:@"update contacts set name = @name, fingerprint = @fingerprint, isverified = 1 where email = @email and username = @username"
                         @name:x:/@micro.form.serialize/*/name?value
+                        @fingerprint:x:/@micro.form.serialize/*/pgp-key?value
                         @email:x:/@micro.form.serialize/*/email?value
                         @username:x:/@whoami/*/username?value
 

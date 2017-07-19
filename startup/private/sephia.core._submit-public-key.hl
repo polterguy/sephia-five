@@ -36,16 +36,16 @@ create-event:sephia.core._submit-public-key
    * Checking status.
    */
   if:x:/@p5.http.post/*/result/*/status?value
-    !=:OK
+    =:OK
 
     /*
-     * Oops, error!
-     * TODO: Do something intelligent here, such as log the fact that it didn't work, or something.
+     * Success!
      */
+    return:bool:true
 
   else
 
     /*
-     * Success!
-     * TODO: Do something intelligent here too ...
+     * Error!
      */
+    return:bool:false

@@ -82,16 +82,23 @@ create-event:sephia.core.send-email
    * Looping through each "To", "Cc" and "Bcc" field in SMTP invocation,
    * and making sure we add the name from database as recipient, in addition to
    * moving the email address into the value of node.
+   *
+   * In addition, we store all fingerprints in our [_crypto-keys] below, 
+   * such that we can use it as the basis for encrypting the email later.
    */
+  _crypto-keys
   p5.mysql.connect:[sephia]
     for-each:x:/../*/p5.smtp.send/*/*(/To|/Cc|/Bcc)/*
-      p5.mysql.select:@"select name from contacts where username = @username and email = @email limit 1"
+      p5.mysql.select:@"select name, fingerprint from contacts where username = @username and email = @email limit 1"
         @username:x:/@whoami/*/username?value
         @email:x:/@_dp/#?name
       set:x:/@_dp/#?value
         src:x:/@_dp/#?name
       set:x:/@_dp/#?name
         src:x:/@p5.mysql.select/*/*/name?value
+      if:x:/@p5.mysql.select/*/*/fingerprint?value
+        add:x:/@_crypto-keys
+          src:x:/@p5.mysql.select/*/*/fingerprint?value
 
   /*
    * Then "Sender".
@@ -196,9 +203,9 @@ and add support for "".{1}"" file extensions if you wish to allow these types of
 
   /*
    * Adding cryptography keys for all recipients,
-   * if we can find public PGP keys for all recipients.
+   * if we found public PGP keys for all recipients.
    */
-  p5.crypto.list-public-keys:x:/../*/p5.smtp.send/*/*(/To|/Cc|/Bcc)/*?value
+  p5.crypto.list-public-keys:x:/@_crypto-keys/*?name
   if:x:/@p5.crypto.list-public-keys/*?count
     =:x:/../*/p5.smtp.send/*/*(/To|/Cc|/Bcc)/*?count
 
@@ -207,11 +214,11 @@ and add support for "".{1}"" file extensions if you wish to allow these types of
      */
     add:x:/../*/p5.smtp.send/*/*/*/multipart
       src:encrypt
-    for-each:x:/../*/p5.smtp.send/*/*(/To|/Cc|/Bcc)/*
+    for-each:x:/@_crypto-keys/*?name
       eval-x:x:/+/*/*
       add:x:/../*/p5.smtp.send/*/*/*/multipart/*/encrypt
         src
-          email:x:/@_dp/#?value
+          fingerprint:x:/@_dp?value
 
   /*
    * Then checking if email should be signed.
@@ -239,21 +246,6 @@ and add support for "".{1}"" file extensions if you wish to allow these types of
           sign
             fingerprint:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-key?value
               password:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-password?value
-
-      /*
-       * Automatically attaching public PGP key as an attachment to email.
-       *
-       * Notice, we simply include it as an inline attachment, and we don't bother
-       * to store the fact that we attached it into our database.
-       */
-      p5.crypto.get-public-key:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-key?value
-      eval-x:x:/+/*/*/*/content
-      add:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart
-        src
-          application:pgp-key
-            Content-Disposition:attachment; filename=public-key.pgp
-            Content-Transfer-Encoding:7bit
-            content:x:/@p5.crypto.get-public-key/*?value
 
   /*
    * Checking if caller specified he wanted to have Markdown created.
