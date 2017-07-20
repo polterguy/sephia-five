@@ -164,6 +164,104 @@ create-event:sephia.contacts._find
   create-widgets
     micro.widgets.modal:sephia-select-contact-modal
       class:micro-modal micro-modal-smaller sephia-compose-search-contacts
+      events
+
+        /*
+         * Active Event that displays a modal widget with all given fingerprints, allowing user to import
+         * public keys from key server, with given fingerprints.
+         *
+         * Expects [contact-id] in addition to a bunch of fingerprints, in addition to optionally [.done] lambda,
+         * which will be invoked when import operation is finished.
+         */
+        sephia.core._recipients._import-keys
+
+          /*
+           * Used to separate arguments between the rest of the lambda object.
+           */
+          .signal
+
+          /*
+           * Creating (another) modal widget that displays the search results, and allows user
+           * to import a key from key server.
+           */
+          add:x:/../*/.apply/**/.done
+            src:x:/../*/.done/*
+          eval-x:x:/+/**/_contact-id
+          .apply
+            eval-x:x:/+/*/*
+            return
+              item
+                .row
+                  onclick
+
+                    /*
+                     * Importing PGP key, and associating it with contact.
+                     */
+                    _contact-id:x:/../*/contact-id?value
+                    p5.web.widgets.get-children:x:/../*/_event?value
+                    get-widget-property:x:/-/*/1?value
+                      innerValue
+                    sephia.core._download-key:x:/@get-widget-property/*/*?value
+                    p5.crypto.import-public-pgp-key:x:/@sephia.core._download-key?value
+                    if:x:/@p5.crypto.import-public-pgp-key/*
+
+                      /*
+                       * Success!
+                       */
+                      delete-widget:sephia-import-pgp-key-from-server
+                      p5.web.widgets.find-first-like:sephia-select-contact-modal
+                        class:micro-modal-content
+                      eval-x:x:/+/*
+                      micro.windows.info:Key was successfully imported from key server
+                        parent:x:/@p5.web.widgets.find-first-like/*/*?value
+                        class:micro-windows-info success
+
+                      /*
+                       * Updating database.
+                       */
+                      p5.mysql.connect:[sephia]
+                        p5.mysql.update:@"update contacts set fingerprint = @fingerprint where id = @id"
+                          @fingerprint:x:/@p5.crypto.import-public-pgp-key/*?name
+                          @id:x:/../*/_contact-id?value
+                      .done
+                      eval:x:/-
+
+                Fingerprint:x:/@_dn/#?name
+                ID:x:/@_dn/#?value
+                Created:x:/@_dn/#/*/Created?value
+
+          apply:x:/../*/create-widgets/**/micro.widgets.grid/*/rows
+            src:x:/@.signal/--/<-(!/_event!/contact-id!/.done)
+            template
+              {@eval}:x:/@.apply
+          create-widgets
+            micro.widgets.modal:sephia-import-pgp-key-from-server
+              class:micro-modal micro-modal-smaller
+              widgets
+                h3
+                  innerValue:We found the following key(s)
+                micro.widgets.grid
+                  class:hover
+                  columns
+                    Fingerprint
+                    ID
+                    Created
+                  rows
+                div
+                  class:right air-top
+                  widgets
+                    button
+                      innerValue:Close
+                      title:Close without importing any keys
+                      oninit
+                        micro.page.set-focus:x:/../*/_event?value
+                      onclick
+
+                        /*
+                         * Deleting modal widget.
+                         */
+                        delete-widget:sephia-import-pgp-key-from-server
+
       widgets
 
         /*
@@ -339,21 +437,24 @@ create-event:sephia.contacts._find
                     add:x:/@_dp/#
                       src
                         status:@"<span class=""icon-smile-o""></span>"
+                          style:"font-size:1.3rem;"
+                          title:You have a verified PGP key for this person
 
                   else
 
                     /*
                      * We have a fingerprint, but the key has not been verified.
                      */
-                    eval-x:x:/+/**/title|/+/**/onclick/*(/_id|/_fingerprint|/sephia.contacts.find._databind/*)
+                    eval-x:x:/+/**/title|/+/**/onclick/**(/_id|/_fingerprint|/sephia.contacts.find._databind/*)
                     add:x:/@_dp/#
                       src
                         status
                           widgets
                             a
                               href:#
+                              style:"font-size:1.3rem;"
                               role:button
-                              title:I have verified that the key '{0}' belongs to {1} &lt;{2}&gt;
+                              title:Verify that the key '{0}' actually belongs to {1} &lt;{2}&gt;
                                 :x:/@_dp/#/*/fingerprint?value
                                 :x:/@_dp/#/*/name?value
                                 :x:/@_dp/#/*/email?value
@@ -367,56 +468,95 @@ create-event:sephia.contacts._find
                                 _fingerprint:x:/@_dp/#/*/fingerprint?value
 
                                 /*
-                                 * Will cryptographically sign the public key with user's private key,
-                                 * to verify that it belongs to the specified contact, and upload the verification to 
-                                 * the default PGP key server.
-                                 *
-                                 * In addition, it will mark the fingerprint for contact in "contacts" database as "isverified".
+                                 * Selecting contact name/email from database.
                                  */
-                                eval-x:x:/+/*
-                                sephia.core._verify-public-key
-                                  contact:x:/@_id?value
-                                  fingerprint:x:/@_fingerprint?value
+                                p5.mysql.connect:[sephia]
+                                  p5.mysql.select:@"select name, email from contacts where id = @id"
+                                    @id:x:/@_id?value
 
                                 /*
-                                 * Verifying submitting signed public key to key server was a success.
-                                 */
-                                if:x:/@sephia.core._verify-public-key?value
-                                  not
-
-                                  /*
-                                   * Submitting signed key to key server was not a success.
-                                   */
-                                  micro.windows.info:Signed key could not be submitted to key server.
-                                  return
-
-                                /*
-                                 * Needed further down as parent to "bubble info window".
+                                 * Notice, we ask the user to confirm that he is certain about that they key with
+                                 * the specified fingerprint actually belongs to the person with the email address,
+                                 * before we allow him to sign the key, and upload the signed key to any key servers.
                                  */
                                 p5.web.widgets.find-first-ancestor-like:x:/../*/_event?value
                                   class:micro-modal-content
-
-                                /*
-                                 * The arguments are forward evaluated above to the same values they were when the grid
-                                 * was originally databound.
-                                 */
-                                sephia.contacts.find._databind
-                                  filter:x:/../*/filter?value
-                                  offset:x:(/../*/offset|/../*/.defaults/*/offset)/$?value
-
-                                /*
-                                 * Supplying feedback to user.
-                                 */
                                 eval-x:x:/+/*
-                                micro.windows.info:The key was successfully verified
+                                micro.windows.info:Confirm that '{0}' belongs to '{1} &lt;{2}&gt;'?
+                                  :x:/@_fingerprint?value
+                                  :x:/@p5.mysql.connect/*/*/*/name?value
+                                  :x:/@p5.mysql.connect/*/*/*/email?value
+                                  class:micro-windows-info-sticky sephia-small-text warning
                                   parent:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
+                                  widgets
+
+                                    button
+                                      innerValue:No
+                                      onclick
+                                        delete-widget:micro-windows-info
+
+                                    button
+                                      innerValue:Yes!
+                                      onclick
+
+                                        /*
+                                         * Forward evaluated above.
+                                         */
+                                        _id:x:/@_dp/#/*/id?value
+                                        _fingerprint:x:/@_dp/#/*/fingerprint?value
+
+                                        /*
+                                         * Will cryptographically sign the public key with user's private key,
+                                         * to verify that it belongs to the specified contact, and upload the verification to 
+                                         * the default PGP key server.
+                                         *
+                                         * In addition, it will mark the fingerprint for contact in "contacts" database as "isverified".
+                                         */
+                                        eval-x:x:/+/*
+                                        sephia.core._verify-public-key
+                                          contact:x:/@_id?value
+                                          fingerprint:x:/@_fingerprint?value
+
+                                        /*
+                                         * Verifying submitting signed public key to key server was a success.
+                                         */
+                                        if:x:/@sephia.core._verify-public-key?value
+                                          not
+
+                                          /*
+                                           * Submitting signed key to key server was not a success.
+                                           */
+                                          micro.windows.info:Signed key could not be submitted to key server.
+                                          return
+
+                                        /*
+                                         * Needed further down as parent to "bubble info window".
+                                         */
+                                        p5.web.widgets.find-first-ancestor-like:x:/../*/_event?value
+                                          class:micro-modal-content
+
+                                        /*
+                                         * The arguments are forward evaluated above to the same values they were when the grid
+                                         * was originally databound.
+                                         */
+                                        sephia.contacts.find._databind
+                                          filter:x:/../*/filter?value
+                                          offset:x:(/../*/offset|/../*/.defaults/*/offset)/$?value
+
+                                        /*
+                                         * Supplying feedback to user.
+                                         */
+                                        eval-x:x:/+/*
+                                        micro.windows.info:The key was successfully verified
+                                          class:micro-windows-info success
+                                          parent:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
 
                 else
 
                   /*
                    * We do not have a key for user.
                    */
-                  eval-x:x:/+/**/title|/+/**/onclick/*(/_id|/_fingerprint|/sephia.contacts.find._databind/*)
+                  eval-x:x:/+/**/title|/+/**/onclick/**(/_id|/_fingerprint|/sephia.contacts.find._databind/*)
                   add:x:/@_dp/#
                     src
                       status
@@ -424,7 +564,8 @@ create-event:sephia.contacts._find
                           a
                             href:#
                             role:button
-                            title:Search for key on key server for user with email '{0}'
+                            style:"font-size:1.3rem;"
+                            title:Search for key on key server using email '{0}' as query
                               :x:/@_dp/#/*/email?value
                             innerValue:@"<span class=""icon-frown-o""></span>"
                             onclick
@@ -433,7 +574,6 @@ create-event:sephia.contacts._find
                                * Forward evaluated above.
                                */
                               _id:x:/@_dp/#/*/id?value
-                              _fingerprint:x:/@_dp/#/*/fingerprint?value
 
                               /*
                                * Needed further down as parent to "bubble info window".
@@ -443,7 +583,40 @@ create-event:sephia.contacts._find
 
                               /*
                                * Searching for a PGP key on the key server matching the email address of the contact.
+                               * First finding contact's email address.
                                */
+                              p5.mysql.connect:[sephia]
+                                p5.mysql.select:@"select email from contacts where id = @id"
+                                  @id:x:/@_id?value
+                              sephia.core._search-key-server:x:/@p5.mysql.connect/*/p5.mysql.select/*/*/email?value
+
+                              /*
+                               * Checking if key server returned anything.
+                               */
+                              if:x:/@sephia.core._search-key-server/*
+
+                                /*
+                                 * We have results, displaying the results to user and allowing him to choose a key.
+                                 */
+                                add:x:/+2
+                                  src:x:/@sephia.core._search-key-server/*
+                                eval-x:x:/+/*
+                                sephia.core._recipients._import-keys
+                                  contact-id:x:/../*/_id?value
+                                  .done
+                                    sephia.contacts.find._databind
+                                      filter:x:/../*/filter?value
+                                      offset:x:(/../*/offset|/../*/.defaults/*/offset)/$?value
+
+                              else
+
+                                /*
+                                 * No results.
+                                 */
+                                eval-x:x:/+/*
+                                micro.windows.info:No keys found on key server
+                                  class:micro-windows-info warning
+                                  parent:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
 
                               /*
                                * The arguments are forward evaluated above to the same values they were when the grid
@@ -452,13 +625,6 @@ create-event:sephia.contacts._find
                               sephia.contacts.find._databind
                                 filter:x:/../*/filter?value
                                 offset:x:(/../*/offset|/../*/.defaults/*/offset)/$?value
-
-                              /*
-                               * Supplying feedback to user.
-                               */
-                              eval-x:x:/+/*
-                              micro.windows.info:A key was found on key server
-                                parent:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
 
               /*
                * Adding row to grid databind invocation.
@@ -590,13 +756,34 @@ create-event:sephia.contacts._changed
     =:" "
 
   /*
+   * Making sure we don't get an SQL injection attack!
+   */
+  for-each:x:/@split/*
+    split:x:/@_dp/#?name
+      =:"\r\n"
+      =:"'"
+      =:"\""
+    if:x:/@split/*?count
+      >:int:1
+
+      // Bad data supplied by user!
+      micro.windows.info:Oops, bad data!
+        class:micro-windows-info warning
+      return
+
+  /*
    * Checking if all recipients have a public PGP key.
    */
-  p5.crypto.list-public-keys:x:/@split/*?name
-  if:x:/-/*?count
-    =:x:/@split/*/$?count
-    or:x:/@split/*/$?count
-      =:int:0
+  join:x:/@split/*?name
+    wrap:"'"
+    sep:,
+  whoami
+  p5.mysql.connect:[sephia]
+    p5.mysql.scalar:@"select count(*) from contacts where email in ({0}) and fingerprint is null and username = @username"
+      :x:/@join?value
+      @username:x:/@whoami/*/username?value
+  if:x:/@p5.mysql.connect/*?value.int
+    =:int:0
 
     /*
      * We have public PGP keys for all recipients, or there are no

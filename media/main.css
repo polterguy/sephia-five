@@ -30,6 +30,10 @@
     margin-left:2px;
 }
 
+.sephia-small-text {
+    font-size:.8rem;
+}
+
 /*
  * An unread email in inbox grid.
  */

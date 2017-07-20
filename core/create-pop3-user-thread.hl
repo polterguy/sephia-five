@@ -191,68 +191,6 @@ fork
                     continue
 
                   /*
-                   * Making sure we store the "from" database ID.
-                   */
-                  _from
-
-                  /*
-                   * Stuffing emails into "contact" table, but only the [From] header initially.
-                   * Rest of email addresses are handled further down.
-                   */
-                  p5.mysql.select:@"select name, id from contacts where email = @email and username = @username"
-                    @email:x:/@_dp/#/*/From/*?value
-                    @username:x:/@.whoami/*/username?value
-
-                  /*
-                   * Checking if entry exists.
-                   */
-                  if:x:/@p5.mysql.select/*?count
-                    =:int:0
-
-                    /*
-                     * Doesn't exist, inserting new entry, making sure we add a "default name" unless one was explicitly given.
-                     */
-                    if:x:/@_dp/#/*/From/0?name
-                      =:
-
-                      /*
-                       * Name was empty, defaulting name to left parts of email.
-                       */
-                      split:x:/@_dp/#/*/From/0?value
-                        =:@
-                      set:x:/@_dp/#/*/From/0?name
-                        src:x:/@split/0?name
-
-                    p5.mysql.insert:@"insert into contacts (name, email, username) value (@name, @email, @username)"
-                      @name:x:/@_dp/#/*/From/0?name
-                      @email:x:/@_dp/#/*/From/0?value
-                      @username:x:/@.whoami/*/username?value
-                    set:x:/@_from?value
-                      src:x:/@p5.mysql.insert/*/id?value
-
-                  else-if:x:/@p5.mysql.select/0/*/name?name
-                    !=:x:/@_dp/#/*/From/*?name
-                    and:x:/@_dp/#/*/From/*?name
-                      !=:
-
-                    /*
-                     * Exists, but name has been changed, and name given is not empty ("").
-                     */
-                    p5.mysql.update:@"update contacts set name = @name where id = @id"
-                      @id:x:/@p5.mysql.select/0/*/id?value
-                      @name:x:/@_dp/#/*/From/*?name
-                    set:x:/@_from?value
-                      src:x:/@p5.mysql.select/0/*/id?value
-
-                  else
-
-                    /*
-                     * Exists, and there are no changes.
-                     */
-                    set:x:/@_from?value
-                      src:x:/@p5.mysql.select/0/*/id?value
-
-                  /*
                    * Checking if email was signed/encrypted, and if so, 
                    * making sure we pass in email of first signature to "email" table insertion.
                    */
@@ -277,6 +215,66 @@ fork
                      */
                     set:x:/@_encrypted?value
                       src:int:1
+
+                  /*
+                   * Making sure we store the "from" database ID.
+                   */
+                  _from
+
+                  /*
+                   * Stuffing email's [From] (sender) into "contacts" table.
+                   */
+                  p5.mysql.select:@"select name, id from contacts where email = @email and username = @username"
+                    @email:x:/@_dp/#/*/From/*?value
+                    @username:x:/@.whoami/*/username?value
+
+                  /*
+                   * Checking if entry exists.
+                   */
+                  if:x:/@p5.mysql.select/*?count
+                    =:int:0
+
+                    /*
+                     * Doesn't exist, inserting new entry.
+                     * Passing in [fingerprint] for PGP key that signed the email, if a signature was given.
+                     */
+                    if:x:/@_signature?value
+                      add:x:/./*/set/*
+                        src
+                          fingerprint:x:/@_signature?value
+
+                    /*
+                     * Creating contact by evaluating [sephia.core._create-contact], and using
+                     * return value is "id" for contact.
+                     */
+                    eval-x:x:/+/*/*
+                    set:x:/@_from?value
+                      sephia.core._create-contact
+                        name:x:/@_dp/#/*/From/0?name
+                        email:x:/@_dp/#/*/From/0?value
+                        username:x:/@.whoami/*/username?value
+
+                  else-if:x:/@p5.mysql.select/0/*/name?name
+                    !=:x:/@_dp/#/*/From/*?name
+                    and:x:/@_dp/#/*/From/*?name
+                      !=:
+
+                    /*
+                     * Exists, but name has been changed, and name given is not empty ("").
+                     */
+                    p5.mysql.update:@"update contacts set name = @name where id = @id"
+                      @id:x:/@p5.mysql.select/0/*/id?value
+                      @name:x:/@_dp/#/*/From/*?name
+                    set:x:/@_from?value
+                      src:x:/@p5.mysql.select/0/*/id?value
+
+                  else
+
+                    /*
+                     * Exists, and there are no changes.
+                     */
+                    set:x:/@_from?value
+                      src:x:/@p5.mysql.select/0/*/id?value
 
                   /*
                    * Verifying that a subject was given by POP3 server.
@@ -324,7 +322,7 @@ fork
                       @emailid:x:/@for-each/@p5.mysql.insert/*/id?value
 
                   /*
-                   * Stuffing emails into "contact" and "recipients" tables.
+                   * Stuffing email adresses into "contacts" and "recipients" tables.
                    */
                   for-each:x:/@_dp/#/*(/To|/Cc|/Bcc)/*
 
@@ -347,35 +345,21 @@ fork
                       =:int:0
 
                       /*
-                       * Doesn't exist, inserting new entry.
-                       * Making sure we default name to "Unknown", unless explicitly given.
+                       * Entry does not exist.
+                       *
+                       * Invoking [sephia.core._create-contact] to create our contact, which will
+                       * try to look for a PGP key, etc for recipient.
                        */
-                      if:x:/@_dp/#?name
-                        =:
-                        or:x:/@_dp/#?name
-                          not
-
-                        /*
-                         * No name given, defaulting to "Unknown".
-                         */
-                        set:x:/@_dp/#?name
-                          src:Unknown
-
-                      /*
-                       * Inserting new contact.
-                       */
-                      p5.mysql.insert:@"insert into contacts (name, email, username) value (@name, @email, @username)"
-                        @name:x:/@_dp/#?name
-                        @email:x:/@_dp/#?value
-                        @username:x:/@.whoami/*/username?value
                       set:x:/@_contact-id?value
-                        src:x:/@p5.mysql.insert/*/id?value
+                        sephia.core._create-contact
+                          name:x:/@_dp/#?name
+                          email:x:/@_dp/#?value
+                          username:x:/@.whoami/*/username?value
 
                     else-if:x:/@p5.mysql.select/0/*/name?value
                       !=:x:/@_dp/#?name
                       and:x:/@_dp/#?name
                         !=:
-                      and:x:/@_dp/#?name
 
                       /*
                        * Exists, but sender has updated his name.

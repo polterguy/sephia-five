@@ -1,0 +1,88 @@
+
+/*
+ * Creates a contact from the given [name], [email] and [username] arguments, 
+ * and returns the ID of the contact that was inserted.
+ *
+ * Optionally pass in [fingerprint], which is the fingerprint of the public PGP key
+ * the contact should be created with.
+ *
+ * Will attempt to find a public PGP key for contact, either in GnuPG database, or using key server.
+ * Notice, expects an open database connection to the Sephia database.
+ */
+create-event:sephia.core._create-contact
+
+  /*
+   * Making sure name defaults to first parts of email, if it is empty or null.
+   */
+  if:x:/../*/name?value
+    not
+    or:x:/../*/name?value
+      =:
+    split:x:/../*/email?value
+      =:@
+    set:x:/../*/name?value
+      src:x:/@split/0?name
+
+  /*
+   * Used to hold any fingerprints of public PGP key matching email.
+   */
+  _fingerprint
+
+  /*
+   * Checking if there exists a public PGP key for user in GnuPG database.
+   */
+  p5.crypto.list-public-keys:x:(/../*/fingerprint|/../*/email)/[0,1]?value
+  if:x:/-/*?count
+    >:int:0
+
+    /*
+     * We found a potentially matching key for contact in GnuPG database.
+     */
+    set:x:/@_fingerprint?value
+      src:x:/@p5.crypto.list-public-keys/0?name
+
+  else-if:x:/../*/fingerprint?value
+
+    /*
+     * Caller supplied a [fingerprint] argument, downloading key if it exists.
+     */
+    sephia.core._download-key:x:/../*/fingerprint?value
+    p5.crypto.import-public-pgp-key:x:/@sephia.core._download-key?value
+    set:x:/@_fingerprint?value
+      src:x:/@p5.crypto.import-public-pgp-key/0?name
+
+  else
+
+    /*
+     * No matching key in GnuPG, trying to search on key server, making sure we wrap
+     * our attempt into a try/catch block.
+     */
+    try
+      sephia.core._search-key-server:x:/../*/email?value
+      if:x:/@sephia.core._search-key-server/*?count
+        >:int:0
+
+        /*
+         * We found a key on key server, downloading it, and importing it into GnuPG database.
+         */
+        sephia.core._download-key:x:/@sephia.core._search-key-server/0?value
+        p5.crypto.import-public-pgp-key:x:/@sephia.core._download-key?value
+        set:x:/@_fingerprint?value
+          src:x:/@p5.crypto.import-public-pgp-key/0?name
+
+    catch
+
+      /*
+       * Silently catching, since invocation might be from a different thread.
+       */
+
+  /*
+   * Inserting new contact into database.
+   */
+  p5.mysql.insert:@"insert into contacts (name, email, username, fingerprint) values (@name, @email, @username, @fingerprint)"
+    @name:x:/../*/name?value
+    @email:x:/../*/email?value
+    @username:x:/../*/username?value
+    @fingerprint:x:/@_fingerprint?value
+  return:x:/@p5.mysql.insert/*/id?value
+  
