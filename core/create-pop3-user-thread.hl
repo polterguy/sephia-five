@@ -216,6 +216,49 @@ fork
                     set:x:/@_encrypted?value
                       src:int:1
 
+                    /*
+                     * Checking if we have a "hidden subject" in email, which should be stored inside of our
+                     * multipart as base64 encoded inside the value of a "X-Subject" MIME header, if it exists.
+                     *
+                     * Notice, if email was encrypted, its original part should exist inside of the outer multipart,
+                     * which was created as a consequence of wrapping our entire root part inside of a "multipart/encrypted"
+                     * wrapper MIME entity.
+                     */
+                    if:x:/@_dp/#/*/multipart/*/*/X-Subject?value
+
+                      /*
+                       * There is a "hidden subject" in email.
+                       */
+                      set:x:/@_dp/#/*/Subject?value
+                        p5.string.decode-base64:x:/@_dp/#/*/multipart/*/*/X-Subject?value
+
+                      /*
+                       * Removing subject from body of email, which should have been added during creation.
+                       */
+                      html2lambda:x:/@_dp/#/*/multipart/**/text/=html/*/content?value
+                      if:x:/@html2lambda/*
+
+                        /*
+                         * Email contained HTML part, removing first "h3" header, which is our real subject,
+                         * injected into body of HTML parts of email when email was sent.
+                         */
+                        set:x:/@html2lambda/**/h3/[0,1]
+                        set:x:/@_dp/#/*/multipart/**/text/=html/*/content?value
+                          lambda2html:x:/@html2lambda/*
+
+                      /*
+                       * Then removing first line of text from text part.
+                       */
+                      index-of:x:/@_dp/#/*/multipart/**/text/=plain/*/content?value
+                        src:"\r\n"
+                      +:x:/@index-of/0?value
+                        _:4
+                      split:x:/@_dp/#/*/multipart/**/text/=plain/*/content?value
+                        =:x:/@+?value
+                      set:x:/@_dp/#/*/multipart/**/text/=plain/*/content?value
+                        src:x:/@split/1?name
+
+
                   /*
                    * Making sure we store the "from" database ID.
                    */

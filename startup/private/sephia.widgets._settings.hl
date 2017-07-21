@@ -43,6 +43,7 @@ create-event:sephia.widgets._settings
     signature:x:/@load-file/*/*?value
     preferred-content-type:html
     markdown-composer:bool:true
+    pgp-subjects:"https://www.nytimes.com, https://www.wsj.com"
 
   /*
    * Making sure we check the correct "perferred content type" radio button.
@@ -62,7 +63,7 @@ create-event:sephia.widgets._settings
   /*
    * Returning widget to caller, making sure we forward evaluate properties.
    */
-  eval-x:x:(/+/**/view/=databound/**/value|/+/**/input(/=sephia-settings-pgp-key|/=sephia-settings-pgp-password)/*/value)
+  eval-x:x:/+/**/view/=databound/**/value|/+/**/input(/=sephia-settings-pgp-key|/=sephia-settings-pgp-password|/=sephia-settings-subject-generator)/*/value
   return
     container
       class:sephia-settings
@@ -377,10 +378,10 @@ create-event:sephia.widgets._settings
                             value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/smtp-password|/../*/.defaults/*/smtp-password)/$?value
 
           /*
-           * PGP settings.
+           * Cryptography settings.
            */
           view
-            name:PGP
+            name:Crypto
             widgets
               micro.widgets.grid:pgp-keys
                 class:hover
@@ -573,6 +574,24 @@ create-event:sephia.widgets._settings
                             type:password
                             placeholder:Your PGP password ...
                             value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pgp-password|/../*/.defaults/*/pgp-password)/$?value
+              div
+                class:row
+                widgets
+                  div
+                    class:col
+                    widgets
+                      div
+                        class:strip fill
+                        widgets
+                          label
+                            innerValue:Subjects
+                            for:sephia-settings-subject-generator
+                          input:sephia-settings-subject-generator
+                            type:text
+                            .data-field:pgp-subjects
+                            value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pgp-subjects|/../*/.defaults/*/pgp-subjects)/$?value
+                            placeholder:A comma separated list of URLs from where random subjects will be generated ...
+                            title:A comma separated list of URLs from where random subjects will be generated
               div
                 class:row
                 widgets

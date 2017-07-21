@@ -222,9 +222,6 @@ and add support for "".{1}"" file extensions if you wish to allow these types of
 
   /*
    * Then checking if email should be signed.
-   *
-   * Notice, if email is to be signed, we automatically attach the public PGP key
-   * for the user as an attachment.
    */
   if:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-key?value
     and:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-key?value
@@ -246,6 +243,44 @@ and add support for "".{1}"" file extensions if you wish to allow these types of
           sign
             fingerprint:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-key?value
               password:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-password?value
+
+  /*
+   * Checking if email is supposed to be encrypted, at which point
+   * we move the subject into the main multipart, and generate a random subject instead,
+   * in addition to adding our own custom header where we keep the original subject.
+   */
+  _smtp-subject
+  _smtp-body-plain
+  _smtp-body-html
+  _smtp-x-subject
+  if:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart/*/encrypt
+
+    /*
+     * Email is to be sent encrypted, making sure we find some random subject, before
+     * we move the real subject into the body of the email, and add our real subject into
+     * the main multipart in a custom "X-Subject" header inside of the encrypted parts of email.
+     */
+    sephia.core._get-random-subject
+    set:x:/@_smtp-body-plain?value
+      src:@"### Subject - {0}
+
+{1}"
+        :x:/../*/subject?value
+        :x:/../*/body?value
+
+    /*
+     * Adding real subject into main multipart as a custom MIME header, making sure
+     * we base64 encode the subject first.
+     */
+    p5.string.encode-base64:x:/../*/subject?value
+    set:x:/@_smtp-x-subject?value
+      src:x:/@p5.string.encode-base64?value
+
+    /*
+     * Then making sure we use bogus subject from "subject generator".
+     */
+    set:x:/@_smtp-subject?value
+      src:x:/@sephia.core._get-random-subject?value
 
   /*
    * Checking if caller specified he wanted to have Markdown created.
@@ -270,6 +305,15 @@ and add support for "".{1}"" file extensions if you wish to allow these types of
             content:x:/../*/body?value
           text:html
             content:x:/@sephia.core._markdown-body-2-html?value
+
+    /*
+     * Checking if email was to be sent encrypted, at which point the [body]
+     * we're supposed to send, can actually be found in [_smtp-body-plain] and [_smtp-body-html].
+     */
+    if:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart/*/encrypt
+      sephia.core._markdown-body-2-html:x:/@_smtp-body-plain?value
+      set:x:/@_smtp-body-html?value
+        src:x:/@sephia.core._markdown-body-2-html?value
 
   else
 
@@ -298,6 +342,21 @@ and add support for "".{1}"" file extensions if you wish to allow these types of
    */
   add:x:/../*/sephia.core.send-email._save-envelope
     src:x:/../*/p5.smtp.send/*/envelope
+
+  /*
+   * Making sure we use the "cryptography overrides" for our SMTP invocation if email is
+   * to be sent encrypted.
+   */
+  if:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart/*/encrypt
+    add:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart
+      src:"X-Subject:{0}"
+        :x:/@_smtp-x-subject?value
+    set:x:/../*/p5.smtp.send/*/envelope/*/Subject?value
+      src:x:/@_smtp-subject?value
+    set:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart/**/text/=plain/*/content?value
+      src:x:/@_smtp-body-plain?value
+    set:x:/../*/p5.smtp.send/*/envelope/*/body/*/multipart/**/text/=html/*/content?value
+      src:x:/@_smtp-body-html?value
 
   /*
    * Sending email.
