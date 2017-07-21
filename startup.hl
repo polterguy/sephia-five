@@ -3,9 +3,6 @@
  * Startup file for Sephia Five.
  *
  * This file is evaluated every time the server restarts, or the web server process is recycled for any reasons.
- *
- * This file simply creates a couple of "IO environment variables", allowing us to more easily access the main 
- * Sephia application folder, in addition to evaluating all Hyperlambda files inside the "/startup/" folder.
  */
 
 
@@ -31,7 +28,7 @@ create-event:p5.io.unroll-path.@SEPHIA
  * Creating environment variable pointing to user's attachment folder.
  *
  * Notice, we store all attachments in user's private document folder, which means that
- * these attachments are only available for the user himself, or a root account.
+ * these attachments are only available for the user himself and root accounts.
  */
 create-event:p5.io.unroll-path.@SEPHIA-USER-ATTACHMENTS
   return:~/documents/private/sephia/attachments

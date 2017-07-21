@@ -16,33 +16,13 @@
 create-event:sephia.smtp.send-email
 
   /*
-   * Sanity check, we'll need [subject], [body] and at least one [to] recipient,
-   * otherwise we'll throw an exception.
-   * First checking if [subject] exists.
+   * Sanity check.
+   * Verifies that the given arguments are passed into invocation of event.
    */
-  if:x:/../*/subject?value
-    not
-    or:x:/../*/subject?value
-      =:
-    throw:No subject for email!
-
-  /*
-   * Then checking if [body] exists.
-   */
-  if:x:/../*/body?value
-    not
-    or:x:/../*/body?value
-      =:
-    throw:No body for email!
-
-  /*
-   * Then checking if [to] exists.
-   */
-  if:x:/../*/to?value
-    not
-    or:x:/../*/to?value
-      =:
-    throw:No recipients for email!
+  micro.contract:x:/..
+    subject:string
+    body:string
+    to:string
 
   /*
    * Retrieving settings for currently logged in user.
@@ -152,7 +132,7 @@ create-event:sephia.smtp.send-email
 
     /*
      * Checking if file was supported, and if so, we add it up 
-     * to [sephia.smtp.send-email._save-envelope] invocation below, and
+     * to [sephia._internals.smtp.save-envelope] invocation below, and
      * the [p5.smtp.send] invocation.
      */
     if:x:/@sephia._internals.mime.get-type-from-file-extension/*
@@ -164,10 +144,10 @@ create-event:sephia.smtp.send-email
         src:x:/@sephia._internals.mime.get-type-from-file-extension/*
 
       /*
-       * Then adding file to [sephia.smtp.send-email._save-envelope].
+       * Then adding file to [sephia._internals.smtp.save-envelope].
        */
       eval-x:x:/+/*/*/*
-      add:x:/../*/sephia.smtp.send-email._save-envelope
+      add:x:/../*/sephia._internals.smtp.save-envelope
         src
           file
             folder:@SEPHIA-USER-ATTACHMENTS/
@@ -340,7 +320,7 @@ and add support for "".{1}"" file extensions if you wish to allow these types of
   /*
    * Storing entire outgoing [envelope] to [_save-envelope].
    */
-  add:x:/../*/sephia.smtp.send-email._save-envelope
+  add:x:/../*/sephia._internals.smtp.save-envelope
     src:x:/../*/p5.smtp.send/*/envelope
 
   /*
@@ -379,181 +359,10 @@ and add support for "".{1}"" file extensions if you wish to allow these types of
   /*
    * Making sure we update MessageId accordingly.
    */
-  set:x:/../*/sephia.smtp.send-email._save-envelope/*/envelope?value
+  set:x:/../*/sephia._internals.smtp.save-envelope/*/envelope?value
     src:x:/@p5.smtp.send/*/envelope?value
 
   /*
    * Saves entire outgoing [envelope] to database.
    */
-  sephia.smtp.send-email._save-envelope
-
-
-
-
-
-/*
- * Saves outgoing [envelope] to database.
- *
- * Expects [envelope] as argument, being entire SMTP envelope.
- *
- * Also expects (outside of envelope) one [file] object for each attachment, having [filename], [prefix] and [folders]
- * as arguments.
- */
-create-event:sephia.smtp.send-email._save-envelope
-
-  /*
-   * Open database connection.
-   */
-  p5.mysql.connect:[sephia]
-
-    /*
-     * Using database transaction, to avoid having incomplete database objects,
-     * in case an exception occurs.
-     */
-    p5.mysql.transaction.begin
-
-      /*
-       * Needed later.
-       */
-      whoami
-
-      /*
-       * First adding any non existing contacts.
-       */
-      for-each:x:/../*/envelope/*(/To|/Cc|/Bcc)/*
-
-        /*
-         * Checking if contact exists from before.
-         */
-        p5.mysql.select:@"select count(*) from contacts where username = @username and email = @email"
-          @username:x:/@whoami/*/username?value
-          @email:x:/@_dp/#?value
-        if:x:/@p5.mysql.select/*?count.int
-          =:int:0
-
-          /*
-           * Inserting new contact, defaulting name to "Unknown".
-           */
-          p5.mysql.insert:@"insert into contacts (name, email, username) values ('Unknown', @email, @username)"
-            @email:x:/@_dp/#?value
-            @username:x:/@whoami/*/username?value
-
-      /*
-       * Checking if "sender" (self) exists in contact database.
-       */
-      _sender
-      p5.mysql.select:@"select * from contacts where username = @username and email = @email"
-        @username:x:/@whoami/*/username?value
-        @email:x:/../*/envelope/*/Sender/*?value
-      if:x:/@p5.mysql.select/*?count.int
-        =:int:0
-
-        /*
-         * Inserting "self" (sender) into "contacts" table in database.
-         */
-        p5.auth.my-settings.get
-        p5.mysql.insert:@"insert into contacts (name, email, username) values (@name, @email, @username)"
-          @name:x:/@p5.auth.my-settings.get/*/sephia/*/name?value
-          @email:x:/@p5.auth.my-settings.get/*/sephia/*/email?value
-          @username:x:/@whoami/*/username?value
-        set:x:/@_sender?value
-          src:x:/@p5.mysql.insert/*/id?value
-
-      else
-
-        /*
-         * Self already exists in contacts table in database.
-         */
-        set:x:/@_sender?value
-          src:x:/@p5.mysql.select/0/*/id?value
-
-      /*
-       * Checking if email is encrypted.
-       */
-      _encrypt:int:0
-      if:x:/../*/envelope/*/body/*/multipart/*/encrypt
-        set:x:/@_encrypt?value
-          src:int:1
-
-      /*
-       * Checking if email is signed.
-       */
-      _signature
-      _fingerprint
-      if:x:/../*/envelope/*/body/*/multipart/*/sign
-
-        /*
-         * Retrieving PGP key's fingerprint, and doing lookup into 
-         * GnuPG database to find its User ID, making sure we store both signature and fingerprint
-         * of key as we insert our email into database.
-         * Notice, we do a [to-upper] conversion of fingerprint, to make sure we store all
-         * fingerprints the same way.
-         */
-        set:x:/@_fingerprint?value
-          to-upper:x:/../*/envelope/*/body/*/multipart/*/sign/*/fingerprint?value
-        p5.crypto.get-key-details:x:/../*/envelope/*/body/*/multipart/*/sign/*/fingerprint?value
-        set:x:/@_signature?value
-          src:x:/@p5.crypto.get-key-details/*/*/user-ids/0?value
-
-      /*
-       * Inserting into "email" table in database.
-       */
-      p5.types.date.now
-        local:true
-      p5.mysql.insert:@"insert into emails (subject, date, sender, username, isread, mimeid, signature, fingerprint, encrypted, type, inreplyto) values (@subject, @date, @sender, @username, 1, @mimeid, @signature, @fingerprint, @encrypted, 'sent', @inreplyto)"
-        @subject:x:/../*/envelope/*/Subject?value
-        @date:x:/@p5.types.date.now?value
-        @sender:x:/@_sender?value
-        @username:x:/@whoami/*/username?value
-        @mimeid:x:/../*/envelope?value
-        @encrypted:x:/@_encrypt?value
-        @signature:x:/@_signature?value
-        @fingerprint:x:/@_fingerprint?value
-        @inreplyto:x:/../*/envelope/*/In-Reply-To?value
-
-      /*
-       * Inserting into "parts" table in database.
-       */
-      p5.mysql.insert:@"insert into parts (type, content, emailid) values ('plain', @content, @emailid)"
-        @content:x:/../*/envelope/*/body/**/text/=plain/*/content?value
-        @emailid:x:/@p5.mysql.insert/@p5.mysql.insert/*/id?value
-
-      /*
-       * Checking if HTML view was given.
-       */
-      if:x:/../*/envelope/*/body/**/text/=html/*/content?value
-
-        /*
-         * Inserting also alternative HTML view.
-         */
-        p5.mysql.insert:@"insert into parts (type, content, emailid) values ('html', @content, @emailid)"
-          @content:x:/../*/envelope/*/body/**/text/=html/*/content?value
-          @emailid:x:/@p5.mysql.insert/@p5.mysql.insert/@p5.mysql.insert/*/id?value
-
-      /*
-       * Inserting into "recipients" table in database.
-       */
-      for-each:x:/../*/envelope/*(/To|/Cc|/Bcc)/*
-        p5.mysql.select:@"select id from contacts where username = @username and email = @email"
-          @username:x:/@whoami/*/username?value
-          @email:x:/../*/envelope/*/Sender/*?value
-        p5.mysql.insert:@"insert into recipients (contactid, type, emailid) values (@contactid, @type, @emailid)"
-          @contactid:x:/@p5.mysql.select/*/*/id?value
-          @type:x:/@_dp/#/.?name
-          @emailid:x:/..for-each/@p5.mysql.insert/@p5.mysql.insert/*/id?value
-
-      /*
-       * Inserting into "attachments" table in database.
-       */
-      for-each:x:/../*/file
-        p5.io.unroll-path:x:/@_dp/#/*/folder?value
-        p5.mysql.insert:@"insert into attachments (filename, prefix, folder, emailid) values (@filename, @prefix, @folder, @emailid)"
-          @filename:x:/@_dp/#/*/filename?value
-          @prefix:x:/@_dp/#/*/prefix?value
-          @folder:x:/@p5.io.unroll-path?value
-          @emailid:x:/@p5.mysql.insert/@p5.mysql.insert/@p5.mysql.insert/*/id?value
-
-      /*
-       * Committing transaction.
-       */
-      p5.mysql.transaction.commit
+  sephia._internals.smtp.save-envelope
