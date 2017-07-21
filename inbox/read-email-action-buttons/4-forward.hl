@@ -1,4 +1,4 @@
-
+﻿
 /*
  * Action button for replying to email
  */
@@ -63,7 +63,7 @@ Date: {2}
     /*
      * Creating actual reply widget.
      */
-    eval-x:x:/+/**/sephia.widgets.compose/*
+    eval-x:x:/+/**/sephia.widgets.compose-email/*
     create-widget
       after:x:/@p5.web.widgets.find-first-ancestor/*/*?value
       class:row air-top
@@ -76,7 +76,7 @@ Date: {2}
             /*
              * This is the actual "composer" widget, which allows user to compose/reply/etc an email.
              */
-            sephia.widgets.compose
+            sephia.widgets.compose-email
               subject:x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]/*/*/subject?value
               body:x:/@_content?value
               recipients

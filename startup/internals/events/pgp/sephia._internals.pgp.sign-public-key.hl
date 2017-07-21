@@ -1,4 +1,4 @@
-
+﻿
 /*
  * Verifies that the given [fingerprint] public PGP key indeed belongs to the given [contact] database ID.
  *
@@ -11,7 +11,7 @@
  * in addition to signing the public key with the user's private key, and upload the signed key to a key server,
  * according to the configuration settings of Sephia.
  */
-create-event:sephia.core._verify-public-key
+create-event:sephia._internals.pgp.sign-public-key
 
   /*
    * Signing contact's public key, with user's private key.
@@ -24,13 +24,13 @@ create-event:sephia.core._verify-public-key
   /*
    * Submitting public key to key server, now signed.
    */
-  sephia.core._submit-public-key:x:/../*/fingerprint?value
+  sephia._internals.pgp.key-server.submit:x:/../*/fingerprint?value
 
   /*
    * Then updating "contacts" table, but only if submitting
    * key to key server was a success.
    */
-  if:x:/@sephia.core._submit-public-key?value
+  if:x:/@sephia._internals.pgp.key-server.submit?value
 
     /*
      * Submitting key to key server was a success.
@@ -43,4 +43,4 @@ create-event:sephia.core._verify-public-key
    * The above invocation returns true if successful, making sure we return
    * that return value to caller.
    */
-  return:x:/@sephia.core._submit-public-key?value
+  return:x:/@sephia._internals.pgp.key-server.submit?value

@@ -1,4 +1,4 @@
-
+﻿
 /*
  * Returns the MIME type for a file name, in addition to the "Content-Transfer-Encoding" unless file is transferred as as.
  *
@@ -9,7 +9,7 @@
  * Otherwise it will return the MIME type, and Content-Disposition, in addition to Content-Transfer-Encoding, 
  * unless it's plain text.
  */
-create-event:sephia.core._get-mime-type
+create-event:sephia._internals.mime.get-type-from-file-extension
 
   /*
    * Splitting [filename] to figure out its extension.

@@ -1,4 +1,4 @@
-
+﻿
 /*
  * Returns a new random subject, by traversing a random entry in user's [pgp-subjects] setting value.
  *
@@ -9,7 +9,7 @@
  * as the MIME "Subject" instead of the real subject the user actually wrote, which will be put into the body
  * of the message, such that it becomes encrypted and hidden from any potential adversaries.
  */
-create-event:sephia.core._get-random-subject
+create-event:sephia._internals.smtp.get-babel-subject
 
   /*
    * Checking session object if we have already stored potential 
@@ -86,7 +86,7 @@ create-event:sephia.core._get-random-subject
      * although this time we'll get a "cache hit", and hence return early, before we retrieve our 
      * potential subjects from our "subjects generator URL".
      */
-    sephia.core._get-random-subject
+    sephia._internals.smtp.get-babel-subject
     return:x:/-?value
 
   catch

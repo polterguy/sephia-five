@@ -1,4 +1,4 @@
-
+﻿
 /*
  * Extension widget for composing an email.
  *
@@ -29,7 +29,7 @@
  * for your widget.
  * All major elements on widget has CSS classes which you can hook into, if you wish to style it yourself.
  */
-create-event:sephia.widgets.compose
+create-event:sephia.widgets.compose-email
 
   /*
    * Default values for arguments not supplied.
@@ -80,7 +80,7 @@ p5.sephia_upload_files = function(e) {
   /*
    * Adding recipients to recipients widget.
    */
-  add:x:/../*/return/**/sephia.widgets._recipients
+  add:x:/../*/return/**/sephia._internals.widgets.recipients
     src:x:/../*/recipients/*
 
   /*
@@ -90,7 +90,7 @@ p5.sephia_upload_files = function(e) {
     eval-x:x:/+/*/*/*
     add:x:/../*/return/*/div/*/oninit
       src
-        sephia.widgets.composer._add-attachment:x:/../*/_event?value
+        sephia.widgets.compose-emailr._add-attachment:x:/../*/_event?value
           filename:x:/@_dp/#?value
 
   /*
@@ -101,13 +101,13 @@ p5.sephia_upload_files = function(e) {
   /*
    * Making sure we add any additional MIME headers requested by user.
    */
-  add:x:/../*/return/**/sephia.core.send-email/*/headers
+  add:x:/../*/return/**/sephia.smtp.send-email/*/headers
     src:x:/../*/headers/*
 
   /*
    * Returning actual widget to caller.
    */
-  eval-x:x:/../*/return/**/widgets/=content/*(/input|/literal)/*/value|/../*/return/*/*/class|/../*/return/**/sephia.core.send-email/*/markdown
+  eval-x:x:/../*/return/**/widgets/=content/*(/input|/literal)/*/value|/../*/return/*/*/class|/../*/return/**/sephia.smtp.send-email/*/markdown
   return
     div
       oninit
@@ -144,7 +144,7 @@ p5.sephia_send_email = function(e) {
          *
          * Requires [filename] as argument.
          */
-        sephia.widgets.composer._add-attachment
+        sephia.widgets.compose-emailr._add-attachment
 
           /*
            * Verifying this is our instance.
@@ -249,7 +249,7 @@ p5.sephia_send_email = function(e) {
          * and allowing user to append to these widgets, by doing a lookup into his or her "contacts"
          * database, and/or typing into the textbox adding a new email to the list of recipients.
          */
-        sephia.widgets._recipients
+        sephia._internals.widgets.recipients
 
         /*
          * Button strip at bottom for "send", "add attachment", "discard", etc.
@@ -298,7 +298,7 @@ p5.sephia_send_email = function(e) {
                        */
                       for-each:x:/@micro.form.serialize/*/attachment
                         eval-x:x:/+/*/*
-                        add:x:/..try/*/sephia.core.send-email/*/attachments
+                        add:x:/..try/*/sephia.smtp.send-email/*/attachments
                           src
                             file:x:/@_dp/#?value
 
@@ -308,7 +308,7 @@ p5.sephia_send_email = function(e) {
                        */
                       add:x:/+
                         src:x:/@micro.form.serialize/*(!/attachment!/no-data)
-                      sephia.core.send-email
+                      sephia.smtp.send-email
                         headers
                         markdown:x:(/../*/markdown-composer|/../*/.defaults/*/markdown-composer)/$?value
                         attachments
@@ -361,7 +361,7 @@ p5.sephia_send_email = function(e) {
                      */
                     p5.web.post.get:sephia-file-name
                     eval-x:x:/+/*
-                    sephia.core._get-mime-type
+                    sephia._internals.mime.get-type-from-file-extension
                       filename:x:/@p5.web.post.get/*?value
                     if:x:/-/*
                       not
@@ -389,11 +389,11 @@ p5.sephia_send_email = function(e) {
                     p5.web.widgets.find-first-ancestor:x:/../*/_event?value
                       .email-composer
                     eval-x:x:/+/*/*
-                    add:x:/../*/sephia.widgets.composer._add-attachment
+                    add:x:/../*/sephia.widgets.compose-emailr._add-attachment
                       src
                         filename:@SEPHIA-USER-ATTACHMENTS/tmp/{0}
                           :x:/../*/p5.web.post.get/[0,1]/*?value
-                    sephia.widgets.composer._add-attachment:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                    sephia.widgets.compose-emailr._add-attachment:x:/@p5.web.widgets.find-first-ancestor/*/*?value
 
                   onchange:"p5.sephia_upload_files(event);"
 

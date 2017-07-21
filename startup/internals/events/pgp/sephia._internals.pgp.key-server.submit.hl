@@ -1,10 +1,10 @@
-
+﻿
 /*
  * Will submit the given public key to Ubuntu's keyserver.
  *
  * Expects the fingerprint of the key to submit to be supplied as [_arg].
  */
-create-event:sephia.core._submit-public-key
+create-event:sephia._internals.pgp.key-server.submit
 
   /*
    * Retrieving public key.

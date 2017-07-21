@@ -1,4 +1,4 @@
-
+﻿
 /*
  * Creates our "recipient" widget.
  *
@@ -7,7 +7,7 @@
  * Optionally pass in [to], [cc] and [bcc] as initial recipients of email.
  * These are collections of email addresses, where the email address is stored as the name of the node.
  */
-create-event:sephia.widgets._recipients
+create-event:sephia._internals.widgets.recipients
 
   /*
    * Adding specified recipients, first [to].
@@ -201,8 +201,8 @@ create-event:sephia.contacts._find
                     p5.web.widgets.get-children:x:/../*/_event?value
                     get-widget-property:x:/-/*/1?value
                       innerValue
-                    sephia.core._download-key:x:/@get-widget-property/*/*?value
-                    p5.crypto.import-public-pgp-key:x:/@sephia.core._download-key?value
+                    sephia._internals.pgp.key-server.download-key:x:/@get-widget-property/*/*?value
+                    p5.crypto.import-public-pgp-key:x:/@sephia._internals.pgp.key-server.download-key?value
                     if:x:/@p5.crypto.import-public-pgp-key/*
 
                       /*
@@ -513,14 +513,14 @@ create-event:sephia.contacts._find
                                          * In addition, it will mark the fingerprint for contact in "contacts" database as "isverified".
                                          */
                                         eval-x:x:/+/*
-                                        sephia.core._verify-public-key
+                                        sephia._internals.pgp.sign-public-key
                                           contact:x:/@_id?value
                                           fingerprint:x:/@_fingerprint?value
 
                                         /*
                                          * Verifying submitting signed public key to key server was a success.
                                          */
-                                        if:x:/@sephia.core._verify-public-key?value
+                                        if:x:/@sephia._internals.pgp.sign-public-key?value
                                           not
 
                                           /*
@@ -588,18 +588,18 @@ create-event:sephia.contacts._find
                               p5.mysql.connect:[sephia]
                                 p5.mysql.select:@"select email from contacts where id = @id"
                                   @id:x:/@_id?value
-                              sephia.core._search-key-server:x:/@p5.mysql.connect/*/p5.mysql.select/*/*/email?value
+                              sephia._internals.pgp.key-server.search:x:/@p5.mysql.connect/*/p5.mysql.select/*/*/email?value
 
                               /*
                                * Checking if key server returned anything.
                                */
-                              if:x:/@sephia.core._search-key-server/*
+                              if:x:/@sephia._internals.pgp.key-server.search/*
 
                                 /*
                                  * We have results, displaying the results to user and allowing him to choose a key.
                                  */
                                 add:x:/+2
-                                  src:x:/@sephia.core._search-key-server/*
+                                  src:x:/@sephia._internals.pgp.key-server.search/*
                                 eval-x:x:/+/*
                                 sephia.core._recipients._import-keys
                                   contact-id:x:/../*/_id?value

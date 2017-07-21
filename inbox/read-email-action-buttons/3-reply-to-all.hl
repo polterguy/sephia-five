@@ -1,4 +1,4 @@
-
+﻿
 /*
  * Action button for replying to email
  */
@@ -106,7 +106,7 @@ button
      */
     add:x:/+/*
       src:x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]/*/*/email?value
-    add:x:/../*/create-widget/**/sephia.widgets.compose/*/recipients/*/to
+    add:x:/../*/create-widget/**/sephia.widgets.compose-email/*/recipients/*/to
       src
 
 
@@ -115,13 +115,13 @@ button
      */
     for-each:x:/@p5.mysql.connect/*/p5.mysql.select/[2,3]/*
       if:x:/@_dp/#/*/type/=To
-        add:x:/../*/create-widget/**/sephia.widgets.compose/*/recipients/*/to
+        add:x:/../*/create-widget/**/sephia.widgets.compose-email/*/recipients/*/to
           src:x:/@_dp/#/*/email?value
       else-if:x:/@_dp/#/*/type/=Cc
-        add:x:/../*/create-widget/**/sephia.widgets.compose/*/recipients/*/cc
+        add:x:/../*/create-widget/**/sephia.widgets.compose-email/*/recipients/*/cc
           src:x:/@_dp/#/*/email?value
       else-if:x:/@_dp/#/*/type/=Bcc
-        add:x:/../*/create-widget/**/sephia.widgets.compose/*/recipients/*/bcc
+        add:x:/../*/create-widget/**/sephia.widgets.compose-email/*/recipients/*/bcc
           src:x:/@_dp/#/*/email?value
 
 
@@ -129,14 +129,14 @@ button
      * Removing "self" from recipients.
      */
     p5.auth.my-settings.get
-    set:x:/../*/create-widget/**/sephia.widgets.compose/*/recipients/*/*/{0}
+    set:x:/../*/create-widget/**/sephia.widgets.compose-email/*/recipients/*/*/{0}
       :x:/@p5.auth.my-settings.get/*/sephia/*/email?value
 
 
     /*
      * Creating actual reply widget.
      */
-    eval-x:x:/../*/create-widget/**/sephia.widgets.compose/*
+    eval-x:x:/../*/create-widget/**/sephia.widgets.compose-email/*
     create-widget
       after:x:/@p5.web.widgets.find-first-ancestor/*/*?value
       class:row air-top
@@ -149,7 +149,7 @@ button
             /*
              * This is the actual "composer" widget, which allows user to compose/reply/etc an email.
              */
-            sephia.widgets.compose
+            sephia.widgets.compose-email
               subject:x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]/*/*/subject?value
               body:x:/@_content?value
               recipients

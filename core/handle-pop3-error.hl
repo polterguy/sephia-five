@@ -1,4 +1,4 @@
-
+﻿
 /*
  * Invoked when an error occurs while "POP3 worker thread" was unsuccessfully trying to
  * fetch emails from POP3 server.
@@ -79,4 +79,4 @@ create-widgets
                           div
                             class:col
                             widgets
-                              sephia.widgets._settings
+                              sephia._internals.widgets.settings

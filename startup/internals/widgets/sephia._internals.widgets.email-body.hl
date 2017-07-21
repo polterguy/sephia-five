@@ -1,4 +1,4 @@
-
+﻿
 /*
  * Extension widget that creates the widget that displays the body of an email.
  *
@@ -12,7 +12,7 @@
  * If email is rendered as plain text, then content is HTML encoded to avoid injecting malicious HTML,
  * but all URLs in email is converted into clickable hyperlinks.
  */
-create-event:sephia.widgets._email-body
+create-event:sephia._internals.widgets.email-body
 
   /*
    * Signal node, to be able to easily find arguments.
@@ -182,7 +182,7 @@ create-event:sephia.widgets._email-body
     /*
      * Making sure we transform all URLs in email to become clickable hyperlinks.
      */
-    sephia.core._create-hyperlinks:x:/@p5.html.html-encode?value
+    sephia._internals.html.create-hyperlinks:x:/@p5.html.html-encode?value
 
     /*
      * Returning pre-formatted "div" element wrapping content of email.
@@ -192,4 +192,4 @@ create-event:sephia.widgets._email-body
       literal
         element:div
         style:"white-space:pre-wrap;width:100%;overflow:hidden;"
-        innerValue:x:/@sephia.core._create-hyperlinks?value
+        innerValue:x:/@sephia._internals.html.create-hyperlinks?value

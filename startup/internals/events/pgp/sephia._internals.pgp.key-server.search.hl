@@ -1,8 +1,8 @@
-
+﻿
 /*
  * Will search the configured PGP key server for a key matching the given [_arg] query.
  */
-create-event:sephia.core._search-key-server
+create-event:sephia._internals.pgp.key-server.search
 
   /*
    * Loading key server configuration setting.

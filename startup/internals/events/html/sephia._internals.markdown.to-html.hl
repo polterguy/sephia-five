@@ -1,8 +1,8 @@
-
+﻿
 /*
  * Creates standard email HTML from the given [_arg] Markdown content.
  */
-create-event:sephia.core._markdown-body-2-html
+create-event:sephia._internals.markdown.to-html
 
   /*
    * Splitting up signature, such that we can have it displayed as pre-formatted.
@@ -19,7 +19,7 @@ create-event:sephia.core._markdown-body-2-html
    * Converting all hyperlinks within email that are not explicitly set to hyperlinks to such.
    * Notice, this invocation will ignore any hyperlinks already created by our above [markdown2html] invocation.
    */
-  sephia.core._create-hyperlinks:x:/@markdown2html?value
+  sephia._internals.html.create-hyperlinks:x:/@markdown2html?value
 
   /*
    * Checking if user actually had a signature in his email.
@@ -31,13 +31,13 @@ create-event:sephia.core._markdown-body-2-html
      * User didn't have any signature, returning raw markdown with hyperlink conversion,
      * making sure we "braid it" into our "wrapper HTML" template.
      */
-    sephia.core._markdown-body-2-html._wrap:x:/@sephia.core._create-hyperlinks?value
+    sephia._internals.markdown.to-html._wrap:x:/@sephia._internals.html.create-hyperlinks?value
     return:x:/-?value
 
   /*
    * Converting URLs in signature to real hyperlinks.
    */
-  sephia.core._create-hyperlinks:x:/@split/0/-?name
+  sephia._internals.html.create-hyperlinks:x:/@split/0/-?name
 
   /*
    * User had a signature.
@@ -45,9 +45,9 @@ create-event:sephia.core._markdown-body-2-html
    * Returning both Markdown and signature as pre-formatted,
    * making sure we "braid" everything inside our "wrapper HTML" template.
    */
-  sephia.core._markdown-body-2-html._wrap:"{0}\r\n<pre style=\"opacity:.3;\">-- \r\n{1}</pre>"
-    :x:/../*/sephia.core._create-hyperlinks/[0,1]?value
-    :x:/../*/sephia.core._create-hyperlinks/[1,2]?value
+  sephia._internals.markdown.to-html._wrap:"{0}\r\n<pre style=\"opacity:.3;\">-- \r\n{1}</pre>"
+    :x:/../*/sephia._internals.html.create-hyperlinks/[0,1]?value
+    :x:/../*/sephia._internals.html.create-hyperlinks/[1,2]?value
   return:x:/-?value
 
 
@@ -57,7 +57,7 @@ create-event:sephia.core._markdown-body-2-html
 /*
  * Will wrap the email content given as [_arg] inside of its "standard HTML template".
  */
-create-event:sephia.core._markdown-body-2-html._wrap
+create-event:sephia._internals.markdown.to-html._wrap
 
   return:@"<!DOCTYPE html>
 <html>

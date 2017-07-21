@@ -1,4 +1,4 @@
-
+﻿
 /*
  * Creates a contact from the given [name], [email] and [username] arguments, 
  * and returns the ID of the contact that was inserted.
@@ -9,7 +9,7 @@
  * Will attempt to find a public PGP key for contact, either in GnuPG database, or using key server.
  * Notice, expects an open database connection to the Sephia database.
  */
-create-event:sephia.core._create-contact
+create-event:sephia._internals.contacts.create
 
   /*
    * Making sure name defaults to first parts of email, if it is empty or null.
@@ -46,8 +46,8 @@ create-event:sephia.core._create-contact
     /*
      * Caller supplied a [fingerprint] argument, downloading key if it exists.
      */
-    sephia.core._download-key:x:/../*/fingerprint?value
-    p5.crypto.import-public-pgp-key:x:/@sephia.core._download-key?value
+    sephia._internals.pgp.key-server.download-key:x:/../*/fingerprint?value
+    p5.crypto.import-public-pgp-key:x:/@sephia._internals.pgp.key-server.download-key?value
     set:x:/@_fingerprint?value
       src:x:/@p5.crypto.import-public-pgp-key/0?name
 
@@ -58,15 +58,15 @@ create-event:sephia.core._create-contact
      * our attempt into a try/catch block.
      */
     try
-      sephia.core._search-key-server:x:/../*/email?value
-      if:x:/@sephia.core._search-key-server/*?count
+      sephia._internals.pgp.key-server.search:x:/../*/email?value
+      if:x:/@sephia._internals.pgp.key-server.search/*?count
         >:int:0
 
         /*
          * We found a key on key server, downloading it, and importing it into GnuPG database.
          */
-        sephia.core._download-key:x:/@sephia.core._search-key-server/0?value
-        p5.crypto.import-public-pgp-key:x:/@sephia.core._download-key?value
+        sephia._internals.pgp.key-server.download-key:x:/@sephia._internals.pgp.key-server.search/0?value
+        p5.crypto.import-public-pgp-key:x:/@sephia._internals.pgp.key-server.download-key?value
         set:x:/@_fingerprint?value
           src:x:/@p5.crypto.import-public-pgp-key/0?name
 

@@ -41,23 +41,6 @@ create-event:p5.io.unroll-path.@SEPHIA-USER-ATTACHMENTS
 
 
 /*
- * Evaluating all other startup scripts.
- *
- * First "public" files.
+ * Evaluating all startup scripts.
  */
-list-files:@SEPHIA/startup/
-  filter:.hl
-load-file:x:/-/*?name
-eval:x:/-/*
-
-
-
-
-
-/*
- * Then "private" files.
- */
-list-files:@SEPHIA/startup/private/
-  filter:.hl
-load-file:x:/-/*?name
-eval:x:/-/*
+micro.evaluate.folder:@SEPHIA/startup/

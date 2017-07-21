@@ -1,4 +1,4 @@
-
+﻿
 /*
  * File responsible for fetching emails.
  *
@@ -287,12 +287,12 @@ fork
                           fingerprint:x:/@_signature?value
 
                     /*
-                     * Creating contact by evaluating [sephia.core._create-contact], and using
+                     * Creating contact by evaluating [sephia._internals.contacts.create], and using
                      * return value is "id" for contact.
                      */
                     eval-x:x:/+/*/*
                     set:x:/@_from?value
-                      sephia.core._create-contact
+                      sephia._internals.contacts.create
                         name:x:/@_dp/#/*/From/0?name
                         email:x:/@_dp/#/*/From/0?value
                         username:x:/@.whoami/*/username?value
@@ -390,11 +390,11 @@ fork
                       /*
                        * Entry does not exist.
                        *
-                       * Invoking [sephia.core._create-contact] to create our contact, which will
+                       * Invoking [sephia._internals.contacts.create] to create our contact, which will
                        * try to look for a PGP key, etc for recipient.
                        */
                       set:x:/@_contact-id?value
-                        sephia.core._create-contact
+                        sephia._internals.contacts.create
                           name:x:/@_dp/#?name
                           email:x:/@_dp/#?value
                           username:x:/@.whoami/*/username?value

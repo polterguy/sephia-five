@@ -1,10 +1,10 @@
-
+﻿
 /*
  * Will download the specified [_arg] key from key server.
  *
  * [_arg] is expected to be a fingerprint.
  */
-create-event:sephia.core._download-key
+create-event:sephia._internals.pgp.key-server.download-key
 
   /*
    * Loading key server configuration setting.

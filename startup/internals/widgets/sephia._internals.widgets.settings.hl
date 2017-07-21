@@ -1,4 +1,4 @@
-
+﻿
 /*
  * Creates our "settings" widget.
  *
@@ -6,7 +6,7 @@
  * server, username, password, etc.
  * Takes no arguments.
  */
-create-event:sephia.widgets._settings
+create-event:sephia._internals.widgets.settings
 
   /*
    * Retrieving settings and setting initial values.
@@ -752,7 +752,7 @@ create-event:sephia.widgets._settings
                                                   /*
                                                    * This even returns false if it was unsuccessful in submitting the key.
                                                    */
-                                                  sephia.core._submit-public-key:x:/@p5.crypto.create-pgp-keypair/*/fingerprint?value
+                                                  sephia._internals.pgp.key-server.submit:x:/@p5.crypto.create-pgp-keypair/*/fingerprint?value
                                                   if:x:/-?value
                                                     not
 

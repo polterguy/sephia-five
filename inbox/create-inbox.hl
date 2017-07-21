@@ -1,4 +1,4 @@
-
+﻿
 /*
  * Shows our inbox for Sephia Five
  */
@@ -21,7 +21,7 @@ clear-widget:sephia-main-container
  */
 p5.auth.my-settings.get
 if:x:/@p5.auth.my-settings.get/*/sephia/*/markdown-composer
-  add:x:/../*/create-widget/**/sephia.widgets.compose
+  add:x:/../*/create-widget/**/sephia.widgets.compose-email
     src
       markdown-composer:bool:true
 
@@ -243,7 +243,7 @@ create-widget:sephia-search-wrapper
                         div
                           class:col
                           widgets
-                            sephia.widgets._settings
+                            sephia._internals.widgets.settings
 
 
             /*
@@ -290,7 +290,7 @@ create-widget:sephia-search-wrapper
                          * Notice, we instantiate it such that it will send also an HTML view, created by converting
                          * its content from Markdown to HTML.
                          */
-                        sephia.widgets.compose
+                        sephia.widgets.compose-email
                           .onclose
 
                             /*

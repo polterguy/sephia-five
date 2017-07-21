@@ -1,8 +1,8 @@
-
+﻿
 /*
  * Converts the given [_arg] HTML snippet such that all hyperlinks become real hyperlinks.
  */
-create-event:sephia.core._create-hyperlinks
+create-event:sephia._internals.html.create-hyperlinks
 
   /*
    * Using regular expression to convert anything that resembles a hyperlink into an actual hyperlink.

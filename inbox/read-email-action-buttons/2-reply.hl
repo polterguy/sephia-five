@@ -1,4 +1,4 @@
-
+﻿
 /*
  * Action button for replying to email
  */
@@ -108,7 +108,7 @@ button
      */
     add:x:/+/*/*
       src:x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]/*/*/email?value
-    add:x:/../*/create-widget/**/sephia.widgets.compose/*/recipients
+    add:x:/../*/create-widget/**/sephia.widgets.compose-email/*/recipients
       src
         to
 
@@ -116,7 +116,7 @@ button
     /*
      * Creating actual reply widget.
      */
-    eval-x:x:/+/**/sephia.widgets.compose(/*|/*/headers/*)
+    eval-x:x:/+/**/sephia.widgets.compose-email(/*|/*/headers/*)
     create-widget
       after:x:/@p5.web.widgets.find-first-ancestor/*/*?value
       class:row air-top
@@ -129,7 +129,7 @@ button
             /*
              * This is the actual "composer" widget, which allows user to compose/reply/etc an email.
              */
-            sephia.widgets.compose
+            sephia.widgets.compose-email
               markdown-composer:bool:true
               subject:x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]/*/*/subject?value
               body:x:/@_content?value

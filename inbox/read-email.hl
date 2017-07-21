@@ -1,4 +1,4 @@
-
+﻿
 /*
  * Reads a single email.
  *
@@ -40,11 +40,11 @@ p5.mysql.connect:[sephia]
      * Checking if this is a legal attachment.
      */
     eval-x:x:/+/*
-    sephia.core._get-mime-type
+    sephia._internals.mime.get-type-from-file-extension
       filename:x:/@_dp/#/*/filename?value
       prefix:x:/@_dp/#/*/prefix?value
       folder:x:/@_dp/#/*/folder?value
-    if:x:/@sephia.core._get-mime-type/*
+    if:x:/@sephia._internals.mime.get-type-from-file-extension/*
 
       /*
        * Attachment has a legal file extension according to configurtion of Sephia.
@@ -301,9 +301,9 @@ where emails.id = @id"
     @id:x:/../*/id?value
 
   /*
-   * Adding all views that exists into [sephia.widgets._email-body]
+   * Adding all views that exists into [sephia._internals.widgets.email-body]
    */
-  add:x:/../*/create-widget/**/sephia.widgets._email-body
+  add:x:/../*/create-widget/**/sephia._internals.widgets.email-body
     src:x:/@p5.mysql.select/*
 
   /*
@@ -380,7 +380,7 @@ create-widget
             /*
              * Displays body of email.
              */
-            sephia.widgets._email-body
+            sephia._internals.widgets.email-body
 
             /*
              * Displays attachments of email.

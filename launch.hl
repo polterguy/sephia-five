@@ -1,4 +1,4 @@
-
+﻿
 /*
  * File responsible for starting Sephia Five, which means creating the main widget, 
  * and wire frame for displaying inbox etc.
@@ -140,7 +140,7 @@ if:x:/@p5.auth.my-settings.get/*/sephia
           div
             class:col
             widgets
-              sephia.widgets._settings
+              sephia._internals.widgets.settings
 
   /*
    * Returning early to avoid evaluating the rest of this file.
