@@ -10,10 +10,6 @@
  * email composer is closed and/or email is sent, in addition to [class], which will be the root class
  * of the composer.
  *
- * If you wish, you can also supply a [markdown-composer] argument, and set its value to "true", at which point
- * the email will be sent also as HTML, where the HTML will be created by converting the email's text content
- * to Markdown.
- *
  * You can optionally supply a [headers] collection, which is a generic collection of additional MIME headers
  * to send your email with.
  *
@@ -36,7 +32,6 @@ create-event:sephia.widgets.compose-email
    */
   .defaults
     class:air-inner
-    markdown-composer:bool:false
 
   /*
    * Including JavaScript necessary to handle uploading of attachments.
@@ -101,13 +96,13 @@ p5.sephia_upload_files = function(e) {
   /*
    * Making sure we add any additional MIME headers requested by user.
    */
-  add:x:/../*/return/**/sephia.smtp.send-email/*/headers
+  add:x:/../*/return/**/sephia.send-email/*/headers
     src:x:/../*/headers/*
 
   /*
    * Returning actual widget to caller.
    */
-  eval-x:x:/../*/return/**/widgets/=content/*(/input|/literal)/*/value|/../*/return/*/*/class|/../*/return/**/sephia.smtp.send-email/*/markdown
+  eval-x:x:/../*/return/**/widgets/=content/*(/input|/literal)/*/value|/../*/return/*/*/class
   return
     div
       oninit
@@ -298,7 +293,7 @@ p5.sephia_send_email = function(e) {
                        */
                       for-each:x:/@micro.form.serialize/*/attachment
                         eval-x:x:/+/*/*
-                        add:x:/..try/*/sephia.smtp.send-email/*/attachments
+                        add:x:/..try/*/sephia.send-email/*/attachments
                           src
                             file:x:/@_dp/#?value
 
@@ -308,9 +303,8 @@ p5.sephia_send_email = function(e) {
                        */
                       add:x:/+
                         src:x:/@micro.form.serialize/*(!/attachment!/no-data)
-                      sephia.smtp.send-email
+                      sephia.send-email
                         headers
-                        markdown:x:(/../*/markdown-composer|/../*/.defaults/*/markdown-composer)/$?value
                         attachments
 
                       /*
