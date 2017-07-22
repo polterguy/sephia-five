@@ -6,12 +6,12 @@
  * All recipients arguments is a list of email addresses, where the email address is expected to be found
  * as the name of the node.
  *
+ * You can also pass in one [attachment] where the value of each [attachment] is expected to be a file that
+ * already exists on server, with its complete path.
+ *
  * You can also optionally pass in [.onclose] and [.onsend] lambda callbacks, which will be invoked when
  * email composer is closed and/or email is sent, in addition to [class], which will be the root class
  * of the composer.
- *
- * You can optionally supply a [headers] collection, which is a generic collection of additional MIME headers
- * to send your email with.
  *
  * This widget will allow the user to compose an email, and send it, allowing the user to lookup contacts
  * from the contacts database, etc. When the email is sent, it will be stored as "sent" in Sephia's database.
@@ -20,9 +20,11 @@
  * not email can be sent encrypted or not.
  *
  * Notice, caller is reponsible for making sure the necessary CSS files are included on the page.
- * By default, this widget requires Micro CSS, preferably with a skin, in addition to the main CSS file
- * for Sephia Five. However, this could probably be changed as you see fit, if you want another type of styling
- * for your widget.
+ *
+ * By default, this widget requires Micro CSS, preferably with a skin, and the "fonts.css" file, in addition to the 
+ * main CSS file for Sephia Five. However, this could probably be changed as you see fit, if you want another type 
+ * of styling for your widget.
+ *
  * All major elements on widget has CSS classes which you can hook into, if you wish to style it yourself.
  */
 create-event:sephia.widgets.compose-email
@@ -79,12 +81,19 @@ p5.sephia_upload_files = function(e) {
     src:x:/../*/recipients/*
 
   /*
-   * Adding attachments supplied by caller to email.
+   * Making sure attachments supplied by caller is attached, by invoking the
+   * event responsible for attaching the file in [oinit] of widget for each [attachment]
+   * user supplied during creating widget.
    */
   for-each:x:/../*/attachment
     eval-x:x:/+/*/*/*
     add:x:/../*/return/*/div/*/oninit
       src
+
+        /*
+         * Notice, the first expression is evaluated only when [oninit] is evaluated, while
+         * the inner [filename] expression was evaluated when lambda was added to [oninit].
+         */
         sephia.widgets.compose-email._add-attachment:x:/../*/_event?value
           filename:x:/@_dp/#?value
 
@@ -92,12 +101,6 @@ p5.sephia_upload_files = function(e) {
    * Necessary to figure out user's signature, which is consumed further down.
    */
   p5.auth.my-settings.get
-
-  /*
-   * Making sure we add any additional MIME headers requested by user.
-   */
-  add:x:/../*/return/**/sephia.send-email/*/headers
-    src:x:/../*/headers/*
 
   /*
    * Returning actual widget to caller.
@@ -188,8 +191,9 @@ p5.sephia_send_email = function(e) {
                    * anywhere else within the root folder of P5.
                    *
                    * However, if file was in user's temp attachment folder, it will be deleted
-                   * the next time user refreshes his page, or starts Sephia Five, hence
-                   * we don't need to delete it, since inevitably it will be deleted later at some point.
+                   * the next time user refreshes his page, or starts Sephia Five.
+                   * Hence, we don't need to delete it, since inevitably it will be deleted later 
+                   * at some point.
                    */
                   p5.web.widgets.get-parent:x:/../*/_event?value
                   delete-widget:x:/-/*/*?value
@@ -214,6 +218,8 @@ p5.sephia_send_email = function(e) {
 
         /*
          * Body of reply.
+         *
+         * Notice, the signature of user is automatically appended into the email's body.
          */
         literal
           element:textarea
@@ -242,6 +248,9 @@ p5.sephia_send_email = function(e) {
          * This is being done by displaying three textbox input elements for "to", "cc" and "bcc",
          * and allowing user to append to these widgets, by doing a lookup into his or her "contacts"
          * database, and/or typing into the textbox adding a new email to the list of recipients.
+         *
+         * This widget might be initially populated with [to], [cc] and [bcc] arguments, if our compose
+         * widget was invoked with these arguments.
          */
         sephia._internals.widgets.recipients
 
@@ -268,6 +277,21 @@ p5.sephia_send_email = function(e) {
                   .onclick
 
                     /*
+                     * Sends email.
+                     *
+                     * Finding root composer widget, and serializing all form elements within it.
+                     */
+                    p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                      .email-composer
+                    micro.form.serialize:x:/-/*/*?value
+
+                    /*
+                     * Making sure we HTML decode the body.
+                     */
+                    set:x:/@micro.form.serialize/*/body?value
+                      p5.html.html-decode:x:/@micro.form.serialize/*/body?value
+
+                    /*
                      * Sending email.
                      *
                      * Making sure we wrap attempt in try/catch block, to give user friendly error messages.
@@ -275,36 +299,13 @@ p5.sephia_send_email = function(e) {
                     try
 
                       /*
-                       * Finding root composer widget, and serializing all form elements within it.
-                       */
-                      p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                        .email-composer
-                      micro.form.serialize:x:/-/*/*?value
-
-                      /*
-                       * Making sure we HTML decode the body, and add our custom HTML wrappers surrounding email.
-                       */
-                      set:x:/@micro.form.serialize/*/body?value
-                        p5.html.html-decode:x:/@micro.form.serialize/*/body?value
-
-                      /*
-                       * Looping through each attachment specified by user.
-                       */
-                      for-each:x:/@micro.form.serialize/*/attachment
-                        eval-x:x:/+/*/*
-                        add:x:/..try/*/sephia.send-email/*/attachments
-                          src
-                            file:x:/@_dp/#?value
-
-                      /*
                        * Invoking Active Event responsible for sending email, passing in arguments
-                       * from above serialization invocation.
+                       * from above serialization invocation, except for [no-data], which is our
+                       * hidden input/file element, used to upload attachments to server.
                        */
                       add:x:/+
-                        src:x:/@micro.form.serialize/*(!/attachment!/no-data)
+                        src:x:/@micro.form.serialize/*(!/no-data)
                       sephia.send-email
-                        headers
-                        attachments
 
                       /*
                        * Invoking specified [.onclose] and [.onsend] lambda objects given during creation of widget.
@@ -316,26 +317,12 @@ p5.sephia_send_email = function(e) {
                     catch
 
                       /*
-                       * Oops, displaying error to user in a modal widget.
+                       * Oops, invoking our exception handler file.
                        */
-                      create-widgets
-                        micro.widgets.modal:sephia-error-modal-widget
-                          class:micro-modal micro-modal-smaller
-                          widgets
-                            h3
-                              innerValue:Oops!
-                            p
-                              innerValue:Oops, email could not be sent. Message from system was; '{0}'
-                                :x:/../*/catch/*/message?value
-                            div
-                              class:right
-                              widgets
-                                button
-                                  innerValue:OK
-                                  oninit
-                                    micro.page.set-focus:x:/../*/_event?value
-                                  onclick
-                                    delete-widget:sephia-error-modal-widget
+                      add:x:/+
+                        src:x:/..catch/*(/message|/type|/stack-trace)
+                      micro.evaluate.file:@SEPHIA/core/handle-exception.hl
+                        error:Couldn't send email
 
                 /*
                  * Hidden file input element, handled through JavaScript, that allows user
@@ -347,20 +334,21 @@ p5.sephia_send_email = function(e) {
                   multiple
                   class:sephiaAttachmentFileInput
                   .data-field:no-data
+                  onchange:"p5.sephia_upload_files(event);"
                   .onupload
 
                     /*
                      * Retrieving the file name, and verifying it's a legal extension.
                      */
                     p5.web.post.get:sephia-file-name
-                    eval-x:x:/+/*
-                    sephia._internals.mime.get-type-from-file-extension
-                      filename:x:/@p5.web.post.get/*?value
-                    if:x:/-/*
+                    if
+                      sephia._internals.is-legal-attachment:x:/@p5.web.post.get/*?value
                       not
 
                       /*
                        * File's extension are not a legal type of attachment in Sephia.
+                       *
+                       * Showing error "bubble window" to user, and returning early.
                        */
                       micro.windows.info:'{0}' is not a legal file type in Sephia Five
                         :x:/@p5.web.post.get/*?value
@@ -378,6 +366,13 @@ p5.sephia_send_email = function(e) {
 
                     /*
                      * Adding attachment to email.
+                     *
+                     * Notice, this is done first of all by attaching a visible button to email composer, which
+                     * once clicked, will delete the attachment from email.
+                     *
+                     * In addition, an hidden input element, with the attachment's filename will be added, that
+                     * will be automatically serialized as part of the email's content when the form is serialized,
+                     * getting ready to send the email.
                      */
                     p5.web.widgets.find-first-ancestor:x:/../*/_event?value
                       .email-composer
@@ -386,9 +381,12 @@ p5.sephia_send_email = function(e) {
                       src
                         filename:@SEPHIA-USER-ATTACHMENTS/tmp/{0}
                           :x:/../*/p5.web.post.get/[0,1]/*?value
-                    sephia.widgets.compose-email._add-attachment:x:/@p5.web.widgets.find-first-ancestor/*/*?value
 
-                  onchange:"p5.sephia_upload_files(event);"
+                    /*
+                     * Invoking the event responsible for associating the attachment wilt email, that will
+                     * create our button and hidden input element.
+                     */
+                    sephia.widgets.compose-email._add-attachment:x:/@p5.web.widgets.find-first-ancestor/*/*?value
 
                 /*
                  * Add attachment button.
@@ -400,6 +398,11 @@ p5.sephia_send_email = function(e) {
                   style:"margin-bottom:0;"
                   class:sephia-compose-add-attachment
                   title:Add attachments
+
+                  /*
+                   * TODO: Won't work if multiple emails are being composed at the same time, since it'll trigger the click for 
+                   * all of these buttons!
+                   */
                   onclick:@"document.querySelector('.sephiaAttachmentFileInput').click();return false;"
 
                 /*

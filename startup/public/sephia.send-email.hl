@@ -3,8 +3,8 @@
  * Creates our "send email" event.
  *
  * Requires [subject], [body], [to] and optionally [cc] and [bcc], which all should be a comma separated list of emails.
- * Optionally pass in [attachments] as collections of attachments to send with email.
- * Attachments should be, if given, a collection of nodes, having values pointing to files on the server.
+ * Optionally pass in any number of [attachment] nodes, being attachments to send with email.
+ * Any [attachment] nodes given should have values pointing to files on the server.
  *
  * [to], [cc] and [bcc] should be comma separated list of emails.
  *
@@ -124,7 +124,7 @@ create-event:sephia.send-email
   /*
    * Then attachments.
    */
-  for-each:x:/../*/attachments/*
+  for-each:x:/../*/attachment
 
     /*
      * Checking if attachment's file extension is a legal type of attachment.
