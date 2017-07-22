@@ -204,9 +204,9 @@ fork
                      * Storing both email and fingerprint of key used to sign email.
                      */
                     set:x:/@_signature?value
-                      src:x:/@_dp/#/*/*/signature/0?name
+                      src:x:/@_dp/#/*/multipart/*/signature/0?name
                     set:x:/@_fingerprint?value
-                      src:x:/@_dp/#/*/*/signature/0/0?value
+                      src:x:/@_dp/#/*/multipart/*/signature/0/0?value
 
                   if:x:/@_dp/#/*/multipart/*/decryption-key
 
