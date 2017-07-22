@@ -1,0 +1,25 @@
+﻿
+/*
+ * Returns true of given [_arg] filename is a legal file extension for attachments in Sephia.
+ */
+create-event:sephia._internals.is-legal-attachment
+
+  /*
+   * Checking if we have a MIME type registered in our configuration for the given file.
+   */
+  eval-x:x:/+/*
+  sephia._internals.mime.get-type-from-file-extension
+    filename:x:/../*/_arg?value
+  if:x:/-/*
+
+    /*
+     * We have a MIME mapping for these types of files.
+     */
+    return:bool:true
+
+  else
+
+    /*
+     * We do not have any MIME mappings for these types of files.
+     */
+    return:bool:false
