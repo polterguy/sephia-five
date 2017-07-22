@@ -1,6 +1,9 @@
 
 /*
  * Databinds our inbox datagrid.
+ *
+ * Requires no arguments, but you can optionally pass in [offset] and [filter] when invoking file,
+ * to start out on a specific page, with a specified filter condition.
  */
 .defaults
   offset:int:0

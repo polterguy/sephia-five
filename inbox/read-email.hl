@@ -9,6 +9,19 @@
  */
 
 
+
+
+
+/*
+ * Sanity checking invocation.
+ */
+micro.lambda.contract.min:x:/..
+  id:long
+
+
+
+
+
 /*
  * Checking if email is already opened in another widget.
  */
@@ -21,6 +34,9 @@ if:x:/-/*/*?value
    */
   micro.windows.info:This email is already open
   return
+
+
+
 
 
 /*

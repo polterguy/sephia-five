@@ -7,6 +7,27 @@
  * [error] is a friendly descriptive text, typically about where the error originated.
  * [message], [stack-trace] and [type] are exception values, retrieved from [catch] lambda when exception was raised.
  */
+
+
+
+
+
+/*
+ * Sanity checking invocation.
+ */
+micro.lambda.contract.min:x:/..
+  error:string
+  message:string
+  stack-trace:string
+  type:string
+
+
+
+
+
+/*
+ * Creating actual widget wrapping error feedback to user.
+ */
 create-widgets
   micro.widgets.modal:sephia-error-modal-widget
     class:micro-modal micro-modal-smaller

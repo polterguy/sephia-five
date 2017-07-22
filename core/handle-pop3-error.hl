@@ -7,6 +7,21 @@
  */
 
 
+
+
+
+/*
+ * Sanity checking invocation.
+ */
+micro.lambda.contract.min:x:/..
+  message:string
+  stack-trace:string
+  type:string
+
+
+
+
+
 /*
  * Creating actual error message.
  */
