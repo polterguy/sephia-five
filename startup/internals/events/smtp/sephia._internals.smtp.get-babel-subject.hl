@@ -1,13 +1,21 @@
 ﻿
 /*
- * Returns a new random subject, by traversing a random entry in user's [pgp-subjects] setting value.
+ * Returns a new random subject, by traversing URLs from user's [pgp-subjects] setting value.
  *
- * Notice, this will retrieve all potential subjects from one (random) URL in user's "subjects generator URLs",
+ * Notice, this will retrieve all potential subjects from all URLs in user's "subjects generator URLs",
  * store these potential candidates into user's session object, before returning one of them at random to caller.
  *
  * Hence, we are able to return (at least to some extent) an intelligent subject to caller, which will be used
- * as the MIME "Subject" instead of the real subject the user actually wrote, which will be put into the body
+ * as the MIME "Subject", instead of the real subject the user actually wrote, which will be put into the body
  * of the message, such that it becomes encrypted and hidden from any potential adversaries.
+ *
+ * This makes it seem as if the user is simply sending an email discussing some random news header with his recipients,
+ * instead of his or her actual subject line.
+ *
+ * The user can configure as many URLs babel-services as he wish, or none, at which point the event will return empty string ("").
+ *
+ * TODO: Potential improvements are to keep this subject around, and when the recipients answer (using Sephia), the subject "sticks",
+ * and the email becomes a reply to that email's subject, and not a randomly generated new subject.
  */
 create-event:sephia._internals.smtp.get-babel-subject
 
@@ -16,10 +24,11 @@ create-event:sephia._internals.smtp.get-babel-subject
    * subjects for the current user in our session object.
    */
   p5.web.session.get:sephia.core.random-subjects
-  if:x:/@p5.web.session.get/*/*/*
+  if:x:/@p5.web.session.get/*
 
     /*
-     * We have more pending subjects, returning one of them at random.
+     * We have subjects already stored in our session, 
+     * returning one of them at random.
      */
     p5.types.int.random
       max:x:/@p5.web.session.get/*/*/*?count
@@ -27,74 +36,96 @@ create-event:sephia._internals.smtp.get-babel-subject
       :x:/@p5.types.int.random?value
 
   /*
-   * Making sure we wrap our logic in a try/catch block, and if an exception occurs,
-   * we return an empty string.
+   * Retrieving settings for user, since we need to know where to get our random subjects.
    */
-  try
+  p5.auth.my-settings.get
+
+  /*
+   * Retrieving all URLs from our "subjects generator setting".
+   */
+  split:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-subjects?value
+    =:,
+    =:" "
+
+  /*
+   * Verifying user actually he a "subject generator URL" setting, and if not,
+   * returning empty string.
+   */
+  if:x:/@split/*?count
+    =:int:0
+    return:""
+
+  /*
+   * Creating one thread for each URL, to retrieve all our "subject generator" 
+   * documents in parallel.
+   */
+  for-each:x:/@split/*?name
 
     /*
-     * Retrieving settings for user, since we need to know where to get our random subjects.
+     * Defaulting protocol to "http://" unless a protocol is explicitly given.
      */
-    p5.auth.my-settings.get
+    if
+      fetch:x:/0/0?value
+        index-of:x:/@_dp?value
+          src:http
+      !=:int:0
+
+      /*
+       * Prepending "http://" in front of subject generator URL.
+       */
+      set:x:/@_dp?value
+        src:"http://{0}"
+          :x:/@_dp?value
 
     /*
-     * Using one of user's random URLs from "subjects generator".
-     */
-    split:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-subjects?value
-      =:,
-    p5.types.int.random
-      max:x:/@split/*?count
-    trim:x:/@split/{0}?name
-      :x:/@p5.types.int.random?value
-
-    /*
-     * Retrieving entire HTML document from the random subject generator URL.
-     */
-    p5.http.get:x:/@trim?value
-
-    /*
-     * Adding all h6, h5, h4, h3 and h2 text elements into our [.subjects] temporary lambda.
-     * Notice, we skip h1, since it's probably the main header for the website itself.
-     */
-    html2lambda:x:/@p5.http.get/*/result/*/content?value
-    .subjects
-    add:x:/@.subjects
-      src:x:/@html2lambda/**(/h6|/h5|/h4|/h3|/h2)/**/\#text?value
-
-    /*
-     * Trimming all potential subjects.
-     */
-    for-each:x:/@.subjects/*
-      set:x:/@_dp/#?value
-        trim:x:/@_dp/#?value
-
-    /*
-     * Storing our potential subjects into session, to make next roundtrip faster, and avoiding
-     * "slashdot'ing" our subject generator URL.
-     */
-    p5.web.session.set:sephia.core.random-subjects
-      src:x:/@.subjects
-
-    /*
-     * Finding a random subject from our above list.
-     */
-    p5.types.int.random
-      max:x:/@.subjects/*?count
-
-    /*
-     * For simplicity we invoke ourselves recursively, and return the value from second invocation,
-     * although this time we'll get a "cache hit", and hence return early, before we retrieve our 
-     * potential subjects from our "subjects generator URL".
-     */
-    sephia._internals.smtp.get-babel-subject
-    return:x:/-?value
-
-  catch
-
-    /*
-     * Oops, something went wrong.
-     * One of the servers in our "subjects generator URLs" was probably down or something.
+     * Adding a [fork] lambda for each subject generator URL into our [wait] below.
      *
-     * Resorting to returning an "empty string" by default.
+     * Making sure we avoid exceptions to leave our thread.
      */
-    return:x:/-?value.string
+    eval-x:x:/+/*/*/*/*
+    add:x:/../*/wait
+      src
+        fork
+          try
+            p5.http.get:x:/@_dp?value
+          catch
+
+  /*
+   * Making sure we do not spend more than 5 seconds fetching our "subject generator documents".
+   */
+  wait
+
+  /*
+   * Adding all h6, h5, h4, h3 and h2 text elements into our [.subjects] temporary lambda.
+   *
+   * We do this by converting the content for all of our above [p5.htto.get] invocations into a lambda object,
+   * before we use an expression to extract all #text nodes' values from all h6,h5,h4,h3 and h2 elements in these documents.
+   *
+   * Notice, we skip h1, since it's probably the main header for the website itself.
+   */
+  .subjects
+  html2lambda:x:/@wait/*/fork/**/p5.http.get/*/result/*/content?value
+  add:x:/@.subjects
+    src:x:/@html2lambda/**(/h6|/h5|/h4|/h3|/h2)/**/\#text?value
+
+  /*
+   * Trimming all potential subjects.
+   */
+  for-each:x:/@.subjects/*
+    set:x:/@_dp/#?value
+      trim:x:/@_dp/#?value
+
+  /*
+   * Storing our potential subjects into session, to make next roundtrip faster, and avoiding
+   * "slashdot'ing" our subject generator URL, and speed up our "subject babel generator".
+   */
+  p5.web.session.set:sephia.core.random-subjects
+    src:x:/@.subjects
+
+  /*
+   * For simplicity we invoke ourselves recursively, and return the value from second invocation,
+   * although this time we'll get a "cache hit", and hence return early, before we retrieve our 
+   * potential subjects from our "subjects generator URL".
+   */
+  sephia._internals.smtp.get-babel-subject
+  return:x:/-?value
