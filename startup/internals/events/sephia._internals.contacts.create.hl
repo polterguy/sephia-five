@@ -46,8 +46,8 @@ create-event:sephia._internals.contacts.create
     /*
      * Caller supplied a [fingerprint] argument, downloading key if it exists.
      */
-    sephia._internals.pgp.key-server.download-key:x:/../*/fingerprint?value
-    p5.crypto.import-public-pgp-key:x:/@sephia._internals.pgp.key-server.download-key?value
+    sephia.pgp.key-server.download-key:x:/../*/fingerprint?value
+    p5.crypto.import-public-pgp-key:x:/@sephia.pgp.key-server.download-key?value
     set:x:/@_fingerprint?value
       src:x:/@p5.crypto.import-public-pgp-key/0?name
 
@@ -58,15 +58,15 @@ create-event:sephia._internals.contacts.create
      * our attempt into a try/catch block.
      */
     try
-      sephia._internals.pgp.key-server.search:x:/../*/email?value
-      if:x:/@sephia._internals.pgp.key-server.search/*?count
+      sephia.pgp.key-server.search:x:/../*/email?value
+      if:x:/@sephia.pgp.key-server.search/*?count
         >:int:0
 
         /*
          * We found a key on key server, downloading it, and importing it into GnuPG database.
          */
-        sephia._internals.pgp.key-server.download-key:x:/@sephia._internals.pgp.key-server.search/0?value
-        p5.crypto.import-public-pgp-key:x:/@sephia._internals.pgp.key-server.download-key?value
+        sephia.pgp.key-server.download-key:x:/@sephia.pgp.key-server.search/0?value
+        p5.crypto.import-public-pgp-key:x:/@sephia.pgp.key-server.download-key?value
         set:x:/@_fingerprint?value
           src:x:/@p5.crypto.import-public-pgp-key/0?name
 

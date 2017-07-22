@@ -8,6 +8,10 @@
  *
  * However, you don't need to create the schema for your database, this file will automatically
  * do that for you, unless the tables have already been created.
+ *
+ * Notice, it is important that your web.config connection string is using a "charset" of "utf8mb4",
+ * otherwise you might get weird bugs when inserting emails into your database that uses high characters,
+ * such as smileys, etc.
  */
 p5.mysql.connect:[sephia]
   p5.mysql.execute:@"

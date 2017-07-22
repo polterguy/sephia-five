@@ -1,0 +1,22 @@
+﻿﻿
+/*
+ * Will wrap the email content given as [_arg] inside of its "standard HTML template".
+ *
+ * Which implies wrapping the goven [_arg] value inside "<html><body></body></html>" markup, and
+ * adding the necessary HTML boiler plate parts around your email's content.
+ */
+create-event:sephia._internals.markdown-to-html.wrap
+
+  return:@"<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset=""utf-8"">
+    <title>Sephia Five email</title>
+  </head>
+  <body>
+    <div class=""sephia-five-email"">
+      {0}
+    </div>
+  </body>
+</html>"
+    :x:/../*/_arg?value

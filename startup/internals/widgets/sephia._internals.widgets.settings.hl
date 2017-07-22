@@ -752,7 +752,7 @@ create-event:sephia._internals.widgets.settings
                                                   /*
                                                    * This even returns false if it was unsuccessful in submitting the key.
                                                    */
-                                                  sephia._internals.pgp.key-server.submit:x:/@p5.crypto.create-pgp-keypair/*/fingerprint?value
+                                                  sephia.pgp.key-server.submit:x:/@p5.crypto.create-pgp-keypair/*/fingerprint?value
                                                   if:x:/-?value
                                                     not
 

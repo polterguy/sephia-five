@@ -1,8 +1,11 @@
 ﻿
 /*
  * Creates standard email HTML from the given [_arg] Markdown content.
+ *
+ * This implies among other things, wrapping the signature of your email into a <pre></pre> HTML snippet,
+ * making all URLs become hyperlinks, in addition to converting the content of email to HTML by assuming it's Markdown.
  */
-create-event:sephia._internals.markdown.to-html
+create-event:sephia.core.markdown.to-html
 
   /*
    * Splitting up signature, such that we can have it displayed as pre-formatted.
@@ -31,7 +34,7 @@ create-event:sephia._internals.markdown.to-html
      * User didn't have any signature, returning raw markdown with hyperlink conversion,
      * making sure we "braid it" into our "wrapper HTML" template.
      */
-    sephia._internals.markdown.to-html._wrap:x:/@sephia._internals.html.create-hyperlinks?value
+    sephia._internals.markdown-to-html.wrap:x:/@sephia._internals.html.create-hyperlinks?value
     return:x:/-?value
 
   /*
@@ -45,30 +48,7 @@ create-event:sephia._internals.markdown.to-html
    * Returning both Markdown and signature as pre-formatted,
    * making sure we "braid" everything inside our "wrapper HTML" template.
    */
-  sephia._internals.markdown.to-html._wrap:"{0}\r\n<pre style=\"opacity:.3;\">-- \r\n{1}</pre>"
+  sephia._internals.markdown-to-html.wrap:"{0}\r\n<pre style=\"opacity:.3;\">-- \r\n{1}</pre>"
     :x:/../*/sephia._internals.html.create-hyperlinks/[0,1]?value
     :x:/../*/sephia._internals.html.create-hyperlinks/[1,2]?value
   return:x:/-?value
-
-
-
-
-
-/*
- * Will wrap the email content given as [_arg] inside of its "standard HTML template".
- */
-create-event:sephia._internals.markdown.to-html._wrap
-
-  return:@"<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset=""utf-8"">
-    <title>Sephia Five email</title>
-  </head>
-  <body>
-    <div class=""sephia-five-email"">
-      {0}
-    </div>
-  </body>
-</html>"
-    :x:/../*/_arg?value

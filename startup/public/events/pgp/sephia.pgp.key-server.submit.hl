@@ -1,10 +1,12 @@
 ﻿
 /*
- * Will submit the given public key to Ubuntu's keyserver.
+ * Will submit the given public key to the key server from your config settings.
  *
  * Expects the fingerprint of the key to submit to be supplied as [_arg].
+ *
+ * Returns boolean true if upload was successful, otherwise false.
  */
-create-event:sephia._internals.pgp.key-server.submit
+create-event:sephia.pgp.key-server.submit
 
   /*
    * Retrieving public key.

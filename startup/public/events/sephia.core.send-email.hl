@@ -10,7 +10,7 @@
  *
  * Will save the sent email into database, associated with the user who sent it.
  */
-create-event:sephia.send-email
+create-event:sephia.core.send-email
 
   /*
    * Sanity check, verifies that at least [subject], [body] and [to] is given.
@@ -223,7 +223,7 @@ create-event:sephia.send-email
     /*
      * Caller requested that Markdown should be used.
      */
-    sephia._internals.markdown.to-html:x:/../*/body?value
+    sephia.core.markdown.to-html:x:/../*/body?value
     eval-x:x:/+/*/*/*/*/content
 
     /*
@@ -242,7 +242,7 @@ create-event:sephia.send-email
           text:plain
             content:x:/../*/body?value
           text:html
-            content:x:/@sephia._internals.markdown.to-html?value
+            content:x:/@sephia.core.markdown.to-html?value
 
   else
 

@@ -305,7 +305,7 @@ p5.sephia_send_email = function(e) {
                        */
                       add:x:/+
                         src:x:/@micro.form.serialize/*(!/no-data)
-                      sephia.send-email
+                      sephia.core.send-email
 
                       /*
                        * Invoking specified [.onclose] and [.onsend] lambda objects given during creation of widget.

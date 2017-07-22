@@ -24,13 +24,13 @@ create-event:sephia._internals.pgp.sign-public-key
   /*
    * Submitting public key to key server, now signed.
    */
-  sephia._internals.pgp.key-server.submit:x:/../*/fingerprint?value
+  sephia.pgp.key-server.submit:x:/../*/fingerprint?value
 
   /*
    * Then updating "contacts" table, but only if submitting
    * key to key server was a success.
    */
-  if:x:/@sephia._internals.pgp.key-server.submit?value
+  if:x:/@sephia.pgp.key-server.submit?value
 
     /*
      * Submitting key to key server was a success.
@@ -43,4 +43,4 @@ create-event:sephia._internals.pgp.sign-public-key
    * The above invocation returns true if successful, making sure we return
    * that return value to caller.
    */
-  return:x:/@sephia._internals.pgp.key-server.submit?value
+  return:x:/@sephia.pgp.key-server.submit?value
