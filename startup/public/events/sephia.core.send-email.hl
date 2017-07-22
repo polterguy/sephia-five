@@ -21,6 +21,14 @@ create-event:sephia.core.send-email
     to:string
 
   /*
+   * Sanity checking optional arguments.
+   */
+  micro.lambda.contract.optional:x:/..
+    cc:string
+    bcc:string
+    attachment:string
+
+  /*
    * Retrieving settings for currently logged in user.
    */
   whoami

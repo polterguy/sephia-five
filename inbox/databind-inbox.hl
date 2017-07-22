@@ -14,6 +14,17 @@
 
 
 /*
+ * Sanity checking optional arguments.
+ */
+micro.lambda.contract.optional:x:/..
+  offset:long
+  filter:string
+
+
+
+
+
+/*
  * Needed to parametrize SQL select queries.
  */
 whoami

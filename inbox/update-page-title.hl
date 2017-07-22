@@ -4,7 +4,7 @@
  *
  * Simply sets the title of the page to "Sephia emails/unread"
  */
- whoami
+whoami
 p5.mysql.connect:[sephia]
   p5.mysql.scalar:@"select count(*) from emails where username = @username"
     @username:x:/@whoami/*/username?value

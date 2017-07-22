@@ -3,7 +3,7 @@
  * Extension widget that creates the widget that displays the body of an email.
  *
  * Expects [row] from "parts" MySQL table, which it will intelligently parse, and return either
- * an iframe for or a pre-formatted div for, depending upon which views that exists, and which
+ * an iframe for, or a pre-formatted div for, depending upon which views that exists, and which
  * type of view user prefers according to his settings.
  *
  * If email is rendered as HTML, all potential malicious HTML tags are stripped according to
@@ -15,6 +15,11 @@
 create-event:sephia._internals.widgets.email-body
 
   /*
+   * Signal node, to be able to easily find arguments.
+   */
+  .signal
+
+  /*
    * Sanity checking invocation.
    */
   micro.lambda.contract.min:x:/..
@@ -23,11 +28,6 @@ create-event:sephia._internals.widgets.email-body
       type:string
       content:string
       emailid:long
-
-  /*
-   * Signal node, to be able to easily find arguments.
-   */
-  .signal
 
   /*
    * Retrieving user's settings to figure out which type of email content he prefers.

@@ -36,6 +36,14 @@ create-event:sephia.widgets.compose-email
     class:air-inner
 
   /*
+   * Sanity checking optional arguments.
+   */
+  micro.lambda.contract.optional:x:/..
+    subject:string
+    body:string
+    recipients
+
+  /*
    * Including JavaScript necessary to handle uploading of attachments.
    *
    * This is done in an Ajax request invoking [.onupload] on a input element

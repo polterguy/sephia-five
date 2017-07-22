@@ -16,6 +16,8 @@ create-event:sephia._internals.is-legal-attachment
   eval-x:x:/+/*
   sephia._internals.mime.get-type-from-file-extension
     filename:x:/../*/_arg?value
+    folder:DUMMY
+    prefix:DUMMY
   if:x:/-/*
 
     /*

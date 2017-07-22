@@ -21,6 +21,14 @@ create-event:sephia._internals.smtp.save-envelope
       body
 
   /*
+   * Sanity checking optional arguments.
+   */
+  micro.lambda.contract.optional:x:/..
+    file:string
+      prefix:string
+      folder:string
+
+  /*
    * Open database connection.
    */
   p5.mysql.connect:[sephia]

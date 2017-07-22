@@ -23,6 +23,16 @@ micro.lambda.contract.min:x:/..
 
 
 /*
+ * Sanity checking optional arguments.
+ */
+micro.lambda.contract.optional:x:/..
+  after:string
+
+
+
+
+
+/*
  * Checking if email is already opened in another widget.
  */
 p5.web.widgets.find:sephia-main-container
