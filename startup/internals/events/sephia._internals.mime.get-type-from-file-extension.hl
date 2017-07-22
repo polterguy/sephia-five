@@ -1,6 +1,6 @@
 ﻿
 /*
- * Returns the MIME type for a file name, in addition to the "Content-Transfer-Encoding" unless file is transferred as as.
+ * Returns the MIME type for a file name, in addition to the "Content-Transfer-Encoding", unless file is transferred as as.
  *
  * Requires [filename], [folder] and [prefix].
  *
@@ -10,6 +10,14 @@
  * unless it's plain text.
  */
 create-event:sephia._internals.mime.get-type-from-file-extension
+
+  /*
+   * Sanity checking invocation.
+   */
+  micro.lambda.contract.min:x:/..
+    filename:string
+    folder:string
+    prefix:string
 
   /*
    * Splitting [filename] to figure out its extension.

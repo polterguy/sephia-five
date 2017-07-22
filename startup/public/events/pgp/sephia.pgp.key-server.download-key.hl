@@ -7,6 +7,12 @@
 create-event:sephia.pgp.key-server.download-key
 
   /*
+   * Sanity checking invocation.
+   */
+  micro.lambda.contract.min:x:/..
+    _arg:string
+
+  /*
    * Loading key server configuration setting.
    */
   load-file:@SEPHIA/config/key-server.hl

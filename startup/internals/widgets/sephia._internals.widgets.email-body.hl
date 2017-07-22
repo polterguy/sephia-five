@@ -15,6 +15,16 @@
 create-event:sephia._internals.widgets.email-body
 
   /*
+   * Sanity checking invocation.
+   */
+  micro.lambda.contract.min:x:/..
+    row
+      id:long
+      type:string
+      content:string
+      emailid:long
+
+  /*
    * Signal node, to be able to easily find arguments.
    */
   .signal

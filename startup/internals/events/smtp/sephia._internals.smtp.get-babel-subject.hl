@@ -28,7 +28,7 @@ create-event:sephia._internals.smtp.get-babel-subject
 
   /*
    * Making sure we wrap our logic in a try/catch block, and if an exception occurs,
-   * we return a random GUID.
+   * we return an empty string.
    */
   try
 

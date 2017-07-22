@@ -5,6 +5,12 @@
 create-event:sephia._internals.is-legal-attachment
 
   /*
+   * Sanity checking invocation.
+   */
+  micro.lambda.contract.min:x:/..
+    _arg:string
+
+  /*
    * Checking if we have a MIME type registered in our configuration for the given file.
    */
   eval-x:x:/+/*

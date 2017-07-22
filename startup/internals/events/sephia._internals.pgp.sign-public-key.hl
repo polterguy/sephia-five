@@ -14,6 +14,13 @@
 create-event:sephia._internals.pgp.sign-public-key
 
   /*
+   * Sanity checking invocation.
+   */
+  micro.lambda.contract.min:x:/..
+    fingerprint:string
+    contact:long
+
+  /*
    * Signing contact's public key, with user's private key.
    */
   p5.auth.my-settings.get

@@ -11,6 +11,16 @@
 create-event:sephia._internals.smtp.save-envelope
 
   /*
+   * Sanity checking invocation.
+   */
+  micro.lambda.contract.min:x:/..
+    envelope
+      To
+      Sender
+      Subject
+      body
+
+  /*
    * Open database connection.
    */
   p5.mysql.connect:[sephia]

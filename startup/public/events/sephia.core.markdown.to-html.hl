@@ -8,6 +8,12 @@
 create-event:sephia.core.markdown.to-html
 
   /*
+   * Sanity checking invocation.
+   */
+  micro.lambda.contract.min:x:/..
+    _arg:string
+
+  /*
    * Splitting up signature, such that we can have it displayed as pre-formatted.
    */
   split:x:/../*/_arg?value

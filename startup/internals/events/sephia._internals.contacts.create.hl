@@ -1,9 +1,9 @@
 ﻿
 /*
- * Creates a contact from the given [name], [email] and [username] arguments, 
+ * Creates a contact from the given [email] and [username] arguments, 
  * and returns the ID of the contact that was inserted.
  *
- * Optionally pass in [fingerprint], which is the fingerprint of the public PGP key
+ * Optionally pass in [name] as name, and/or [fingerprint], which is the fingerprint of the public PGP key
  * the contact should be created with.
  *
  * Will attempt to find a public PGP key for contact, either in GnuPG database, or using key server.
@@ -12,12 +12,18 @@
 create-event:sephia._internals.contacts.create
 
   /*
+   * Making sure invoker obeys by lambda contract.
+   */
+  micro.lambda.contract.min:x:/..
+    name:string
+    email:string
+    username:string
+
+  /*
    * Making sure name defaults to first parts of email, if it is empty or null.
    */
   if:x:/../*/name?value
-    not
-    or:x:/../*/name?value
-      =:
+    =:
     split:x:/../*/email?value
       =:@
     set:x:/../*/name?value

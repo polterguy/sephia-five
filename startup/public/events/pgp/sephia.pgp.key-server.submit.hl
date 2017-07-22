@@ -1,12 +1,17 @@
 ﻿
 /*
- * Will submit the given public key to the key server from your config settings.
+ * Will submit the given public key [_arg] to the key server from your config settings.
  *
  * Expects the fingerprint of the key to submit to be supplied as [_arg].
- *
  * Returns boolean true if upload was successful, otherwise false.
  */
 create-event:sephia.pgp.key-server.submit
+
+  /*
+   * Sanity checking invocation.
+   */
+  micro.lambda.contract.min:x:/..
+    _arg:string
 
   /*
    * Retrieving public key.
