@@ -7,6 +7,8 @@
  * Attachments should be, if given, a collection of nodes, having values pointing to files on the server.
  *
  * [to], [cc] and [bcc] should be comma separated list of emails.
+ *
+ * Will save the sent email into database, associated with the user who sent it.
  */
 create-event:sephia.send-email
 
@@ -39,6 +41,12 @@ create-event:sephia.send-email
    * Used to temporary hold fingerprints of all recipients of email.
    */
   .fingerprints
+
+  /*
+   * Used to temporary hold attachments for email, since we'll need them in a 
+   * different format at the end of this event, when saving email to database.
+   */
+  .attachments
 
   /*
    * Adding all recipients' email addresses
@@ -102,10 +110,14 @@ create-event:sephia.send-email
     src:x:/../*/subject?value
 
   /*
-   * Used to track of envelope has been given a multipart or not.
+   * Used to track if envelope has been given a multipart or not.
    *
    * We try to keep construction of email as small as possible, and only
    * create a multipart if we really have to.
+   *
+   * This makes sure that unless user both have attachments and has chosen to
+   * compose HTML emails (using Markdown) - Then only a single text:plain MIME type
+   * will be created.
    */
   .has-multipart:bool:true
 
@@ -124,11 +136,20 @@ create-event:sephia.send-email
        * Checking if we need to create a multipart for envelope.
        */
       if:x:/@.has-multipart?value
+
+        /*
+         * We'll need to create a root multipart MIME entity.
+         */
         set:x:/@.has-multipart?value
           src:bool:false
         add:x:/@.envelope/*/body
           src
             multipart:mixed
+
+        /*
+         * Since this is our first attachment, we verify that the user has an attachment folder.
+         */
+        micro.evaluate.file:@SEPHIA/core/ensure-user-attachment-folder.hl
 
       /*
        * Copy file into attachment folder, and figuring out new path 
@@ -158,13 +179,25 @@ create-event:sephia.send-email
           :x:/@split/0/-?name
 
       /*
+       * Adding file to above [.attachments] lambda, which is needed later
+       * when saving email to database.
+       */
+      eval-x:x:/+/*/**
+      add:x:/@.attachments
+        src
+          file:x:/@split/0/-?name
+            prefix:{0}-
+              :x:/@p5.types.guid.new?value
+            folder:x:/@p5.io.unroll-path?value
+
+      /*
        * Figuring out MIME type for file.
        */
       eval-x:x:/+/*
       sephia._internals.mime.get-type-from-file-extension
         folder:x:/@p5.io.unroll-path?value
-        filename:x:/@split/0/-?name
         prefix:x:/@p5.types.guid.new?value
+        filename:x:/@split/0/-?name
 
       /*
        * Adding file to [.envelope].
@@ -192,6 +225,17 @@ create-event:sephia.send-email
      */
     sephia._internals.markdown.to-html:x:/../*/body?value
     eval-x:x:/+/*/*/*/*/content
+
+    /*
+     * Notice, this expression might look "funny", but our email structure depends upon
+     * whether or not user has added attachments or not.
+     *
+     * If user has attached files in his email, then a "multipart:mixed" wrapper around
+     * the entire email will have been created. We prioritize adding our "multipart:alternative"
+     * entity inside of this wrapper multipart.
+     * If this wrapper "multipart:mixed" doesn't exist however, we simply make sure our 
+     * "multipart:alternative" becomes the root MIME entity of our message.
+     */
     add:x:(/@.envelope/*/body/*/multipart|/@.envelope/*/body)/[0,1]
       src
         multipart:alternative
@@ -206,6 +250,13 @@ create-event:sephia.send-email
      * Caller did not want to create an HTML view.
      */
     eval-x:x:/+/*/*/*/content
+
+    /*
+     * Notice, this expression might look "funny", but our email structure depends upon
+     * whether or not user has added attachments or not.
+     *
+     * See above comments for explanation.
+     */
     add:x:(/@.envelope/*/body/*/multipart|/@.envelope/*/body)/[0,1]
       src
         text:plain
@@ -222,7 +273,13 @@ create-event:sephia.send-email
     /*
      * We've got cryptography keys for all recipients.
      *
-     * First adding an [encrypt] node to our multipart.
+     * First adding an [encrypt] node to our root MIME entity, which might be either
+     * a "multipart:mixed", "multipart:alternative" or a simple "text:plain", depending
+     * upon whether or not user has added attachments to email, chosen to create alternative 
+     * HTML views by converting text content into Markdown, or neither of the above.
+     *
+     * Hence, at this point, we shouldn't care what type of MIME entity is our root entity,
+     * and simply choose to encrypt the root MIME entity, regardless of its type.
      */
     add:x:/@.envelope/*/body/0
       src:encrypt
@@ -252,7 +309,15 @@ create-event:sephia.send-email
     if:x:/-/*
 
       /*
-       * Private key exists in GnuPG database.
+       * Private key for user exists in GnuPG database.
+       *
+       * Notice, our root MIME entity might be either a "multipart:mixed", "multipart:alternative" 
+       * or a simple "text:plain", depending upon whether or not user has added attachments to email, 
+       * chosen to create alternative HTML views by converting text content into Markdown, or neither 
+       * of the above.
+       *
+       * Hence, at this point, we shouldn't care what type of MIME entity is our root entity,
+       * and simply choose to sign the root MIME entity, regardless of its type.
        */
       eval-x:x:/+/*/*/**
       add:x:/@.envelope/*/body/0
@@ -273,22 +338,35 @@ create-event:sephia.send-email
    *
    * First we add entire [.envelope] into SMTP invocation.
    */
+  eval-x:x:/../*/p5.smtp.send/*
   add:x:/../*/p5.smtp.send/*/envelope
     src:x:/@.envelope/*
+
+  /*
+   * Then we add our envelope into our [sephia._internals.smtp.save-envelope] invocation, which
+   * will save our email to our database.
+   */
+  add:x:/../*/sephia._internals.smtp.save-envelope/*
+    src:x:/@.envelope/*
+  add:x:/../*/sephia._internals.smtp.save-envelope
+    src:x:/@.attachments/*
 
   /*
    * Babeling our subject, but only if email is to be sent encrypted.
    *
    * Notice, this is done on the data that now exists inside of [p5.smtp.send],
-   * and will change the subject line, and move it into our encrypted parts of email,
-   * if email is to be sent encrypted.
+   * and will change the subject line, and move it into our encrypted parts of email.
    */
   if:x:/../*/p5.smtp.send/*/envelope/*/body/0/*/encrypt
 
     /*
      * Email is be sent encrypted, "babeling" our subject.
      *
-     * First base64 encoding actual subject, and adding to encrypted multipart entity.
+     * First base64 encoding real subject, and adding it to encrypted multipart entity as 
+     * a custom MIME header called "X-Subject".
+     *
+     * This MIME header is added to the root MIME entity of our message, regardless of what 
+     * type of MIME entity that is.
      */
     p5.string.encode-base64:x:/../*/subject?value
     eval-x:x:/+/*/*
@@ -308,6 +386,7 @@ create-event:sephia.send-email
      * we move subject line into both of its text parts.
      *
      * First we move subject into our "text:plain" MIME part's content.
+     * Subject is added as a Markdown "h3" element at the top of our email.
      */
     set:x:/../*/p5.smtp.send/*/envelope/**/text/=plain/*/content?value
       src:@"### {0}
@@ -318,11 +397,14 @@ create-event:sephia.send-email
 
     /*
      * Then we move our subject into our "text:html" MIME part's content, if there is one.
+     *
+     * This is done by semantically parsing our HTML view's content, and inserting our own "h3" element
+     * directly into the HTML, using the [html2lambda] and [lambda2html] events.
      */
     if:x:/../*/p5.smtp.send/*/envelope/**/text/=html
 
       /*
-       * There is an HTML part, hence we'll need to inject an "h3" element into the top 
+       * There is an HTML part, hence we'll need to insert an "h3" element into the top 
        * of our "body" element.
        */
       html2lambda:x:/../*/p5.smtp.send/*/envelope/**/text/=html/*/content?value
@@ -331,16 +413,14 @@ create-event:sephia.send-email
         src
           h3
             #text:x:/../*/subject?value
+
+      /*
+       * Then converting results of above insertion back into HTML, and updating the "text:html"
+       * MIME entity of our email.
+       */
       lambda2html:x:/@html2lambda/*
       set:x:/../*/p5.smtp.send/*/envelope/**/text/=html/*/content?value
         src:x:/@lambda2html?value
-
-  /*
-   * Final preparings to send and save our email.
-   */
-  eval-x:x:/../*/p5.smtp.send/*
-  add:x:/../*/sephia._internals.smtp.save-envelope/*
-    src:x:/@.envelope/*
 
   /*
    * Sending our actual email using our user's SMTP settings.
@@ -362,7 +442,7 @@ create-event:sephia.send-email
    * But we'll need to make sure the email is saved with the correct MIME ID, which is returned
    * from above invocation to [p5.smtp.send].
    */
-  set:x:/+/*?value
+  set:x:/+/*/envelope?value
     src:x:/@p5.smtp.send/*/envelope?value
   sephia._internals.smtp.save-envelope
     envelope

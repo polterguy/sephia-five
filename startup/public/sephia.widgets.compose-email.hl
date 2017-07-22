@@ -1,4 +1,4 @@
-﻿
+﻿﻿
 /*
  * Extension widget for composing an email.
  *
@@ -85,7 +85,7 @@ p5.sephia_upload_files = function(e) {
     eval-x:x:/+/*/*/*
     add:x:/../*/return/*/div/*/oninit
       src
-        sephia.widgets.compose-emailr._add-attachment:x:/../*/_event?value
+        sephia.widgets.compose-email._add-attachment:x:/../*/_event?value
           filename:x:/@_dp/#?value
 
   /*
@@ -139,7 +139,7 @@ p5.sephia_send_email = function(e) {
          *
          * Requires [filename] as argument.
          */
-        sephia.widgets.compose-emailr._add-attachment
+        sephia.widgets.compose-email._add-attachment
 
           /*
            * Verifying this is our instance.
@@ -189,11 +189,10 @@ p5.sephia_send_email = function(e) {
                    *
                    * However, if file was in user's temp attachment folder, it will be deleted
                    * the next time user refreshes his page, or starts Sephia Five, hence
-                   * we don't need to delete it.
+                   * we don't need to delete it, since inevitably it will be deleted later at some point.
                    */
                   p5.web.widgets.get-parent:x:/../*/_event?value
-                  micro.form.serialize:x:/-/*/*?value
-                  delete-widget:x:/@p5.web.widgets.get-parent/*/*?value
+                  delete-widget:x:/-/*/*?value
 
       widgets:content
 
@@ -383,11 +382,11 @@ p5.sephia_send_email = function(e) {
                     p5.web.widgets.find-first-ancestor:x:/../*/_event?value
                       .email-composer
                     eval-x:x:/+/*/*
-                    add:x:/../*/sephia.widgets.compose-emailr._add-attachment
+                    add:x:/../*/sephia.widgets.compose-email._add-attachment
                       src
                         filename:@SEPHIA-USER-ATTACHMENTS/tmp/{0}
                           :x:/../*/p5.web.post.get/[0,1]/*?value
-                    sephia.widgets.compose-emailr._add-attachment:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                    sephia.widgets.compose-email._add-attachment:x:/@p5.web.widgets.find-first-ancestor/*/*?value
 
                   onchange:"p5.sephia_upload_files(event);"
 

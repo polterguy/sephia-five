@@ -1,0 +1,16 @@
+﻿
+/*
+ * File will make sure there exists an attachment folder for user.
+ */
+if
+  fetch:x:/0/0?value
+    folder-exists:@SEPHIA-USER-ATTACHMENTS/
+  not
+
+  /*
+   * Creating attachments folders, the "/tmp/" guy is for temporary attachments,
+   * for instance attachments uploaded during composing an email, that still haven't
+   * been sent, etc.
+   */
+  create-folder:@SEPHIA-USER-ATTACHMENTS/
+  create-folder:@SEPHIA-USER-ATTACHMENTS/tmp/

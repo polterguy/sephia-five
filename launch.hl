@@ -66,26 +66,17 @@ p5.web.include-css-file:@SEPHIA/media/main.css
  *
  * Every time the user starts Sephia, this temporary attachment folder will be emptied.
  */
-if
-  fetch:x:/0/0?value
-    folder-exists:@SEPHIA-USER-ATTACHMENTS/
-  not
+micro.evaluate.file:@SEPHIA/core/ensure-user-attachment-folder.hl
 
-  /*
-   * Creating attachments folders, the "/tmp/" guy is for temporary attachments,
-   * for instance attachments uploaded during composing an email, that still haven't
-   * been sent, etc.
-   */
-  create-folder:@SEPHIA-USER-ATTACHMENTS/
-  create-folder:@SEPHIA-USER-ATTACHMENTS/tmp/
 
-else
 
-  /*
-   * Making sure we delete all file in temporary attachment folder.
-   */
-  list-files:@SEPHIA-USER-ATTACHMENTS/tmp/
-  delete-file:x:/-/*?name
+
+
+/*
+ * Making sure we delete all file in temporary attachment folder.
+ */
+list-files:@SEPHIA-USER-ATTACHMENTS/tmp/
+delete-file:x:/-/*?name
 
 
 

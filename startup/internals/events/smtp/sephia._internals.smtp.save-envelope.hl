@@ -4,8 +4,9 @@
  *
  * Expects [envelope] as argument, being entire SMTP envelope.
  *
- * Also expects (outside of envelope) one [file] object for each attachment, having [filename], [prefix] and [folders]
- * as arguments.
+ * Also expects (outside of envelope) one [file] object for each attachment, 
+ * having a value pointing to filename, a [prefix] and a [folder] as arguments, which once
+ * combined together, becomes the file's complete path.
  */
 create-event:sephia._internals.smtp.save-envelope
 
@@ -156,7 +157,7 @@ create-event:sephia._internals.smtp.save-envelope
       for-each:x:/../*/file
         p5.io.unroll-path:x:/@_dp/#/*/folder?value
         p5.mysql.insert:@"insert into attachments (filename, prefix, folder, emailid) values (@filename, @prefix, @folder, @emailid)"
-          @filename:x:/@_dp/#/*/filename?value
+          @filename:x:/@_dp/#?value
           @prefix:x:/@_dp/#/*/prefix?value
           @folder:x:/@p5.io.unroll-path?value
           @emailid:x:/@p5.mysql.insert/@p5.mysql.insert/@p5.mysql.insert/*/id?value
