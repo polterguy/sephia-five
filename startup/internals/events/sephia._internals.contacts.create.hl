@@ -96,5 +96,15 @@ create-event:sephia._internals.contacts.create
     @email:x:/../*/email?value
     @username:x:/../*/username?value
     @fingerprint:x:/@_fingerprint?value
-  return:x:/@p5.mysql.insert/*/id?value
+
+  /*
+   * Returning newly inserted contact to caller.
+   */
+  eval-x:x:/+/*
+  return
+    id:x:/@p5.mysql.insert/*/id?value
+    name:x:/../*/name?value
+    email:x:/../*/email?value
+    username:x:/../*/username?value
+    fingerprint:x:/@_fingerprint?value
   
