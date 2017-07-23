@@ -294,12 +294,13 @@ fork
                      * Creating contact by evaluating [sephia._internals.contacts.create], and using
                      * return value is "id" for contact.
                      */
-                    eval-x:x:/+/*/*
+                    eval-x:x:/+/*/*/*
                     set:x:/@_from?value
-                      sephia._internals.contacts.create
-                        name:x:/@_dp/#/*/From/0?name
-                        email:x:/@_dp/#/*/From/0?value
-                        username:x:/@.whoami/*/username?value
+                      fetch:x:/0/*/id?value
+                        sephia._internals.contacts.create
+                          name:x:/@_dp/#/*/From/0?name
+                          email:x:/@_dp/#/*/From/0?value
+                          username:x:/@.whoami/*/username?value
 
                   else-if:x:/@p5.mysql.select/0/*/name?name
                     !=:x:/@_dp/#/*/From/*?name
@@ -399,10 +400,11 @@ fork
                        * try to look for a PGP key, etc for recipient.
                        */
                       set:x:/@_contact-id?value
-                        sephia._internals.contacts.create
-                          name:x:/@_dp/#?name
-                          email:x:/@_dp/#?value
-                          username:x:/@.whoami/*/username?value
+                        fetch:x:/0/*/id?value
+                          sephia._internals.contacts.create
+                            name:x:/@_dp/#?name
+                            email:x:/@_dp/#?value
+                            username:x:/@.whoami/*/username?value
 
                     else-if:x:/@p5.mysql.select/0/*/name?value
                       !=:x:/@_dp/#?name

@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS `contacts` (
 CREATE TABLE IF NOT EXISTS `emails` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `subject` varchar(4096) NOT NULL,
-  `babelsubject` varchar(4096) NOT NULL,
+  `babelsubject` varchar(4096) NULL,
   `date` datetime NOT NULL,
   `sender` int(10) unsigned NOT NULL,
   `username` varchar(45) NOT NULL,
