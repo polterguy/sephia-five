@@ -478,7 +478,7 @@ fork
        * Sleeping current thread for n seconds, before we start continute our outer [while], 
        * which will start fetching again.
        */
-      sleep:10000
+      sleep:5000
 
       /*
        * Making sure we have synchronised access to our "thread signal object".

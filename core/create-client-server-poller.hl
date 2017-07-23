@@ -33,7 +33,7 @@ create-literal-widget:sephia-poller
      * invoking our [.oncheck] below, after n seconds.
      */
     sephia.core.create-poller-javascript
-      p5.web.send-javascript:@"if (!p5.sephia_poller) {p5.sephia_poller=true;setTimeout(function(){delete p5.sephia_poller;p5.$('sephia-poller').raise('.oncheck')}, 10000);}"
+      p5.web.send-javascript:@"if (!p5.sephia_poller) {p5.sephia_poller=true;setTimeout(function(){delete p5.sephia_poller;p5.$('sephia-poller').raise('.oncheck')}, 5000);}"
 
   .oncheck
 
