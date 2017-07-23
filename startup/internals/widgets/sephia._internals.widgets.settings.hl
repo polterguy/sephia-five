@@ -879,21 +879,17 @@ create-event:sephia._internals.widgets.settings
                         /*
                          * Nothing was updated, hence we'll need to insert a new record.
                          */
-                        p5.mysql.insert:@"insert into contacts (name, email, username) values (@name, @email, @username)"
+                        p5.mysql.insert:@"insert into contacts (name, email, username, fingerprint, isverified) values (@name, @email, @username, @fingerprint, 1)"
                           @name:x:/@micro.form.serialize/*/name?value
                           @email:x:/@micro.form.serialize/*/email?value
                           @username:x:/@whoami/*/username?value
+                          @fingerprint:x:/@micro.form.serialize/*/pgp-key?value
 
                     /*
                      * Re-launches inbox for simplicity.
                      */
                     load-file:@SEPHIA/launch.hl
                     eval:x:/-/*
-
-                    /*
-                     * Giving user feedback
-                     */
-                    micro.windows.info:Your settings was successfully saved
 
                 /*
                  * Close button that will close settings without updating them.
