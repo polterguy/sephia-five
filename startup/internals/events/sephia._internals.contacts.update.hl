@@ -40,48 +40,56 @@ create-event:sephia._internals.contacts.update
   _fingerprint
 
   /*
-   * Checking if we can find a public PGP key for user,
-   * but only if [fingerprint] was specified.
+   * Notice, we do NOT update fingerprint for contact, if there is an existing fingerprint for contact.
    */
-  if:x:/../*/fingerprint?value
+  p5.mysql.scalar:@"select count(*) from contacts where fingerprint is null and id = @id"
+    @id:x:/../*/id?value
+  if:x:/@p5.mysql.scalar?value.int
+    =:int:1
 
     /*
-     * First checking GnuPG database.
+     * Checking if we can find a public PGP key for user,
+     * but only if [fingerprint] was specified.
      */
-    p5.crypto.list-public-keys:x:/../*/fingerprint?value
-    if:x:/-/*?count
-      >:int:0
+    if:x:/../*/fingerprint?value
 
       /*
-       * We found a potentially matching key for contact in GnuPG database.
+       * First checking GnuPG database.
        */
-      set:x:/@_fingerprint?value
-        src:x:/@p5.crypto.list-public-keys/0?name
-
-    else
-
-      /*
-       * Caller supplied a [fingerprint] argument, downloading key if it exists.
-       * Making sure we wrap our logic in a try/catch block.
-       */
-      try
-        sephia.pgp.key-server.download-key:x:/../*/fingerprint?value
-        p5.crypto.import-public-pgp-key:x:/@sephia.pgp.key-server.download-key?value
+      p5.crypto.list-public-keys:x:/../*/fingerprint?value
+      if:x:/-/*?count
+        >:int:0
 
         /*
-         * Making sure our downloaded key actually matched the specified [fingerprint] argument, before
-         * we start using it.
+         * We found a potentially matching key for contact in GnuPG database.
          */
-        if:x:/@p5.crypto.import-public-pgp-key/0?name
-          =:x:/../*/fingerprint?value
-          set:x:/@_fingerprint?value
-            src:x:/@p5.crypto.import-public-pgp-key/0?name
+        set:x:/@_fingerprint?value
+          src:x:/@p5.crypto.list-public-keys/0?name
 
-      catch
+      else
 
         /*
-         * Silently catching, since we might be on another thread.
+         * Caller supplied a [fingerprint] argument, downloading key if it exists.
+         * Making sure we wrap our logic in a try/catch block.
          */
+        try
+          sephia.pgp.key-server.download-key:x:/../*/fingerprint?value
+          p5.crypto.import-public-pgp-key:x:/@sephia.pgp.key-server.download-key?value
+
+          /*
+           * Making sure our downloaded key actually matched the specified [fingerprint] argument, before
+           * we start using it.
+           */
+          if:x:/@p5.crypto.import-public-pgp-key/0?name
+            =:x:/../*/fingerprint?value
+            set:x:/@_fingerprint?value
+              src:x:/@p5.crypto.import-public-pgp-key/0?name
+
+        catch
+
+          /*
+           * Silently catching, since we might be on another thread.
+           */
 
   /*
    * Updating contact in database.
