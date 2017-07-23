@@ -198,10 +198,15 @@ fork
                   _fingerprint
                   _encrypted:int:0
                   _babel-subject
+
+                  /*
+                   * Checking if email was cryptographically signed, and that signature was verified.
+                   */
                   if:x:/@_dp/#/*/multipart/*/signature/*?value
 
                     /*
-                     * Email was cryptographically signed.
+                     * Email was cryptographically signed, and signature was verified to be correct.
+                     *
                      * Storing both email and fingerprint of key used to sign email.
                      */
                     set:x:/@_signature?value
@@ -209,7 +214,7 @@ fork
                     set:x:/@_fingerprint?value
                       src:x:/@_dp/#/*/multipart/*/signature/0/0?value
 
-                  if:x:/@_dp/#/*/multipart/*/decryption-key
+                  if:x:/@_dp/#/*/multipart/=encrypted
 
                     /*
                      * Email was encrypted.
@@ -283,12 +288,13 @@ fork
 
                     /*
                      * Doesn't exist, inserting new entry.
+                     *
                      * Passing in [fingerprint] for PGP key that signed the email, if a signature was given.
                      */
-                    if:x:/@_signature?value
-                      add:x:/./*/set/*
+                    if:x:/@_fingerprint?value
+                      add:x:/././*/set/*/*
                         src
-                          fingerprint:x:/@_signature?value
+                          fingerprint:x:/@_fingerprint?value
 
                     /*
                      * Creating contact by evaluating [sephia._internals.contacts.create], and using
@@ -364,11 +370,26 @@ fork
                   /*
                    * Now inserting all "parts" into "parts" table.
                    */
-                  for-each:x:/@_dp/#/**/text/*/content/.
-                    p5.mysql.insert:@"insert into parts (type, content, emailid) values (@type, @content, @emailid)"
-                      @type:x:/@_dp/#?value
-                      @content:x:/@_dp/#/*/content?value
+                  if:x:/@_dp/#/**/text
+                    for-each:x:/@_dp/#/**/text/*/content/.
+                      p5.mysql.insert:@"insert into parts (type, content, emailid) values (@type, @content, @emailid)"
+                        @type:x:/@_dp/#?value
+                        @content:x:/@_dp/#/*/content?value
+                        @emailid:x:/@for-each/@p5.mysql.insert/*/id?value
+
+                  else
+
+                    /*
+                     * No parts, possible because of that email was encrypted for an encryption key 
+                     * that user doesn't use anymore.
+                     *
+                     * Notice, to keep "structure" of database, we still insert a part, possibly empty though,
+                     * possibly with a "processing message" from p5.mime.
+                     */
+                    _default:
+                    p5.mysql.insert:@"insert into parts (type, content, emailid) values ('plain', @content, @emailid)"
                       @emailid:x:/@for-each/@p5.mysql.insert/*/id?value
+                      @content:x:(/@_dp/#/**/processing-message|/@_default)?value
 
                   /*
                    * Stuffing email adresses into "contacts" and "recipients" tables.
@@ -399,6 +420,7 @@ fork
                        * Invoking [sephia._internals.contacts.create] to create our contact, which will
                        * try to look for a PGP key, etc for recipient.
                        */
+                      eval-x:x:/+/*/*/*
                       set:x:/@_contact-id?value
                         fetch:x:/0/*/id?value
                           sephia._internals.contacts.create
@@ -434,7 +456,7 @@ fork
                     p5.mysql.insert:@"insert into recipients (contactid, type, emailid) values (@contactid, @type, @id)"
                       @contactid:x:/@_contact-id?value
                       @type:x:/@_dp/#/.?name
-                      @id:x:/@for-each/@p5.mysql.insert/*/id?value
+                      @id:x:/..for-each/@p5.mysql.insert/*/id?value
 
                 /*
                  * Commit database transaction.
