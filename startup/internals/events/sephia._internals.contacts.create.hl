@@ -66,7 +66,8 @@ create-event:sephia._internals.contacts.create
   else
 
     /*
-     * No matching key in GnuPG, trying to search on key server, making sure we wrap
+     * No matching key in GnuPG, and no fingerprint was given.
+     * Trying to search on key server, making sure we wrap
      * our attempt into a try/catch block.
      */
     try
