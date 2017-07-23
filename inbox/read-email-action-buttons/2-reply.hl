@@ -90,6 +90,13 @@ button
         src:"Re: {0}"
           :x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]/*/*/babelsubject?value
 
+      /*
+       * Adding explicit babelsubject to composer widget.
+       */
+      add:x:/../**/sephia.widgets.compose-email
+        src
+          babelsubject:x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]/*/*/babelsubject?value
+
     /*
      * Will contain the "massaged content" from email.
      */
@@ -149,7 +156,6 @@ button
             sephia.widgets.compose-email
               markdown-composer:bool:true
               subject:x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]/*/*/subject?value
-              babelsubject:x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]/*/*/babelsubject?value
               body:x:/@_content?value
               recipients
               class:air-inner shaded rounded

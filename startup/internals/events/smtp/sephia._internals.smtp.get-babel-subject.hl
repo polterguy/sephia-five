@@ -13,9 +13,6 @@
  * instead of his or her actual subject line.
  *
  * The user can configure as many URLs babel-services as he wish, or none, at which point the event will return empty string ("").
- *
- * TODO: Potential improvements are to keep this subject around, and when the recipients answer (using Sephia), the subject "sticks",
- * and the email becomes a reply to that email's subject, and not a randomly generated new subject.
  */
 create-event:sephia._internals.smtp.get-babel-subject
 
