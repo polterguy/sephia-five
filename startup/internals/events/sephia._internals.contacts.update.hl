@@ -97,12 +97,29 @@ create-event:sephia._internals.contacts.update
    * Notice, different logic in case we couldn't find a matching [fingerprint].
    */
   if:x:/@_fingerprint?value
+
+    /*
+     * We always store fingerprint as UPPER in database.
+     */
+    set:x:/@_fingerprint?value
+      to-upper:x:/@_fingerprint?value
+
+    /*
+     * Doing actual update.
+     */
     p5.mysql.update:@"update contacts set name = @name, email = @email, fingerprint = @fingerprint where id = @id"
       @name:x:/../*/name?value
       @email:x:/../*/email?value
       @fingerprint:x:/@_fingerprint?value
       @id:x:/../*/id?value
+
   else
+
+    /*
+     * Updating without fingerprint.
+     *
+     * Notice, we still do not delete any existing fingerprints for contact.
+     */
     p5.mysql.update:@"update contacts set name = @name, email = @email where id = @id"
       @name:x:/../*/name?value
       @email:x:/../*/email?value

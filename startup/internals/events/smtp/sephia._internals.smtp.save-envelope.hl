@@ -114,6 +114,7 @@ create-event:sephia._internals.smtp.save-envelope
          * Retrieving PGP key's fingerprint, and doing lookup into 
          * GnuPG database to find its User ID, making sure we store both signature and fingerprint
          * of key as we insert our email into database.
+         *
          * Notice, we do a [to-upper] conversion of fingerprint, to make sure we store all
          * fingerprints the same way.
          */

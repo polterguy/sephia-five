@@ -71,6 +71,7 @@ create-event:sephia._internals.contacts.create
         =:x:/../*/fingerprint?value
         set:x:/@_fingerprint?value
           src:x:/@p5.crypto.import-public-pgp-key/0?name
+
     catch
 
     /*
@@ -102,6 +103,13 @@ create-event:sephia._internals.contacts.create
       /*
        * Silently catching, since invocation might be from a different thread.
        */
+
+  /*
+   * We always store fingerprint as UPPER in database.
+   */
+  if:x:/@_fingerprint?value
+    set:x:/@_fingerprint?value
+      to-upper:x:/@_fingerprint?value
 
   /*
    * Inserting new contact into database.
