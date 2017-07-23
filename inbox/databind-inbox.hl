@@ -76,6 +76,9 @@ if
     case:attachment
       set:x:/@_filter?value
         src:@"and exists (select * from attachments where attachments.emailid = emails.id)"
+    case:all
+      set:x:/@_filter?value
+        src:@""
     default
       micro.windows.info:I don't recognize your type declaration
         class:micro-windows-info warning
