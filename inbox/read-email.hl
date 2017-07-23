@@ -205,8 +205,8 @@ where recipients.emailid = @id"
   /*
    * Retrieving actual email.
    */
-  p5.mysql.select:@"select emails.id, subject, date, signature, emails.fingerprint, encrypted, type, mimeid, name, email from emails 
-inner join contacts on emails.sender = contacts.id 
+  p5.mysql.select:@"select emails.id, subject, date, signature, emails.fingerprint, encrypted, type, mimeid, name, email, contacts.fingerprint, contacts.isverified
+from emails inner join contacts on emails.sender = contacts.id 
 where emails.id = @id"
     @id:x:/../*/id?value
 
@@ -221,9 +221,27 @@ where emails.id = @id"
 
     /*
      * Email was both encrypted and signed.
+     *
+     * Now checking if contact actually has a fingerprint, and if it is verified.
      */
-    set:x:/@_bg?value
-      src:sephia-safe
+    if:x:/@p5.mysql.select/*/*/fingerprint/[0,1]?value
+      =:x:/@p5.mysql.select/*/*/fingerprint/[1,2]?value
+      and:x:/@p5.mysql.select/*/*/isverified?value.int
+        !=:int:0
+
+      /*
+       * Email was encrypted, cryptographically signed, and fingerprint of contact who sent email has been verified.
+       */
+      set:x:/@_bg?value
+        src:sephia-safe
+
+    else
+
+      /*
+       * Email was encrypted, cryptographically signed, but fingerprint of contact who sent email has not been verified.
+       */
+      set:x:/@_bg?value
+        src:sephia-unknown
 
   else
 
@@ -232,6 +250,10 @@ where emails.id = @id"
      */
     set:x:/@_bg?value
       src:sephia-unsafe
+  p5.html.html-encode:x:/..
+  create-widget
+    element:pre
+    innerValue:x:/@p5.html.html-encode?value
 
   /*
    * Checking if this is a "sent" email or a "received".
@@ -299,7 +321,7 @@ where emails.id = @id"
     set:x:/@_meta4?value
       src:"Signed by: {0} - {1}"
         :x:/@p5.html.html-encode?value
-        :x:/@p5.mysql.select/*/*/fingerprint?value
+        :x:/@p5.mysql.select/*/*/fingerprint/[0,1]?value
 
   else
 
