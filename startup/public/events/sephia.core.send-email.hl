@@ -5,6 +5,8 @@
  * Requires [subject], [body], [to] and optionally [cc] and [bcc], which all should be a comma separated list of emails.
  * Optionally pass in any number of [attachment] nodes, being attachments to send with email.
  * Any [attachment] nodes given should have values pointing to files on the server.
+ * You can also pass in an optional [babelsubject], which will explicitly use this subject, instead of creating a 
+ * new babel subject.
  *
  * [to], [cc] and [bcc] should be comma separated list of emails.
  *
@@ -26,6 +28,7 @@ create-event:sephia.core.send-email
   micro.lambda.contract.optional:x:/..
     cc:string
     bcc:string
+    babelsubject:string
     attachment:string
 
   /*
@@ -383,11 +386,25 @@ create-event:sephia.core.send-email
         X-Subject:x:/@p5.string.encode-base64?value
 
     /*
-     * Then getting a new random subject, and exchanging actual subject with "babel subject".
+     * Then getting a new random subject, and exchanging actual subject with "babel subject", or
+     * if supplied, using the babel subject specified when invoking event.
      */
-    sephia._internals.smtp.get-babel-subject
-    set:x:/../*/p5.smtp.send/*/envelope/*/Subject?value
-      src:x:/@sephia._internals.smtp.get-babel-subject?value
+    if:x:/../*/babelsubject?value
+
+      /*
+       * Caller supplied an explicit babel subject.
+       */
+      set:x:/../*/p5.smtp.send/*/envelope/*/Subject?value
+        src:x:/../*/babelsubject?value
+
+    else
+
+      /*
+       * Caller did not supply an explicit babel subject.
+       */
+      sephia._internals.smtp.get-babel-subject
+      set:x:/../*/p5.smtp.send/*/envelope/*/Subject?value
+        src:x:/@sephia._internals.smtp.get-babel-subject?value
 
     /*
      * Then to support email clients that does not support our custom "X-Subject" MIME header,

@@ -9,6 +9,9 @@
  * You can also pass in one [attachment] where the value of each [attachment] is expected to be a file that
  * already exists on server, with its complete path.
  *
+ * You can also optionally pass in a [babelsubject], which will make sure your email is using the specified
+ * babelsubject, and doesn't create a new one, if the subject is supposed to be babelled.
+ *
  * You can also optionally pass in [.onclose] and [.onsend] lambda callbacks, which will be invoked when
  * email composer is closed and/or email is sent, in addition to [class], which will be the root class
  * of the composer.
@@ -40,6 +43,7 @@ create-event:sephia.widgets.compose-email
    */
   micro.lambda.contract.optional:x:/..
     subject:string
+    babelsubject:string
     body:string
     recipients
 
@@ -109,6 +113,15 @@ p5.sephia_upload_files = function(e) {
    * Necessary to figure out user's signature, which is consumed further down.
    */
   p5.auth.my-settings.get
+
+  /*
+   * Checking if caller provided an explicit "babel subject".
+   */
+  if:x:/../*/babelsubject?value
+    eval-x:x:/+/*/*
+    add:x:/../*/return/**/sephia.core.send-email
+      src
+        babelsubject:x:/../*/babelsubject?value
 
   /*
    * Returning actual widget to caller.

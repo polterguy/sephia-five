@@ -197,6 +197,7 @@ fork
                   _signature
                   _fingerprint
                   _encrypted:int:0
+                  _babel-subject
                   if:x:/@_dp/#/*/multipart/*/signature/*?value
 
                     /*
@@ -227,8 +228,11 @@ fork
                     if:x:/@_dp/#/*/multipart/*/*/X-Subject?value
 
                       /*
-                       * There is a "hidden subject" in email.
+                       * There is a "hidden subject" in email, making sure we first store the "babel subject", before
+                       * we retrieve the real subject.
                        */
+                      set:x:/@_babel-subject?value
+                        src:x:/@_dp/#/*/Subject?value
                       set:x:/@_dp/#/*/Subject?value
                         p5.string.decode-base64:x:/@_dp/#/*/multipart/*/*/X-Subject?value
 
@@ -334,8 +338,9 @@ fork
                   /*
                    * Now we can insert email into database.
                    */
-                  p5.mysql.insert:@"insert into emails (subject, date, sender, username, isread, mimeid, signature, fingerprint, encrypted, type, inreplyto) values (@subject, @date, @sender, @username, 0, @mimeid, @signature, @fingerprint, @encrypted, 'received', @inreplyto)"
+                  p5.mysql.insert:@"insert into emails (subject, babelsubject, date, sender, username, isread, mimeid, signature, fingerprint, encrypted, type, inreplyto) values (@subject, @babelsubject, @date, @sender, @username, 0, @mimeid, @signature, @fingerprint, @encrypted, 'received', @inreplyto)"
                     @subject:x:/@_dp/#/*/Subject?value
+                    @babelsubject:x:/@_babel-subject?value
                     @date:x:/@_dp/#/*/Date?value
                     @sender:x:/@_from?value.uint
                     @username:x:/@.whoami/*/username?value
