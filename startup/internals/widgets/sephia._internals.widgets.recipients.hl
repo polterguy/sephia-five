@@ -749,41 +749,22 @@ create-event:sephia.contacts._changed
         class:warning
     return
 
-  trim:x:/@join?value
-    chars:,
-  split:x:/-?value
+  split:x:/@trim?value
     =:,
     =:" "
 
   /*
-   * Making sure we don't get an SQL injection attack!
-   */
-  for-each:x:/@split/*
-    split:x:/@_dp/#?name
-      =:"\r\n"
-      =:"'"
-      =:"\""
-    if:x:/@split/*?count
-      >:int:1
-
-      // Bad data supplied by user!
-      micro.windows.info:Oops, bad data!
-        class:micro-windows-info warning
-      return
-
-  /*
    * Checking if all recipients have a public PGP key.
    */
-  join:x:/@split/*?name
-    wrap:"'"
-    sep:,
   whoami
   p5.mysql.connect:[sephia]
-    p5.mysql.scalar:@"select count(*) from contacts where email in ({0}) and fingerprint is null and username = @username"
-      :x:/@join?value
+    add:x:/+/*/\@email
+      src:x:/@split/*?name
+    p5.mysql.scalar:@"select count(*) from contacts where email in (@email) and fingerprint is not null and username = @username"
+      @email
       @username:x:/@whoami/*/username?value
-  if:x:/@p5.mysql.connect/*?value.int
-    =:int:0
+  if:x:/@p5.mysql.connect/*/p5.mysql.scalar?value.int
+    =:x:/@split/*?count
 
     /*
      * We have public PGP keys for all recipients, or there are no
