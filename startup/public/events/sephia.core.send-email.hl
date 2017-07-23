@@ -32,7 +32,8 @@ create-event:sephia.core.send-email
     attachment:string
 
   /*
-   * Retrieving settings for currently logged in user.
+   * Retrieving settings for currently logged in user, and keeping the [whoami] object
+   * around since it's needed later.
    */
   whoami
   p5.auth.my-settings.get
@@ -44,7 +45,7 @@ create-event:sephia.core.send-email
     To
     Cc
     Bcc
-    Sender
+    From
     Subject
     body
 
@@ -131,9 +132,9 @@ create-event:sephia.core.send-email
           src:x:/@p5.mysql.select/*/*/fingerprint?value
 
   /*
-   * Setting "Sender" of email.
+   * Setting "From" of email.
    */
-  add:x:/@.envelope/*/Sender
+  add:x:/@.envelope/*/From
     src:@"{0}:{1}"
       :x:/@p5.auth.my-settings.get/*/sephia/*/name?value
       :x:/@p5.auth.my-settings.get/*/sephia/*/email?value

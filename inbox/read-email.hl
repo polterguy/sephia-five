@@ -42,7 +42,8 @@ if:x:/-/*/*?value
   /*
    * Another widget is already showing this email, returning early.
    */
-  micro.windows.info:This email is already open
+  p5.web.send-javascript:@"p5.$('{0}').el.scrollIntoView(true);"
+    :x:/@p5.web.widgets.find/*/*?value
   return
 
 
@@ -222,7 +223,7 @@ where emails.id = @id"
      * Email was both encrypted and signed.
      */
     set:x:/@_bg?value
-      src:success
+      src:sephia-safe
 
   else
 
@@ -230,7 +231,20 @@ where emails.id = @id"
      * Email was either not encrypted or not signed.
      */
     set:x:/@_bg?value
-      src:warning
+      src:sephia-unsafe
+
+  /*
+   * Checking if this is a "sent" email or a "received".
+   */
+  if:x:/@p5.mysql.select/*/*/type?value
+    =:"received"
+    set:x:/@_bg?value
+      src:{0} sephia-reader-received
+        :x:/@_bg?value
+  else
+    set:x:/@_bg?value
+      src:{0} sephia-reader-sent
+        :x:/@_bg?value
 
   /*
    * This part will contain some of the "meta content" for email, more specifically who sent the email.

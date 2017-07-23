@@ -106,6 +106,13 @@
     }
 }
 
+.sephia-reader-received {
+}
+
+.sephia-reader-sent {
+    background-color: #fcfcfc;
+}
+
 .sephia-iframe-reader {
     overflow: hidden;
     height: 100%;
@@ -193,20 +200,20 @@
     position:relative;
 }
 
-.sephia-email-reader .warning, .sephia-email-reader .success {
-    background: inherit;
+.sephia-unsafe, .sephia-safe {
+    position:relative;
 }
-.sephia-email-reader .warning:after, .sephia-email-reader .success:after {
+.sephia-unsafe:after, .sephia-safe:after {
     font-family:'icomoon' !important;
     position:absolute;
-    top:5px;
-    right:9px;
+    bottom:5px;
+    left:9px;
     color:#ddd;
     font-size:1.7rem;
 }
-.sephia-email-reader .warning:after {
+.sephia-unsafe:after {
     content:'\f119';
 }
-.sephia-email-reader .success:after {
+.sephia-safe:after {
     content:'\f118';
 }

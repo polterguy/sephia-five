@@ -735,18 +735,18 @@ create-event:sephia.contacts._changed
 
     /*
      * There is no text in any of the recipients textbox input fields.
-     * Defaulting to "warning".
+     * Defaulting to "sephia-unsafe".
      */
     get-widget-property:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
       class
     if:x:/@get-widget-property/*/*?value
-      ~:success
+      ~:sephia-safe
       micro.css.toggle:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
-        class:success
+        class:sephia-safe
     if:x:/@get-widget-property/*/*?value
-      !~:warning
+      !~:sephia-unsafe
       micro.css.toggle:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
-        class:warning
+        class:sephia-unsafe
     return
 
   split:x:/@trim?value
@@ -773,13 +773,13 @@ create-event:sephia.contacts._changed
     get-widget-property:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
       class
     if:x:/@get-widget-property/*/*?value
-      !~:success
+      !~:sephia-safe
       micro.css.toggle:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
-        class:success
+        class:sephia-safe
     if:x:/@get-widget-property/*/*?value
-      ~:warning
+      ~:sephia-unsafe
       micro.css.toggle:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
-        class:warning
+        class:sephia-unsafe
 
   else
 
@@ -789,10 +789,10 @@ create-event:sephia.contacts._changed
     get-widget-property:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
       class
     if:x:/@get-widget-property/*/*?value
-      ~:success
+      ~:sephia-safe
       micro.css.toggle:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
-        class:success
+        class:sephia-safe
     if:x:/@get-widget-property/*/*?value
-      !~:warning
+      !~:sephia-unsafe
       micro.css.toggle:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
-        class:warning
+        class:sephia-unsafe

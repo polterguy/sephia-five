@@ -16,7 +16,7 @@ create-event:sephia._internals.smtp.save-envelope
   micro.lambda.contract.min:x:/..
     envelope
       To
-      Sender
+      From
       Subject
       body
 
@@ -71,7 +71,7 @@ create-event:sephia._internals.smtp.save-envelope
       _sender
       p5.mysql.select:@"select * from contacts where username = @username and email = @email"
         @username:x:/@whoami/*/username?value
-        @email:x:/../*/envelope/*/Sender/*?value
+        @email:x:/../*/envelope/*/From/*?value
       if:x:/@p5.mysql.select/*?count.int
         =:int:0
 
@@ -153,9 +153,17 @@ create-event:sephia._internals.smtp.save-envelope
 
         /*
          * Inserting also alternative HTML view.
+         *
+         * Notice, before we do this, we replace the CSS class of the main wrapper element 
+         * created from "sephia-five-received-email" to "sephia-five-sent-email", to make our
+         * "conversations" render correctly when viewing a sent email.
          */
+        html2lambda:x:/../*/envelope/*/body/**/text/=html/*/content?value
+        set:x:/@html2lambda/**/body/*/div/*/\@class?value
+          src:sephia-five-sent-email
+        lambda2html:x:/@html2lambda/*
         p5.mysql.insert:@"insert into parts (type, content, emailid) values ('html', @content, @emailid)"
-          @content:x:/../*/envelope/*/body/**/text/=html/*/content?value
+          @content:x:/@lambda2html?value
           @emailid:x:/@p5.mysql.insert/@p5.mysql.insert/@p5.mysql.insert/*/id?value
 
       /*

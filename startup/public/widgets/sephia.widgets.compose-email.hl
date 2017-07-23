@@ -19,7 +19,7 @@
  * This widget will allow the user to compose an email, and send it, allowing the user to lookup contacts
  * from the contacts database, etc. When the email is sent, it will be stored as "sent" in Sephia's database.
  *
- * The class of the main root widget will be modified to contain either "warning" or "success" according to whether or
+ * The class of the main root widget will be modified to contain either "sephia-unsafe" or "sephia-safe" according to whether or
  * not email can be sent encrypted or not.
  *
  * Notice, caller is reponsible for making sure the necessary CSS files are included on the page.
@@ -36,7 +36,7 @@ create-event:sephia.widgets.compose-email
    * Default values for arguments not supplied.
    */
   .defaults
-    class:air-inner
+    class:air-inner shaded rounded
 
   /*
    * Sanity checking optional arguments.
