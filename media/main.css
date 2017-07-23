@@ -200,10 +200,10 @@
     position:relative;
 }
 
-.sephia-unsafe, .sephia-safe {
+.sephia-unsafe, .sephia-safe, .sephia-unknown {
     position:relative;
 }
-.sephia-unsafe:after, .sephia-safe:after {
+.sephia-unsafe:after, .sephia-safe:after, .sephia-unknown:after {
     font-family:'icomoon' !important;
     position:absolute;
     bottom:5px;
@@ -216,4 +216,7 @@
 }
 .sephia-safe:after {
     content:'\f118';
+}
+.sephia-unknown:after {
+    content:'\f11a';
 }
