@@ -56,12 +56,26 @@ create-event:sephia._internals.contacts.create
   else-if:x:/../*/fingerprint?value
 
     /*
-     * Caller supplied a [fingerprint] argument, downloading key if it exists.
+     * Caller supplied a [fingerprint] argument, attempting to download key from key server.
+     * Making sure we wrap our logic in a try/catch block.
      */
-    sephia.pgp.key-server.download-key:x:/../*/fingerprint?value
-    p5.crypto.import-public-pgp-key:x:/@sephia.pgp.key-server.download-key?value
-    set:x:/@_fingerprint?value
-      src:x:/@p5.crypto.import-public-pgp-key/0?name
+    try
+      sephia.pgp.key-server.download-key:x:/../*/fingerprint?value
+      p5.crypto.import-public-pgp-key:x:/@sephia.pgp.key-server.download-key?value
+
+      /*
+       * Making sure our downloaded key actually matched the specified [fingerprint] argument, before
+       * we start using it.
+       */
+      if:x:/@p5.crypto.import-public-pgp-key/*?name
+        =:x:/../*/fingerprint?value
+        set:x:/@_fingerprint?value
+          src:x:/@p5.crypto.import-public-pgp-key/0?name
+    catch
+
+    /*
+     * Silently catching, since we might be on another thread.
+     */
 
   else
 

@@ -1,0 +1,113 @@
+﻿
+/*
+ * Updates the given [id] contact with the specified [name], [email] and [fingerprint] arguments.
+ *
+ * Optionally pass in [fingerprint], which is the fingerprint of the public PGP key
+ * the contact should be created with.
+ *
+ * Will attempt to find a public PGP key for contact, either in GnuPG database, or using key server.
+ * Notice, expects an open database connection to the Sephia database.
+ */
+create-event:sephia._internals.contacts.update
+
+  /*
+   * Making sure invoker obeys by lambda contract.
+   */
+  micro.lambda.contract.min:x:/..
+    id:long
+    name:string
+    email:string
+
+  /*
+   * Sanity checking optional arguments.
+   */
+  micro.lambda.contract.optional:x:/..
+    fingerprint:string
+
+  /*
+   * Making sure name defaults to first parts of email, if it is empty or null.
+   */
+  if:x:/../*/name?value
+    =:
+    split:x:/../*/email?value
+      =:@
+    set:x:/../*/name?value
+      src:x:/@split/0?name
+
+  /*
+   * Used to hold any fingerprints of public PGP key matching email.
+   */
+  _fingerprint
+
+  /*
+   * Checking if we can find a public PGP key for user,
+   * but only if [fingerprint] was specified.
+   */
+  if:x:/../*/fingerprint?value
+
+    /*
+     * First checking GnuPG database.
+     */
+    p5.crypto.list-public-keys:x:/../*/fingerprint?value
+    if:x:/-/*?count
+      >:int:0
+
+      /*
+       * We found a potentially matching key for contact in GnuPG database.
+       */
+      set:x:/@_fingerprint?value
+        src:x:/@p5.crypto.list-public-keys/0?name
+
+    else
+
+      /*
+       * Caller supplied a [fingerprint] argument, downloading key if it exists.
+       * Making sure we wrap our logic in a try/catch block.
+       */
+      try
+        sephia.pgp.key-server.download-key:x:/../*/fingerprint?value
+        p5.crypto.import-public-pgp-key:x:/@sephia.pgp.key-server.download-key?value
+
+        /*
+         * Making sure our downloaded key actually matched the specified [fingerprint] argument, before
+         * we start using it.
+         */
+        if:x:/@p5.crypto.import-public-pgp-key/0?name
+          =:x:/../*/fingerprint?value
+          set:x:/@_fingerprint?value
+            src:x:/@p5.crypto.import-public-pgp-key/0?name
+
+      catch
+
+        /*
+         * Silently catching, since we might be on another thread.
+         */
+
+  /*
+   * Updating contact in database.
+   *
+   * Notice, different logic in case we couldn't find a matching [fingerprint].
+   */
+  if:x:/@_fingerprint?value
+    p5.mysql.update:@"update contacts set name = @name, email = @email, fingerprint = @fingerprint where id = @id"
+      @name:x:/../*/name?value
+      @email:x:/../*/email?value
+      @fingerprint:x:/@_fingerprint?value
+      @id:x:/../*/id?value
+  else
+    p5.mysql.update:@"update contacts set name = @name, email = @email where id = @id"
+      @name:x:/../*/name?value
+      @email:x:/../*/email?value
+      @id:x:/../*/id?value
+
+  /*
+   * Returning newly inserted contact to caller.
+   */
+  eval-x:x:/+/*
+  return
+    id:x:/@p5.mysql.insert/*/id?value
+    name:x:/../*/name?value
+    email:x:/../*/email?value
+    username:x:/../*/username?value
+    fingerprint:x:/@_fingerprint?value
+  
