@@ -585,14 +585,14 @@ create-event:sephia._internals.widgets.settings
                         class:strip fill
                         widgets
                           label
-                            innerValue:Subjects
+                            innerValue:Babelizers
                             for:sephia-settings-subject-generator
                           input:sephia-settings-subject-generator
                             type:text
                             .data-field:pgp-subjects
                             value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pgp-subjects|/../*/.defaults/*/pgp-subjects)/$?value
                             placeholder:A comma separated list of URLs from where random subjects will be generated ...
-                            title:A comma separated list of URLs from where random subjects will be generated
+                            title:A comma separated list of URLs from where random subjects will be generated, to hide the original subject of encrypted emails.
               div
                 class:row
                 widgets

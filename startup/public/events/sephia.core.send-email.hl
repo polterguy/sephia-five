@@ -371,7 +371,7 @@ create-event:sephia.core.send-email
   if:x:/../*/p5.smtp.send/*/envelope/*/body/0/*/encrypt
 
     /*
-     * Email is be sent encrypted, "babeling" our subject.
+     * Email is be sent encrypted, "babelizing" our subject.
      *
      * First base64 encoding real subject, and adding it to encrypted multipart entity as 
      * a custom MIME header called "X-Subject".
@@ -401,6 +401,8 @@ create-event:sephia.core.send-email
 
       /*
        * Caller did not supply an explicit babel subject.
+       *
+       * Retrieving babelized subject from babelizer.
        */
       sephia._internals.smtp.get-babel-subject
       set:x:/../*/p5.smtp.send/*/envelope/*/Subject?value
@@ -411,7 +413,8 @@ create-event:sephia.core.send-email
      * we move subject line into both of its text parts.
      *
      * First we move subject into our "text:plain" MIME part's content.
-     * Subject is added as a Markdown "h3" element at the top of our email.
+     *
+     * Subject is added as a Markdown "h3" element at the top of our email in our "text:plain" part.
      */
     set:x:/../*/p5.smtp.send/*/envelope/**/text/=plain/*/content?value
       src:@"### {0}

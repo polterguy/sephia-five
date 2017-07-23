@@ -45,8 +45,11 @@ create-event:sephia._internals.smtp.get-babel-subject
     =:" "
 
   /*
-   * Verifying user actually he a "subject generator URL" setting, and if not,
-   * returning empty string.
+   * Verifying user actually has a "subject generator URL" setting, and if not,
+   * returning "".
+   *
+   * This means, that if you don't want to use babelized subjects, you can just set
+   * the "Babelizer" setting to empty.
    */
   if:x:/@split/*?count
     =:int:0
