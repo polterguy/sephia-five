@@ -34,10 +34,11 @@ micro.lambda.contract.min:x:/..
 /*
  * Checking if email has alread been fetched from POP server.
  */
-p5.mysql.scalar:@"select count(*) from emails where mimeid = @mimeid"
+p5.mysql.scalar:@"select count(*) from emails where mimeid = @mimeid and username = @username"
   @mimeid:x:/../*/envelope?value
-if:x:/@p5.mysql.scalar?value
-  >:long:0
+  @username:x:/../*/username?value
+if:x:/@p5.mysql.scalar?value.int
+  >:int:0
 
   /*
    * Email has already been fetched, no need to continue.
@@ -219,13 +220,13 @@ else-if:x:/@p5.mysql.select/0/*/name?value
   !=:x:/../*/envelope/*/From/*?name
   and:x:/../*/envelope/*/From/*?name
     !=:
-  or:x:/@p5.mysql.select/0/*/fingerprint?value
-    not
+  or:x:/@p5.mysql.select/0/*/isverified?value.int
+    =:int:0
     and:x:/@_fingerprint?value
 
   /*
    * Exists, but name has been changed, and name given is not empty (""),
-   * or contact had no existing fingerprint, and email was signed with a fingerprint.
+   * or contact had no existing verified fingerprint, and email was signed with a fingerprint.
    *
    * Passing in [fingerprint] for PGP key that signed the email to our "update" invocation, 
    * if email was cryptographically signed.
@@ -342,10 +343,8 @@ if:x:/../*/envelope/*/Subject?value
 /*
  * Now (finally, puuh!) - We can insert email into database.
  */
-p5.mysql.insert:@"insert into emails (subject, babelsubject, date, sender, username, isread, 
-mimeid, signature, fingerprint, encrypted, type, inreplyto, status)
-values (@subject, @babelsubject, @date, @sender, @username, 0, 
-@mimeid, @signature, @fingerprint, @encrypted, 'received', @inreplyto, @status)"
+p5.mysql.insert:@"insert into emails (subject, babelsubject, date, sender, username, isread, mimeid, signature, fingerprint, encrypted, type, inreplyto, status) 
+values (@subject, @babelsubject, @date, @sender, @username, 0, @mimeid, @signature, @fingerprint, @encrypted, 'received', @inreplyto, @status)"
   @subject:x:/../*/envelope/*/Subject?value
   @babelsubject:x:/@_babel-subject?value
   @date:x:/../*/envelope/*/Date?value

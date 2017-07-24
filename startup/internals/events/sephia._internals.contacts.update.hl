@@ -45,10 +45,10 @@ create-event:sephia._internals.contacts.update
   if:x:/../*/fingerprint?value
 
     /*
-     * Making sure we check if contact already has an existing fingerprint associated with him,
-     * before we attempt to update it.
+     * Making sure we check if contact already has an existing verified fingerprint associated with him,
+     * before we attempt to update him.
      */
-    p5.mysql.scalar:@"select count(*) from contacts where fingerprint is null and id = @id"
+    p5.mysql.scalar:@"select count(*) from contacts where isverified = 0 and id = @id"
       @id:x:/../*/id?value
     if:x:/@p5.mysql.scalar?value.int
       =:int:1
@@ -74,16 +74,41 @@ create-event:sephia._internals.contacts.update
          */
         try
           sephia.pgp.key-server.download-key:x:/../*/fingerprint?value
-          p5.crypto.import-public-pgp-key:x:/@sephia.pgp.key-server.download-key?value
 
           /*
-           * Making sure our downloaded key actually matched the specified [fingerprint] argument, before
-           * we start using it.
+           * Checking if above download attempt actually returned something.
            */
-          if:x:/@p5.crypto.import-public-pgp-key/0?name
-            =:x:/../*/fingerprint?value
-            set:x:/@_fingerprint?value
-              src:x:/@p5.crypto.import-public-pgp-key/0?name
+          if:x:/@sephia.pgp.key-server.download-key?value
+
+            /*
+             * Downloading key succeded.
+             */
+            p5.crypto.import-public-pgp-key:x:/@sephia.pgp.key-server.download-key?value
+
+            /*
+             * Making sure our downloaded key actually matched the specified [fingerprint] argument, before
+             * we start using it.
+             *
+             * Notice, without this check, we could in theory have a man in the middle attack, injecting something
+             * else from the download operation above, than what we actually requested to have downloaded, which
+             * would result in using a bogus public PGP key, possibly created by an adversary.
+             */
+            if:x:/@p5.crypto.import-public-pgp-key/0?name
+              =:x:/../*/fingerprint?value
+
+              /*
+               * Downloaded key matched what we requested, using it for contact.
+               */
+              set:x:/@_fingerprint?value
+                src:x:/@p5.crypto.import-public-pgp-key/0?name
+
+            else
+
+              /*
+               * Oops, what we wanted to download, was not what we were given.
+               * Deleting key from GnuPG database.
+               */
+              p5.crypto.delete-public-key:x:/@p5.crypto.import-public-pgp-key/0?name
 
         catch
 
