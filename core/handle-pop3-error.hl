@@ -52,10 +52,9 @@ create-widgets
                    * Deleting error object, restarting thread worker, and closing modal widget.
                    */
                   whoami
-                  delete-data:x:/*/*/sephia.core.thread-signal-object-{0}
+                  delete-data:x:/*/*/sephia.core.thread-signal-{0}
                     :x:/@whoami/*/username?value
-                  load-file:@SEPHIA/core/create-pop3-user-thread.hl
-                  eval:x:/-/*
+                  micro.evaluate.file:@SEPHIA/core/create-pop3-user-thread.hl
                   delete-widget:sephia-error-window
                   sephia.core.create-poller-javascript
 

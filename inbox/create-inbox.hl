@@ -215,8 +215,7 @@ create-widget:sephia-search-wrapper
                  * has no negative consequences if the thread already exists.
                  */
                 sephia.inbox.open
-                load-file:@SEPHIA/core/create-pop3-user-thread.hl
-                eval:x:/-/*
+                micro.evaluate.file:@SEPHIA/core/create-pop3-user-thread.hl
 
 
             /*

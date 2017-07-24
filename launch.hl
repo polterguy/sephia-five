@@ -1,11 +1,14 @@
 ﻿
 /*
  * File responsible for starting Sephia Five, which means creating the main widget, 
- * and wire frame for displaying inbox etc.
+ * and wire frame for displaying inbox, starting POP3 worker thread, etc.
  *
  * Notice, it will first force the user to setup his POP3 and SMTP settings, unless
  * he has already done so.
  */
+
+
+
 
 
 /*
@@ -33,7 +36,14 @@ if:x:/@p5.web.session.get/*/*
     :x:/@p5.web.session.get/*/*/*/folder?value
     :x:/@p5.web.session.get/*/*/*/prefix?value
     :x:/@p5.web.session.get/*/*/*/filename?value
+
+  /*
+   * Returning early to avoid evaluating the rest of the file.
+   */
   return
+
+
+
 
 
 /*
@@ -143,13 +153,36 @@ if:x:/@p5.auth.my-settings.get/*/sephia
 
 
 /*
+ * Making sure we create our "self" contacts entry, having the correct fingerprint.
+ */
+whoami
+p5.mysql.connect:[sephia]
+  p5.mysql.scalar:@"select count(*) from contacts where username = @username and email = @email"
+    @username:x:/@whoami/*/username?value
+    @email:x:/@p5.auth.my-settings.get/*/sephia/*/email?value
+  if:x:/-?value.int
+    =:int:0
+
+    /*
+     * "Self" does not exist as a contact, making sure we insert it.
+     */
+    p5.mysql.update:@"insert into contacts (name, email, username, fingerprint, isverified) values (@name, @email, @username, @fingerprint, 1)"
+      @name:x:/@p5.auth.my-settings.get/*/sephia/*/name?value
+      @email:x:/@p5.auth.my-settings.get/*/sephia/*/email?value
+      @username:x:/@whoami/*/username?value
+      @fingerprint:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-key?value
+
+
+
+
+
+/*
  * Making sure we start email fetching thread.
  *
  * This will create a thread for each user, that runs in the background,
  * and constantly pulls new emails from the user's POP3 server.
  */
-load-file:@SEPHIA/core/create-pop3-user-thread.hl
-eval:x:/-/*
+micro.evaluate.file:@SEPHIA/core/create-pop3-user-thread.hl
 
 
 
@@ -158,8 +191,7 @@ eval:x:/-/*
 /*
  * Creating inbox widget.
  */
-load-file:@SEPHIA/inbox/create-inbox.hl
-eval:x:/-/*
+micro.evaluate.file:@SEPHIA/inbox/create-inbox.hl
 
 
 
@@ -169,5 +201,4 @@ eval:x:/-/*
  * Creates widget that constantly polls server every n'th second to
  * check if new emails have arrived.
  */
-load-file:@SEPHIA/core/create-client-server-poller.hl
-eval:x:/-/*
+micro.evaluate.file:@SEPHIA/core/create-client-server-poller.hl

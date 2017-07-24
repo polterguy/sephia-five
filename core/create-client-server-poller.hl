@@ -10,9 +10,27 @@
  * If the POP3 "user thread" throws an exception, it will also display that exception to the user.
  *
  * This file also resets the "count" which is incremented once for each POP3 check operation in our "user thread",
- * which unless it is reset before it reaches "5", will allow the "POP3 user thread" to simply stop, by finishing its work.
+ * which unless it is reset before it reaches "5", will allow the "POP3 user thread" to simply finish its work, and die out.
  */
 
+
+
+
+
+/*
+ * Loading configuration to check how frequently we should poll the server.
+ */
+load-file:@SEPHIA/config/pop3-thread.hl
+set:x:/../*/create-literal-widget/**/_sleep-between-fetch?value
+  src:x:/@load-file/*/*/sleep-between-fetch?value
+
+
+
+
+
+/*
+ * Creating actual (hidden) "poller widget", that polls the server every n'th second, to check for new emails.
+ */
 create-literal-widget:sephia-poller
   element:span
   style:"display:none; !important"
@@ -20,11 +38,8 @@ create-literal-widget:sephia-poller
 
     /*
      * Invoking checker initially, which will start our "loop".
-     *
-     * We do this by simply invoking the [.oncheck] Ajax event for our widget.
      */
-    p5.web.widgets.ajax-events.raise:x:/../*/_event?value
-      .oncheck
+    sephia._internals.check-emails
 
   events
 
@@ -32,126 +47,160 @@ create-literal-widget:sephia-poller
      * Creates a JavaScript object that will poll towards the server, 
      * invoking our [.oncheck] below, after n seconds.
      */
-    sephia.core.create-poller-javascript
-      p5.web.send-javascript:@"if (!p5.sephia_poller) {p5.sephia_poller=true;setTimeout(function(){delete p5.sephia_poller;p5.$('sephia-poller').raise('.oncheck')}, 5000);}"
+    sephia._internals.create-poller-javascript
+
+      /*
+       * Notice, this JavaScript timeout function is created such that if an exception happens during
+       * polling the server, no new timer poll object will be created.
+       */
+      _sleep-between-fetch
+      p5.web.send-javascript:@"
+if (!p5.sephia_poller) {{
+  p5.sephia_poller=true;
+  setTimeout(function() {{
+    delete p5.sephia_poller;
+    p5.$('sephia-poller').raise('.oncheck')
+  }}, {0});
+}}"
+        :x:/@_sleep-between-fetch?value
+
+    /*
+     * Checks to see if emails have arrived from POP3 server, and notifies user
+     * if new emails have arrived.
+     */
+    sephia._internals.check-emails
+
+      /*
+       * We'll need this later to parametrize some of our invocations below.
+       */
+      whoami
+
+      /*
+       * Making sure we have easy access to "thread signal object".
+       */
+      eval-x:x:/+
+      _thread-signal:sephia.core.thread-signal-{0}
+        :x:/@whoami/*/username?value
+
+      /*
+       * Making sure we have synchronised access to our "thread signal object".
+       *
+       * Notice, p5.data is thread safe, but some other thread might still need to first select this item,
+       * for then to insert a modification of it somehow. Hence, we'll need synchronized access to it.
+       * Trying to keep our locks as small as possible
+       */
+      read-lock:x:/@_thread-signal?value
+
+        /*
+         * Retrieving the thread signal object from p5.data.
+         */
+        select-data:x:/*/*/{0}
+          :x:/@_thread-signal?value
+
+      /*
+       * Checking if thread is still running.
+       */
+      if:x:/@read-lock/*/select-data/*/*/running?value
+
+        /*
+         * Thread is still running.
+         *
+         * Now we must check if new emails have arrived from POP3 server.
+         * We do this by selecting the MIME ID of the newest email in database, and comparing it towards
+         * a ViewState value that tracks the last fetched email.
+         */
+        p5.mysql.connect:[sephia]
+          p5.mysql.select:@"select mimeid from emails where username = @username and type='received' order by id desc limit 1"
+            @username:x:/@whoami/*/username?value
+
+        /*
+         * Then we retrieve the page value which wraps our "last known MIME ID".
+         */
+        p5.web.viewstate.get:sephia.emails.last-known
+
+        /*
+         * Then we compare these values.
+         */
+        if:x:/@p5.mysql.connect/*/p5.mysql.select/*/*/mimeid?value
+          !=:x:/@p5.web.viewstate.get/*?value
+          and:x:/@p5.web.viewstate.get/*?value
+
+          /*
+           * We have received at least one new email.
+           */
+          micro.evaluate.file:@SEPHIA/inbox/update-page-title.hl
+
+          /*
+           * Notifying user, but making sure we don't "go berserk" when notifying him.
+           */
+          p5.web.viewstate.get:sephia.core.has-notified-user-of-new-emails
+          if:x:/-/*?value
+            not
+
+            /*
+             * User has not been notified previously of that he has new email, making sure we do so.
+             */
+            p5.web.viewstate.set:sephia.core.has-notified-user-of-new-emails
+              src:bool:true
+            micro.windows.info:You have new emails, click your inbox to see them.
+              class:micro-windows-info success
+              onclick
+                sephia.inbox.open
+
+        /*
+         * Updating "last known email".
+         */
+        p5.web.viewstate.set:sephia.emails.last-known
+          src:x:/@p5.mysql.connect/*/p5.mysql.select/*/*/mimeid?value
+
+        /*
+         * Making sure we poll towards server again after some n seconds.
+         */
+        sephia._internals.create-poller-javascript
+
+        /*
+         * Making sure we have synchronised access to our "thread signal object".
+         */
+        write-lock:x:/@_thread-signal?value
+
+          /*
+           * Zeroing out "thread count" to make sure thread doesn't stop running.
+           */
+          update-data:x:/*/*/{0}/*/running/*/count?value
+            :x:/@_thread-signal?value
+            src:int:0
+
+      else-if:x:/@read-lock/*/select-data/*/*/restart?value
+
+        /*
+         * Thread was stopped and should be restarted for some reasons.
+         *
+         * Might be caused by for instance that the user's settings was changed.
+         * Notice, we don't need to synchronize access here, since thread has already 
+         * at this point decided to stop iterating.
+         */
+        delete-data:x:/@_thread-signal?value
+        micro.evaluate.file:@SEPHIA/core/create-pop3-user-thread.hl
+        sephia._internals.create-poller-javascript
+
+      else-if:x:/@read-lock/*/select-data/*/*/error
+
+        /*
+         * Thread has stopped running, and contains an error exception message.
+         *
+         * Invoking our "error handler".
+         */
+        eval-x:x:/+/*
+        micro.evaluate.file:@SEPHIA/core/handle-pop3-error.hl
+          message:x:/@read-lock/*/select-data/*/*/error/*/message?value
+          stack-trace:x:/@read-lock/*/select-data/*/*/error/*/stack-trace?value
+          type:x:/@read-lock/*/select-data/*/*/error/*/type?value
 
   .oncheck
 
     /*
-     * We'll need this later to parametrize some of our invocations below.
+     * Invoking lambda event responsible for checking if new emails have arrived, and taking
+     * the necessary steps accordingly.
      */
-    whoami
+    sephia._internals.check-emails
 
-    /*
-     * Making sure we have synchronised access to the "thread signal object".
-     */
-    lock:sephia.core.thread-signal-object-{0}
-      :x:/@whoami/*/username?value
-
-      /*
-       * Retrieving the thread signal object from p5.data.
-       */
-      select-data:x:/*/*/sephia.core.thread-signal-object-{0}
-        :x:/@whoami/*/username?value
-
-    /*
-     * Checking if thread is still running.
-     */
-    if:x:/@lock/*/select-data/*/*/running?value
-
-      /*
-       * Thread is still running.
-       *
-       * Now we must check if new emails have arrived from POP3 server.
-       * We do this by selecting the MIME ID of the newest email in database, and comparing it towards
-       * a ViewState value that tracks the last fetched email.
-       */
-      p5.mysql.connect:[sephia]
-        p5.mysql.select:@"select mimeid from emails where username = @username and type='received' order by id desc limit 1"
-          @username:x:/@whoami/*/username?value
-
-      /*
-       * Then we retrieve the page value which wraps our "last known MIME ID".
-       */
-      p5.web.viewstate.get:sephia.emails.last-known
-
-      /*
-       * Then we compare these values.
-       */
-      if:x:/@p5.mysql.connect/*/p5.mysql.select/*/*/mimeid?value
-        !=:x:/@p5.web.viewstate.get/*?value
-        and:x:/@p5.web.viewstate.get/*?value
-
-        /*
-         * We have received at least one new email.
-         */
-        load-file:@SEPHIA/inbox/update-page-title.hl
-        eval:x:/-/*
-
-        /*
-         * Notifying user, but making sure we don't "go berserk" when notifying him.
-         */
-        p5.web.viewstate.get:sephia.core.has-notified-user-of-new-emails
-        if:x:/-/*?value
-          not
-
-          /*
-           * User has not been notified previously of that he has new email, making sure we do so.
-           */
-          p5.web.viewstate.set:sephia.core.has-notified-user-of-new-emails
-            src:bool:true
-          micro.windows.info:You have new emails, click your inbox to see them.
-            class:micro-windows-info success
-            onclick
-              sephia.inbox.open
-
-      /*
-       * Updating "last known email".
-       */
-      p5.web.viewstate.set:sephia.emails.last-known
-        src:x:/@p5.mysql.connect/*/p5.mysql.select/*/*/mimeid?value
-
-      /*
-       * Making sure we poll towards server again after some n seconds.
-       */
-      sephia.core.create-poller-javascript
-
-      /*
-       * Making sure we have synchronised access to our "thread signal object".
-       */
-      lock:sephia.core.thread-signal-object-{0}
-        :x:/@whoami/*/username?value
-
-        /*
-         * Zeroing out "thread count" to make sure thread doesn't stop running.
-         */
-        update-data:x:/*/*/sephia.core.thread-signal-object-{0}/*/running/*/count?value
-          :x:/@whoami/*/username?value
-          src:int:0
-
-    else-if:x:/@lock/*/select-data/*/*/restart?value
-
-      /*
-       * Thread was stopped and should be restarted for some reasons.
-       *
-       * Might be caused by for instance that the user's settings was changed.
-       */
-      delete-data:x:/*/*/sephia.core.thread-signal-object-{0}
-        :x:/@whoami/*/username?value
-      load-file:@SEPHIA/core/create-pop3-user-thread.hl
-      eval:x:/-/*
-      sephia.core.create-poller-javascript
-
-    else-if:x:/@lock/*/select-data/*/*/error
-
-      /*
-       * Thread has stopped running, and contains an error exception message.
-       *
-       * Invoking our "error handler".
-       */
-      load-file:@SEPHIA/core/handle-pop3-error.hl
-      eval-x:x:/+/*
-      eval:x:/-2/*
-        message:x:/@lock/*/select-data/*/*/error/*/message?value
-        stack-trace:x:/@lock/*/select-data/*/*/error/*/stack-trace?value
-        type:x:/@lock/*/select-data/*/*/error/*/type?value

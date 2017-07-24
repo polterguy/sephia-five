@@ -840,21 +840,20 @@ create-event:sephia._internals.widgets.settings
                     /*
                      * Making sure we synchronise access to thread signal object.
                      */
-                    lock:sephia.core.thread-creator-signal-object-{0}
+                    write-lock:sephia.core.thread-signal-{0}
                       :x:/@whoami/*/username?value
 
                       /*
                        * Deleting old thread signal object.
                        */
-                      delete-data:x:/*/*/sephia.core.thread-signal-object-{0}
+                      delete-data:x:/*/*/sephia.core.thread-signal-{0}
                         :x:/@whoami/*/username?value
 
                       /*
                        * Creating a new thread signal object, that informs thread to restart.
                        */
-                      eval-x:x:/+/*
                       set:x:/+/*?name
-                        src:sephia.core.thread-signal-object-{0}
+                        src:sephia.core.thread-signal-{0}
                           :x:/@whoami/*/username?value
                       insert-data
                         thread

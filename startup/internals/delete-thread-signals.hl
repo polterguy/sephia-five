@@ -10,4 +10,4 @@
  * This file, which is evaluated when the server starts, deletes all of the "thread signals"
  * from your p5.data database.
  */
-delete-data:x:/*/*/~sephia.core.thread-signal-object-
+delete-data:x:/*/*/~sephia.core.thread-signal-

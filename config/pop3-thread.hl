@@ -1,0 +1,36 @@
+
+/*
+ * Configuration file for POP3 worker thread.
+ */
+
+
+
+
+
+/*
+ * Number of milliseconds to sleep between POP3 fetch operations.
+ * To make system more responsive, and fetch emails more frequently, set this
+ * number to a smaller value.
+ *
+ * If you have many users in your system, and the CPU of your server starts going
+ * into the roof, you should probably increase this number.
+ */
+sleep-between-fetch:int:5000
+
+
+
+
+
+/*
+ * Number of emails to fetch in one POP3 operation.
+ */
+emails-2-fetch-in-batch:int:10
+
+
+
+
+
+/*
+ * Whether or not emails should be marked on POP3 server explicitly as deleted or not.
+ */
+delete-emails:bool:false
