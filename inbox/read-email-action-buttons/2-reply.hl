@@ -54,63 +54,12 @@ button
     sephia._internals.get-reply-data:x:/@get-widget-property/*/*?value
 
     /*
-     * Adding explicit babelsubject to composer widget, if it exists.
+     * Creating our reply widget.
      */
-    if:x:/@sephia._internals.get-reply-data/*/babelsubject?value
-      eval-x:x:/+/*/*
-      add:x:/../**/sephia.widgets.compose-email
-        src
-          babelsubject:x:/@sephia._internals.get-reply-data/*/babelsubject?value
-
-    /*
-     * Adding "To" recipient.
-     */
-    add:x:/+/*
-      src:x:/@sephia._internals.get-reply-data/*/to
-    add:x:/../*/create-widget/**/sephia.widgets.compose-email/*/recipients
-      src
-
-    /*
-     * Creating actual reply widget.
-     */
-    eval-x:x:/+/**/sephia.widgets.compose-email(/*|/*/headers/*)
-    create-widget
-      after:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-      class:row air-top
-      .email-id:x:/@get-widget-property/*/*?value
-      widgets
-        div
-          class:col
-          widgets
-
-            /*
-             * This is the actual "composer" widget, which allows user to compose/reply/etc an email.
-             */
-            sephia.widgets.compose-email
-              markdown-composer:bool:true
-              subject:x:/@sephia._internals.get-reply-data/*/subject?value
-              body:x:/@sephia._internals.get-reply-data/*/content?value
-              recipients
-              class:air-inner shaded rounded
-              headers
-                In-Reply-To:x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]/*/*/mimeid?value
-              .onclose
-
-                /*
-                 * Simply deleting main wrapper widget.
-                 */
-                p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                  .email-id
-                delete-widget:x:/-/*/*?value
-
-              .onsend
-
-                /*
-                 * Notifying user.
-                 */
-                micro.windows.info:Email was successfully sent
-
-    /*
-     * Deleting reader widget.
-     */
-    delete-widget:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+    load-file:@SEPHIA/inbox/read-email-action-buttons/common/create-reply-widget.hl
+    add:x:/../*/eval
+      src:x:/@sephia._internals.get-reply-data/*
+    eval-x:x:/+/*
+    eval:x:/../*/load-file/*
+      id:x:/@get-widget-property/*/*?value
+      reader-widget:x:/@p5.web.widgets.find-first-ancestor/*/*?value

@@ -1,0 +1,51 @@
+﻿
+/*
+ * Creates a reply widget.
+ *
+ * Expects [reader-widget] being the ID of the widget that is creating our reply 
+ * and [id] being the ID of the email we're replying to.
+ * In addition to [subject], [content], [to] and optionally [babelsubject], [cc] and [bcc]
+ */
+add:x:/../*/create-widget/**/sephia.widgets.compose-email/*/recipients
+  src:x:/../*(/to|/cc|/bcc)
+eval-x:x:/../*/create-widget/**/sephia.widgets.compose-email(/*|/*/headers/*)
+create-widget
+  after:x:/../*/reader-widget?value
+  class:row air-top
+  .email-id:x:/../*/id?value
+  widgets
+    div
+      class:col
+      widgets
+
+        /*
+         * This is the actual "composer" widget, which allows user to compose/reply/etc an email.
+         */
+        sephia.widgets.compose-email
+          markdown-composer:bool:true
+          subject:x:/../*/subject?value
+          body:x:/../*/content?value
+          recipients
+          class:air-inner shaded rounded
+          headers
+            In-Reply-To:x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]/*/*/mimeid?value
+          .onclose
+
+            /*
+             * Simply deleting main wrapper widget.
+             */
+            p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+              .email-id
+            delete-widget:x:/-/*/*?value
+
+          .onsend
+
+            /*
+             * Notifying user.
+             */
+            micro.windows.info:Email was successfully sent
+
+/*
+ * Deleting reader widget.
+ */
+delete-widget:x:/../*/reader-widget?value
