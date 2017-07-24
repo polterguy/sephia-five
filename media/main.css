@@ -24,7 +24,8 @@
  */
 .sephia-status {
     float:right;
-    color:#e0e0e0;
+    color:#c0c0c0;
+    font-size:1.3rem;
 }
 .sephia-status span {
     margin-left:2px;
@@ -118,6 +119,14 @@
     height: 100%;
     width: 100%;
     border:none;
+}
+
+.sephia-meta {
+    margin-bottom:0;
+}
+.sephia-meta ul {
+    margin-top: 1rem;
+    list-style-type:none;
 }
 
 

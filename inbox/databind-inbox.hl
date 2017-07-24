@@ -94,6 +94,7 @@ if
      */
     set:x:(/../*/filter|/../*/.defaults/*/filter)/$?value
       src:x:/@split/0/-?name
+
   else
 
     /*
@@ -117,7 +118,7 @@ p5.mysql.connect:[sephia]
    * Notice, we do not order by date, since dates might sometimes be local, and/or slightly offsets.
    * Hence, we order our emails by "id" descendingly, which should always bring in the most recent email at the top.
    */
-  p5.mysql.select:@"select emails.id, subject, date, encrypted, signature, emails.fingerprint, isread, type, contacts.email, contacts.name from emails inner join contacts on contacts.id = emails.sender 
+  p5.mysql.select:@"select emails.id, subject, date, encrypted, signature, emails.fingerprint, emails.status, isread, type, contacts.email, contacts.name from emails inner join contacts on contacts.id = emails.sender 
 where emails.username = @username and (subject like @filter or contacts.name like @filter or contacts.email like @filter 
 or exists (select * from parts where content like @filter and parts.emailid = emails.id)) {0}
 order by id desc limit 15 offset @offset"
@@ -146,7 +147,7 @@ order by id desc limit 15 offset @offset"
         src:{0} sephia-sent
           :x:/@_class?value
 
-    else-if:x:/@_dp/#/*/isread?value.int
+    if:x:/@_dp/#/*/isread?value.int
       =:int:0
 
       /*
@@ -186,18 +187,6 @@ order by id desc limit 15 offset @offset"
       trim:x:/@_class?value
 
     /*
-     * Adding signed icon, if we should.
-     */
-    if:x:/@_dp/#/*/fingerprint?value
-      and:x:/@_dp/#/*/fingerprint?value
-        !=:
-      add:x:/..for-each/*/add/**/Date/*/widgets/*/div/*/widgets
-        src
-          literal
-            element:span
-            class:icon-paw
-
-    /*
      * Checking if email has attachments.
      */
     p5.mysql.scalar:@"select count(*) from attachments where emailid = @id"
@@ -210,27 +199,39 @@ order by id desc limit 15 offset @offset"
             element:span
             class:icon-paperclip
 
-
     /*
-     * Adding encrypted icon, if we should.
+     * Making sure we add the correct "face" to email.
      */
-    if:x:/@_dp/#/*/encrypted?value.int
-      !=:int:0
-      add:x:/..for-each/*/add/**/Date/*/widgets/*/div/*/widgets
-        src
-          literal
-            element:span
-            class:icon-lock
+    switch:x:/@_dp/#/*/status?value.int
+      case:int:0
+        add:x:/..for-each/*/add/**/Date/*/widgets/*/div/*/widgets
+          src
+            literal
+              element:span
+              class:icon-smile-o
+
+      case:int:1
+        add:x:/..for-each/*/add/**/Date/*/widgets/*/div/*/widgets
+          src
+            literal
+              element:span
+              class:icon-meh-o
+
+      case:int:2
+        add:x:/..for-each/*/add/**/Date/*/widgets/*/div/*/widgets
+          src
+            literal
+              element:span
+              class:icon-frown-o
 
     /*
      * Forward evaluating arguments, and creating our row.
      */
-    eval-x:x:/+/*/*/*|/+/*/*/*/Date/**|/+/*/*/*/.row/*(/*/*/id|/title|/class|/.row-email-id)
+    eval-x:x:/+/*/*/*|/+/*/*/*/Date/**|/+/*/*/*/.row/*(/*/*/id|/class|/.row-email-id)
     add:x:/../*/micro.widgets.grid.databind
       src
         item
           .row
-            title:x:/@_dp/#/*/email?value
             class:x:/@_class?value
             .row-email-id:x:/@_dp/#/*/id?value
             onclick

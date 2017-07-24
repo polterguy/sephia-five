@@ -230,6 +230,14 @@ else-if:x:/@p5.mysql.select/0/*/name?value
    *
    * Passing in [fingerprint] for PGP key that signed the email to our "update" invocation, 
    * if email was cryptographically signed.
+   *
+   * Notice, we update fingerprint of contact, even if contact has an existing fingerprint, since otherwise
+   * we run the risk of having a contact created, a fingerprint found at the key server, which is not valid, 
+   * and hence communication becomes impossible.
+   *
+   * The logic we have here, implies that at the maximum one email becomes unreadable due to that it was encrypted
+   * with the wrong fingerprint, at which point the receiver can simply answer, and the sender will install the 
+   * correct fingerprint.
    */
   if:x:/@_fingerprint?value
     add:x:/././*/sephia._internals.contacts.update

@@ -222,7 +222,7 @@ where recipients.emailid = @id"
   /*
    * Retrieving actual email.
    */
-  p5.mysql.select:@"select subject, date, signature, emails.fingerprint, encrypted, type, mimeid, status, contacts.name, contacts.email
+  p5.mysql.select:@"select subject, date, signature, emails.fingerprint, encrypted, emails.status, type, mimeid, contacts.name, contacts.email
 from emails inner join contacts on emails.sender = contacts.id 
 where emails.id = @id"
     @id:x:/../*/id?value
@@ -234,31 +234,18 @@ where emails.id = @id"
    * we have in our database, etc.
    */
   _bg
-  if:x:/@p5.mysql.select/*/*/status?value.int
-    =:int:0
+  switch:x:/@p5.mysql.select/*/*/status?value.int
+    case:int:0
+      set:x:/@_bg?value
+        src:sephia-safe
 
-    /*
-     * Email was considered safe.
-     */
-    set:x:/@_bg?value
-      src:sephia-safe
+    case:int:1
+      set:x:/@_bg?value
+        src:sephia-unknown
 
-  else-if:x:/@p5.mysql.select/*/*/status?value.int
-    =:int:1
-
-    /*
-     * Email was considered as being unknown in regards to whether or not it was safe.
-     */
-    set:x:/@_bg?value
-      src:sephia-unknown
-
-  else
-
-    /*
-     * Email was considered as being unsafe.
-     */
-    set:x:/@_bg?value
-      src:sephia-unsafe
+    case:int:2
+      set:x:/@_bg?value
+        src:sephia-unsafe
 
   /*
    * Checking if this is a "sent" email or a "received".
@@ -346,29 +333,44 @@ where emails.id = @id"
       src:Email was not cryptographically signed
 
   /*
-   * This part will contain email's MIME ID.
+   * This part will contain status of email ("safe", "warning" or "unsafe").
    */
   _meta5
-  set:x:/@_meta5?value
+  switch:x:/@p5.mysql.select/*/*/status?value.int
+    case:int:0
+      set:x:/@_meta5?value
+        src:"Email is safely encrypted and signed by a verified public PGP key"
+    case:int:1
+      set:x:/@_meta5?value
+        src:"Email is encrypted and signed, but PGP key is not verified"
+    case:int:2
+      set:x:/@_meta5?value
+        src:"Email is either not cryptographically signed or encrypted, and should not be trusted in general"
+
+  /*
+   * This part will contain email's MIME ID.
+   */
+  _meta6
+  set:x:/@_meta6?value
     src:"Message ID: {0}"
       :x:/@p5.mysql.select/*/*/mimeid?value
 
   /*
    * This part will contain all recipients of the email.
    */
-  _meta6:@"Recipients: <ul style=""color:rgba(0,0,0,.3)"">"
+  _meta7:@"<p>Recipients:</p><ul>"
   p5.mysql.select:@"select contacts.name, contacts.email, recipients.type from recipients inner join contacts on contacts.id = recipients.contactid where recipients.emailid = @id"
     @id:x:/../*/id?value
   for-each:x:/@p5.mysql.select/*
-    set:x:/@_meta6?value
+    set:x:/@_meta7?value
       src:"{0}<li>{3} - {1} &lt;{2}&gt;</li>"
-        :x:/@_meta6?value
+        :x:/@_meta7?value
         :x:/@_dp/#/*/name?value
         :x:/@_dp/#/*/email?value
         :x:/@_dp/#/*/type?value
-  set:x:/@_meta6?value
+  set:x:/@_meta7?value
     src:{0}</ul>
-      :x:/@_meta6?value
+      :x:/@_meta7?value
 
   /*
    * Selecting content of email.
@@ -490,54 +492,59 @@ create-widget
                   style:"margin-top:1rem;"
 
                 /*
-                 * Displays email "meta data", more specifically who sent the email.
+                 * Displays who sent the email.
                  */
                 p
-                  style:"color:rgba(0,0,0,.3);font-style:italic;margin-bottom:0;"
+                  class:sephia-meta
                   innerValue:x:/@p5.mysql.connect/*/_meta1?value
 
                 /*
-                 * Displays additional "meta data" about email, more specifically the date email was sent.
+                 * Displays the date email was sent.
                  */
                 p
-                  style:"color:rgba(0,0,0,.3);font-style:italic;margin-bottom:0;"
+                  class:sephia-meta
                   innerValue:x:/@p5.mysql.connect/*/_meta2?value
 
                 /*
-                 * Displays additional "meta data" about email, more specifically if email was sent encrypted.
+                 * Displays if email was sent encrypted.
                  */
                 p
-                  style:"color:rgba(0,0,0,.3);font-style:italic;margin-bottom:0;"
+                  class:sephia-meta
                   innerValue:x:/@p5.mysql.connect/*/_meta3?value
 
                 /*
-                 * Displays additional "meta data" about email, more specifically if email was cryptographically signed.
+                 * Displays if email was cryptographically signed, and by which PGP key.
                  */
                 p
-                  style:"color:rgba(0,0,0,.3);font-style:italic;margin-bottom:0;"
+                  class:sephia-meta
                   innerValue:x:/@p5.mysql.connect/*/_meta4?value
 
                 /*
-                 * Displays additional "meta data" about email, more specifically its MIME ID.
+                 * Displays status of email, "safe", "warning" or "unsafe" parts.
                  */
                 p
-                  style:"color:rgba(0,0,0,.3);font-style:italic;margin-bottom:0;"
+                  class:sephia-meta
                   innerValue:x:/@p5.mysql.connect/*/_meta5?value
 
                 /*
-                 * Displays additional "meta data" about email, more specifically all recipients.
+                 * Displays email's MIME ID.
                  */
                 p
-                  style:"color:rgba(0,0,0,.3);font-style:italic;"
-                  class:air-top
+                  class:sephia-meta
                   innerValue:x:/@p5.mysql.connect/*/_meta6?value
 
                 /*
-                 * Displays additional "meta data" about email, more specifically "In-Reply-To" parts.
+                 * Displays all recipients.
+                 */
+                div
+                  class:air-top sephia-meta
+                  innerValue:x:/@p5.mysql.connect/*/_meta7?value
+
+                /*
+                 * Displays "In-Reply-To" parts.
                  */
                 p
-                  style:"color:rgba(0,0,0,.3);"
-                  class:air-top
+                  class:air-top sephia-meta
                   .id:x:/@p5.mysql.connect/*/p5.mysql.select/[2,3]/*/*/id?value
                   oninit
 
@@ -553,8 +560,7 @@ create-widget
                         =:int:0
 
                         /*
-                         * Email was not a reply.
-                         * Hiding widget and returning early.
+                         * Email was not a reply, hiding widget and returning early.
                          */
                         set-widget-property:x:/../*/_event?value
                           visible:false
@@ -590,8 +596,7 @@ create-widget
                         =:int:0
 
                         /*
-                         * We don't have this email in our database.
-                         * Hiding widget and returning early.
+                         * We don't have this email in our database, hiding widget and returning early.
                          */
                         set-widget-property:x:/../*/_event?value
                           visible:false
@@ -622,9 +627,8 @@ create-widget
                           .email-id
                         get-widget-property:x:/../*/_event?value
                           .id-link
-                        load-file:@SEPHIA/inbox/read-email.hl
                         eval-x:x:/+/*
-                        eval:x:/-2/*
+                        micro.evaluate.file:@SEPHIA/inbox/read-email.hl
                           id:x:/@get-widget-property/*/*?value
                           after:x:/@p5.web.widgets.find-first-ancestor/*/*?value
 

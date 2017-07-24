@@ -887,8 +887,13 @@ create-event:sephia._internals.widgets.settings
                     /*
                      * Re-launches inbox for simplicity.
                      */
-                    load-file:@SEPHIA/launch.hl
-                    eval:x:/-/*
+                    micro.evaluate.file:@SEPHIA/launch.hl
+
+                    /*
+                     * Making sure we remove cache of all "babelizing subjects", to force Sephia to
+                     * fetch them again,since they might have changed.
+                     */
+                    p5.web.session.set:sephia.core.random-subjects
 
                 /*
                  * Close button that will close settings without updating them.
