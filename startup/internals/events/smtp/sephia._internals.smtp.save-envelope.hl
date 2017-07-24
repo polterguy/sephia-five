@@ -59,47 +59,33 @@ create-event:sephia._internals.smtp.save-envelope
           =:int:0
 
           /*
-           * Inserting new contact, defaulting name to "Unknown".
+           * Inserting new contact.
            */
-          p5.mysql.insert:@"insert into contacts (name, email, username) values ('Unknown', @email, @username)"
-            @email:x:/@_dp/#?value
-            @username:x:/@whoami/*/username?value
+          eval-x:x:/+/*
+          sephia._internals.contacts.create
+            name:
+            email:x:/@_dp/#?value
+            username:x:/@whoami/*/username?value
 
       /*
-       * Checking if "sender" (self) exists in contact database.
+       * Retrieving "self" from database.
        */
       _sender
       p5.mysql.select:@"select * from contacts where username = @username and email = @email"
         @username:x:/@whoami/*/username?value
         @email:x:/../*/envelope/*/From/*?value
-      if:x:/@p5.mysql.select/*?count.int
-        =:int:0
-
-        /*
-         * Inserting "self" (sender) into "contacts" table in database.
-         */
-        p5.auth.my-settings.get
-        p5.mysql.insert:@"insert into contacts (name, email, username, fingerprint, isverified) values (@name, @email, @username, @fingerprint, 1)"
-          @name:x:/@p5.auth.my-settings.get/*/sephia/*/name?value
-          @email:x:/@p5.auth.my-settings.get/*/sephia/*/email?value
-          @username:x:/@whoami/*/username?value
-          @fingerprint:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-key?value
-        set:x:/@_sender?value
-          src:x:/@p5.mysql.insert/*/id?value
-
-      else
-
-        /*
-         * Self already exists in contacts table in database.
-         */
-        set:x:/@_sender?value
-          src:x:/@p5.mysql.select/0/*/id?value
+      set:x:/@_sender?value
+        src:x:/@p5.mysql.select/0/*/id?value
 
       /*
        * Checking if email is encrypted.
        */
       _encrypt:int:0
       if:x:/../*/envelope/*/body/*/multipart/*/encrypt
+
+        /*
+         * Email was encrypted.
+         */
         set:x:/@_encrypt?value
           src:int:1
 
@@ -125,11 +111,47 @@ create-event:sephia._internals.smtp.save-envelope
           src:x:/@p5.crypto.get-key-details/*/*/user-ids/0?value
 
       /*
+       * Used to hold the "status" of email, 2 equals "unsafe", 1 equals "with warnings" and 0 equals "safe".
+       *
+       * Defaulting to "unsafe".
+       */
+      _status:int:2
+      if:x:/@_encrypt?value.int
+        =:int:1
+        and:x:/@_fingerprint?value
+
+        /*
+         * Email was sent as both encrypted and signed.
+         *
+         * Bumping status from "unsafe" to "warning" before we check if all recipients had verified public keys.
+         */
+        set:x:/@_status?value
+          src:int:1
+
+        /*
+         * Then checking if all recipients had verified PGP keys.
+         */
+        add:x:/+/*/\@emails
+          src:x:/../*/envelope/*(/To|/Cc|/Bcc)/*?value
+        p5.mysql.scalar:@"select count(*) from contacts where username = @username and isverified = 0 and email in (@emails)"
+          @username:x:/@whoami/*/username?value
+          @emails
+        if:x:/@p5.mysql.scalar?value.int
+          =:int:0
+
+          /*
+           * All recipients are verified.
+           */
+          set:x:/@_status?value
+            src:int:0
+
+      /*
        * Inserting into "email" table in database.
        */
       p5.types.date.now
         local:true
-      p5.mysql.insert:@"insert into emails (subject, date, sender, username, isread, mimeid, signature, fingerprint, encrypted, type, inreplyto) values (@subject, @date, @sender, @username, 1, @mimeid, @signature, @fingerprint, @encrypted, 'sent', @inreplyto)"
+      p5.mysql.insert:@"insert into emails (subject, date, sender, username, isread, mimeid, signature, fingerprint, encrypted, type, inreplyto, status) 
+values (@subject, @date, @sender, @username, 1, @mimeid, @signature, @fingerprint, @encrypted, 'sent', @inreplyto, @status)"
         @subject:x:/../*/envelope/*/Subject?value
         @date:x:/@p5.types.date.now?value
         @sender:x:/@_sender?value
@@ -139,6 +161,7 @@ create-event:sephia._internals.smtp.save-envelope
         @signature:x:/@_signature?value
         @fingerprint:x:/@_fingerprint?value
         @inreplyto:x:/../*/envelope/*/In-Reply-To?value
+        @status:x:/@_status?value
 
       /*
        * Inserting into "parts" table in database.

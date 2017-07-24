@@ -40,18 +40,18 @@ create-event:sephia._internals.contacts.update
   _fingerprint
 
   /*
-   * Notice, we do NOT update fingerprint for contact, if there is an existing fingerprint for contact.
+   * Notice, we do not update fingerprint for contact, if there is an existing fingerprint for contact.
    */
-  p5.mysql.scalar:@"select count(*) from contacts where fingerprint is null and id = @id"
-    @id:x:/../*/id?value
-  if:x:/@p5.mysql.scalar?value.int
-    =:int:1
+  if:x:/../*/fingerprint?value
 
     /*
-     * Checking if we can find a public PGP key for user,
-     * but only if [fingerprint] was specified.
+     * Making sure we check if contact already has an existing fingerprint associated with him,
+     * before we attempt to update it.
      */
-    if:x:/../*/fingerprint?value
+    p5.mysql.scalar:@"select count(*) from contacts where fingerprint is null and id = @id"
+      @id:x:/../*/id?value
+    if:x:/@p5.mysql.scalar?value.int
+      =:int:1
 
       /*
        * First checking GnuPG database.
@@ -69,7 +69,7 @@ create-event:sephia._internals.contacts.update
       else
 
         /*
-         * Caller supplied a [fingerprint] argument, downloading key if it exists.
+         * Caller supplied a [fingerprint] argument, trying to download the key if it exists.
          * Making sure we wrap our logic in a try/catch block.
          */
         try

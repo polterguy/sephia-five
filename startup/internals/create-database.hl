@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS `emails` (
   `encrypted` int(11) unsigned NOT NULL,
   `type` varchar(45) NOT NULL,
   `inreplyto` varchar(2048),
+  `status` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`),
   KEY `email_sender_idx` (`sender`),

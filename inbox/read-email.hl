@@ -40,7 +40,8 @@ p5.web.widgets.find:sephia-main-container
 if:x:/-/*/*?value
 
   /*
-   * Another widget is already showing this email, returning early.
+   * Another widget is already showing this email, returning early,
+   * making sure we scroll to the existing reader for email.
    */
   p5.web.send-javascript:@"p5.$('{0}').el.scrollIntoView(true);"
     :x:/@p5.web.widgets.find/*/*?value
@@ -173,103 +174,116 @@ where recipients.emailid = @id"
   /*
    * Creating recipients list, and putting into adequate node above.
    * This becomes a comma separated string for each of the above recipient types.
+   *
+   * First "To" field.
    */
   for-each:x:/@p5.mysql.select/*/*/type/=To/.
     set:x:/@_to?value
-      src:{0}, {1} &lt;{2}&gt;
+      src:{0}, {1} <{2}>
         :x:/@_to?value
         :x:/@_dp/#/*/name?value
         :x:/@_dp/#/*/email?value
   set:x:/@_to?value
     trim:x:/@_to?value
       chars:" ,"
+  set:x:/@_to?value
+    p5.html.html-encode:x:/@_to?value
+
+  /*
+   * Then "Cc" field
+   */
   for-each:x:/@p5.mysql.select/*/*/type/=Cc/.
     set:x:/@_cc?value
-      src:{0}, {1} &lt;{2}&gt;
+      src:{0}, {1} <{2}>
         :x:/@_cc?value
         :x:/@_dp/#/*/name?value
         :x:/@_dp/#/*/email?value
   set:x:/@_cc?value
     trim:x:/@_cc?value
       chars:" ,"
+  set:x:/@_cc?value
+    p5.html.html-encode:x:/@_cc?value
+
+  /*
+   * Then "Bcc" field
+   */
   for-each:x:/@p5.mysql.select/*/*/type/=Bcc/.
     set:x:/@_bcc?value
-      src:{0}, {1} &lt;{2}&gt;
+      src:{0}, {1} <{2}>
         :x:/@_bcc?value
         :x:/@_dp/#/*/name?value
         :x:/@_dp/#/*/email?value
   set:x:/@_bcc?value
     trim:x:/@_bcc?value
       chars:" ,"
+  set:x:/@_bcc?value
+    p5.html.html-encode:x:/@_bcc?value
 
   /*
    * Retrieving actual email.
    */
-  p5.mysql.select:@"select emails.id, subject, date, signature, emails.fingerprint, encrypted, type, mimeid, name, email, contacts.fingerprint, contacts.isverified
+  p5.mysql.select:@"select subject, date, signature, emails.fingerprint, encrypted, type, mimeid, status, contacts.name, contacts.email
 from emails inner join contacts on emails.sender = contacts.id 
 where emails.id = @id"
     @id:x:/../*/id?value
 
   /*
-   * This part will contain the background color of the reader, which
-   * depends upon whether or not the email was encrypted or not.
+   * This part will contain the status CSS class of the reader, which
+   * depends upon whether or not the email was encrypted or not, if it was cryptographically 
+   * signed, and if the fingerprint for the signature matches the fingerprint for the contact 
+   * we have in our database, etc.
    */
   _bg
-  if:x:/@p5.mysql.select/*/*/encrypted?value.int
-    !=:int:0
-    and:x:/@p5.mysql.select/*/*/signature?value
+  if:x:/@p5.mysql.select/*/*/status?value.int
+    =:int:0
 
     /*
-     * Email was both encrypted and signed.
-     *
-     * Now checking if contact actually has a fingerprint, and if it is verified.
+     * Email was considered safe.
      */
-    if:x:/@p5.mysql.select/*/*/fingerprint/[0,1]?value
-      =:x:/@p5.mysql.select/*/*/fingerprint/[1,2]?value
-      and:x:/@p5.mysql.select/*/*/isverified?value.int
-        !=:int:0
+    set:x:/@_bg?value
+      src:sephia-safe
 
-      /*
-       * Email was encrypted, cryptographically signed, and fingerprint of contact who sent email has been verified.
-       */
-      set:x:/@_bg?value
-        src:sephia-safe
+  else-if:x:/@p5.mysql.select/*/*/status?value.int
+    =:int:1
 
-    else
-
-      /*
-       * Email was encrypted, cryptographically signed, but fingerprint of contact who sent email has not been verified.
-       */
-      set:x:/@_bg?value
-        src:sephia-unknown
+    /*
+     * Email was considered as being unknown in regards to whether or not it was safe.
+     */
+    set:x:/@_bg?value
+      src:sephia-unknown
 
   else
 
     /*
-     * Email was either not encrypted or not signed.
+     * Email was considered as being unsafe.
      */
     set:x:/@_bg?value
       src:sephia-unsafe
-  p5.html.html-encode:x:/..
-  create-widget
-    element:pre
-    innerValue:x:/@p5.html.html-encode?value
 
   /*
    * Checking if this is a "sent" email or a "received".
    */
   if:x:/@p5.mysql.select/*/*/type?value
     =:"received"
+
+    /*
+     * Email was "received", meaning in the user's "inbox".
+     */
     set:x:/@_bg?value
       src:{0} sephia-reader-received
         :x:/@_bg?value
+
   else
+
+    /*
+     * Email was "sent", meaning it was sent by user.
+     */
     set:x:/@_bg?value
       src:{0} sephia-reader-sent
         :x:/@_bg?value
 
   /*
-   * This part will contain some of the "meta content" for email, more specifically who sent the email.
+   * This part will contain who sent the email.
    */
   _meta1
   set:x:/@_meta1?value
@@ -278,7 +292,7 @@ where emails.id = @id"
       :x:/@p5.mysql.select/*/*/email?value
 
   /*
-   * This part will contain some more of the "meta content" for email, more specifically when it was sent.
+   * This part will contain when the email was sent.
    */
   _meta2
   p5.types.date.format:x:/@p5.mysql.select/*/*/date?value
@@ -288,14 +302,14 @@ where emails.id = @id"
       :x:/@p5.types.date.format?value
 
   /*
-   * This part will contain some more of the "meta content" for email, more specifically if email was sent encrypted.
+   * This part will tell if email was sent encrypted.
    */
   _meta3
   if:x:/@p5.mysql.select/*/*/encrypted?value.int
     !=:int:0
 
     /*
-     * Email was sent encrypted.
+     * Email was encrypted.
      */
     set:x:/@_meta3?value
       src:Email was sent encrypted
@@ -309,7 +323,7 @@ where emails.id = @id"
       src:Email was not encrypted
 
   /*
-   * This part will contain some more of the "meta content" for email, more specifically if email was cryptographically signed.
+   * This part will contain if email was cryptographically signed.
    */
   _meta4
   if:x:/@p5.mysql.select/*/*/signature?value
@@ -332,7 +346,7 @@ where emails.id = @id"
       src:Email was not cryptographically signed
 
   /*
-   * This part will contain some more of the "meta content" for email, more specifically its MIME ID.
+   * This part will contain email's MIME ID.
    */
   _meta5
   set:x:/@_meta5?value
@@ -390,21 +404,28 @@ add:x:/../*/create-widget/**/widgets/=action-strip
  */
 p5.web.widgets.find-like:sephia-main-container
   .row-email-id:x:/../*/id?value
-get-widget-property:x:/-/*/*?value
-  class
-if:x:/-/*/*?value
-  ~:sephia-unread
-  micro.css.toggle:x:/@p5.web.widgets.find-like/*/*?value
-    class:sephia-unread
+micro.css.delete:x:/@p5.web.widgets.find-like/*/*?value
+  class:sephia-unread
 
 
 /*
  * Checking if we had an [after] argument.
  */
 if:x:/../*/after?value
+
+  /*
+   * Caller supplied an explicit [after] argument, which means that reader
+   * should be created after this specfied widget.
+   */
   add:x:/../*/create-widget
     src:x:/../*/after
+
 else
+
+  /*
+   * Caller did not specify an explicit [after] argument, simply appending
+   * reader into "sephia-main-container" widget.
+   */
   add:x:/../*/create-widget
     src
       parent:sephia-main-container

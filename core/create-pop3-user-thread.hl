@@ -103,7 +103,7 @@ fork
   _users-home-folder
 
   /*
-   * Making sure we set our own contact entry to "isverified", having the correct fingerprint.
+   * Making sure we create our "self" contacts entry, having the correct fingerprint.
    */
   p5.mysql.connect:[sephia]
     p5.mysql.scalar:@"select count(*) from contacts where username = @username and email = @email"
@@ -211,8 +211,7 @@ fork
                     continue
 
                   /*
-                   * Checking if email was signed/encrypted, and if so, 
-                   * making sure we pass in email of first signature to "email" table insertion.
+                   * These are used to temporarily hold the state of our email.
                    */
                   _signature
                   _fingerprint
@@ -292,6 +291,7 @@ fork
                    * Making sure we store the "from" database ID.
                    */
                   _from
+                  _from-created:bool:false
 
                   /*
                    * Stuffing email's [From] (sender) into "contacts" table.
@@ -328,6 +328,13 @@ fork
                           email:x:/@_dp/#/*/From/0?value
                           username:x:/@.whoami/*/username?value
 
+                    /*
+                     * Making sure we store the fact that email's sender was actually created as a contact during
+                     * this iteration.
+                     */
+                    set:x:/@_from-created?value
+                      src:bool:true
+
                   else-if:x:/@p5.mysql.select/0/*/name?value
                     !=:x:/@_dp/#/*/From/*?name
                     and:x:/@_dp/#/*/From/*?name
@@ -340,12 +347,18 @@ fork
                      * Exists, but name has been changed, and name given is not empty (""),
                      * or contact had no existing fingerprint, and email was signed with a fingerprint.
                      *
-                     * Passing in [fingerprint] for PGP key that signed the email, if a signature was given.
+                     * Passing in [fingerprint] for PGP key that signed the email to our "update" invocation, 
+                     * if a signature was given.
                      */
                     if:x:/@_fingerprint?value
                       add:x:/././*/sephia._internals.contacts.update
                         src
                           fingerprint:x:/@_fingerprint?value
+
+
+                    /*
+                     * Updating contact by evaluating [sephia._internals.contacts.update].
+                     */
                     eval-x:x:/+/*
                     sephia._internals.contacts.update
                       id:x:/@p5.mysql.select/0/*/id?value
@@ -363,6 +376,46 @@ fork
                       src:x:/@p5.mysql.select/0/*/id?value
 
                   /*
+                   * Used to temporarily hold the status of our email.
+                   *
+                   * Notice, we default to "unsafe".
+                   * 2 equals "unsafe", 1 equals "warnings" and 0 equals "safe".
+                   */
+                  _status:int:2
+                  if:x:/@_fingerprint?value
+                    and:x:/@_encrypted?value.int
+                      =:int:1
+
+                    /*
+                     * Email was both encrypted and cryptographically signed, bumping status of
+                     * email to "warning", before we check if the fingerprint the email was signed
+                     * with matches the fingerprint associated with the contact.
+                     *
+                     * First checking if "From" was created during this iteration, at which point it is
+                     * meaningless to check if his fingerprint is verified.
+                     */
+                    set:x:/@_status?value
+                      src:int:1
+                    if:x:/@_from-created?value
+                      =:bool:false
+
+                      /*
+                       * Contact was not created during this iteration.
+                       *
+                       * Checking if his fingerprint is verified, and if so, we set the email's status to "safe".
+                       */
+                      p5.mysql.select:@"select isverified from contacts where id = @id"
+                        @id:x:/@_from?value
+                      if:x:/@p5.mysql.select/*/*?value.int
+                        !=:int:0
+
+                        /*
+                         * Sender signed email with a verified public key.
+                         */
+                        set:x:/@_status?value
+                          src:int:0
+
+                  /*
                    * Verifying that a subject was given by POP3 server.
                    */
                   if:x:/@_dp/#/*/Subject?value
@@ -377,7 +430,9 @@ fork
                   /*
                    * Now we can insert email into database.
                    */
-                  p5.mysql.insert:@"insert into emails (subject, babelsubject, date, sender, username, isread, mimeid, signature, fingerprint, encrypted, type, inreplyto) values (@subject, @babelsubject, @date, @sender, @username, 0, @mimeid, @signature, @fingerprint, @encrypted, 'received', @inreplyto)"
+                  p5.mysql.insert:@"insert into emails (subject, babelsubject, date, sender, username, isread, 
+mimeid, signature, fingerprint, encrypted, type, inreplyto, status) values (@subject, @babelsubject, @date, @sender, 
+@username, 0, @mimeid, @signature, @fingerprint, @encrypted, 'received', @inreplyto, @status)"
                     @subject:x:/@_dp/#/*/Subject?value
                     @babelsubject:x:/@_babel-subject?value
                     @date:x:/@_dp/#/*/Date?value
@@ -388,6 +443,7 @@ fork
                     @fingerprint:x:/@_fingerprint?value
                     @encrypted:x:/@_encrypted?value
                     @inreplyto:x:/@_dp/#/*/In-Reply-To?value
+                    @status:x:/@_status?value
 
                   /*
                    * Now inserting into "attachments" table.
@@ -460,35 +516,13 @@ fork
                             email:x:/@_dp/#?value
                             username:x:/@.whoami/*/username?value
 
-                    else-if:x:/@p5.mysql.select/0/*/name?value
-                      !=:x:/@_dp/#?name
-                      and:x:/@_dp/#?name
-                        !=:
-
-                      /*
-                       * Exists, but sender has updated his name.
-                       */
-                      p5.mysql.update:@"update contacts set name = @name where id = @id"
-                        @name:x:/@_dp/#?name
-                        @id:x:/@p5.mysql.select/0/*/id?value
-                      set:x:/@_contact-id?value
-                        src:x:/@p5.mysql.select/0/*/id?value
-
                     else
 
                       /*
-                       * Exists, and there are no changes.
+                       * Recipient already exists as a contact.
                        */
                       set:x:/@_contact-id?value
                         src:x:/@p5.mysql.select/0/*/id?value
-
-                    /*
-                     * Inserting into "recipients" table.
-                     */
-                    p5.mysql.insert:@"insert into recipients (contactid, type, emailid) values (@contactid, @type, @id)"
-                      @contactid:x:/@_contact-id?value
-                      @type:x:/@_dp/#/.?name
-                      @id:x:/..for-each/@p5.mysql.insert/*/id?value
 
                 /*
                  * Commit database transaction.
