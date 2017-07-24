@@ -524,6 +524,14 @@ mimeid, signature, fingerprint, encrypted, type, inreplyto, status) values (@sub
                       set:x:/@_contact-id?value
                         src:x:/@p5.mysql.select/0/*/id?value
 
+                    /*
+                     * Inserting into "recipients" table.
+                     */
+                    p5.mysql.insert:@"insert into recipients (contactid, type, emailid) values (@contactid, @type, @id)"
+                      @contactid:x:/@_contact-id?value
+                      @type:x:/@_dp/#/.?name
+                      @id:x:/..for-each/@p5.mysql.insert/*/id?value
+
                 /*
                  * Commit database transaction.
                  *
