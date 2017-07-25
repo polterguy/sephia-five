@@ -6,9 +6,27 @@
  * and [id] being the ID of the email we're replying to.
  * In addition to [subject], [content], [to] and optionally [babelsubject], [cc] and [bcc]
  */
+
+
+
+
+
+/*
+ * Adding recipients and custom MIME headers supplied by caller.
+ */
 add:x:/../*/create-widget/**/sephia.widgets.compose-email/*/recipients
   src:x:/../*(/to|/cc|/bcc)
-eval-x:x:/../*/create-widget/**/sephia.widgets.compose-email(/*|/*/headers/*)
+add:x:/../*/create-widget/**/sephia.widgets.compose-email/*/headers
+  src:x:/../*/headers/*
+
+
+
+
+
+/*
+ * Creating reply widget, making sure we forward evaluate all arguments first.
+ */
+eval-x:x:/../*/create-widget/**/sephia.widgets.compose-email/*
 create-widget
   after:x:/../*/reader-widget?value
   class:row air-top
@@ -28,7 +46,6 @@ create-widget
           recipients
           class:air-inner shaded rounded
           headers
-            In-Reply-To:x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]/*/*/mimeid?value
           .onclose
 
             /*

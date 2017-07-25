@@ -10,6 +10,8 @@
  *
  * [to], [cc] and [bcc] should be comma separated list of emails.
  *
+ * You can also pass in an optional [headers] collection, which will be MIME headers associate with the message.
+ *
  * Will save the sent email into database, associated with the user who sent it.
  */
 create-event:sephia.core.send-email
@@ -30,6 +32,7 @@ create-event:sephia.core.send-email
     bcc:string
     babelsubject:string
     attachment:string
+    headers
 
   /*
    * Retrieving settings for currently logged in user, and keeping the [whoami] object
@@ -146,6 +149,12 @@ create-event:sephia.core.send-email
     src:x:/../*/subject?value
 
   /*
+   * Then any custom [headers] caller requested to have associated with email.
+   */
+  add:x:/@.envelope
+    src:x:/../*/headers/*
+
+  /*
    * Used to track if envelope has been given a multipart or not.
    *
    * We try to keep construction of email as small as possible, and only
@@ -257,7 +266,7 @@ create-event:sephia.core.send-email
   if:x:/@p5.auth.my-settings.get/*/sephia/*/markdown-composer?value
 
     /*
-     * Caller requested that Markdown should be used.
+     * User's settings requested that Markdown should be used.
      */
     sephia.core.markdown.to-html:x:/../*/body?value
     eval-x:x:/+/*/*/*/*/content

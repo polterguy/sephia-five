@@ -12,6 +12,9 @@
  * You can also optionally pass in a [babelsubject], which will make sure your email is using the specified
  * babelsubject, and doesn't create a new one, if the subject is supposed to be babelled.
  *
+ * You can also optionally pass in a [headers] collection, which will be MIME headers associated with the message
+ * once it is sent.
+ *
  * You can also optionally pass in [.onclose] and [.onsend] lambda callbacks, which will be invoked when
  * email composer is closed and/or email is sent, in addition to [class], which will be the root class
  * of the composer.
@@ -46,6 +49,7 @@ create-event:sephia.widgets.compose-email
     babelsubject:string
     body:string
     recipients
+    headers
 
   /*
    * Including JavaScript necessary to handle uploading of attachments.
@@ -79,6 +83,12 @@ p5.sephia_upload_files = function(e) {
     src:x:/../*/.onsend/*
   add:x:/../*/return/*/div/*/.onclose
     src:x:/../*/.onclose/*
+
+  /*
+   * Adding custom headers requested by caller.
+   */
+  add:x:/../*/return/**/sephia.core.send-email
+    src:x:/../*/headers
 
   /*
    * Adding contens of [oninit], if specified.

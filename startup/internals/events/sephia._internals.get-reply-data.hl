@@ -27,6 +27,15 @@ create-event:sephia._internals.get-reply-data
       @id:x:/../*/_arg?value
 
     /*
+     * Adding "In-Reply-To" MIME header.
+     */
+    eval-x:x:/+/*/*/*
+    add:x:/../*/return
+      src
+        headers
+          In-Reply-To:x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]/*/*/mimeid?value
+
+    /*
      * Making sure subject starts with "Re:".
      */
     if
