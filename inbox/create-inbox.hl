@@ -64,9 +64,8 @@ create-widget:sephia-search-wrapper
           .offset
         get-widget-property:sephia-search-txt
           value
-        load-file:@SEPHIA/inbox/databind-inbox.hl
         eval-x:x:/+/*
-        eval:x:/-2/*
+        micro.evaluate.file:@SEPHIA/inbox/databind-inbox.hl
           offset:x:/..if/*/get-widget-property/[0,1]/*/*?value
           filter:x:/..if/*/get-widget-property/[1,2]/*/*?value
 
@@ -80,8 +79,7 @@ create-widget:sephia-search-wrapper
           .offset:0
         set-widget-property:sephia-search-txt
           value:
-        load-file:@SEPHIA/inbox/databind-inbox.hl
-        eval:x:/-/*
+        micro.evaluate.file:@SEPHIA/inbox/databind-inbox.hl
 
   widgets
     div

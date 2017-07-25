@@ -196,6 +196,16 @@ if (!p5.sephia_poller) {{
           stack-trace:x:/@read-lock/*/select-data/*/*/error/*/stack-trace?value
           type:x:/@read-lock/*/select-data/*/*/error/*/type?value
 
+      else
+
+        /*
+         * Synchronization object was somehow deleted, which means that our "worker thread"
+         * will soon choke, when trying to increment its [count].
+         * Simply creating another poller should do the trick, since our next poll will then
+         * show this error.
+         */
+        sephia._internals.create-poller-javascript
+
   .oncheck
 
     /*
