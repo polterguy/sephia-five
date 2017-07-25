@@ -6,6 +6,9 @@
  * Optionally pass in [fingerprint], which is the fingerprint of the public PGP key
  * the contact should be created with.
  *
+ * If you pass in [verified] and set its value to boolean "true", the contact will
+ * be created as initially verified.
+ *
  * Will attempt to find a public PGP key for contact, either in GnuPG database, or using key server.
  * Notice, expects an open database connection to the Sephia database.
  */
@@ -24,6 +27,7 @@ create-event:sephia._internals.contacts.create
    */
   micro.lambda.contract.optional:x:/..
     fingerprint:string
+    verified:bool
 
   /*
    * Making sure name defaults to first parts of email, if it is empty or null.
@@ -74,9 +78,9 @@ create-event:sephia._internals.contacts.create
 
     catch
 
-    /*
-     * Silently catching, since we might be on another thread.
-     */
+      /*
+       * Silently catching, since we might be on another thread.
+       */
 
   else
 
@@ -112,13 +116,27 @@ create-event:sephia._internals.contacts.create
       to-upper:x:/@_fingerprint?value
 
   /*
+   * Checking if caller requested contact to be initially created as a verified contact.
+   */
+  if:x:/../*/verified?value
+    and:x:/@_fingerprint?value
+
+    /*
+     * We have a fingerprint for contact, and caller requested that contact be created
+     * as initially verified - Hence, we set status of contact to verified.
+     */
+    set:x:/../*/p5.mysql.insert/*/\@isverified?value
+      src:1
+
+  /*
    * Inserting new contact into database.
    */
-  p5.mysql.insert:@"insert into contacts (name, email, username, fingerprint) values (@name, @email, @username, @fingerprint)"
+  p5.mysql.insert:@"insert into contacts (name, email, username, fingerprint, isverified) values (@name, @email, @username, @fingerprint, @isverified)"
     @name:x:/../*/name?value
     @email:x:/../*/email?value
     @username:x:/../*/username?value
     @fingerprint:x:/@_fingerprint?value
+    @isverified:0
 
   /*
    * Returning newly inserted contact to caller.

@@ -1,0 +1,10 @@
+
+/*
+ * Configuration file for the initial contact(s) that user receives when he starts
+ * Sephia Five for the first time.
+ */
+contact
+  name:Thomas Hansen
+  email:thomas@gaiasoul.com
+  fingerprint:5E11AEF421CDB0A7A9A5C6B4AED9D04F43BE2AAD
+  verified:bool:true

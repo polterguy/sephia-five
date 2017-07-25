@@ -193,6 +193,15 @@ p5.mysql.connect:[sephia]
 
 
 /*
+ * Ensuring user has his "welcome email(s)".
+ */
+micro.evaluate.file:@SEPHIA/core/ensure-initial-welcome-emails-and-contacts.hl
+
+
+
+
+
+/*
  * Making sure we start email fetching thread.
  *
  * This will create a thread for each user, that runs in the background,

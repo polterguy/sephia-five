@@ -1,0 +1,76 @@
+
+/*
+ * Configuration file for the initial welcome email(s) that user receives when he starts
+ * Sephia Five for the first time.
+ *
+ * Notice, you can create multiple [envelope]s here, to insert multiple emails.
+ *
+ * The [To] parts will be dynamically inserted in file that is responsible for
+ * inserting these welcome emails. Besides from that, the rest of the message must
+ * conform to an [envelope] as returned from [p5.pop3.get].
+ */
+
+
+
+
+
+/*
+ * Initial welcome email.
+ */
+envelope:welcome-email-sephia-five-no1@gaiasoul.com
+  Subject:Welcome to Sephia Five
+  Date:date:"2017-07-25T19:57:00.000"
+  From
+    Thomas Hansen:thomas@gaiasoul.com
+  multipart:encrypted
+    signature
+      Thomas Hansen <thomas@gaiasoul.com>:bool:true
+        fingerprint:5E11AEF421CDB0A7A9A5C6B4AED9D04F43BE2AAD
+    text:plain
+      content:@"Sephia Five is an Open Source and cryptographically secure email alternative to public services such as GMail and Hotmail, that allows you to host your own data, on your own web server(s), and communicate securely, without any adversaries being able to know what you and your friends are communicating about.
+
+If you look at the bottom left corner of this email, you will see a smiley. This smiley indicates that this email was sent encrypted, and that it was cryptographically signed, and that it was signed with a PGP key, that you have verified belongs to the email address of 'thomas@gaiasoul.com' - Or that you can for some reasons be certain about belongs to the person who claims to own it.
+
+If you get emails that are not happy, this means that the email was sent encrypted, and that it was cryptographically signed, but that you still haven't verified that the public PGP key belongs to the one who claims to own it. A sad email, means that it was sent either in plain text, or that it was not cryptographically signed - Which means you should not trust it.
+
+Your goal should be to make sure all your emails are happy, either by verifying the keys of the ones sending you emails, and by encouraging them to start sending you encrypted and cryptographically signed emails.
+
+Sephia Five has reduced the complexity of using PGP encrypted emails, to the point where it is almost automagically happening, without compromising your online safety in any ways. This means that Sephia increases your amount of online privacy, without you having to put in any effort for this to occur, and making it almost impossible for you to do something wrong.
+
+Unless something is easy to use, it is not secure!
+
+With Sephia Five, the only remaining thing you'll have to do, to make sure your online communication is cryptographically secured, is to verify your contacts' PGP fingerprints. Apart from this, everything else simply magically happens in the background for you.
+
+Hint; It may be wise to put your PGP fingerprints on your business cards, to make the process of verifying your fingerprint easier.
+
+Important!
+NEVER verify a fingerprint you're not certain of belongs to the one who claims to own it! If you do, you will be given a sense of false security, that could compromise both yours, and other people's communication with the individual who owns this email address."
+
+
+
+
+
+/*
+ * Features of Sephia Five email.
+ */
+envelope:welcome-email-sephia-five-no2@gaiasoul.com
+  Subject:Sephia Five's features
+  Date:date:"2017-07-25T19:57:00.000"
+  From
+    Thomas Hansen:thomas@gaiasoul.com
+  multipart:encrypted
+    signature
+      Thomas Hansen <thomas@gaiasoul.com>:bool:true
+        fingerprint:5E11AEF421CDB0A7A9A5C6B4AED9D04F43BE2AAD
+    text:plain
+      content:@"Sephia Five first of all makes using PGP cryptography ridiculously easy. There are almost no more complex things for you left to do, and you have all your email security features almost automagically happening for you, behind the scene, without you having to put in much effort for it to happen.
+
+In addition, Sephia Five makes it much harder for you to have your computer infected by viruses, and other malware. Sephia Five will warn you if you try to download an attachment that is not considered 100% safe. This makes it harder for you to become infected by viruses, since you'll consciously have to make a decision yourself, to download a virus or some other malware.
+
+But Sephia Five's feature list, also contains things that are for the 'less paranoid' amongst us. For instance, you can compose emails using Markdown, which allows you to add formatting to your emails, using the familiar Markdown syntax - https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet. This allows you to create rich text emails, without using any complex editors, simply by adding your formatting commands using Markdown syntax.
+
+Another cool feature we're particularly proud of, is that you can have multiple emails open at the same time. This allows you to read and reference parts from multiple emails, while composing or replying to some other email(s).
+
+With Sephia Five, you can also create 'conversations', which keeps track of who said what, as you and your friends replies to each other emails'. Sephia Five is ridiculously fast, and consumes several order of magnitude less bandwidth, than that which for instance GMail uses. This means that you can expect to have a highly responsive system, even when you're accessing your emails over very, very, very bad internet connections.
+
+Sephia Five is also Open Source and Free Software. This means that you can scrutinize its code, if you wish, to make sure for yourself, that there are no 'backdoors' in the system, that somehow compromises your data."
