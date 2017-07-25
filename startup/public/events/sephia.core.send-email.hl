@@ -280,13 +280,19 @@ create-event:sephia.core.send-email
      * entity inside of this wrapper multipart.
      * If this wrapper "multipart:mixed" doesn't exist however, we simply make sure our 
      * "multipart:alternative" becomes the root MIME entity of our message.
+     *
+     * Notice, to avoid trailing spaces in lines of text to be stripped, which are used in
+     * among other places signatures, etc - We need to encode the content such that these trailing
+     * SP characters are not removed. QuotedPrintable will do just that.
      */
     add:x:(/@.envelope/*/body/*/multipart|/@.envelope/*/body)/[0,1]
       src
         multipart:alternative
           text:plain
+            Content-Transfer-Encoding:QuotedPrintable
             content:x:/../*/body?value
           text:html
+            Content-Transfer-Encoding:QuotedPrintable
             content:x:/@sephia.core.markdown.to-html?value
 
   else
@@ -301,10 +307,14 @@ create-event:sephia.core.send-email
      * whether or not user has added attachments or not.
      *
      * See above comments for explanation.
+     *
+     * QuotedPrintable encoding for content is necessary to not have MimeKit remove trailing
+     * SP characters on lines of text, which are used in e.g. signatures etc.
      */
     add:x:(/@.envelope/*/body/*/multipart|/@.envelope/*/body)/[0,1]
       src
         text:plain
+          Content-Transfer-Encoding:QuotedPrintable
           content:x:/../*/body?value
 
   /*
