@@ -45,6 +45,27 @@ create-event:sephia._internals.widgets.settings
     preferred-content-type:html
     markdown-composer:bool:true
     pgp-subjects:"https://www.nytimes.com, https://www.wsj.com"
+    skin:serious
+
+  /*
+   * Populating skin selector.
+   */
+  list-files:@MICRO/media/skins/
+    filter:.css
+  for-each:x:/@list-files/*?name
+    split:x:/@_dp?value
+      =:/
+      =:.
+    if:x:/@split/0/-2?name
+      =:x:(/../*/p5.auth.my-settings.get/*/sephia/*/skin|/@.defaults/*/skin)/$?value
+      add:x:/././*/add/*/*
+        src:selected
+    eval-x:x:/+/*/*/*
+    add:x:/../*/return/**/widgets/=skins
+      src
+        literal
+          element:option
+          innerValue:x:/@split/0/-2?name
 
   /*
    * Making sure we check the correct "perferred content type" radio button.
@@ -148,6 +169,21 @@ create-event:sephia._internals.widgets.settings
                         placeholder:Signature ...
                         rows:7
                         value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/signature|/../*/.defaults/*/signature)/$?value
+              div
+                class:row
+                widgets
+                  div
+                    class:col
+                    widgets
+                      div
+                        class:strip fill
+                        widgets
+                          label
+                            for:sephia-settings-skin
+                            innerValue:Theme
+                          select:sephia-settings-skin
+                            .data-field:skin
+                            widgets:skins
               div
                 class:row
                 widgets
@@ -885,15 +921,15 @@ create-event:sephia._internals.widgets.settings
                           @fingerprint:x:/@micro.form.serialize/*/pgp-key?value
 
                     /*
-                     * Re-launches inbox for simplicity.
-                     */
-                    micro.evaluate.file:@SEPHIA/launch.hl
-
-                    /*
                      * Making sure we remove cache of all "babelizing subjects", to force Sephia to
-                     * fetch them again,since they might have changed.
+                     * fetch them again, since they might have changed.
                      */
                     p5.web.session.set:sephia.core.random-subjects
+
+                    /*
+                     * Re-launches inbox for simplicity.
+                     */
+                    p5.web.reload-location
 
                 /*
                  * Close button that will close settings without updating them.

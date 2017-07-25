@@ -47,27 +47,6 @@ if:x:/@p5.web.session.get/*/*
 
 
 /*
- * Including Micro, with Serious skin, and adding Awesome Fonts.
- */
-p5.web.include-css-file:@MICRO/media/main.css
-p5.web.include-css-file:@MICRO/media/ext.css
-p5.web.include-css-file:@MICRO/media/fonts.css
-p5.web.include-css-file:@MICRO/media/skins/serious.css
-
-
-
-
-
-/*
- * Including main CSS file for Sephia.
- */
-p5.web.include-css-file:@SEPHIA/media/main.css
-
-
-
-
-
-/*
  * Making sure user has an attachment folder.
  *
  * The first time the user opens Sephia, it will automatically create the user's
@@ -120,6 +99,17 @@ create-container-widget:sephia-main-container
 
 
 /*
+ * Including Micro, and adding Awesome Fonts.
+ */
+p5.web.include-css-file:@MICRO/media/main.css
+p5.web.include-css-file:@MICRO/media/ext.css
+p5.web.include-css-file:@MICRO/media/fonts.css
+
+
+
+
+
+/*
  * Retrieving user's settings, and making sure user has setup his account(s).
  *
  * Notice, if user hasn't setup his account(s), we won't allow him to open his inbox,
@@ -131,6 +121,13 @@ if:x:/@p5.auth.my-settings.get/*/sephia
 
   /*
    * User has no settings, displaying settings form, and returning early.
+   * First making sure we include the necessary default CSS files (serious skin).
+   */
+  p5.web.include-css-file:@MICRO/media/skins/serious.css
+  p5.web.include-css-file:@SEPHIA/media/main.css
+
+  /*
+   * Then creating our settings widget, before we return early.
    */
   create-widget
     parent:sephia-main-container
@@ -147,6 +144,25 @@ if:x:/@p5.auth.my-settings.get/*/sephia
    * Returning early to avoid evaluating the rest of this file.
    */
   return
+
+
+
+
+
+/*
+ * Including Micro skin user has selected.
+ */
+p5.web.include-css-file:@MICRO/media/skins/{0}.css
+  :x:/@p5.auth.my-settings.get/*/sephia/*/skin?value
+
+
+
+
+
+/*
+ * Including main CSS file for Sephia.
+ */
+p5.web.include-css-file:@SEPHIA/media/main.css
 
 
 
