@@ -37,14 +37,24 @@ whoami
 
 
 /*
- * Parsing filter, such that we only search types of emails specified by caller.
+ * Removing [filter] argument for simplicity's sake, if it was empty.
+ *
+ * If it is removed, the default filter will be used.
  */
 if:x:/../*/filter?value
   not
   or:x:/../*/filter?value
     =:
   set:x:/../*/filter
-_filter
+
+
+
+
+
+/*
+ * Parsing filter, such that we only search types of emails specified by caller.
+ */
+_filter-type
 if
   fetch:x:/0/0?value
     index-of:x:(/../*/filter|/../*/.defaults/*/filter)/$?value
@@ -59,25 +69,25 @@ if
     =:":"
   switch:x:/@split/0?name
     case:inbox
-      set:x:/@_filter?value
+      set:x:/@_filter-type?value
         src:@"and emails.type='received'"
     case:sent
-      set:x:/@_filter?value
+      set:x:/@_filter-type?value
         src:@"and emails.type='sent'"
     case:unread
-      set:x:/@_filter?value
+      set:x:/@_filter-type?value
         src:@"and emails.isread=0 and emails.type='received'"
     case:read
-      set:x:/@_filter?value
+      set:x:/@_filter-type?value
         src:@"and emails.isread=1 and emails.type='received'"
     case:safe
-      set:x:/@_filter?value
+      set:x:/@_filter-type?value
         src:@"and emails.encrypted != 0 and emails.fingerprint is not null"
     case:attachment
-      set:x:/@_filter?value
+      set:x:/@_filter-type?value
         src:@"and exists (select * from attachments where attachments.emailid = emails.id)"
     case:all
-      set:x:/@_filter?value
+      set:x:/@_filter-type?value
         src:@""
     default
       micro.windows.info:I don't recognize your type declaration
@@ -122,7 +132,7 @@ p5.mysql.connect:[sephia]
 where emails.username = @username and (subject like @filter or contacts.name like @filter or contacts.email like @filter 
 or exists (select * from parts where content like @filter and parts.emailid = emails.id)) {0}
 order by id desc limit 15 offset @offset"
-    :x:/@_filter?value
+    :x:/@_filter-type?value
     @username:x:/@whoami/*/username?value
     @offset:x:(/../*/offset|/../*/.defaults/*/offset)/$?value.int
     @filter:%{0}%
@@ -209,6 +219,7 @@ order by id desc limit 15 offset @offset"
             literal
               element:span
               class:icon-smile-o
+              title:@"Your conversation is private and cryptographically secured in all regards."
 
       case:int:1
         add:x:/..for-each/*/add/**/Date/*/widgets/*/div/*/widgets
@@ -216,6 +227,8 @@ order by id desc limit 15 offset @offset"
             literal
               element:span
               class:icon-meh-o
+              title:@"Your conversation is probably private and cryptographically secured, but might originate from somebody else than you think.
+Please verify that the PGP key you're using for this contact(s) is/are the correct public PGP keys, belonging to the person(s) you want to securely communicate with."
 
       case:int:2
         add:x:/..for-each/*/add/**/Date/*/widgets/*/div/*/widgets
@@ -223,6 +236,8 @@ order by id desc limit 15 offset @offset"
             literal
               element:span
               class:icon-frown-o
+              title:@"Your conversation is not private, and might originate from somebody else than you think, and you might just as well
+send the person a postcard, or publish your communication publicly in your local newspaper's front page."
 
     /*
      * Forward evaluating arguments, and creating our row.
@@ -239,9 +254,8 @@ order by id desc limit 15 offset @offset"
               /*
                * Executing file responsible for reading a single email.
                */
-              load-file:@SEPHIA/inbox/read-email.hl
               eval-x:x:/+/*
-              eval:x:/-2/*
+              micro.evaluate.file:@SEPHIA/inbox/read-email.hl
                 id:x:/@_dp/#/*/id?value
 
           Name:x:/@_dp/#/*/name?value

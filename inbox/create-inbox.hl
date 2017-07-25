@@ -114,9 +114,8 @@ create-widget:sephia-search-wrapper
                  */
                 get-widget-property:sephia-search-txt
                   value
-                load-file:@SEPHIA/inbox/databind-inbox.hl
                 eval-x:x:/+/*
-                eval:x:/-2/*
+                micro.evaluate.file:@SEPHIA/inbox/databind-inbox.hl
                   filter:x:/@get-widget-property/*/*?value
 
                 /*
@@ -159,9 +158,8 @@ create-widget:sephia-search-wrapper
 
                 get-widget-property:sephia-search-txt
                   value
-                load-file:@SEPHIA/inbox/databind-inbox.hl
                 eval-x:x:/+/*
-                eval:x:/-2/*
+                micro.evaluate.file:@SEPHIA/inbox/databind-inbox.hl
                   filter:x:/@get-widget-property/*/*?value
                   offset:x:/@-?value
 
@@ -184,9 +182,8 @@ create-widget:sephia-search-wrapper
                   _:15
                 get-widget-property:sephia-search-txt
                   value
-                load-file:@SEPHIA/inbox/databind-inbox.hl
                 eval-x:x:/+/*
-                eval:x:/-2/*
+                micro.evaluate.file:@SEPHIA/inbox/databind-inbox.hl
                   filter:x:/@get-widget-property/*/*?value
                   offset:x:/@+?value
                 if:x:/-?value
@@ -329,8 +326,7 @@ create-widget
 /*
  * Databinding grid.
  */
-load-file:@SEPHIA/inbox/databind-inbox.hl
-eval:x:/-/*
+micro.evaluate.file:@SEPHIA/inbox/databind-inbox.hl
 
 
 
@@ -339,5 +335,4 @@ eval:x:/-/*
 /*
  * Updating email count.
  */
-load-file:@SEPHIA/inbox/update-page-title.hl
-eval:x:/-/*
+micro.evaluate.file:@SEPHIA/inbox/update-page-title.hl

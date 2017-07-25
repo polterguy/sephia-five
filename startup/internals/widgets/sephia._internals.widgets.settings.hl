@@ -906,5 +906,4 @@ create-event:sephia._internals.widgets.settings
                     /*
                      * Re-launches Sephia for simplicity.
                      */
-                    load-file:@SEPHIA/launch.hl
-                    eval:x:/-/*
+                    micro.evaluate.file:@SEPHIA/launch.hl

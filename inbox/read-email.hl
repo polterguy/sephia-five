@@ -345,7 +345,7 @@ where emails.id = @id"
         src:"Email is encrypted and signed, but PGP key is not verified"
     case:int:2
       set:x:/@_meta5?value
-        src:"Email is either not cryptographically signed or encrypted, and should not be trusted in general"
+        src:"Email is either not cryptographically signed or encrypted"
 
   /*
    * This part will contain email's MIME ID.
@@ -652,5 +652,4 @@ create-widget
 /*
  * Updating page title, since we now (probably) have read one more email.
  */
-load-file:@SEPHIA/inbox/update-page-title.hl
-eval:x:/-/*
+micro.evaluate.file:@SEPHIA/inbox/update-page-title.hl
