@@ -5,6 +5,10 @@
  * Notice, this CSS file is only injected into iframe created when user is reading an HTML email.
  */
 
+body {
+    padding-bottom:0;
+}
+
 pre {
     background:none;
     padding-left:0;

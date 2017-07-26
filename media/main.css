@@ -20,6 +20,13 @@
 }
 
 /*
+ * Email reader's "action buttons".
+ */
+.reader-action-button {
+    margin-bottom:0;
+}
+
+/*
  * Wrapper for status icons that shows if email was encrypted, signed, etc.
  */
 .sephia-status {

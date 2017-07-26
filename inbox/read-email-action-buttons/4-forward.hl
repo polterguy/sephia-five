@@ -5,6 +5,7 @@
 button
   innerValue:@"<span class=""icon-mail-forward""></span>"
   title:Forward email
+  class:reader-action-button
   onclick
 
     /*

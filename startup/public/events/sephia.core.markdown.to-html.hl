@@ -23,6 +23,7 @@ create-event:sephia.core.markdown.to-html
    * Converting content of email (minus signature) to Markdown.
    */
   markdown2html:x:/-/0?name
+    root-url:@SEPHIA/
 
   /*
    * Converting all hyperlinks within email that are not explicitly set to hyperlinks to such.

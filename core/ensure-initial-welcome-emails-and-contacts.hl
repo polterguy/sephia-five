@@ -100,6 +100,24 @@ p5.mysql.connect:[sephia]
     for-each:x:/@load-file/*/*/envelope
 
       /*
+       * Checking if currently iterated email does not have an HTML view, and if not, 
+       * making sure we create one, by converting its text content to HTML using Markdown.
+       */
+      if:x:/@_dp/#/*/multipart/*/text/=html
+        not
+        and:x:/@_dp/#/*/multipart/*/text/=plain/*/content?value
+
+        /*
+         * Converting text content to HTML, and inserting it into email as an alternative HTML view.
+         */
+        sephia.core.markdown.to-html:x:/@_dp/#/*/multipart/*/text/=plain/*/content?value
+        eval-x:x:/+/*/*/*
+        add:x:/@_dp/#/*/multipart
+          src
+            text:html
+              content:x:/@sephia.core.markdown.to-html?value
+
+      /*
        * Inserting currently iterated email, by invoking file responsible for 
        * doing that. Making sure we forward evaluate all arguments.
        */
