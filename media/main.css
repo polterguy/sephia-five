@@ -23,7 +23,6 @@
  * Email reader's "action buttons".
  */
 .reader-action-button {
-    margin-bottom:0;
 }
 
 /*
@@ -119,6 +118,13 @@
 
 .sephia-reader-sent {
     background-color: #fcfcfc;
+}
+
+.sephia-reader-subject {
+    background:#fdfdfd;
+    padding:.5rem 1rem .5rem 1rem;
+    border-top-left-radius:var(--border-radius);
+    border-top-right-radius:var(--border-radius);
 }
 
 .sephia-iframe-reader {
@@ -222,8 +228,8 @@
 .sephia-unsafe:after, .sephia-safe:after, .sephia-unknown:after {
     font-family:'icomoon' !important;
     position:absolute;
-    bottom:5px;
-    left:9px;
+    bottom:1rem;
+    left:1rem;
     color:#ddd;
     font-size:1.7rem;
 }

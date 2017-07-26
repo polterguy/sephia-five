@@ -14,9 +14,25 @@ pre {
     padding-left:0;
 }
 
+img {
+    max-width:50%;
+    border-radius:5px;
+    box-shadow:3px 3px 5px rgba(0,0,0,.5);
+    float:right;
+    margin:0 1rem 1rem 1rem;
+}
+
 blockquote {
     font-size: 1rem;
     margin-left: 1rem;
+}
+.sephia-five-received-email,
+.sephia-five-sent-email {
+    padding:0 1rem 1rem 1rem;
+    position:relative;
+}
+.sephia-five-received-email blockquote {
+    margin-left:0;
 }
 .sephia-five-received-email blockquote,
 .sephia-five-sent-email blockquote {

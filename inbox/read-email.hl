@@ -444,7 +444,7 @@ create-widget
       class:col-100 sephia-email-reader
       widgets
         div
-          class:air-inner {0} shaded rounded
+          class:{0} shaded rounded
             :x:/@p5.mysql.connect/*/_bg?value
           oninit
 
@@ -461,6 +461,7 @@ create-widget
              */
             h3
               innerValue:x:/@p5.mysql.connect/*/p5.mysql.select/[2,3]/*/*/subject?value
+              class:sephia-reader-subject
 
             /*
              * Displays body of email.
@@ -638,7 +639,7 @@ create-widget
              * "Action strip" containing all buttons for actions user can do with email, such as "Reply", "Forward", "Delete", etc.
              */
             div
-              class:right
+              class:right air
               widgets
                 div
                   class:strip

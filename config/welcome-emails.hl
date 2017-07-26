@@ -27,7 +27,7 @@ envelope:welcome-email-sephia-five-no1@gaiasoul.com
       Thomas Hansen <thomas@gaiasoul.com>:bool:true
         fingerprint:5E11AEF421CDB0A7A9A5C6B4AED9D04F43BE2AAD
     text:plain
-      content:@"Sephia Five is an Open Source and cryptographically secure email alternative to public services such as GMail and Hotmail, that allows you to host your own data, on your own web server(s), and communicate securely, without any adversaries being able to know what you and your friends are communicating about. Sephia Five is created to serve the needs of both companies, organisations and individuals.
+      content:@"Sephia Five is an Open Source and cryptographically secure email alternative to public services such as GMail and Hotmail, that allows you to host your own data, on your own web server(s), and communicate securely, without any adversaries being able to know what you and your friends are communicating about. Sephia Five is a CIA grade cryptographically secured email system, created to serve the needs of both companies, organisations, and individuals.
 
 If you look at the bottom left corner of this email, you will see a smiley. This smiley indicates that this email was sent encrypted, and that it was cryptographically signed, and that it was signed with a PGP key, that you have verified belongs to the email address of 'thomas@gaiasoul.com' - Or that you can for some reasons be certain about belongs to the person who claims to own it.
 
@@ -37,15 +37,17 @@ Your goal should be to make sure all your emails are happy, either by verifying 
 
 Sephia Five has reduced the complexity of using PGP encrypted emails, to the point where it is almost automagically happening, without compromising your online safety in any ways. This means that Sephia increases your amount of online privacy, without you having to put in any effort for this to occur, and making it almost impossible for you to do something wrong.
 
-### Unless something is easy to use, it is not secure!
+### Security starts with simplicity!
 
-With Sephia Five, the only remaining thing you'll have to do, to make sure your online communication is cryptographically secured, is to verify your contacts' PGP fingerprints. Apart from this, everything else simply magically happens in the background for you.
+![alt Edward Snowden in regards to Privacy](/media/snowden.png)
 
-Hint: It may be wise to put your own PGP fingerprints on your business cards, to make the process of verifying your fingerprint easier.
+_'Unless something is easy to use, it can never be secure'_ - Sephia Five is so easy to use, that the only remaining thing you'll have to remember yourself, to make sure your online communication is cryptographically secured, is to verify your contacts' PGP fingerprints. Apart from this, everything else simply magically happens in the background for you.
 
-**Important!**
+It may be wise to put your own PGP fingerprints on your business cards, to make the process of verifying your fingerprint easier. And remember, every time you send an unencrypted email, you are snitching on a friend. Even if you have nothing to hide, your friends might very well have a lot to hide. The more people who encrypt their emails, the more difficult it becomes to surveillance those who attempts to create a better world!
 
-NEVER verify a fingerprint you're not certain of belongs to the one who claims to own it! If you do, you will be given a sense of false security, that could compromise both yours, and other people's communication with the individual who owns this email address.
+**Important!** - NEVER verify a fingerprint you're not certain belongs to the one who claims to own it! If you do, you will be given a false sense of security, that could compromise both yours, and other people's communication with the individual who owns this email address. Another tips, is to keep these welcome emails in your inbox for later references, in case you need help one way or another.
+
+If you want to hear about our commercial offerings, you can simply reply to this email, and we will come back to you with information.
 
 Kind Regards,
 
@@ -73,6 +75,10 @@ envelope:welcome-email-sephia-five-no2@gaiasoul.com
         fingerprint:5E11AEF421CDB0A7A9A5C6B4AED9D04F43BE2AAD
     text:plain
       content:@"Sephia Five first of all makes using PGP cryptography ridiculously easy to use. There are almost no more complex things for you left to do, and you have all your email security features almost automagically happening for you, behind the scene, without you having to put in any effort for it to happen.
+
+Sephia is _'paranoid software'_, to such an extent that it will even encrypt your subject, to not give adversaries anything to start with, when trying to figure out what you are communicating. In fact, an adversary will only see some random subject, fetched from for instance the New York Times, Wall Street Journal, or some other customzied _'babelizing service'_ you can configure as you see fit. This not only encrypts and hides your original subject, but also makes your emails being perceived as innocent discussions about your local news.
+
+The founder of Intel once famously said _'Only the paranoid will survive'_. Sephia Five is created for survivors.
 
 ### Virus and malware protection
 
@@ -104,27 +110,31 @@ Sephia Five is also carefully constructed such that it does not become _'noisy'_
 
 This clean way of communicating, cannot be emphasized enough, since it allows your brain to more easily digest the important parts of your communication. The number of buttons and choices have been carefully reduced to a minimum - Such that only what is relevant for you will be displayed at any time. Colors are by default kept to a minimum, and there are no ads, stealing your attention. Sephia Five is built to be friends with your brain.
 
-### Performance
+Sephia Five also works on every single device you already have, allowing you to access your emails on your tablet, computer, phone - Or television for that matter!
 
-Sephia Five is ridiculously fast. GMail uses more than 4MB of bandwidth consumption when opened without cache turned on, and 1.5MB if cache is turned on. Sephia Five will use 0.25 MB at the max with cache turned off, and 0.01 MB with cache turned on. This means that Sephia Five is perfectly fine working over very slow internet connections. It also means that it is much faster able to access your emails, and write emails when you're using Sephia Five.
-
-Time is money is often being said. If that is true, Sephia gives you money, simply since it gives you more time. Below is a graph showing you the difference in performance between GMail and Sephia Five.
+Possibly the best part of Sephia Five, is that you don't need to change your existing email address. You can setup Sephia Five to use your existing email address, including GMail if you wish - And the port to becoming 100% secure online, becomes 100% transparently implemented, without you feeling anything besides that warm and cozy feeling of that your communication can now be 100% perfectly trusted, and that you have reclaimed your privacy.
 
 ![alt Bandwidth comparison between Sephia Five and GMail](media/bandwidth-comparison.png)
 
+### Performance
+
+Sephia Five is ridiculously fast. GMail uses more than 4MB of bandwidth consumption when opened without cache turned on, and 1.5MB if cache is turned on. Sephia Five will use 0.25 MB at the max with cache turned off, and 0.01 MB with cache turned on. This means that Sephia Five is perfectly fine working over very slow internet connections.
+
+This also means that Sephia Five can open your emails faster, and you can start composing your emails faster, and in general terms wait less, than that which you'll have to do when using most of the alternatives out there. Sephia Five responds faster than your brain and fingers. This is something you will learn to appreciate as you start getting used to it. Software systems should be about solving problems, not about having to wait for your systems to get up running!
+
+Time is money is often being said. If that is true, Sephia gives you money, simply since it gives you more time. We have attached a graph to this email that shows you the difference in performance between GMail and Sephia Five. For the record, smaller is better when it comes to bandwidth consumption. And Sephia Five is blistering fast!
+
 ### Sephia is Open Source and Free Software
 
-Sephia Five is also Open Source and Free Software. This means that you or anybody with knowledge about programming, can scrutinize its code, to make sure that there are no 'backdoors' in the system. This is our guarantee to you about that we take your privacy important.
+Sephia Five is also Open Source and Free Software. This means that you or anybody with knowledge about programming, can scrutinize its code, to make sure that there are no backdoors in the system. This is our guarantee to you about that we take your privacy important.
 
 This also allows you to modify it and customize it as you see fit, and it makes you less dependent upon having to trust others to maintain your installation of Sephia Five. Sephia Five returns your Freedom to you, and empowers you in every way.
 
 ### Summary
 
-Sephia Five is
-
-* Secure
+* CIA grade security
 * Easy and intuitive to use
-* Performs like lightning
+* Blistering fast
 * Free Software
 
 Kind Regards,
@@ -140,10 +150,10 @@ https://gaiasoul.com"
 
 
 /*
- * CIA grade cryptography, ridiculously simple to use
+ * CIA grade cryptography, ridiculously easy to use
  */
 envelope:welcome-email-sephia-five-no3@gaiasoul.com
-  Subject:CIA grade cryptography, ridiculously simple to use
+  Subject:CIA grade cryptography, ridiculously easy to use
   Date:date:"2017-07-25T19:57:00.000"
   From
     Thomas Hansen:thomas@gaiasoul.com
@@ -152,21 +162,21 @@ envelope:welcome-email-sephia-five-no3@gaiasoul.com
       Thomas Hansen <thomas@gaiasoul.com>:bool:true
         fingerprint:5E11AEF421CDB0A7A9A5C6B4AED9D04F43BE2AAD
     text:plain
-      content:@"When Phil Zimmerman created PGP cryptography, Bruce Schneier said; _'PGP is the closest you come to military grade cryptography in the public space'_. When Edward Snowden was able to play cat and mouse with CIA, NSA, and the entire military industrial complex of the USA and its state department, he was using PGP cryptography to communicate with his friends. Julian Assange and WikiLeaks are using PGP cryptography, and so far, the CIA and the NSA have never been able to hack their emails. Every single intelligence organisation and secret police force on the planet, with respect for themselves, are using PGP cryptography in one form or another.
+      content:@"![alt Bank vault security](/media/vault.png)
+
+When Phil Zimmerman created PGP cryptography, Bruce Schneier said; _'PGP is the closest you come to military grade cryptography in the public space'_. When Edward Snowden was able to play cat and mouse with CIA, NSA, and the entire military industrial complex of the USA and its state department, he was using PGP cryptography to communicate with his friends. Julian Assange and WikiLeaks are using PGP cryptography, and so far, the CIA and the NSA have never been able to hack their emails. Every single intelligence organisation and secret police force on the planet, with respect for themselves, are using PGP cryptography in one form or another.
 
 Facts are, PGP cryptography is the by far most secure and robust form of cryptography we are aware of in the world today. According to what we know about its algorithms, it would take every single super computer on the planet, billions of years, to break into your email communication, as long as you can keep your private PGP key secure, and your Sephia Five server secure.
 
 In addition Sephia Five is Open Source, which allows any software developer on the planet to scrutinize its code, to verify that what we say about Sephia Five is correct. Open Source is our guarantee to you, for that your email conversation is securely encrypted.
 
-### However
+### KISS, Keep It Simple and Stupid
 
-No system is secure, unless it is dead simple to use, and configured correctly. Sephia Five is dead simple to use, and makes it almost impossible for you to _'mess things up'_, compromising its built in security. For instance, when you create a new PGP key pair, Sephia Five will by default automatically upload your public PGP key to all key servers, instantly allowing anyone who wants to send you encrypted emails to do that. When you have received a cryptographically signed email, Sephia Five will automatically search for the public PGP key on key servers, to allow you to immediately start communicating securely with the one who sent you this email.
+No system is secure, unless it is dead simple to use. Sephia Five is dead simple to use, and makes it almost impossible for you to _'mess things up'_, compromising its built in security. For instance, when you create a new PGP key pair, Sephia Five will by default automatically upload your public PGP key to all key servers, instantly allowing anyone who wants to send you encrypted emails to do that. When you have received a cryptographically signed email, Sephia Five will automatically search for the public PGP key on key servers, to allow you to immediately start communicating securely with the one who sent you this email.
 
 These two traits of Sephia, makes Sephia Five so ridiculously easy to use, that it becomes almost impossible for you to _'mess things up'_ by accidentally doing something wrong. Normally establishing an encrypted communication channel between two people are very difficult. With Sephia Five it just _'automagically happens'_, without you having to put in any active effort to secure your email. And if your communication is not secure, you will be properly warned.
 
-No security system is stronger than its weakest link. Most weak links exists due to human nature. In Sephia Five human nature is almost completely taken out of the equation, making it almost impossible for a human being to do something wrong, that accidentally compromises security in any ways.
-
-This last traits of Sephia, arguably makes it the most secure email system on the planet, since no system can be truly secure, unless it is so easy to use, that it becomes _'secure by default'_.
+No security system is stronger than its weakest link. Most weak links exists due to human behavior. In Sephia Five human behavior is almost completely taken out of the equation, making it almost impossible for a human being to do something wrong, that accidentally compromises security in any ways. This last traits of Sephia, arguably makes it the most secure email system on the planet, since no system can be truly secure, unless it is so easy to use, that it becomes _'secure by default'_.
 
 I cannot think of a single reason why I wouldn't want to suggest Sephia Five for any company and/or organisation taking security seriously, including intelligence workers, and the CIA and/or NSA. If the CIA were to be hacked 5 years from now, and their entire IT infrastructure for communication were to become public knowledge, I would almost be surprised if the world did not learn that they were using Sephia Five for their email communication.
 
@@ -203,7 +213,9 @@ Ask yourself the following question.
 
 > What is my data worth?
 
-Unless the answer to that question is _'nothing'_, you need our services, it's really that simple. We care about your privacy. Most security experts will say that there exist two types of companies, the ones who know they have been hacked, and the ones who don't know they have been hacked. Our goal is to keep you in neither of these two categories! If you want to hear more about our offers, you can simply just reply to this email, and ask us for more information.
+Unless the answer to that question is _'nothing'_, you need our services, it's really that simple. We care about your privacy. Most security experts will say that there exist two types of companies, the ones who know they have been hacked, and the ones who don't know they have been hacked. Our goal is to keep you out of both of these two categories. Knowledge is power, please keep your power to yourself, and don't give it away to others voluntarily - At least not without putting up a fight.
+
+If you want to hear more about our commercial offerings, you can simply reply to this email, and ask us for more information.
 
 Kind Regards,
 
