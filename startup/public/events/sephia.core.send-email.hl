@@ -12,7 +12,13 @@
  *
  * You can also pass in an optional [headers] collection, which will be MIME headers associate with the message.
  *
+ * Notice, unless you pass in [force], and set its value to boolean "true", the email will not
+ * be sent unless all recipients are in user's list of contacts, but instead the event will return "false" to
+ * the caller.
+ *
  * Will save the sent email into database, associated with the user who sent it.
+ *
+ * If the email is successfully sent, boolean "true" will be returned to caller.
  */
 create-event:sephia.core.send-email
 
@@ -33,6 +39,7 @@ create-event:sephia.core.send-email
     babelsubject:string
     attachment:string
     headers
+    force
 
   /*
    * Retrieving settings for currently logged in user, and keeping the [whoami] object
@@ -98,6 +105,18 @@ create-event:sephia.core.send-email
        */
       if:x:/@p5.mysql.select/*
         not
+
+        /*
+         * Currently iterated recipient did not exist in user's list of contacts.
+         *
+         * Checking if caller wants to [force] sending email, and unless he does,
+         * we do not send the email, but return "false" to caller.
+         */
+        if:x:/../*/force
+          not
+          or:x:/../*/force?value.bool
+            =:bool:false
+          return:bool:false
 
         /*
          * Inserting a new contact.
@@ -517,3 +536,8 @@ create-event:sephia.core.send-email
     src:x:/@p5.smtp.send/*/envelope?value
   sephia._internals.smtp.save-envelope
     envelope
+
+  /*
+   * Email was successfully sent, returning "true" to caller.
+   */
+  return:bool:true

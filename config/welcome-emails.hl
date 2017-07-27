@@ -29,7 +29,7 @@ envelope:welcome-email-sephia-five-no1@gaiasoul.com
     text:plain
       content:@"Sephia Five is an Open Source and cryptographically secure email alternative to public services such as GMail and Hotmail, that allows you to host your own data, on your own web server(s), and communicate securely, without any adversaries being able to know what you and your friends are communicating about. Sephia Five is a CIA grade cryptographically secured email system, created to serve the needs of both companies, organisations, and individuals.
 
-If you look at the bottom left corner of this email, you will see a smiley. This smiley indicates that this email was sent encrypted, and that it was cryptographically signed, and that it was signed with a PGP key, that you have verified belongs to the email address of 'thomas@gaiasoul.com' - Or that you can for some reasons be certain about belongs to the person who claims to own it.
+If you look at the bottom left corner of this email, you will see a smiley. This smiley indicates that this email was sent encrypted, and that it was cryptographically signed, and that it was signed with a PGP key, that you have verified belongs to the email address of 'thomas@gaiasoul.com'.
 
 If you get emails that are not happy, this means that the email was sent encrypted, and that it was cryptographically signed, but that you still haven't verified that the public PGP key belongs to the one who claims to own it. A sad email, means that it was sent either in plain text, or that it was not cryptographically signed - Which means you should not trust it.
 
@@ -49,7 +49,7 @@ It may be wise to put your own PGP fingerprints on your business cards, to make 
 
 If you want to hear about our commercial offerings, you can simply reply to this email, and we will come back to you with information.
 
-Kind Regards,
+Yours Truthfully,
 
 Thomas Hansen
 
@@ -65,7 +65,7 @@ https://gaiasoul.com"
  * Features of Sephia Five email.
  */
 envelope:welcome-email-sephia-five-no2@gaiasoul.com
-  Subject:Sephia Five's feature list
+  Subject:Sephia Five, reinventing email
   Date:date:"2017-07-25T19:57:00.000"
   From
     Thomas Hansen:thomas@gaiasoul.com
@@ -108,7 +108,7 @@ If you are tired of endless marketing emails, with tons of colors and images in 
 
 Sephia Five is also carefully constructed such that it does not become _'noisy'_ on your eyes. This is important for your brain to be able to pick up the most important parts of your communication. Imagine trying to hold a conversation at a rock concert. Obviously it is more difficult to understand what's being said, right? Sephia Five is carefully constructed in a visual and psychologically _'silent'_ way, such that it becomes easier for your brain to focus on what you should focus on; **Your conversations**. Sephia Five has few buttons, and does a lot of intelligent automatic background work for you. This means that you get a more _'silent'_ psychological and visual environment to communicate with your colleagues and friends, with fewer misunderstandings.
 
-This clean way of communicating, cannot be emphasized enough, since it allows your brain to more easily digest the important parts of your communication. The number of buttons and choices have been carefully reduced to a minimum - Such that only what is relevant for you will be displayed at any time. Colors are by default kept to a minimum, and there are no ads, stealing your attention. Sephia Five is built to be friends with your brain.
+This clean way of communicating, cannot be emphasized enough, since it allows your brain to more easily digest the important parts of your communication. The number of buttons and choices have been carefully reduced to a minimum - Such that only what is relevant for you will be displayed at any time. Colors are by default kept to a minimum, and there are no ads stealing your attention. Sephia Five is built to be friends with your brain.
 
 Sephia Five also works on every single device you already have, allowing you to access your emails on your tablet, computer, phone - Or television for that matter!
 
@@ -137,7 +137,7 @@ This also allows you to modify it and customize it as you see fit, and it makes 
 * Blistering fast
 * Free Software
 
-Kind Regards,
+Yours Truthfully,
 
 Thomas Hansen
 
@@ -164,7 +164,7 @@ envelope:welcome-email-sephia-five-no3@gaiasoul.com
     text:plain
       content:@"![alt Bank vault security](/media/vault.png)
 
-When Phil Zimmerman created PGP cryptography, Bruce Schneier said; _'PGP is the closest you come to military grade cryptography in the public space'_. When Edward Snowden was able to play cat and mouse with CIA, NSA, and the entire military industrial complex of the USA and its state department, he was using PGP cryptography to communicate with his friends. Julian Assange and WikiLeaks are using PGP cryptography, and so far, the CIA and the NSA have never been able to hack their emails. Every single intelligence organisation and secret police force on the planet, with respect for themselves, are using PGP cryptography in one form or another.
+When Phil Zimmerman created PGP cryptography, Bruce Schneier said; _'PGP is the closest you come to military grade cryptography in the public space'_. When Edward Snowden was able to play cat and mouse with CIA, NSA, and the entire military industrial complex of the USA and its state department, he was using PGP cryptography to communicate with his friends. Julian Assange and WikiLeaks are using PGP cryptography, and so far, the CIA and the NSA have never been able to hack their emails. Every single intelligence organisation and secret police force on the planet, with respect for themselves, are using PGP cryptography one way or another.
 
 Facts are, PGP cryptography is the by far most secure and robust form of cryptography we are aware of in the world today. According to what we know about its algorithms, it would take every single super computer on the planet, billions of years, to break into your email communication, as long as you can keep your private PGP key secure, and your Sephia Five server secure.
 
@@ -182,7 +182,7 @@ I cannot think of a single reason why I wouldn't want to suggest Sephia Five for
 
 Sephia Five is CIA grade cryptography, ridiculously easy to use. If you want to hear more about our commercial offerings, feel free to simply reply to this email, and we will help you.
 
-Kind Regards,
+Yours Truthfully,
 
 Thomas Hansen
 
@@ -217,7 +217,46 @@ Unless the answer to that question is _'nothing'_, you need our services, it's r
 
 If you want to hear more about our commercial offerings, you can simply reply to this email, and ask us for more information.
 
-Kind Regards,
+Yours Truthfully,
+
+Thomas Hansen
+
+-- 
+Got Privacy?
+https://gaiasoul.com"
+
+
+
+
+
+/*
+ * Disclaimer
+ */
+envelope:welcome-email-sephia-five-no5@gaiasoul.com
+  Subject:Disclaimer, read me!
+  Date:date:"2017-07-25T19:57:00.000"
+  From
+    Thomas Hansen:thomas@gaiasoul.com
+  multipart:encrypted
+    signature
+      Thomas Hansen <thomas@gaiasoul.com>:bool:true
+        fingerprint:5E11AEF421CDB0A7A9A5C6B4AED9D04F43BE2AAD
+    text:plain
+      content:@"![alt Thomas Hansen the CEO and CTO of GaiaSoul](/media/thomas.jpg)
+
+Although we have done everything within our powers to secure your online communication in Sephia Five, accidents do happen. There might exist bugs in Sephia, that compromises your security. And we might have without knowing it, done something wrong when we created Sephia. Although, we have done everything within our reach to make sure you are as secure as it is possible to be, we would still like to state for the record that there are no guarantees in security, and none within reach of sanity will ever give you any either. Though I suspect, that if your email is compromised when using Sephia Five, it is highly likely not due to a bug in our code, but rather due to the way you installed it and/or configured/used it.
+
+We can provide training of your personal, in addition to that we can help you install Sephia according to your needs. We can also customize it, to further secure your online security according to your needs. This would further secure your online communication, and increase your security when communicating with colleagues, partners and friends. If you are interested in hearing more about our commercial offerings, feel free to simply respond to this email, and we will come back to you ASAP, and help you secure your online communication any ways we can.
+
+We are also available to hire for creating other types of software, and/or customizations for Sephia Five. Sephia is highly modular in its design, and we can help you integrate it into your existing applications, and/or create new applications for you, either from scratch, or that is built as plugins to Sephia Five.
+
+Our mission is to keep your data safe, and we would very much enjoy hearing from you, about your special needs in this space. When you send an unencrypted email, you might just as well send a postcard. Anyone who comes close to your unencrypted email, which includes possibly hundreds of companies and/or individuals, can clearly read your email, just like you can read this email. This means that your competitors and/or adversaries can read your communication, without even having to put in an effort. The consequences of this is often unknown, and companies who have been subjected to industrial espionage, will often never understand that they have been subjected to it, besides from all of a sudden experiencing a lot of _'bad luck'_. All of a sudden, a competitor starts contacting your customers, knowing exactly what buttons to trigger to make them switch vendor. Or compromising information about the CEO of your company is all of a sudden _'accidentally'_ spread on Facebook, etc, without you understanding how they got hold of this information.
+
+Do not become the next victim of data intrusion and theft! Contact us today, by simply replying to this email, and we will do whatever is within our powers to help you secure your online presence! This is what we do!
+
+**We are paranoid such that you can sleep at night!**
+
+Yours Truthfully,
 
 Thomas Hansen
 

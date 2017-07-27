@@ -1,0 +1,18 @@
+
+/*
+ * Configuration file for which default settings to use for users.
+ */
+signature:@"Got Privacy ...?
+https://gaiasoul.com/license"
+pop3-server:pop.gmail.com
+pop3-port:995
+pop3-ssl:bool:true
+smtp-server:smtp.gmail.com
+smtp-port:465
+smtp-ssl:bool:true
+preferred-content-type:html
+markdown-composer:bool:true
+pgp-subjects:"https://www.nytimes.com, https://www.wsj.com"
+skin:sea-breeze
+pgp-key-password:ThisIs$omeR4ndomPa$$w0rd4U
+

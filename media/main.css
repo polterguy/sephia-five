@@ -4,6 +4,10 @@
  */
 
 
+.strip>label:first-child {
+    min-width:120px;
+}
+
 /*
  * Overridden to create some cogs while in settings form.
  */
@@ -121,8 +125,7 @@
 }
 
 .sephia-reader-subject {
-    background:#fdfdfd;
-    padding:.5rem 1rem .5rem 1rem;
+    padding:1rem 1.5rem 0 1.5rem;
     border-top-left-radius:var(--border-radius);
     border-top-right-radius:var(--border-radius);
 }
@@ -132,6 +135,11 @@
     height: 100%;
     width: 100%;
     border:none;
+}
+
+.sephia-reader-meta-wrapper {
+    padding:1.5rem;
+    color:#999;
 }
 
 .sephia-meta {
@@ -224,6 +232,7 @@
 
 .sephia-unsafe, .sephia-safe, .sephia-unknown {
     position:relative;
+    overflow:hidden;
 }
 .sephia-unsafe:after, .sephia-safe:after, .sephia-unknown:after {
     font-family:'icomoon' !important;

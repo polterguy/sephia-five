@@ -339,6 +339,53 @@ p5.sephia_send_email = function(e) {
                       sephia.core.send-email
 
                       /*
+                       * Checking if email was successfully sent, and if not, explaining to
+                       * user that one of the recipients was not on his list of contacts, and
+                       * asking him if he still wants to send the email.
+                       */
+                      if:x:/@sephia.core.send-email?value
+                        =:bool:false
+
+                        /*
+                         * Warning user, and asking him to confirm that he wants to send the email, even
+                         * though some recipient(s) are not in his list of contacts.
+                         */
+                        eval-x:x:/+/**(/_widget|/_composer|/parent)
+                        micro.windows.info:@"One or more of your recipients was not in your list of contact, are you sure you wish to send this email?"
+                          class:micro-windows-info micro-windows-info-sticky warning
+                          parent:x:/../*/p5.web.widgets.find-first-ancestor/*/*?value
+                          widgets
+                            button
+                              innerValue:No
+                              onclick
+                                delete-widget:micro-windows-info
+                            button
+                              innerValue:Yes
+                              onclick:@"return p5.sephia_send_email(event);"
+                              .onclick
+
+                                /*
+                                 * Creating a hidden input element, that will be serialized when form is
+                                 * serialized, and pass in [force] to [sephia.core.send-email], forcing the
+                                 * email to be sent, even though one of the contacts was not in user's list of contacts.
+                                 *
+                                 * Then we simply invoke [.onclick] once again, which will force the email to be sent.
+                                 */
+                                _widget:x:/../*/_event?value
+                                _composer:x:/../*/p5.web.widgets.find-first-ancestor/*/*?value
+                                create-widget
+                                  parent:x:/@_composer?value
+                                  element:input
+                                  type:hidden
+                                  .data-field:force
+                                  value:true
+                                p5.web.widgets.ajax-events.raise:x:/@_widget?value
+                                  .onclick
+                                delete-widget:micro-windows-info
+
+                        return
+
+                      /*
                        * Invoking specified [.onclose] and [.onsend] lambda objects given during creation of widget.
                        */
                       p5.web.widgets.ajax-events.raise:x:/@p5.web.widgets.find-first-ancestor/*/*?value
@@ -383,7 +430,7 @@ p5.sephia_send_email = function(e) {
                        */
                       micro.windows.info:'{0}' is not a legal file type in Sephia Five
                         :x:/@p5.web.post.get/*?value
-                        class:micro-windows-info micro-windows-info-error
+                        class:micro-windows-info warning
                       return
 
                     /*

@@ -119,7 +119,7 @@ p5.mysql.connect:[sephia]
              */
             eval-x:x:/+/**/_widget
             micro.windows.info:These files are not considered safe, are you sure you wish to download it?
-              class:micro-windows-info micro-windows-info-error
+              class:micro-windows-info warning
               widgets
                 button
                   innerValue:Yes
@@ -163,7 +163,7 @@ p5.mysql.connect:[sephia]
   /*
    * Fetching all recipients for email.
    */
-  p5.mysql.select:@"select name, email, type from contacts 
+  p5.mysql.select:@"select name, email, recipients.type from contacts 
 inner join recipients on contacts.id = recipients.contactid
 where recipients.emailid = @id"
     @id:x:/../*/id?value
@@ -222,7 +222,7 @@ where recipients.emailid = @id"
   /*
    * Retrieving actual email.
    */
-  p5.mysql.select:@"select emails.id, subject, date, signature, emails.fingerprint, encrypted, emails.status, type, mimeid, contacts.name, contacts.email
+  p5.mysql.select:@"select emails.id, subject, date, signature, emails.fingerprint, encrypted, emails.status, emails.type, mimeid, contacts.name, contacts.email
 from emails inner join contacts on emails.sender = contacts.id 
 where emails.id = @id"
     @id:x:/../*/id?value
@@ -484,6 +484,7 @@ create-widget
             container
               visible:false
               .meta-data
+              class:sephia-reader-meta-wrapper
               widgets
 
                 /*

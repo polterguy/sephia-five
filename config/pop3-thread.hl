@@ -24,7 +24,7 @@ sleep-between-fetch:int:5000
 /*
  * Number of emails to fetch in one POP3 operation.
  */
-emails-2-fetch-in-batch:int:10
+emails-2-fetch-in-batch:int:20
 
 
 
