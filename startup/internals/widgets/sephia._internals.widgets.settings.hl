@@ -942,8 +942,30 @@ save your settings, and do something else in the meantime, and come back here af
                       =:
                       set:x:/@micro.form.serialize/*/pgp-key?value
 
-                    add:x:/+/*
+                    /*
+                     * Adding the serialized settings from form to user's settings.
+                     */
+                    add:x:/../*/p5.auth.my-settings.set/*
                       src:x:/@micro.form.serialize/*
+
+                    /*
+                     * Checking if we have a [fetch-emails] configuration object, and
+                     * if so, we add it to user's settings.
+                     */
+                    load-file:@SEPHIA/config/default-settings.hl
+                    if:x:/-/*/*/fetch-emails/*?count
+                      >:int:0
+
+                      /*
+                       * Sephia is configured to only allow its users to fetch emails at specific
+                       * times of day. Making sure we store these times into user's settings.
+                       */
+                      add:x:/../*/p5.auth.my-settings.set/*/sephia
+                        src:x:/../*/load-file/*/*/fetch-emails
+
+                    /*
+                     * Storing user's settings.
+                     */
                     p5.auth.my-settings.set
                       sephia
 

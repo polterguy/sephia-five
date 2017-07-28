@@ -123,7 +123,7 @@ if:x:/@p5.auth.my-settings.get/*/sephia
    * User has no settings, displaying settings form, and returning early.
    * First making sure we include the necessary default CSS files (serious skin).
    */
-  p5.web.include-css-file:@MICRO/media/skins/serious.css
+  p5.web.include-css-file:@MICRO/media/skins/sea-breeze.css
   p5.web.include-css-file:@SEPHIA/media/main.css
 
   /*
@@ -180,10 +180,22 @@ micro.evaluate.file:@SEPHIA/core/ensure-initial-welcome-emails-and-contacts.hl
 /*
  * Making sure we start email fetching thread.
  *
- * This will create a thread for each user, that runs in the background,
+ * This will by default create a thread for each user, that runs in the background,
  * and constantly pulls new emails from the user's POP3 server.
+ *
+ * Alternatively, it will check if user is allowed to fetch his emails, and if not,
+ * return boolean "false" with a [message] explaining to the user why.
  */
 micro.evaluate.file:@SEPHIA/core/create-pop3-user-thread.hl
+if:x:/@micro.evaluate.file?value
+  =:bool:false
+  and:x:/@micro.evaluate.file/*/message
+
+  /*
+   * Fetch operation was not successfully started for some reason, showing a message
+   * to the user why.
+   */
+  micro.windows.info:x:/@micro.evaluate.file/*/message?value
 
 
 

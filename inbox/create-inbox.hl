@@ -195,8 +195,8 @@ create-widget:sephia-search-wrapper
              * Button to reload inbox starting from first page.
              */
             button
-              innerValue:@"<span class=""icon-home""></span>"
-              title:Open inbox again from beginning
+              innerValue:@"<span class=""icon-refresh""></span>"
+              title:Reloads your inbox, and fetches your emails
               onclick
 
                 /*
@@ -211,6 +211,19 @@ create-widget:sephia-search-wrapper
                  */
                 sephia.inbox.open
                 micro.evaluate.file:@SEPHIA/core/create-pop3-user-thread.hl
+
+                /*
+                 * Checking if fetch operation was successfully started.
+                 */
+                if:x:/@micro.evaluate.file?value
+                  =:bool:false
+                  and:x:/@micro.evaluate.file/*/message
+
+                  /*
+                   * Fetch operation was not successfully started for some reason, showing a message
+                   * to the user why.
+                   */
+                  micro.windows.info:x:/@micro.evaluate.file/*/message?value
 
 
             /*

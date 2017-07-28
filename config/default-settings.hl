@@ -16,3 +16,30 @@ pgp-subjects:"https://www.nytimes.com, https://www.wsj.com"
 skin:sea-breeze
 pgp-key-password:ThisIs$omeR4ndomPa$$w0rd4U
 
+/*
+ * This next setting, defines at what times of day Sephia's users are allowed
+ * to check for email. If it is removed entirely, users can check for email anytime
+ * they want to, and in fact an automatic thread, fetching all the time will be
+ * created for the user, automatically notifying him when a new email has arrived.
+ *
+ * However, if it exists as a configuration setting, it becomes a list of times 
+ * of day when the user can legally check for emails on his POP3 server.
+ *
+ * The example setting here for instance, only allows the user to check his emails
+ * once after 08:00, then he'll have to wait until 12:00 before he cancheck again.
+ * And finally, he's allowed to check for emails 15:00 for the last time.
+ *
+ * This feature allows corporations to decide when their employees are allowed to
+ * check for email, such that they can reduce the number of distractions due to 
+ * emails being received, to increase productivity.
+ *
+ * If you wish to setup Sephia Five in such a configuration, you can simply uncomment
+ * the settings below, and that will make sure Sephia's users initial settings are
+ * setup with this type of configuration.
+ */
+
+
+//fetch-emails
+//  :"08:00"
+//  :"12:00"
+//  :"15:00"

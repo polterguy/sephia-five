@@ -30,6 +30,7 @@
  * Used further down.
  */
 whoami
+p5.auth.my-settings.get
 
 
 
@@ -60,25 +61,128 @@ write-lock:x:/@_thread-signal?value
    */
   select-data:x:/*/*/{0}
     :x:/@_thread-signal?value
-  if:x:/@select-data/*?value
+  if:x:/@select-data/*
 
     /*
-     * Thread signal object already exists, returning early.
-     *
-     * This either means that an error has occurred, or thread is already running perfectly fine,
-     * and does not need to be created.
+     * Thread signal object already exists, now we must check its type.
      */
-    return:bool:false
+    if:x:/@select-data/*/*?name
+      =:last-fetch
 
-  /*
-   * Creating our initial "POP3 worker thread signal object".
-   */
-  set:x:/+/*?name
-    src:x:/@_thread-signal?value
-  insert-data
-    thread
-      running:bool:true
-        count:int:0
+      /*
+       * User's settings allows Sephia to only check emails at specific times of the day,
+       * checking if user is allowed to check email now, or if we should return early.
+       *
+       * The lambda below will contain all times during "today" that the user is allowed
+       * to check his email as date formatted strings.
+       */
+      .allowed-times
+
+      /*
+       * Getting current date, and formatting away time parts, such that we
+       * can construct accurate date-time parts, for when user is allowed to check email
+       * during "today".
+       */
+      p5.types.date.now
+        local:true
+      p5.types.date.format:x:/-?value
+        format:"yyyy-MM-dd"
+      for-each:x:/@p5.auth.my-settings.get/*/sephia/*/fetch-emails/*?value
+        add:x:/@.allowed-times
+          src:@"""{0}T{1}:00.000"""
+            :x:/@p5.types.date.format?value
+            :x:/@_dp?value
+
+      /*
+       * Now removing all [.allowed-times] that are "older" than [last-fetch].
+       * Since our [.allowed-times] contains only strings, we convert [last-fetch] into a string,
+       * and remove everything that's "less" than our [last-fetch] value.
+       */
+      p5.types.date.format:x:/@select-data/*/*/last-fetch?value
+        format:@"yyyy-MM-ddTHH:mm:ss.fff"
+      for-each:x:/@.allowed-times/*
+        if:x:/@_dp/#?name
+          <:x:/@p5.types.date.format?value
+          set:x:/@_dp/#
+
+      /*
+       * If our [.allowed-times] now contains anything, its first child will be the string
+       * representation of the "next legal time of today" that user is allowed to fetch his emails.
+       *
+       * Hence, all we need to do now, is first to check of [.allowed-times] contains anything, or if
+       * user has spent all his "fetch emails" invocations, for then to check if there are anymore
+       * "fetch email invocations" if date-time-now is larger than the first item in [.allowed-times].
+       */
+      if:x:/@.allowed-times/*?count
+        =:int:0
+
+        /*
+         * User has fetched his emails as many times as he is allowed to do today.
+         */
+        add:x:/./*/return
+          src:"message:You're not allowed to fetch your emails anymore today"
+        return:bool:false
+
+      else
+
+        /*
+         * Checking if date-time-now is less than the first item in [.allowed-times],
+         * at which point the user is not allowed to fetch his emails.
+         *
+         * If date-time-now is greater than or equal to the first item in [.allowed-time],
+         * the user is allowed to fetch his emails, and we simply allow the lambda object to continue,
+         * at which point after fetching his emails, we will have a new [last-fetch] object.
+         */
+        p5.types.date.format:x:/@p5.types.date.now?value
+          format:"yyyy-MM-ddTHH:mm:ss.fff"
+        if:x:/@p5.types.date.format?value
+          <:x:/@.allowed-times/0?name
+
+          /*
+           * User is not allowed to fetch his emails.
+           */
+          p5.types.date.format:x:/@.allowed-times/0?name.date
+            format:"HH:mm"
+          add:x:/./*/return
+            src:@"message:""Sorry, the next time you can fetch your emails is {0}"""
+              :x:/@p5.types.date.format?value
+          return:bool:false
+
+        else
+
+          /*
+           * No thread signal exists, and we can fetch emails.
+           *
+           * Creating our initial "POP3 worker thread signal object".
+           */
+          set:x:/+/*?name
+            src:x:/@_thread-signal?value
+          insert-data
+            thread
+              running:bool:true
+                count:int:0
+
+    else
+
+      /*
+       * This either means that an error has occurred, or thread is already running perfectly fine,
+       * and does not need to be created.
+       */
+      return:bool:false
+
+  else
+
+    /*
+     * No thread signal exists, and we can fetch emails.
+     *
+     * Creating our initial "POP3 worker thread signal object".
+     */
+    set:x:/+/*?name
+      src:x:/@_thread-signal?value
+    insert-data
+      thread
+        running:bool:true
+          count:int:0
 
 
 
@@ -107,7 +211,6 @@ set:x:/../*/fork/*/_users-home-folder?value
 /*
  * Passing in user settings to [fork].
  */
-p5.auth.my-settings.get
 add:x:/../*/fork/*/.settings
   src:x:/@p5.auth.my-settings.get/*/sephia/*
 
@@ -175,8 +278,8 @@ fork
     while:bool:true
 
       /*
-       * Checking if we should continue this thread, or gracefull return, preventing further
-       * evaluation of thread.
+       * Checking if we should continue this thread, or gracefull return preventing further
+       * evaluation.
        *
        * Notice, this file will return boolean "false" if we should stop thread, and "true"
        * if we should continue our loop.
@@ -257,6 +360,39 @@ fork
             if:x:/@p5.pop3.get/*/envelope?count
               <:x:/@_emails-2-fetch?value
               break
+
+      /*
+       * Checking if user's settings are declared to only allow him to check emails at specific times of the day,
+       * and if so, we store the current time as "last fetch time", and gracefully exit thread.
+       */
+      if:x:/@.settings/*/fetch-emails/*?count
+        >:int:0
+
+        /*
+         * User is only allowed to fetch emails at specific times of the day.
+         * Storing current time for user, and exiting thread gracefully, making sure
+         * we have synchronized access to thread signal object.
+         */
+        write-lock:x:/@_thread-signal?value
+
+          /*
+           * Deleting old thread signal object.
+           */
+          delete-data:x:/*/*/{0}
+            :x:/@_thread-signal?value
+          p5.types.date.now
+            local:true
+          set:x:/+2/*?name
+            src:x:/@_thread-signal?value
+          eval-x:x:/+/*/*
+          insert-data
+            thread
+              last-fetch:x:/@p5.types.date.now?value
+
+        /*
+         * Breaking outermost while loop, which will result in gracefully exiting our thread.
+         */
+        break
 
       /*
        * Sleeping current thread for n seconds, before we continue our outer [while], 

@@ -50,6 +50,15 @@ create-literal-widget:sephia-poller
     sephia._internals.create-poller-javascript
 
       /*
+       * Checking if caller requested a "slow" fetcher, at which point we
+       * only poll towards the server every 5 minutes, only to avoid user being thrown out
+       * of his session, while composing emails and such.
+       */
+      if:x:/../*/slow?value
+        set:x:/../*/_sleep-between-fetch?value
+          src:300000
+
+      /*
        * Notice, this JavaScript timeout function is created such that if an exception happens during
        * polling the server, no new timer poll object will be created.
        */
@@ -195,6 +204,41 @@ if (!p5.sephia_poller) {{
           message:x:/@read-lock/*/select-data/*/*/error/*/message?value
           stack-trace:x:/@read-lock/*/select-data/*/*/error/*/stack-trace?value
           type:x:/@read-lock/*/select-data/*/*/error/*/type?value
+
+      else-if:x:/@read-lock/*/select-data/*/*/last-fetch
+
+        /*
+         * We don't have a worker thread at this point, since user's configuration
+         * is setup such that user is only allowed to fetch his emails during specific
+         * times of the day.
+         *
+         * Trying to invoke file that checks for emails, which will not work, unless the user
+         * is allowed to check his emails at this particular time of the day.
+         */
+        micro.evaluate.file:@SEPHIA/core/create-pop3-user-thread.hl
+        if:x:/@micro.evaluate.file?value
+          =:bool:true
+
+          /*
+           * Sephia Five is now checking for emails for the user.
+           * Making sure we notify the user
+           */
+          micro.windows.info:Sephia Five is now checking for emails.
+
+          /*
+           * Creating a temporary "fast poller" while we're checking for emails.
+           */
+          sephia._internals.create-poller-javascript
+
+        else
+
+          /*
+           * To make sure we keep the session object alive, we create a slow poller,
+           * who's purpose is only to make sure the user is not thrown out from his session, 
+           * as he is writing emails, and browsing around his existing emails.
+           */
+          sephia._internals.create-poller-javascript
+            slow:bool:true
 
       else
 
