@@ -384,11 +384,38 @@ fork
              * Checking if there was less than 20 messages fetched, at which point we break the inner [while] loop.
              *
              * If there were fewer than 20 email, our thread will sleep for n seconds, before attempting to fetch new 
-             * emails from our POP3 server again.
+             * emails from our POP3 server again, or entirely stop, depending upon user's settings.
              */
             if:x:/@p5.pop3.get/*/envelope?count
               <:x:/@_emails-2-fetch?value
               break
+
+      /*
+       * Storing the fact that we are finished with checking emails, and whether or not
+       * there was any new emails fetched.
+       */
+      write-lock:{0}-new-emails
+        :x:/@_thread-signal?value
+
+        /*
+         * Deleting old signal object.
+         *
+         * Notice, now old signal object should exist, but we still make sure,
+         * by explicitly deleting any old signal objects.
+         */
+        delete-data:x:/*/*/{0}-new-emails
+          :x:/@_thread-signal?value
+
+        /*
+         * Creating new signal object.
+         */
+        set:x:/./*/insert-data/*?name
+          src:{0}-new-emails
+            :x:/@_thread-signal?value
+        eval-x:x:/+/*/*
+        insert-data
+          thread
+            new-emails:x:/@_new-emails?value
 
       /*
        * Checking if user's settings are declared to only allow him to check emails at specific times of the day,
@@ -422,39 +449,6 @@ fork
          * Breaking outermost while loop, which will result in gracefully exiting our thread.
          */
         break
-
-      /*
-       * Checking if we received emails, and if so, making sure we create a signal object,
-       * that our GUI thread can check, to notify user of that new emails have arrived.
-       */
-      if:x:/@_new-emails?value
-
-        /*
-         * There was at least one new email fetched during this iteration, making sure
-         * we store that fact, to notify user on GUI thread.
-         *
-         * Making sure we've got synchronised access to our signal object.
-         */
-        write-lock:{0}-new-emails
-          :x:/@_thread-signal?value
-
-          /*
-           * Deleting old signal object.
-           *
-           * Notice, now old signal object should exist, but we still make sure,
-           * by explicitly deleting any old signal objects.
-           */
-          delete-data:x:/*/*/{0}-new-emails
-            :x:/@_thread-signal?value
-
-          /*
-           * Creating new signal object.
-           */
-          set:x:/./*/insert-data/*?name
-            src:{0}-new-emails
-              :x:/@_thread-signal?value
-          insert-data
-            thread
 
       /*
        * Sleeping current thread for n seconds, before we continue our outer [while], 

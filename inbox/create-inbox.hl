@@ -292,6 +292,11 @@ create-widget:sephia-search-wrapper
                    */
                   micro.file.evaluate:@SEPHIA/create-pop3-user-thread.hl
 
+                  /*
+                   * Making sure we update email count.
+                   */
+                  micro.file.evaluate:@SEPHIA/inbox/update-page-title.hl
+
             /*
              * Button to open settings.
              */

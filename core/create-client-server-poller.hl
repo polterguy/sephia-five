@@ -56,7 +56,8 @@ create-literal-widget:sephia-poller
        */
       if:x:/../*/slow?value
         set:x:/../*/_sleep-between-fetch?value
-          src:300000
+          src:60000
+          //src:300000
 
       /*
        * Notice, this JavaScript timeout function is created such that if an exception happens during
@@ -119,7 +120,8 @@ if (!p5.sephia_poller) {{
          */
         select-data:x:/*/*/sephia.core.thread-signal-{0}-new-emails
           :x:/@whoami/*/username?value
-        if:x:/-/*
+        if:x:/@select-data/*/*?value
+          =:bool:true
 
           /*
            * User has received new emails since the last poll towards the server.
@@ -128,6 +130,24 @@ if (!p5.sephia_poller) {{
            */
           set:x:/@_new-emails?value
             src:bool:true
+          delete-data:x:/*/*/sephia.core.thread-signal-{0}-new-emails
+            :x:/@whoami/*/username?value
+
+          /*
+           * Making sure we delete any "temporary fast pollers".
+           */
+          p5.web.session.set:sephia.core.temporary-fast-poller
+
+        else-if:x:/@select-data/*/*?value
+          =:bool:false
+
+          /*
+           * No new emails, but fetcher thread has done its job.
+           *
+           * Making sure we stop creating temporary fast pollers, and delete our
+           * signal object.
+           */
+          p5.web.session.set:sephia.core.temporary-fast-poller
           delete-data:x:/*/*/sephia.core.thread-signal-{0}-new-emails
             :x:/@whoami/*/username?value
 
@@ -193,14 +213,13 @@ if (!p5.sephia_poller) {{
 
           /*
            * Sephia Five is now checking for emails for the user.
-           * Making sure we notify the user
-           */
-          micro.windows.info:Sephia Five is now checking for emails.
-
-          /*
-           * Creating a temporary "fast poller" while we're checking for emails.
+           *
+           * Creating a temporary "fast poller" while we're checking for emails, 
+           * and making sure our next pollers also are "fast".
            */
           sephia._internals.create-poller-javascript
+          p5.web.session.set:sephia.core.temporary-fast-poller
+            src:bool:true
 
         else
 
@@ -208,9 +227,26 @@ if (!p5.sephia_poller) {{
            * To make sure we keep the session object alive, we create a slow poller,
            * who's purpose is only to make sure the user is not thrown out from his session, 
            * as he is writing emails, and browsing around his existing emails.
+           *
+           * Notice, if we have a "temporary fast" poller, we create a fast one instead,
+           * which happens when Sephia is currently checking for emails at POP3 server, due
+           * to the "next time of day to check for emails" have arrived.
            */
-          sephia._internals.create-poller-javascript
-            slow:bool:true
+          p5.web.session.get:sephia.core.temporary-fast-poller
+          if:x:/-/*?value
+
+            /*
+             * Creating temporary fast poller.
+             */
+            sephia._internals.create-poller-javascript
+
+          else
+
+            /*
+             * Creating slow poller.
+             */
+            sephia._internals.create-poller-javascript
+              slow:bool:true
 
       else
 
