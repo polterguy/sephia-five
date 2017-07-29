@@ -11,6 +11,9 @@
  *
  * This file also resets the "count" which is incremented once for each POP3 check operation in our "user thread",
  * which unless it is reset before it reaches "5", will allow the "POP3 user thread" to simply finish its work, and die out.
+ *
+ * If user's settings is configured to only allow him to check emails during specific times of the day, this file
+ * will create a "slow" poller, who's purpose is to only keep user's session alive.
  */
 
 
@@ -74,8 +77,7 @@ if (!p5.sephia_poller) {{
         :x:/@_sleep-between-fetch?value
 
     /*
-     * Checks to see if emails have arrived from POP3 server, and notifies user
-     * if new emails have arrived.
+     * Checks to see if emails have arrived from POP3 server, and acts accordingly.
      */
     sephia._internals.check-emails
 

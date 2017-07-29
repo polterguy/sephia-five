@@ -30,19 +30,6 @@ if:x:/@p5.auth.my-settings.get/*/sephia/*/markdown-composer
 
 
 /*
- * Checking if user's settings only allows him to check emails n times per day,
- * and if not, we remove the "check for emails" button, since Sephia will automatically
- * check for emails all the time, unless it is configured to only check n times per day.
- */
-if:x:/@p5.auth.my-settings.get/*/sephia/*/fetch-emails/*
-  not
-  set:x:/../*/create-widget/**/button/=sephia-check-for-emails
-
-
-
-
-
-/*
  * Creating filtering and paging widget toolbar at top of page.
  */
 create-widget:sephia-search-wrapper
@@ -203,47 +190,6 @@ create-widget:sephia-search-wrapper
                     .offset:x:/@+?value
 
             /*
-             * Button to fetch emails from POP3 server.
-             *
-             * Notice, this button is only visible if the user's settings only allows
-             * him to check his emails n number of times during the day.
-             */
-            button:sephia-check-for-emails
-              innerValue:@"<span class=""icon-refresh""></span>"
-              title:Check for new emails
-              onclick
-
-                /*
-                 * Checking if we have an error signal object, and if so, deleting it,
-                 * before we create our POP3 fetcher thread.
-                 */
-                p5.auth.my-settings.get
-                whoami
-                write-lock:sephia.core.thread-signal-{0}
-                  :x:/@whoami/*/username?value
-                  delete-data:x:/*/*/sephia.core.thread-signal-{0}
-                    :x:/@whoami/*/username?value
-
-                /*
-                 * Evaluates file responsible for fetching email from POP3 server, which will
-                 * start a new fetch thread, which will check for new emails on POP3 server.
-                 */
-                micro.evaluate.file:@SEPHIA/core/create-pop3-user-thread.hl
-
-                /*
-                 * Checking if fetch operation was successfully started.
-                 */
-                if:x:/@micro.evaluate.file?value
-                  =:bool:false
-                  and:x:/@micro.evaluate.file/*/message
-
-                  /*
-                   * Fetch operation was not successfully started for some reason, showing a message
-                   * to the user why.
-                   */
-                  micro.windows.info:x:/@micro.evaluate.file/*/message?value
-
-            /*
              * Button that clear search, and opens email inbox from the beginning.
              */
             button
@@ -257,45 +203,29 @@ create-widget:sephia-search-wrapper
                 sephia.inbox.open
 
                 /*
-                 * Notice, unless user's settings only allows him to check emails n times per day,
-                 * we also reset any potential errors, and evaluate the file responsible for creating 
-                 * a new thread when the "home button" is clicked. We do this such that the home button 
-                 * also clears out any previous errors, and restarts our POP3 server thread, in case any
-                 * previous errors have stopped our POP3 fetcher thread.
+                 * Deleting any potential "error signal objects", making sure we've got synchronized access
+                 * to signal object.
                  */
-                p5.auth.my-settings.get
-                if:x:/@p5.auth.my-settings.get/*/sephia/*/fetch-emails/*
-                  not
-
-                  /*
-                   * We are not in "restricted fetch mode", checking if we have errors, at
-                   * which point we delete them, before we invoke file responsible for creating
-                   * a new POP3 worker thread.
-                   *
-                   * Making sure we've synchronised access to thread signal object.
-                   */
-                  whoami
-                  write-lock:sephia.core.thread-signal-{0}
+                whoami
+                write-lock:sephia.core.thread-signal-{0}
+                  :x:/@whoami/*/username?value
+                  delete-data:x:/*/*/sephia.core.thread-signal-{0}/*/error/.
                     :x:/@whoami/*/username?value
-                    select-data:x:/*/*/sephia.core.thread-signal-{0}
-                      :x:/@whoami/*/username?value
-                    if:x:/@select-data/*/*/error
-                      delete-data:x:/*/*/sephia.core.thread-signal-{0}
-                        :x:/@whoami/*/username?value
 
-                  /*
-                   * Invoking file responsible for creating a new POP3 fetcher thread.
-                   *
-                   * Notice, if we already have another fetcher thread, doesn't matter, since
-                   * the invocation will return before it creates a new thread, and no new thread 
-                   * will be created.
-                   */
-                  micro.file.evaluate:@SEPHIA/create-pop3-user-thread.hl
+                /*
+                 * Invoking file responsible for creating a new POP3 fetcher thread.
+                 *
+                 * Notice, if we already have another fetcher thread, or if user is only allowed
+                 * to check his emails on a specific times of the day, doesn't matter, since
+                 * the invocation will return before it creates a new thread, and no new thread 
+                 * will be created.
+                 */
+                micro.file.evaluate:@SEPHIA/create-pop3-user-thread.hl
 
-                  /*
-                   * Making sure we update email count.
-                   */
-                  micro.file.evaluate:@SEPHIA/inbox/update-page-title.hl
+                /*
+                 * Making sure we update email count, in case we've had new emails.
+                 */
+                micro.file.evaluate:@SEPHIA/inbox/update-page-title.hl
 
             /*
              * Button to open settings.

@@ -17,7 +17,7 @@ skin:sea-breeze
 pgp-key-password:ThisIs$omeR4ndomPa$$w0rd4U
 
 /*
- * This next setting, defines at what times of day Sephia's users are allowed
+ * This next configuration setting, defines at what times of day Sephia's users are allowed
  * to check for email. If it is removed entirely, users can check for email anytime
  * they want to, and in fact an automatic thread, fetching all the time will be
  * created for the user, automatically notifying him when a new email has arrived.
@@ -27,11 +27,11 @@ pgp-key-password:ThisIs$omeR4ndomPa$$w0rd4U
  *
  * The example setting here for instance, only allows the user to check his emails
  * once after 08:00, then he'll have to wait until 12:00 before he can check again.
- * And finally, he's allowed to check for emails 15:00 for the last time.
+ * And finally, he's allowed to check for emails 15:00 for the last time during the day.
  *
  * This feature allows companies to decide when their employees are allowed to
  * check for email, such that they can reduce the number of distractions due to 
- * emails being received, to increase productivity in their work force.
+ * emails being received, to increase productivity amongst their workers.
  *
  * If you wish to setup Sephia Five in such a configuration, you can simply uncomment
  * the settings below, and that will make sure Sephia's users initial settings are

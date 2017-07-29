@@ -187,15 +187,6 @@ micro.evaluate.file:@SEPHIA/core/ensure-initial-welcome-emails-and-contacts.hl
  * return boolean "false" with a [message] explaining to the user why.
  */
 micro.evaluate.file:@SEPHIA/core/create-pop3-user-thread.hl
-if:x:/@micro.evaluate.file?value
-  =:bool:false
-  and:x:/@micro.evaluate.file/*/message
-
-  /*
-   * Fetch operation was not successfully started for some reason, showing a message
-   * to the user why.
-   */
-  micro.windows.info:x:/@micro.evaluate.file/*/message?value
 
 
 
