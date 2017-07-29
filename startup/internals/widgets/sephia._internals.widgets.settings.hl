@@ -948,6 +948,11 @@ save your settings, and do something else in the meantime, and come back here af
                   onclick
 
                     /*
+                     * Needed further below.
+                     */
+                    whoami
+
+                    /*
                      * Serializing all setting values, and storing in user settings.
                      */
                     p5.web.widgets.get-parent:sephia-settings-tab
@@ -971,15 +976,65 @@ save your settings, and do something else in the meantime, and come back here af
                      * if so, we add it to user's settings.
                      */
                     load-file:@SEPHIA/config/default-user-settings.hl
-                    if:x:/-/*/*/fetch-emails/*?count
+                    if:x:/-/*/*/fetch-emails?count
                       >:int:0
 
                       /*
                        * Sephia is configured to only allow its users to fetch emails at specific
                        * times of day. Making sure we store these times into user's settings.
+                       *
+                       * However, this can be configured on a per role basis, making sure we check for
+                       * roles matching the current user's role in the configuration file first.
                        */
-                      add:x:/../*/p5.auth.my-settings.set/*/sephia
-                        src:x:/../*/load-file/*/*/fetch-emails
+                      if:x:/../*/load-file/*/*/fetch-emails/={0}/[0,1]
+                        :x:/@whoami/*/role?value
+
+                        /*
+                         * There is an explicit configuration for the current user's role, making
+                         * sure we use this configuration setting.
+                         *
+                         * Making sure this configuration is not empty first though, which would imply that users
+                         * in this role are allowed to check their emails anytime they wish, at which point
+                         * we do not need to add up any [fetch-emails] configuration for the user.
+                         */
+                        if:x:/../*/load-file/*/*/fetch-emails/={0}/[0,1]/*
+                          :x:/@whoami/*/role?value
+
+                          /*
+                           * There exists an explicitly mentioned configuration for user's role,
+                           * and it is not empty.
+                           *
+                           * In case configuration file has "logical errors" though, and mentions the same role
+                           * twice or more, we make sure we only use the first declaration from the file.
+                           */
+                          add:x:/../*/p5.auth.my-settings.set/*/sephia
+                            src:x:/../*/load-file/*/*/fetch-emails/={0}/[0,1]
+                              :x:/@whoami/*/role?value
+
+                      else-if:x:/../*/load-file/*/*/fetch-emails/=~/[0,1]/*
+
+                        /*
+                         * There was no explicit configuration for user's role, checking if there
+                         * is a generic one, which is the default configuration for all roles
+                         * not explicitly mentioned.
+                         *
+                         * Notice, the generic configuration might also allow users by default to check
+                         * their emails at any time of the day, hence our [else-if] expression above checks
+                         * if the generic handler actually has any values, before it evaluates this else-if lambda.
+                         */
+                        add:x:/../*/p5.auth.my-settings.set/*/sephia
+                          src:x:/../*/load-file/*/*/fetch-emails/=~/[0,1]
+
+                    /*
+                     * Making sure we preserve any non-Sephia settings for user.
+                     *
+                     * Notice, the same installation might be used for multiple apps.
+                     * Without this simple addition to our code, all "non-Sephia" settings would
+                     * disappear after evaluating this lambda.
+                     */
+                    p5.auth.my-settings.get
+                    add:x:/../*/p5.auth.my-settings.set
+                      src:x:/@p5.auth.my-settings.get/*(!/sephia)
 
                     /*
                      * Storing user's settings.
@@ -988,12 +1043,9 @@ save your settings, and do something else in the meantime, and come back here af
                       sephia
 
                     /*
-                     * Notice, before we can re-relaunch inbox, we must signal any fetcher threads that they should restart,
-                     * to update settings.
-                     */
-                    whoami
-
-                    /*
+                     * Notice, before we can re-relaunch inbox, we must signal any fetcher threads that 
+                     * they should restart, to update settings.
+                     *
                      * Making sure we synchronise access to thread signal object.
                      */
                     write-lock:sephia.core.thread-signal-{0}
@@ -1001,19 +1053,35 @@ save your settings, and do something else in the meantime, and come back here af
 
                       /*
                        * Deleting old thread signal object.
+                       *
+                       * Notice, we make sure we do not delete any [last-fetch] thread signals,
+                       * since this would allow the user to check his emails, simply by changing
+                       * his settings, and saving them again. Which of course would become a "hack"
+                       * for users to be able to check their emails out of the normally allowed times
+                       * of the day they're allowed to check for emails.
                        */
-                      delete-data:x:/*/*/sephia.core.thread-signal-{0}
+                      delete-data:x:/*/*/sephia.core.thread-signal-{0}/*/last-fetch/.
                         :x:/@whoami/*/username?value
 
                       /*
-                       * Creating a new thread signal object, that informs thread to restart.
+                       * Checking if there exists a thread signal object, which might be the case, if
+                       * it was of type [last-fetch], and only if no signal object exists, we insert a new
+                       * signal object, forcing Sephia to restart its POP3 worker thread.
                        */
-                      set:x:/+/*?name
-                        src:sephia.core.thread-signal-{0}
-                          :x:/@whoami/*/username?value
-                      insert-data
-                        thread
-                          restart:bool:true
+                      select-data:x:/*/*/sephia.core.thread-signal-{0}
+                        :x:/@whoami/*/username?value
+                      if:x:/-/*
+                        not
+
+                        /*
+                         * Creating a new thread signal object, that informs thread to restart.
+                         */
+                        set:x:/+/*?name
+                          src:sephia.core.thread-signal-{0}
+                            :x:/@whoami/*/username?value
+                        insert-data
+                          thread
+                            restart:bool:true
 
                     /*
                      * Updating contacts table with email matching current user, making sure its name becomes correct.

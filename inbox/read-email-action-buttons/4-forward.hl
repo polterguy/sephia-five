@@ -43,6 +43,7 @@ button
     set:x:/@_content?value
       src:@"
 
+
 --------- Forwarded message -----------
 From: {0} <{1}>
 Date: {2}
@@ -90,15 +91,3 @@ Date: {2}
                 p5.web.widgets.find-first-ancestor:x:/../*/_event?value
                   .email-id
                 delete-widget:x:/-/*/*?value
-
-              .onsend
-
-                /*
-                 * Notifying user.
-                 */
-                micro.windows.info:Email was successfully sent
-
-    /*
-     * Deleting reader widget
-     */
-    delete-widget:x:/@p5.web.widgets.find-first-ancestor/*/*?value

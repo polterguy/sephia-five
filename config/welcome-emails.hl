@@ -136,9 +136,9 @@ Sephia Five also works on every single device you already have, allowing you to 
 
 Possibly the best part of Sephia Five, is that you don't need to change your existing email address. You can setup Sephia Five to use your existing email address, including GMail if you wish - And the port to becoming 100% secure online, becomes 100% transparently implemented, without you feeling anything besides that warm and cozy feeling of that your communication can now be 100% perfectly trusted, and that you have reclaimed your privacy.
 
-![alt Bandwidth comparison between Sephia Five and GMail](media/bandwidth-comparison.png)
-
 ### Performance
+
+![alt Bandwidth comparison between Sephia Five and GMail](media/bandwidth-comparison.png)
 
 Sephia Five is ridiculously fast. GMail uses more than 4MB of bandwidth consumption when opened without cache turned on, and 1.5MB if cache is turned on. Sephia Five will use 0.25 MB at the max with cache turned off, and roughly 0.02 MB with cache turned on. This means that Sephia Five is perfectly fine working over very slow internet connections.
 

@@ -13,25 +13,31 @@ smtp-ssl:bool:true
 preferred-content-type:html
 markdown-composer:bool:true
 pgp-subjects:"https://www.nytimes.com, https://www.wsj.com"
-skin:sea-breeze
+skin:serious
 pgp-key-password:ThisIs$omeR4ndomPa$$w0rd4U
+
+
+
+
 
 /*
  * This next configuration setting, defines at what times of day Sephia's users are allowed
  * to check for email. If it is removed entirely, users can check for email anytime
- * they want to, and in fact an automatic thread, fetching all the time will be
- * created for the user, automatically notifying him when a new email has arrived.
+ * they want to, and in fact an automatic thread, fetching emails all the time will be
+ * created for the users.
  *
  * However, if there exists a configuration setting like the one below, it becomes a 
  * list of times of day, when the user can legally check for emails on his POP3 server.
  *
- * The example setting here for instance, only allows the user to check his emails
- * once after 08:00, then he'll have to wait until 12:00 before he can check again.
- * And finally, he's allowed to check for emails 15:00 for the last time during the day.
+ * The first example setting here for instance, that is commented out, only allows the 
+ * user to check his emails once after 08:00, then he'll have to wait until 12:00 before 
+ * he can check again. And finally, he's allowed to check for emails 15:00 for the last 
+ * time during the day. Any attempts to check his emails besides from these times, will
+ * be silently stopped.
  *
  * This feature allows companies to decide when their employees are allowed to
  * check for email, such that they can reduce the number of distractions due to 
- * emails being received, to increase productivity amongst their workers.
+ * emails being received, to increase productivity amongst their employees.
  *
  * If you wish to setup Sephia Five in such a configuration, you can simply uncomment
  * the settings below, and that will make sure Sephia's users initial settings are
@@ -43,10 +49,40 @@ pgp-key-password:ThisIs$omeR4ndomPa$$w0rd4U
  *
  * This setting cannot be changed by the user in his settings form, but once created,
  * can only be modified through other means.
+ *
+ * This configuration can also be individual for the types of users that exists in Sephia,
+ * which is controlled by the value of the node, referencing a specific role.
  */
 
 
+
+/*
+ * This becomes the default check for email times, for all roles not explicitly mentioned
+ * further below, since it has no explicitly mentioned role.
+ */
 //fetch-emails
 //  :"08:00"
 //  :"12:00"
 //  :"15:00"
+
+
+
+/*
+ * This becomes the email allowance times for everyone that belongs to the role of "sales".
+ */
+//fetch-emails:sales
+//  :"08:00"
+//  :"09:00"
+//  :"10:00"
+//  :"11:00"
+//  :"12:00"
+//  :"13:00"
+//  :"14:00"
+//  :"15:00"
+
+
+/*
+ * Ommitting any values, such as we've done for the "management" role here, allows
+ * all users that are in the role of "management" to check their emails anytime the wish.
+ */
+//fetch-emails:management

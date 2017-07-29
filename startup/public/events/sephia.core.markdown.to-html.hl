@@ -32,6 +32,21 @@ create-event:sephia.core.markdown.to-html
   sephia._internals.html.create-hyperlinks:x:/@markdown2html?value
 
   /*
+   * Converting all images to Sephia images, which implies adding some styles to them, to
+   * make them render left aligned, with some borders and margin.
+   */
+  html2lambda:x:/@sephia._internals.html.create-hyperlinks?value
+  for-each:x:/-/**/img
+    add:x:/@_dp/#
+      src
+        @style:"max-width:50%;border-radius:5px;box-shadow:3px 3px 5px rgba(0,0,0,.5);float:left;margin:0 1rem 1rem 0;"
+
+  /*
+   * Converting lambda back to HTML, now with styling for all images.
+   */
+  lambda2html:x:/@html2lambda/*
+
+  /*
    * Checking if user actually had a signature in his email.
    */
   if:x:/@split/*?count
@@ -41,7 +56,7 @@ create-event:sephia.core.markdown.to-html
      * User didn't have any signature, returning raw markdown with hyperlink conversion,
      * making sure we "braid it" into our "wrapper HTML" template.
      */
-    sephia._internals.markdown-to-html.wrap:x:/@sephia._internals.html.create-hyperlinks?value
+    sephia._internals.markdown-to-html.wrap:x:/@lambda2html?value
     return:x:/-?value
 
   /*
@@ -56,6 +71,6 @@ create-event:sephia.core.markdown.to-html
    * making sure we "braid" everything inside our "wrapper HTML" template.
    */
   sephia._internals.markdown-to-html.wrap:"{0}\r\n<pre style=\"opacity:.3;\">-- \r\n{1}</pre>"
-    :x:/../*/sephia._internals.html.create-hyperlinks/[0,1]?value
+    :x:/../*/lambda2html/[0,1]?value
     :x:/../*/sephia._internals.html.create-hyperlinks/[1,2]?value
   return:x:/-?value
