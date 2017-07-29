@@ -92,6 +92,21 @@
 .sephia-inbox td:nth-child(3) {
     width:250px;
 }
+.sephia-inbox td:nth-child(4) {
+    width:100px;
+    text-align:right;
+}
+.sephia-inbox td:nth-child(4) button {
+    margin-bottom:0;
+    height:30px;
+    padding:8px 15px 7px 15px;
+    opacity:.3;
+}
+.sephia-inbox td:nth-child(4) button:hover,
+.sephia-inbox td:nth-child(4) button:focus,
+.sephia-inbox td:nth-child(4) button:active {
+    opacity:1;
+}
 .sephia-inbox td:nth-child(1),
 .sephia-inbox th:nth-child(1),
 .sephia-inbox td:nth-child(3),
