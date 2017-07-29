@@ -32,7 +32,7 @@ create-event:sephia._internals.widgets.settings
    * Notice, we're simply using GMail server settings here.
    * The [signature] we're fetching from our configuration file.
    */
-  load-file:@SEPHIA/config/default-settings.hl
+  load-file:@SEPHIA/config/default-user-settings.hl
   eval-x:x:/+/*
   .defaults
     pop3-server:x:/@load-file/*/*/pop3-server?value
@@ -221,6 +221,24 @@ create-event:sephia._internals.widgets.settings
                       label
                         for:sephia-setting-prefer-plain
                         innerValue:I prefer to read plain text emails
+              div
+                class:row
+                widgets
+                  div
+                    class:col right
+                    widgets
+                      button
+                        innerValue:Mark ell emails as read
+                        onclick
+
+                          /*
+                           * Marking all emails as read.
+                           */
+                          whoami
+                          p5.mysql.connect:[sephia]
+                            p5.mysql.update:@"update emails set isread = 1 where username = @username"
+                              @username:x:/@whoami/*/username?value
+                          micro.evaluate.file:@SEPHIA/inbox/update-page-title.hl
 
           /*
            * POP3 settings.
@@ -952,7 +970,7 @@ save your settings, and do something else in the meantime, and come back here af
                      * Checking if we have a [fetch-emails] configuration object, and
                      * if so, we add it to user's settings.
                      */
-                    load-file:@SEPHIA/config/default-settings.hl
+                    load-file:@SEPHIA/config/default-user-settings.hl
                     if:x:/-/*/*/fetch-emails/*?count
                       >:int:0
 

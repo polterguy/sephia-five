@@ -61,7 +61,14 @@ write-lock:x:/@_thread-signal?value
    */
   select-data:x:/*/*/{0}
     :x:/@_thread-signal?value
+
+  /*
+   * If a thread signal already exists, we do not create a new thread, 
+   * unless [force-restart] was set to boolean "true".
+   */
   if:x:/@select-data/*
+    and:x:/../*/force-restart?value
+      !=:bool:true
 
     /*
      * Thread signal object already exists, now we must check its type.
@@ -173,9 +180,20 @@ write-lock:x:/@_thread-signal?value
   else
 
     /*
-     * No thread signal exists, and we can fetch emails.
+     * No thread signal exists, or we were forced to restart thread.
+     * Regardless, we can safely create our "fetcher thread".
      *
-     * Creating our initial "POP3 worker thread signal object".
+     * There might exist existing signals, since we can also end up in here, if
+     * we were forced to restart thread.
+     *
+     * Deleting any pre-existing thread signal objects first.
+     */
+    delete-data:x:/*/*/{0}
+      :x:/@_thread-signal?value
+
+    /*
+     * Creating a new thread signal object, and allowing further execution of
+     * our file.
      */
     set:x:/+/*?name
       src:x:/@_thread-signal?value
@@ -278,6 +296,11 @@ fork
     while:bool:true
 
       /*
+       * Used to track if user has got new emails.
+       */
+      _new-emails:bool:false
+
+      /*
        * Checking if we should continue this thread, or gracefull return preventing further
        * evaluation.
        *
@@ -341,6 +364,12 @@ fork
                     src:x:/@.whoami/*/username
                   micro.evaluate.file:@SEPHIA/core/save-pop3-email-2-database.hl
 
+                  /*
+                   * Making sure we store the fact that we had at least one new email.
+                   */
+                  set:x:/@_new-emails?value
+                    src:bool:true
+
 
                 /*
                  * Commit database transaction.
@@ -382,7 +411,7 @@ fork
             :x:/@_thread-signal?value
           p5.types.date.now
             local:true
-          set:x:/+2/*?name
+          set:x:/./*/insert-data/*?name
             src:x:/@_thread-signal?value
           eval-x:x:/+/*/*
           insert-data
@@ -393,6 +422,39 @@ fork
          * Breaking outermost while loop, which will result in gracefully exiting our thread.
          */
         break
+
+      /*
+       * Checking if we received emails, and if so, making sure we create a signal object,
+       * that our GUI thread can check, to notify user of that new emails have arrived.
+       */
+      if:x:/@_new-emails?value
+
+        /*
+         * There was at least one new email fetched during this iteration, making sure
+         * we store that fact, to notify user on GUI thread.
+         *
+         * Making sure we've got synchronised access to our signal object.
+         */
+        write-lock:{0}-new-emails
+          :x:/@_thread-signal?value
+
+          /*
+           * Deleting old signal object.
+           *
+           * Notice, now old signal object should exist, but we still make sure,
+           * by explicitly deleting any old signal objects.
+           */
+          delete-data:x:/*/*/{0}-new-emails
+            :x:/@_thread-signal?value
+
+          /*
+           * Creating new signal object.
+           */
+          set:x:/./*/insert-data/*?name
+            src:{0}-new-emails
+              :x:/@_thread-signal?value
+          insert-data
+            thread
 
       /*
        * Sleeping current thread for n seconds, before we continue our outer [while], 

@@ -3,7 +3,7 @@
  * Configuration file for which default settings to use for users.
  */
 signature:@"Got Privacy ...?
-https://gaiasoul.com/license"
+https://gaiasoul.com"
 pop3-server:pop.gmail.com
 pop3-port:995
 pop3-ssl:bool:true
@@ -22,20 +22,27 @@ pgp-key-password:ThisIs$omeR4ndomPa$$w0rd4U
  * they want to, and in fact an automatic thread, fetching all the time will be
  * created for the user, automatically notifying him when a new email has arrived.
  *
- * However, if it exists as a configuration setting, it becomes a list of times 
- * of day when the user can legally check for emails on his POP3 server.
+ * However, if there exists a configuration setting like the one below, it becomes a 
+ * list of times of day, when the user can legally check for emails on his POP3 server.
  *
  * The example setting here for instance, only allows the user to check his emails
- * once after 08:00, then he'll have to wait until 12:00 before he cancheck again.
+ * once after 08:00, then he'll have to wait until 12:00 before he can check again.
  * And finally, he's allowed to check for emails 15:00 for the last time.
  *
- * This feature allows corporations to decide when their employees are allowed to
+ * This feature allows companies to decide when their employees are allowed to
  * check for email, such that they can reduce the number of distractions due to 
- * emails being received, to increase productivity.
+ * emails being received, to increase productivity in their work force.
  *
  * If you wish to setup Sephia Five in such a configuration, you can simply uncomment
  * the settings below, and that will make sure Sephia's users initial settings are
  * setup with this type of configuration.
+ *
+ * You can of course modify the times of the day to any times you wish, just remember
+ * that the times are defined in "military hour", meaning for instance that "20:00" 
+ * becomes 8PM.
+ *
+ * This setting cannot be changed by the user in his settings form, but once created,
+ * can only be modified through other means.
  */
 
 

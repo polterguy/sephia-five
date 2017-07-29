@@ -2,6 +2,10 @@
 /*
  * Configuration file for the initial contact(s) that user receives when he starts
  * Sephia Five for the first time.
+ *
+ * If you wish to for instance populate all user's initial contact list with some
+ * set of "corporate contact list", you can just change this file to whatever your
+ * default set of contacts are.
  */
 contact
   name:Thomas Hansen

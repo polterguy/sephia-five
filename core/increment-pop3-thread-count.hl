@@ -28,23 +28,32 @@ write-lock:x:/../*/thread-signal?value
     :x:/../*/thread-signal?value
 
   /*
-   * Then checking if we have exceeded our iteration count, 
-   * or some parts of our program has told our thread to restart.
+   * Then checking if we have exceeded our iteration count.
    */
-  if:x:/@select-data/*/*/restart?value
-    or:x:/@select-data/*/*/running/*/count?value.int
-      >=:int:5
+  if:x:/@select-data/*/*/running/*/count?value.int
+    >=:int:5
 
     /*
-     * Thread should be stopped and restarted for some reasons, or there has not been a client
-     * polling the server for information for more than 5 iterations, which means that our thread 
-     * is no longer needed.
+     * Thread should be stopped, since there has not been a client polling the server for 
+     * information for more than 5 iterations, which means that our thread is no longer needed.
      *
-     * Regardless of the circumstances, we delete signal object, and return false to caller, indicating
-     * that the thread should be gracefully exited.
+     * Hence, we delete signal object, and return false to caller, indicating that the thread 
+     * should be gracefully exited.
      */
     delete-data:x:/*/*/{0}
       :x:/../*/thread-signal?value
+    return:bool:false
+
+  /*
+   * Then checking if some other part of our program has forced us to restart our
+   * thread, due to e.g. settings having been updated, etc.
+   */
+  if:x:/@select-data/*/*/restart?value
+
+    /*
+     * Thread should be stopped and restarted for some reasons, hence we return false to caller, 
+     * indicating that the thread should be gracefully exited.
+     */
     return:bool:false
 
   /*

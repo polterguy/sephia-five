@@ -2,16 +2,20 @@
 /*
  * Configuration file for which PGP key server to use.
  *
- * The value of node is the URL to use to publish your key.
- * The [http-verb] is the HTTP verb to use when adding your key, which probably is either "post" or "put".
- * The [key-arg-name] is which argument name to use for your key when creating your HTTP post/put request.
+ * This file contains the configuration settings for which PGP key server to
+ * use, and how to use it. It is used when either searching for a PGP key on a
+ * key server, submitting a PGP key to your key server, etc.
  *
- * All other arguments are added to the HTTP request invocation as HTTP headers, as they are.
+ * [http-verb] is the HTTP REST verb to use for all these settings.
  */
 
 
 /*
  * Configuration section for uploading a key to key server.
+ *
+ * [key-arg-name] is the HTTP argument name of the actual key in the HTTP REST
+ * operation. All other arguments are added as is into the actual HTTP REST invocation,
+ * and hence becomes HTTP headers for your invocation.
  */
 upload-key-url:"http://keyserver.ubuntu.com/pks/add"
   http-verb:post
@@ -21,10 +25,22 @@ upload-key-url:"http://keyserver.ubuntu.com/pks/add"
 
 /*
  * Configuration section for searching for a key on key server.
+ *
+ * [query-arg-name] is the argument name for the HTTP REST operation that will
+ * actually do the search.
  */
 search-key-url:"https://keyserver.ubuntu.com/pks/lookup?op=vindex&fingerprint=on&"
   http-verb:get
   query-arg-name:search
+
+  /*
+   * This is a lambda callback, which will be given the [result] node of the
+   * search HTTP REST operation, and is expected to return the keys found back 
+   * to the caller.
+   *
+   * It is expected to return a list of fingerprints, with [Created] and [uid] as
+   * its children. The fingerprints should be tha name of the nodes returned.
+   */
   .get-results
     html2lambda:x:/../*/result/#?value
     for-each:x:/@html2lambda/*/html/*/body/*/pre/*/\#text/=~-/=~Fingerprint
@@ -51,7 +67,13 @@ search-key-url:"https://keyserver.ubuntu.com/pks/lookup?op=vindex&fingerprint=on
 
 
 /*
- * Configuration section for download a key from key server.
+ * Configuration section for downloading a key from key server.
+ *
+ * Expected to return the actual KEY data from its [.get-results] lambda object,
+ * given the [result] node from the HTTP REST invocation as its argument.
+ *
+ * [query-arg-name] is the HTTP REST argument name for the key to search for, 
+ * and is expected to hold the ID of the key (not the fingerprint).
  */
 download-key-url:"https://keyserver.ubuntu.com/pks/lookup?op=get&"
   http-verb:get

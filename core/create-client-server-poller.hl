@@ -107,62 +107,37 @@ if (!p5.sephia_poller) {{
           :x:/@_thread-signal?value
 
       /*
+       * Checking if new emails have arrived since our last poll towards the server, making sure
+       * we have synchronised access to signal object.
+       */
+      _new-emails:bool:false
+      write-lock:sephia.core.thread-signal-{0}-new-emails
+        :x:/@whoami/*/username?value
+
+        /*
+         * Checking if user received new emails since our last poll.
+         */
+        select-data:x:/*/*/sephia.core.thread-signal-{0}-new-emails
+          :x:/@whoami/*/username?value
+        if:x:/-/*
+
+          /*
+           * User has received new emails since the last poll towards the server.
+           *
+           * Storing that fact, and making sure we delete signal object.
+           */
+          set:x:/@_new-emails?value
+            src:bool:true
+          delete-data:x:/*/*/sephia.core.thread-signal-{0}-new-emails
+            :x:/@whoami/*/username?value
+
+      /*
        * Checking if thread is still running.
        */
       if:x:/@read-lock/*/select-data/*/*/running?value
 
         /*
          * Thread is still running.
-         *
-         * Now we must check if new emails have arrived from POP3 server.
-         * We do this by selecting the MIME ID of the newest email in database, and comparing it towards
-         * a ViewState value that tracks the last fetched email.
-         */
-        p5.mysql.connect:[sephia]
-          p5.mysql.select:@"select mimeid from emails where username = @username and type='received' order by id desc limit 1"
-            @username:x:/@whoami/*/username?value
-
-        /*
-         * Then we retrieve the page value which wraps our "last known MIME ID".
-         */
-        p5.web.viewstate.get:sephia.emails.last-known
-
-        /*
-         * Then we compare these values.
-         */
-        if:x:/@p5.mysql.connect/*/p5.mysql.select/*/*/mimeid?value
-          !=:x:/@p5.web.viewstate.get/*?value
-          and:x:/@p5.web.viewstate.get/*?value
-
-          /*
-           * We have received at least one new email.
-           */
-          micro.evaluate.file:@SEPHIA/inbox/update-page-title.hl
-
-          /*
-           * Notifying user, but making sure we don't "go berserk" when notifying him.
-           */
-          p5.web.viewstate.get:sephia.core.has-notified-user-of-new-emails
-          if:x:/-/*?value
-            not
-
-            /*
-             * User has not been notified previously of that he has new email, making sure we do so.
-             */
-            p5.web.viewstate.set:sephia.core.has-notified-user-of-new-emails
-              src:bool:true
-            micro.windows.info:You have new emails, click your inbox to see them.
-              class:micro-windows-info success
-              onclick
-                sephia.inbox.open
-
-        /*
-         * Updating "last known email".
-         */
-        p5.web.viewstate.set:sephia.emails.last-known
-          src:x:/@p5.mysql.connect/*/p5.mysql.select/*/*/mimeid?value
-
-        /*
          * Making sure we poll towards server again after some n seconds.
          */
         sephia._internals.create-poller-javascript
@@ -183,13 +158,10 @@ if (!p5.sephia_poller) {{
 
         /*
          * Thread was stopped and should be restarted for some reasons.
-         *
          * Might be caused by for instance that the user's settings was changed.
-         * Notice, we don't need to synchronize access here, since thread has already 
-         * at this point decided to stop iterating.
          */
-        delete-data:x:/@_thread-signal?value
         micro.evaluate.file:@SEPHIA/core/create-pop3-user-thread.hl
+          force-restart:bool:true
         sephia._internals.create-poller-javascript
 
       else-if:x:/@read-lock/*/select-data/*/*/error
@@ -245,10 +217,55 @@ if (!p5.sephia_poller) {{
         /*
          * Synchronization object was somehow deleted, which means that our "worker thread"
          * will soon choke, when trying to increment its [count].
-         * Simply creating another poller should do the trick, since our next poll will then
-         * show this error.
+         * This migh happen due to a server restart, or similar events, that recycles the process.
+         * Regardless, we simply create another poller, since a future poll will show this error.
          */
         sephia._internals.create-poller-javascript
+
+      /*
+       * Checking if user received new emails since the last poll operation.
+       */
+      if:x:/@_new-emails?value
+
+        /*
+         * User has received new emails, making sure we update email count.
+         */
+        micro.evaluate.file:@SEPHIA/inbox/update-page-title.hl
+
+        /*
+         * Then we check if user has paged his inbox, or filtered it somehow, and if not,
+         * we automatically re-databind his inbox.
+         *
+         * Notice, before we do this, we need to check if his inbox is currently being displayed,
+         * which might not be the case, if user has opened his settings, etc.
+         */
+        if
+          fetch:x:/0/0?value
+            widget-exists:sephia-search-txt
+
+          /*
+           * User's inbox is currently being displayed, now checking if he has filtered it.
+           */
+          get-widget-property:sephia-search-txt
+            value
+          if:x:/@get-widget-property/*/*?value
+            not
+            or:x:/@get-widget-property/*/*?value
+              =:
+
+            /*
+             * User has no filter in his search textbox, now checking if he has paged.
+             */
+            get-widget-property:sephia-search-wrapper
+              .offset
+            if:x:/@get-widget-property/*/*?value.int
+              =:int:0
+
+              /*
+               * User has his inbox up, he has not filtered it, and he has not paged it, hence
+               * we can automatically re-databind his inbox for him.
+               */
+              micro.evaluate.file:@SEPHIA/inbox/databind-inbox.hl
 
   .oncheck
 
