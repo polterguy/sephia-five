@@ -52,12 +52,11 @@ create-literal-widget:sephia-poller
       /*
        * Checking if caller requested a "slow" fetcher, at which point we
        * only poll towards the server every 5 minutes, only to avoid user being thrown out
-       * of his session, while composing emails and such.
+       * of his session, while composing emails and browsing his inbox.
        */
       if:x:/../*/slow?value
         set:x:/../*/_sleep-between-fetch?value
-          src:60000
-          //src:300000
+          src:300000
 
       /*
        * Notice, this JavaScript timeout function is created such that if an exception happens during
