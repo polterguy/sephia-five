@@ -201,5 +201,5 @@ create-event:sephia._internals.widgets.email-body
     return
       literal
         element:div
-        style:"white-space:pre-wrap;width:100%;overflow:hidden;"
+        class:sephia-text-reader
         innerValue:x:/@sephia._internals.html.create-hyperlinks?value

@@ -251,22 +251,22 @@ where emails.id = @id"
    * Checking if this is a "sent" email or a "received".
    */
   if:x:/@p5.mysql.select/*/*/type?value
-    =:"received"
-
-    /*
-     * Email was "received", meaning in the user's "inbox".
-     */
-    set:x:/@_bg?value
-      src:{0} sephia-reader-received
-        :x:/@_bg?value
-
-  else
+    =:"sent"
 
     /*
      * Email was "sent", meaning it was sent by user.
      */
     set:x:/@_bg?value
       src:{0} sephia-reader-sent
+        :x:/@_bg?value
+
+  else
+
+    /*
+     * Email was "received", meaning in the user's "inbox".
+     */
+    set:x:/@_bg?value
+      src:{0} sephia-reader-received
         :x:/@_bg?value
 
   /*

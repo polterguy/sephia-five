@@ -91,7 +91,7 @@ create-widget:sephia-search-wrapper
               type:text
               class:smaller
               placeholder:"inbox:"
-              title:@"Use 'inbox:', 'sent:', 'read:', 'unread:', 'safe:', 'all:' and 'attachment:' to specify type of emails to search for"
+              title:@"Use 'inbox:', 'sent:', 'read:', 'unread:', 'safe:', 'all:', 'spam:' and 'attachment:' to specify type of emails to search for"
               onkeydown:@"if (event.keyCode == 13) {p5.$('sephia-search-btn').raise('onclick');return false;}"
 
             /*

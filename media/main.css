@@ -153,6 +153,13 @@
     padding:0 1.5rem;
 }
 
+.sephia-text-reader {
+    white-space: pre-wrap;
+    width: 100%;
+    overflow: hidden;
+    padding: 0 1.5rem;
+}
+
 .sephia-reader-meta-wrapper {
     padding:1.5rem;
     color:#999;
@@ -171,7 +178,8 @@
  * Attachments in reader.
  */
 .sephia-inbox-attachments {
-    margin-top:1rem;
+    margin-top: 1rem;
+    padding: 0 1.5rem;
 }
 .sephia-inbox-attachment {
     background:linear-gradient(#ffffff, #ddffdd);

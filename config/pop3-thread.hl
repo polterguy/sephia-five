@@ -15,7 +15,7 @@
  * If you have many users in your system, and the CPU of your server starts going
  * into the roof, you should probably increase this number.
  */
-sleep-between-fetch:int:5000
+sleep-between-fetch:int:10000
 
 
 

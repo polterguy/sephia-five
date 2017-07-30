@@ -6,6 +6,39 @@ button
   innerValue:@"<span class=""icon-mail-forward""></span>"
   title:Forward email
   class:reader-action-button
+  oninit
+
+    /*
+     * Figuring out the ID of our email, such that we can figure out what type 
+     * of email this is.
+     */
+    p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+      .email-id
+    get-widget-property:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+      .email-id
+
+    /*
+     * Connecting to database, to retrieve type of email, and act accordingly.
+     */
+    p5.mysql.connect:[sephia]
+
+      /*
+       * Figuring out what type of email this is.
+       */
+      p5.mysql.scalar:@"select type from emails where emails.id = @id"
+        @id:x:/@get-widget-property/*/*?value
+      if:x:/@p5.mysql.scalar?value
+        =:spam
+
+        /*
+         * This is spam, hence we hide the button.
+         *
+         * Hint, if user wants to forward the email, he'll first need to move 
+         * it out of his spam folder.
+         */
+        set-widget-property:x:/../*/_event?value
+          visible:false
+
   onclick
 
     /*

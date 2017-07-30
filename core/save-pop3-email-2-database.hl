@@ -6,6 +6,10 @@
  * Expects [envelope] being the email as returned from [p5.pop3.get] 
  * and [username] being the username of the user the invocation should save emails for.
  *
+ * Optionally pass in [settings] being the user's settings.
+ * If [settings] is passed in, the event will make sure the email passes through all spam
+ * filters the user has setup when saved to the database.
+ *
  * Also expects an open database connection to the Sephia Five database.
  *
  * Returns boolean "true" if email was inserted, otherwise "false".
@@ -26,6 +30,19 @@ micro.lambda.contract.min:x:/..
     Subject
     Date:date
   username:string
+
+
+
+
+
+/*
+ * Sanity checking optional arguments given to invocation.
+ */
+micro.lambda.contract.optional:x:/..
+  settings
+    hollywood-spam-filter
+    signature-spam-filter
+    cryptography-spam-filter
 
 
 
@@ -188,8 +205,6 @@ if:x:/@p5.mysql.select/*?count
   =:int:0
 
   /*
-   * "From" doesn't exist, inserting new entry into "contacts" table.
-   *
    * Passing in [fingerprint] for PGP key that signed the email, if a signature was given.
    */
   if:x:/@_fingerprint?value
@@ -349,10 +364,98 @@ if:x:/../*/envelope/*/Subject?value
 
 
 /*
+ * Then we can check if this email is to be considered spam or not, but first 
+ * checking if caller even supplied a [settings] section.
+ */
+_type:received
+if:x:/../*/settings
+
+  /*
+   * Settings was passed in, checking if email is spam according to spam filter configuration.
+   *
+   * First checking if contact is on "exception list", meaning the contact is explicitly marked
+   * as "spam" or "nospam" in database.
+   *
+   * NULL means don't know
+   * 0 means "nospam"
+   * 1 means "spam"
+   */
+  p5.mysql.scalar:@"select spam from contacts where id = @from"
+    @from:x:/@_from?value
+  if:x:/@p5.mysql.scalar?value
+    and:x:/@p5.mysql.scalar?value.int
+      =:int:1
+
+    /*
+     * Contact is explicitly marked as "spam" in database.
+     */
+    set:x:/@_type?value
+      src:spam
+
+  else-if:x:/@p5.mysql.scalar?value
+    not
+
+    /*
+     * Contact is not explicitly marked as neither "spam" nor "nospam" in database.
+     *
+     * Checking if "Hollywood" filter is turned on.
+     */
+    if:x:/../*/settings/*/hollywood-spam-filter?value
+      =:bool:true
+
+      /*
+       * "Hollywood" filter is turned on.
+       *
+       * This means that the email is considered spam, unless the user has sent the
+       * sender of the email an email first.
+       */
+      p5.mysql.scalar:@"select count(*) from emails where type = 'sent' and username = @username and exists (select * from recipients where emailid = emails.id and contactid = @from)"
+        @username:x:/../*/username?value
+        @from:x:/@_from?value
+      if:x:/@p5.mysql.scalar?value.int
+        =:int:0
+
+        /*
+         * User has never sent this contact an email, hence we treat this email as "spam".
+         */
+        set:x:/@_type?value
+          src:spam
+
+    /*
+     * Checking if "Signature" filter is turned on, and if so, making sure the email
+     * is to be considered spam, unless it was cryptographically signed.
+     */
+    if:x:/../*/settings/*/signature-spam-filter?value
+      =:bool:true
+      and:x:/@_fingerprint?value
+        not
+
+      /*
+       * Email was not cryptographically signed, and user has turned on "signature filter".
+       */
+      set:x:/@_type?value
+        src:spam
+
+    /*
+     * Checking if "Cryptography" filter is turned on, and if so, making sure the email
+     * is to be considered spam, unless it was encrypted.
+     */
+    if:x:/../*/settings/*/cryptography-spam-filter?value
+      =:bool:true
+      and:x:/@_encrypted?value
+        =:int:0
+      set:x:/@_type?value
+        src:spam
+
+
+
+
+
+/*
  * Now (finally, puuh!) - We can insert email into database.
  */
 p5.mysql.insert:@"insert into emails (subject, babelsubject, date, sender, username, isread, mimeid, signature, fingerprint, encrypted, type, inreplyto, status) 
-values (@subject, @babelsubject, @date, @sender, @username, 0, @mimeid, @signature, @fingerprint, @encrypted, 'received', @inreplyto, @status)"
+values (@subject, @babelsubject, @date, @sender, @username, 0, @mimeid, @signature, @fingerprint, @encrypted, @type, @inreplyto, @status)"
   @subject:x:/../*/envelope/*/Subject?value
   @babelsubject:x:/@_babel-subject?value
   @date:x:/../*/envelope/*/Date?value
@@ -362,6 +465,7 @@ values (@subject, @babelsubject, @date, @sender, @username, 0, @mimeid, @signatu
   @signature:x:/@_signature?value
   @fingerprint:x:/@_fingerprint?value
   @encrypted:x:/@_encrypted?value
+  @type:x:/@_type?value
   @inreplyto:x:/../*/envelope/*/In-Reply-To?value
   @status:x:/@_status?value
 

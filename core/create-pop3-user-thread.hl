@@ -356,13 +356,16 @@ fork
                 for-each:x:/@p5.pop3.get/*/envelope
 
                   /*
-                   * Passing in [envelope] and [whoami] object, which is needed to know which user to save email on behalf of.
+                   * Passing in [envelope], [username], and [settings].
                    */
                   add:x:/..for-each/*/micro.evaluate.file
                     src:x:/@_dp/#
                   add:x:/..for-each/*/micro.evaluate.file
                     src:x:/@.whoami/*/username
+                  add:x:/..for-each/*/micro.evaluate.file/*/settings
+                    src:x:/@.settings/*
                   micro.evaluate.file:@SEPHIA/core/save-pop3-email-2-database.hl
+                    settings
 
                   /*
                    * Making sure we store the fact that we had at least one new email.

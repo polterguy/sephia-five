@@ -47,6 +47,9 @@ create-event:sephia._internals.widgets.settings
     skin:x:/@load-file/*/*/skin?value
     signature:x:/@load-file/*/*/signature?value
     pgp-key-password:x:/@load-file/*/*/pgp-key-password?value
+    hollywood-spam-filter:bool:false
+    signature-spam-filter:bool:false
+    cryptography-spam-filter:bool:false
 
   /*
    * Populating skin selector.
@@ -81,6 +84,20 @@ create-event:sephia._internals.widgets.settings
    */
   if:x:(/../*/p5.auth.my-settings.get/*/sephia/*/markdown-composer|/../*/.defaults/*/markdown-composer)/$?value
     add:x:/../*/return/**/input/*/type/=checkbox/./*/.data-field/=markdown-composer/.
+      src:checked
+
+  /*
+   * Checking the correct spam filters according to user's settings, 
+   * or alternatively use the [.defaults] values.
+   */
+  if:x:(/../*/p5.auth.my-settings.get/*/sephia/*/hollywood-spam-filter|/../*/.defaults/*/hollywood-spam-filter)/$?value
+    add:x:/../*/return/**/input/*/type/=checkbox/./*/.data-field/=hollywood-spam-filter/.
+      src:checked
+  if:x:(/../*/p5.auth.my-settings.get/*/sephia/*/signature-spam-filter|/../*/.defaults/*/signature-spam-filter)/$?value
+    add:x:/../*/return/**/input/*/type/=checkbox/./*/.data-field/=signature-spam-filter/.
+      src:checked
+  if:x:(/../*/p5.auth.my-settings.get/*/sephia/*/cryptography-spam-filter|/../*/.defaults/*/cryptography-spam-filter)/$?value
+    add:x:/../*/return/**/input/*/type/=checkbox/./*/.data-field/=cryptography-spam-filter/.
       src:checked
 
   /*
@@ -927,6 +944,40 @@ save your settings, and do something else in the meantime, and come back here af
                                              */
                                             delete-widget:sephia-create-pgp-key-modal
 
+          /*
+           * Spam filter settings.
+           */
+          view
+            name:Spam
+            widgets
+              div
+                class:row
+                widgets
+                  div
+                    class:col
+                    widgets
+                      input:sephia-settings-holloywood-spam-filter
+                        type:checkbox
+                        .data-field:hollywood-spam-filter
+                      label
+                        for:sephia-settings-holloywood-spam-filter
+                        innerValue:Enable Hollywood spam filter
+                        title:All emails coming from people not already on your list of contacts will be treated as spam
+                      input:sephia-settings-signature-spam-filter
+                        type:checkbox
+                        .data-field:signature-spam-filter
+                      label
+                        for:sephia-settings-signature-spam-filter
+                        innerValue:Enable signature spam filter
+                        title:All emails that are not cryptographically signed will be treated as spam
+                      input:sephia-settings-cryptography-spam-filter
+                        type:checkbox
+                        .data-field:cryptography-spam-filter
+                      label
+                        for:sephia-settings-cryptography-spam-filter
+                        innerValue:Enable cryptography spam filter
+                        title:All emails that are not encrypted will be treated as spam
+
 
         /*
          * Save button, beneath our tab widget.
@@ -1060,7 +1111,7 @@ save your settings, and do something else in the meantime, and come back here af
                        * for users to be able to check their emails out of the normally allowed times
                        * of the day they're allowed to check for emails.
                        */
-                      delete-data:x:/*/*/sephia.core.thread-signal-{0}/*/last-fetch/.
+                      delete-data:x:/*/*/sephia.core.thread-signal-{0}(!/*/last-fetch/.)
                         :x:/@whoami/*/username?value
 
                       /*

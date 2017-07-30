@@ -29,9 +29,15 @@ button
         @id:x:/@get-widget-property/*/*?value
       if:x:/@p5.mysql.scalar?value
         =:sent
+        or:x:/@p5.mysql.scalar?value
+          =:spam
 
         /*
-         * This email was sent by user himself, and hence replying to it makes no sense.
+         * This email was sent by user himself, or is marked as spam, 
+         * and hence replying to it makes no sense.
+         *
+         * Hint, if a user wants to reply to an email, he will first need to move
+         * it out of his spam folder.
          */
         set-widget-property:x:/../*/_event?value
           visible:false

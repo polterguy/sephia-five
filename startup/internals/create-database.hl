@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS `contacts` (
   `fingerprint` VARCHAR(256) NULL,
   `isverified` int unsigned NOT NULL DEFAULT 0,
   `type` VARCHAR(256) NULL,
+  `spam` INT(10) NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

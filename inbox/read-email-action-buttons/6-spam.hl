@@ -1,0 +1,65 @@
+
+/*
+ * Action button for marking email is "nospam".
+ */
+button
+  innerValue:@"<span class=""icon-ban""></span>"
+  title:This is spam
+  class:reader-action-button
+  oninit
+
+    /*
+     * Figuring out the ID of our email, such that we can figure out what type 
+     * of email this is.
+     */
+    p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+      .email-id
+    get-widget-property:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+      .email-id
+
+    /*
+     * Connecting to database, to retrieve type of email, and act accordingly.
+     */
+    p5.mysql.connect:[sephia]
+
+      /*
+       * Figuring out what type of email this is.
+       */
+      p5.mysql.scalar:@"select type from emails where emails.id = @id"
+        @id:x:/@get-widget-property/*/*?value
+      if:x:/@p5.mysql.scalar?value
+        =:spam
+
+        /*
+         * This is already marked as spam, hence we hide the button.
+         */
+        set-widget-property:x:/../*/_event?value
+          visible:false
+
+  onclick
+
+    /*
+     * Finding email in database, and setting its type to 'spam', for then
+     * to make sure contact is on our "spam" list.
+     */
+    p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+      .email-id
+    get-widget-property:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+      .email-id
+    p5.mysql.connect:[sephia]
+      p5.mysql.update:@"update emails set type = 'spam' where id = @id"
+        @id:x:/@get-widget-property/*/*?value
+      p5.mysql.update:@"update contacts set spam = 1 where exists (select * from emails where emails.id = @id and contacts.id = emails.sender)"
+        @id:x:/@get-widget-property/*/*?value
+
+    /*
+     * Entirely deleting reader widget, and re-databinding inbox.
+     */
+    delete-widget:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+    sephia.inbox.open
+      keep-page-filter:bool:true
+
+    /*
+     * Updating page title.
+     */
+    micro.evaluate.file:@SEPHIA/inbox/update-page-title.hl

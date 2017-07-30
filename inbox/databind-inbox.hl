@@ -83,6 +83,9 @@ if
     case:safe
       set:x:/@_filter-type?value
         src:@"and emails.encrypted != 0 and emails.fingerprint is not null"
+    case:spam
+      set:x:/@_filter-type?value
+        src:@"and emails.type = 'spam'"
     case:attachment
       set:x:/@_filter-type?value
         src:@"and exists (select * from attachments where attachments.emailid = emails.id)"
