@@ -13,7 +13,7 @@ create-event:sephia.pgp.key-server.search
   /*
    * Loading key server configuration setting.
    */
-  load-file:@SEPHIA/config/key-server.hl
+  load-file:@SEPHIA/configuration/key-server.hl
 
   /*
    * Using HTTP GET to query for key on server, making sure we URL encode query.

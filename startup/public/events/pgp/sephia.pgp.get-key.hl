@@ -1,0 +1,112 @@
+﻿﻿﻿
+/*
+ * Will try its best at finding the given [fingerprint] key, either by first
+ * attempting to locate it in our GnuPG database, or trying to find it in our
+ * key server.
+ *
+ * Requires [fingerprint] and [email].
+ *
+ * [email] is necessary in case it needs to search for the key on the key servers.
+ */
+create-event:sephia.pgp.get-key
+
+  /*
+   * Sanity checking invocation.
+   */
+  micro.lambda.contract.min:x:/..
+    email:string
+    fingerprint:string
+
+  /*
+   * We always treat fingerprints as UPPERS.
+   */
+  set:x:/../*/fingerprint?value
+    to-upper:x:/../*/fingerprint?value
+
+  /*
+   * Checking if there exists a public PGP key matching the fingerprint in 
+   * our GnuPG database.
+   */
+  p5.crypto.list-public-keys:x:/../*/fingerprint?value
+  if
+    fetch:x:/0?value
+      to-upper:x:/@p5.crypto.list-public-keys/0?name
+    =:x:/../*/fingerprint?value
+
+    /*
+     * We found a fingerprint match in our GnuPG database.
+     *
+     * No need to download the key, since we've already got it, and simply need to
+     * associate it with our contact.
+     */
+    to-upper:x:/@p5.crypto.list-public-keys/0?name
+    return:x:/-?value
+
+  else
+
+    /*
+     * We could not find the specified [fingerprint] in our GnuPG database.
+     *
+     * Hence, we attempt to download the key from our key server.
+     *
+     * Making sure we wrap our logic in a try/catch block, in case network errors
+     * occurs, or something similar, during our attempt to look up key on key server.
+     */
+    try
+
+      /*
+       * Finding all public PGP keys for the given [email] argument from our
+       * key server.
+       */
+      sephia.pgp.key-server.search:x:/../*/email?value
+
+      /*
+       * Checking if the above invocation returned a key matching our 
+       * given [fingerprint].
+       */
+      if:x:/@sephia.pgp.key-server.search/*/{0}
+        :x:/../*/fingerprint?value
+
+        /*
+         * Key server has the PGP key matching our given [fingerprint].
+         *
+         * Downloading it from the ID of the key matching our [fingerprint].
+         *
+         * Hint, for some reasons, the most popular key servers don't seem to be able to
+         * allow people to download keys according to fingerprints, but the key ID
+         * seems to always work.
+         */
+        sephia.pgp.key-server.download-key-from-key-id:x:/:x:/@sephia.pgp.key-server.search/*/{0}?value
+          :x:/../*/fingerprint?value
+
+        /*
+         * Verifying we actually got something from our above invocation.
+         */
+        if:x:/@sephia.pgp.key-server.download-key-from-key-id?value
+
+          /*
+           * Verifying that the key downloaded actually matches the [fingerprint]
+           * argument supplied.
+           */
+          p5.crypto.preview-public-pgp-key:x:/@sephia.pgp.key-server.download-key-from-key-id?value
+          if:x:/@p5.crypto.preview-public-pgp-key/0?name
+            =:x:/../*/fingerprint?value
+
+            /*
+             * Download was successful, and the key server gave us the correct key.
+             *
+             * Importing the results into our GnuPG database.
+             */
+            p5.crypto.import-public-pgp-key:x:/@sephia.pgp.key-server.download-key-from-key-id?value
+
+            /*
+             * Returning the fingerprint of the key we just imported.
+             */
+            to-upper:x:/@p5.crypto.import-public-pgp-key/0?name
+            return:x:/-?value
+
+    catch
+
+      /*
+       * Silently catching, since we might be on another thread.
+       */

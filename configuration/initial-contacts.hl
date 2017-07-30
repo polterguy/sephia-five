@@ -1,0 +1,29 @@
+
+/*
+ * Configuration file for the initial contact(s) that user receives when he starts
+ * Sephia Five for the first time.
+ *
+ * If you wish to for instance populate all user's initial contact list with some
+ * set of "corporate contact list", you can just change this file to whatever your
+ * default set of contacts are.
+ *
+ * The only mandatory argument to a contact is actually [email], the rest of the
+ * arguments are optional.
+ *
+ * [fingerprint] is the fingerprint of the contact's public PGP key, [verified]
+ * is whether or not the [fingerprint] can be trusted, and [spam] is an integer
+ * having the value of either "0" or "1".
+ *
+ * If you set [spam] to "0", the contact is created such that he is initially 
+ * created such that he is in the whitelist of contacts, and no emails from him
+ * will be considered spam.
+ *
+ * If you set [spam] to "1", then all emails from the contact is considered to
+ * be spam, and no emails will ever show up in the user's inbox from this contact.
+ */
+contact
+  name:Thomas Hansen
+  email:thomas@gaiasoul.com
+  fingerprint:5E11AEF421CDB0A7A9A5C6B4AED9D04F43BE2AAD
+  verified:bool:true
+  spam:int:0

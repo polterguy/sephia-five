@@ -7,7 +7,7 @@
  * type of view user prefers according to his settings.
  *
  * If email is rendered as HTML, all potential malicious HTML tags are stripped according to
- * the whitelist definition that can be found in "/config/html-whitelist.hl".
+ * the whitelist definition that can be found in "/configuration/html-whitelist.hl".
  *
  * If email is rendered as plain text, then content is HTML encoded to avoid injecting malicious HTML,
  * but all URLs in email is converted into clickable hyperlinks.
@@ -98,7 +98,7 @@ create-event:sephia._internals.widgets.email-body
      * object, which is not explicitly mentioned in our "html-whitelist.hl" configuration file.
      */
     _exp:/@html2lambda/**(
-    load-file:@SEPHIA/config/html-whitelist.hl
+    load-file:@SEPHIA/configuration/html-whitelist.hl
 
     /*
      * Looping through each item in whitelist.

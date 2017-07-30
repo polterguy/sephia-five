@@ -240,7 +240,7 @@ add:x:/../*/fork/*/.settings
  * Loading configuration for POP3 worker thread, and applying configuration
  * for our worker thread.
  */
-load-file:@SEPHIA/config/pop3-thread.hl
+load-file:@SEPHIA/configuration/pop3-thread.hl
 set:x:/../*/fork/**/sleep?value
   src:x:/@load-file/*/*/sleep-between-fetch?value
 set:x:/../*/fork/**/_emails-2-fetch?value

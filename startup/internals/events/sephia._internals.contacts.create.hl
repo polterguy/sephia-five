@@ -1,16 +1,25 @@
-﻿
+﻿﻿﻿﻿﻿
 /*
  * Creates a contact from the given [name], [email] and [username] arguments, 
- * and returns the ID of the contact that was inserted.
+ * and returns the ID, and all other properties of the contact that was inserted.
  *
  * Optionally pass in [fingerprint], which is the fingerprint of the public PGP key
- * the contact should be created with.
+ * the contact should initially be created with.
  *
- * If you pass in [verified] and set its value to boolean "true", the contact will
- * be created as initially verified.
+ * If you pass in a [fingerprint] and [verified], and set [verified]'s value to 
+ * boolean "true", the contact will be created as initially verified.
  *
- * Will attempt to find a public PGP key for contact, either in GnuPG database, or using key server.
- * Notice, expects an open database connection to the Sephia database.
+ * You can also optionally pass in [spam], which can be either "0" or "1", where "0" 
+ * means that the contact is to be inserted as not spam, and "1" means that the 
+ * contact is to be inserted initially as a "spam" contact.
+ *
+ * If you don't pass in [spam], then the spam filters in Sephia will try to 
+ * determine if emails from the contact are to be considered spam or not.
+ *
+ * Will attempt to find a public PGP key for contact, either in GnuPG database, 
+ * or using key server, but only if a [fingerprint] is supplied.
+ *
+ * Notice, the event expects an open database connection to the Sephia database.
  */
 create-event:sephia._internals.contacts.create
 
@@ -28,6 +37,7 @@ create-event:sephia._internals.contacts.create
   micro.lambda.contract.optional:x:/..
     fingerprint:string
     verified:bool
+    spam:int
 
   /*
    * Making sure name defaults to first parts of email, if it is empty or null.
@@ -45,71 +55,25 @@ create-event:sephia._internals.contacts.create
   _fingerprint
 
   /*
-   * Checking if there exists a public PGP key for user in GnuPG database.
+   * Checking if caller provided a [fingerprint] argument.
    */
-  p5.crypto.list-public-keys:x:(/../*/fingerprint|/../*/email)/[0,1]?value
-  if:x:/-/*?count
-    >:int:0
+  if:x:/../*/fingerprint?value
 
     /*
-     * We found a potentially matching key for contact in GnuPG database.
+     * Attempting to find the given [fingerprint] key for the given [email].
+     *
+     * Notice, our invocation below, will return null if no key was found.
+     *
+     * Otherwise, it will return the [fingerprint] of the key that was successfully found.
      */
+    eval-x:x:/+/*/*
     set:x:/@_fingerprint?value
-      src:x:/@p5.crypto.list-public-keys/0?name
-
-  else-if:x:/../*/fingerprint?value
-
-    /*
-     * Caller supplied a [fingerprint] argument, attempting to download key from key server.
-     * Making sure we wrap our logic in a try/catch block.
-     */
-    try
-      sephia.pgp.key-server.download-key:x:/../*/fingerprint?value
-      p5.crypto.import-public-pgp-key:x:/@sephia.pgp.key-server.download-key?value
-
-      /*
-       * Making sure our downloaded key actually matched the specified [fingerprint] argument, before
-       * we start using it.
-       */
-      if:x:/@p5.crypto.import-public-pgp-key/*?name
-        =:x:/../*/fingerprint?value
-        set:x:/@_fingerprint?value
-          src:x:/@p5.crypto.import-public-pgp-key/0?name
-
-    catch
-
-      /*
-       * Silently catching, since we might be on another thread.
-       */
-
-  else
-
-    /*
-     * No matching key in GnuPG, and no fingerprint was given.
-     * Trying to search on key server, making sure we wrap
-     * our attempt into a try/catch block.
-     */
-    try
-      sephia.pgp.key-server.search:x:/../*/email?value
-      if:x:/@sephia.pgp.key-server.search/*?count
-        >:int:0
-
-        /*
-         * We found a key on key server, downloading it, and importing it into GnuPG database.
-         */
-        sephia.pgp.key-server.download-key:x:/@sephia.pgp.key-server.search/0?value
-        p5.crypto.import-public-pgp-key:x:/@sephia.pgp.key-server.download-key?value
-        set:x:/@_fingerprint?value
-          src:x:/@p5.crypto.import-public-pgp-key/0?name
-
-    catch
-
-      /*
-       * Silently catching, since invocation might be from a different thread.
-       */
+      sephia.pgp.get-key
+        email:x:/../*/email?value
+        fingerprint:x:/../*/fingerprint?value
 
   /*
-   * We always store fingerprint as UPPER in database.
+   * We always store fingerprint as UPPER case in our database.
    */
   if:x:/@_fingerprint?value
     set:x:/@_fingerprint?value
@@ -118,6 +82,7 @@ create-event:sephia._internals.contacts.create
   /*
    * Checking if caller requested contact to be initially created as a verified contact.
    */
+  _is-verified:int:0
   if:x:/../*/verified?value
     and:x:/@_fingerprint?value
 
@@ -125,18 +90,19 @@ create-event:sephia._internals.contacts.create
      * We have a fingerprint for contact, and caller requested that contact be created
      * as initially verified - Hence, we set status of contact to verified.
      */
-    set:x:/../*/p5.mysql.insert/*/\@isverified?value
+    set:x:/@_is-verified?value
       src:1
 
   /*
    * Inserting new contact into database.
    */
-  p5.mysql.insert:@"insert into contacts (name, email, username, fingerprint, isverified) values (@name, @email, @username, @fingerprint, @isverified)"
+  p5.mysql.insert:@"insert into contacts (name, email, username, fingerprint, isverified, spam) values (@name, @email, @username, @fingerprint, @isverified, @spam)"
     @name:x:/../*/name?value
     @email:x:/../*/email?value
     @username:x:/../*/username?value
     @fingerprint:x:/@_fingerprint?value
-    @isverified:0
+    @isverified:x:/@_is-verified?value
+    @spam:x:/../*/spam?value
 
   /*
    * Returning newly inserted contact to caller.
@@ -148,4 +114,5 @@ create-event:sephia._internals.contacts.create
     email:x:/../*/email?value
     username:x:/../*/username?value
     fingerprint:x:/@_fingerprint?value
-  
+    is-verified:x:/@_is-verified?value
+    spam:x:/../*/spam?value

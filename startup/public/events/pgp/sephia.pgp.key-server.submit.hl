@@ -22,7 +22,7 @@ create-event:sephia.pgp.key-server.submit
   /*
    * Loading key server configuration setting.
    */
-  load-file:@SEPHIA/config/key-server.hl
+  load-file:@SEPHIA/configuration/key-server.hl
 
   /*
    * HTTP POST/PUT'ing public key to key server, making sure we use the

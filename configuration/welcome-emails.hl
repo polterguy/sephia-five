@@ -94,6 +94,14 @@ The difference between a trusted colleague, or some random person, might be as l
 
 If you still choose to send the email, this recipient will be added to your list of contacts, avoiding future warnings for the same email address.
 
+### The most aggressive spam filter in the industry
+
+Sephia Five contains what is probably the most aggressive spam filter in our industry. By default, spam filtering is turned off, but if you wish, you can setup Sephia such that it labels all emails that originates from people that you've never sent an email to first as spam. We refer to this is the _'Hollywood spam filter'_, since it implies _'don't call us, we'll call you'_. You can also have a requirement that emails are cryptographically signed, and/or encrypted, before they're accepted into your inbox.
+
+And of course, you still have the ability to manually check emails that are caught in your spam filter, and explicitly mark them as 'not spam'. If you do, then all future emails from that sender will avoid your spam folder. You can also do the opposite, and mark an email explicitly as spam, at which point all future emails from that contact will be treated as spam.
+
+This gives you 100% perfect control over your privacy, through a very simple ruleset, that puts you in control, while still being as automated as possibly, not adding anything to your daily routine in any ways, that could be defined as additional workload. Often email software vendors tries to create spam filters based upon artificial intelligence, which ends up creating algorithms you cannot understand, and hence you tend to loose a lot of email that you want, and receive a lot of email that you do not want. This will never occur with Sephia, since the spam filter in Sephia is created around a simple ruleset, easily understood, and predictable for you as a user. Even though the spam filter in Sephia is ridiculously easy to understand, it is still extremely strong, making it easy for you to never again receive spam, or ever again drop an email you actually wanted to have.
+
 ### Privacy is more than just cryptography
 
 Don't get me wrong, cryptography is super important, for anyone taking their business seriously. But Sephia Five also contains privacy features that allows you to literally have your privacy.

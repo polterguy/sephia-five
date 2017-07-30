@@ -213,7 +213,7 @@ create-event:sephia.core.send-email
         /*
          * Since this is our first attachment, we verify that the user has an attachment folder.
          */
-        micro.evaluate.file:@SEPHIA/core/ensure-user-attachment-folder.hl
+        micro.evaluate.file:@SEPHIA/init-user/ensure-user-attachment-folder.hl
 
       /*
        * Copy file into attachment folder, and figuring out new path 

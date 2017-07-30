@@ -1,12 +1,27 @@
-﻿
+﻿﻿﻿
 /*
- * Updates the given [id] contact with the specified [name], [email] and [fingerprint] arguments.
+ * Updates the given [id] contact with the given [name] and [email] arguments, 
+ * and returns the ID, and all other properties of the contact.
  *
  * Optionally pass in [fingerprint], which is the fingerprint of the public PGP key
- * the contact should be created with.
+ * the contact should be associated with.
  *
- * Will attempt to find a public PGP key for contact, either in GnuPG database, or using key server.
- * Notice, expects an open database connection to the Sephia database.
+ * If you pass in a [fingerprint] and [verified], and set [verified]'s value to 
+ * boolean "true", the contact will be set as verified.
+ *
+ * You can also optionally pass in [spam], which can be either "0" or "1", where "0" 
+ * means that all emails originating from contact in the future is to be considered
+ * as not spam, and "1" implying that all future emails from the contact is to
+ * be considered as "spam".
+ *
+ * If you don't pass in [spam], then the spam filters in Sephia will try to 
+ * determine if future emails from the contact are to be considered spam or not.
+ *
+ * Will attempt to find a public PGP key for contact, either in GnuPG database, 
+ * or using key server, but only if a [fingerprint] is supplied, and the contact
+ * does not have a verified fingerprint from before.
+ *
+ * Notice, the event expects an open database connection to the Sephia database.
  */
 create-event:sephia._internals.contacts.update
 
@@ -23,6 +38,8 @@ create-event:sephia._internals.contacts.update
    */
   micro.lambda.contract.optional:x:/..
     fingerprint:string
+    verified:bool
+    spam:int
 
   /*
    * Making sure name defaults to first parts of email, if it is empty or null.
@@ -40,124 +57,69 @@ create-event:sephia._internals.contacts.update
   _fingerprint
 
   /*
-   * Notice, we do not update fingerprint for contact, if there is an existing fingerprint for contact.
+   * Checking if caller provided a [fingerprint] argument, and the contact does
+   * not have an existing fingerprint association, that has already been verified.
    */
   if:x:/../*/fingerprint?value
-
-    /*
-     * Making sure we check if contact already has an existing verified fingerprint associated with him,
-     * before we attempt to update him.
-     */
-    p5.mysql.scalar:@"select count(*) from contacts where isverified = 0 and id = @id"
-      @id:x:/../*/id?value
-    if:x:/@p5.mysql.scalar?value.int
+    and
+      fetch:x:/0?value.int
+        p5.mysql.scalar:@"select count(*) from contacts where id = @id and (isverified = 0 or fingerprint is null)"
+          @id:x:/../*/id?value
       =:int:1
 
-      /*
-       * First checking GnuPG database.
-       */
-      p5.crypto.list-public-keys:x:/../*/fingerprint?value
-      if:x:/-/*?count
-        >:int:0
-
-        /*
-         * We found a potentially matching key for contact in GnuPG database.
-         */
-        set:x:/@_fingerprint?value
-          src:x:/@p5.crypto.list-public-keys/0?name
-
-      else
-
-        /*
-         * Caller supplied a [fingerprint] argument, trying to download the key if it exists.
-         * Making sure we wrap our logic in a try/catch block.
-         */
-        try
-          sephia.pgp.key-server.download-key:x:/../*/fingerprint?value
-
-          /*
-           * Checking if above download attempt actually returned something.
-           */
-          if:x:/@sephia.pgp.key-server.download-key?value
-
-            /*
-             * Downloading key succeded.
-             */
-            p5.crypto.import-public-pgp-key:x:/@sephia.pgp.key-server.download-key?value
-
-            /*
-             * Making sure our downloaded key actually matched the specified [fingerprint] argument, before
-             * we start using it.
-             *
-             * Notice, without this check, we could in theory have a man in the middle attack, injecting something
-             * else from the download operation above, than what we actually requested to have downloaded, which
-             * would result in using a bogus public PGP key, possibly created by an adversary.
-             */
-            if:x:/@p5.crypto.import-public-pgp-key/0?name
-              =:x:/../*/fingerprint?value
-
-              /*
-               * Downloaded key matched what we requested, using it for contact.
-               */
-              set:x:/@_fingerprint?value
-                src:x:/@p5.crypto.import-public-pgp-key/0?name
-
-            else
-
-              /*
-               * Oops, what we wanted to download, was not what we were given.
-               * Deleting key from GnuPG database.
-               */
-              p5.crypto.delete-public-key:x:/@p5.crypto.import-public-pgp-key/0?name
-
-        catch
-
-          /*
-           * Silently catching, since we might be on another thread.
-           */
+    /*
+     * Attempting to find the given [fingerprint] key for the given [email].
+     *
+     * Notice, our invocation below, will return null if no key was found.
+     *
+     * Otherwise, it will return the [fingerprint] of the key that was successfully found.
+     */
+    eval-x:x:/+/*/*
+    set:x:/@_fingerprint?value
+      sephia.pgp.get-key
+        email:x:/../*/email?value
+        fingerprint:x:/../*/fingerprint?value
 
   /*
-   * Updating contact in database.
-   *
-   * Notice, different logic in case we couldn't find a matching [fingerprint].
+   * We always store fingerprint as UPPER case in our database.
    */
   if:x:/@_fingerprint?value
-
-    /*
-     * We always store fingerprint as UPPER in database.
-     */
     set:x:/@_fingerprint?value
       to-upper:x:/@_fingerprint?value
 
-    /*
-     * Doing actual update.
-     */
-    p5.mysql.update:@"update contacts set name = @name, email = @email, fingerprint = @fingerprint where id = @id"
-      @name:x:/../*/name?value
-      @email:x:/../*/email?value
-      @fingerprint:x:/@_fingerprint?value
-      @id:x:/../*/id?value
-
-  else
+  /*
+   * Checking if caller requested contact to be updated to a verified contact.
+   */
+  _is-verified:int:0
+  if:x:/../*/verified?value
+    and:x:/@_fingerprint?value
 
     /*
-     * Updating without fingerprint.
-     *
-     * Notice, we still do not delete any existing fingerprints for contact.
+     * We have a fingerprint for contact, and caller requested that contact be updated
+     * to become verified - Hence, we set status of contact to verified.
      */
-    p5.mysql.update:@"update contacts set name = @name, email = @email where id = @id"
-      @name:x:/../*/name?value
-      @email:x:/../*/email?value
-      @id:x:/../*/id?value
+    set:x:/@_is-verified?value
+      src:1
 
   /*
-   * Returning newly inserted contact to caller.
+   * Updating our contact.
+   */
+  p5.mysql.update:@"update contacts set name = @name, email = @email, fingerprint = @fingerprint, isverified = @isverified, spam = @spam where id = @id"
+    @name:x:/../*/name?value
+    @email:x:/../*/email?value
+    @fingerprint:x:/@_fingerprint?value
+    @isverified:x:/@_is-verified?value
+    @spam:x:/../*/spam?value
+    @id:x:/../*/id?value
+
+  /*
+   * Returning the updated data for our contact.
    */
   eval-x:x:/+/*
   return
-    id:x:/@p5.mysql.insert/*/id?value
+    id:x:/../*/id?value
     name:x:/../*/name?value
     email:x:/../*/email?value
-    username:x:/../*/username?value
     fingerprint:x:/@_fingerprint?value
-  
+    isverified:x:/@_is-verified?value
+    spam:x:/../*/spam?value

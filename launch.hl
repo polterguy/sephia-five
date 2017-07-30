@@ -55,7 +55,7 @@ if:x:/@p5.web.session.get/*/*
  *
  * Every time the user starts Sephia, this temporary attachment folder will be emptied.
  */
-micro.evaluate.file:@SEPHIA/core/ensure-user-attachment-folder.hl
+micro.evaluate.file:@SEPHIA/init-user/ensure-user-attachment-folder.hl
 
 
 
@@ -171,7 +171,7 @@ p5.web.include-css-file:@SEPHIA/media/main.css
 /*
  * Ensuring user has his "welcome email(s)".
  */
-micro.evaluate.file:@SEPHIA/core/ensure-initial-welcome-emails-and-contacts.hl
+micro.evaluate.file:@SEPHIA/init-user/ensure-initial-welcome-emails-and-contacts.hl
 
 
 
@@ -205,4 +205,4 @@ micro.evaluate.file:@SEPHIA/inbox/create-inbox.hl
  * Creates widget that constantly polls server every n'th second to
  * check if new emails have arrived.
  */
-micro.evaluate.file:@SEPHIA/core/create-client-server-poller.hl
+micro.evaluate.file:@SEPHIA/inbox/create-client-server-poller.hl

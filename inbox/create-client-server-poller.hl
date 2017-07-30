@@ -23,7 +23,7 @@
 /*
  * Loading configuration to check how frequently we should poll the server.
  */
-load-file:@SEPHIA/config/pop3-thread.hl
+load-file:@SEPHIA/configuration/pop3-thread.hl
 set:x:/../*/create-literal-widget/**/_sleep-between-fetch?value
   src:x:/@load-file/*/*/sleep-between-fetch?value
 
@@ -193,7 +193,7 @@ if (!p5.sephia_poller) {{
          * Invoking our "error handler".
          */
         eval-x:x:/+/*
-        micro.evaluate.file:@SEPHIA/core/handle-pop3-error.hl
+        micro.evaluate.file:@SEPHIA/error/handle-pop3-error.hl
           message:x:/@read-lock/*/select-data/*/*/error/*/message?value
           stack-trace:x:/@read-lock/*/select-data/*/*/error/*/stack-trace?value
           type:x:/@read-lock/*/select-data/*/*/error/*/type?value

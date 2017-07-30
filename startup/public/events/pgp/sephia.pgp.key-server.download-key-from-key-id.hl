@@ -1,10 +1,10 @@
-﻿
+﻿﻿﻿
 /*
  * Will download the specified [_arg] key from key server.
  *
- * [_arg] is expected to be a fingerprint.
+ * [_arg] is expected to be the ID of a key.
  */
-create-event:sephia.pgp.key-server.download-key
+create-event:sephia.pgp.key-server.download-key-from-key-id
 
   /*
    * Sanity checking invocation.
@@ -15,7 +15,7 @@ create-event:sephia.pgp.key-server.download-key
   /*
    * Loading key server configuration setting.
    */
-  load-file:@SEPHIA/config/key-server.hl
+  load-file:@SEPHIA/configuration/key-server.hl
 
   /*
    * Using HTTP GET to query for key on server, making sure we URL encode query.
