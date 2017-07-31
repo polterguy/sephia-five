@@ -351,12 +351,14 @@ p5.sephia_send_email = function(e) {
                          * though some recipient(s) are not in his list of contacts.
                          */
                         eval-x:x:/+/**(/_widget|/_composer|/parent)
-                        micro.windows.info:@"One or more of your recipients was not in your list of contact, are you sure you wish to send this email?"
+                        micro.windows.info:@"At least one recipient was not a contact, send anyway?"
                           class:micro-windows-info micro-windows-info-sticky warning
                           parent:x:/../*/p5.web.widgets.find-first-ancestor/*/*?value
                           widgets
                             button
                               innerValue:No
+                              oninit
+                                micro.page.set-focus:x:/../*/_event?value
                               onclick
                                 delete-widget:micro-windows-info
                             button

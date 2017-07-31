@@ -57,6 +57,7 @@ create-event:sephia._internals.widgets.recipients
       widgets
         div
           class:col-50 strip fill sephia-compose-to-wrapper
+          style:"padding:0;"
           widgets
             input
               type:text
