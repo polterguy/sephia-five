@@ -5,7 +5,7 @@
  * This implies among other things, wrapping the signature of your email into a <pre></pre> HTML snippet,
  * making all URLs become hyperlinks, in addition to converting the content of email to HTML by assuming it's Markdown.
  */
-create-event:sephia.core.markdown.to-html
+create-event:sephia._internals.markdown-to-html
 
   /*
    * Sanity checking invocation.

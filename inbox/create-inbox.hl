@@ -207,14 +207,14 @@ create-widget:sephia-search-wrapper
                     :x:/@whoami/*/username?value
 
                 /*
-                 * Invoking file responsible for creating a new POP3 fetcher thread.
+                 * Creating a new POP3 fetcher thread.
                  *
                  * Notice, if we already have another fetcher thread, or if user is only allowed
                  * to check his emails on a specific times of the day, doesn't matter, since
                  * the invocation will return before it creates a new thread, and no new thread 
                  * will be created.
                  */
-                micro.file.evaluate:@SEPHIA/create-pop3-user-thread.hl
+                sephia._internals.create-pop3-user-thread
 
                 /*
                  * Making sure we update email count, in case we've had new emails.

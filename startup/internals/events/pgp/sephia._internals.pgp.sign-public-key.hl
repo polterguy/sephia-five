@@ -31,7 +31,9 @@ create-event:sephia._internals.pgp.sign-public-key
   /*
    * Submitting public key to key server, now signed.
    */
-  sephia.pgp.key-server.submit:x:/../*/fingerprint?value
+  eval-x:x:/+/*
+  sephia.pgp.key-server.submit
+    fingerprint:x:/../*/fingerprint?value
 
   /*
    * Then updating "contacts" table, but only if submitting

@@ -1,0 +1,87 @@
+﻿
+/*
+ * Will create a new contact, or update an existing.
+ *
+ * Expects [name], [email] and optionally [fingerprint], [verified], [type], 
+ * [spam] and [unverify].
+ *
+ * Will check if a contact with the given [email] exists for logged in user, and if
+ * it does, it will update the existing contact, instead of creating a new contact.
+ * If no contact exists with the given [email], a new contact will be created.
+ *
+ * If given a [fingerprint], it will associate that fingerprint with the contact,
+ * unless a contact already exists, and he has an existing fingerprint associated
+ * with him, which has been previously verified.
+ *
+ * If [unverify] is boolean "true", any existing fingerprints will be removed, and
+ * the contact will be set to not verified.
+ *
+ * [spam], if specified, can be either "0" or "1". If it is "1", then all future
+ * emails from this contact will be treated as spam. If it is "0", then all future
+ * email from this contact will not be treated as spam. If ommitted, the default
+ * spam filters in Sephia will try to determine if the email sent by the contact
+ * in the future are spam or not.
+ *
+ * [type] is a categorisation of the contact. For instance, the user's own contact,
+ * has the type of "self".
+ *
+ * If you supply [verified], and set its value to boolean "true", and the contact
+ * does not already have a verified fingerprint associated with him, then the
+ * [fingerprint] you pass in, will be associated with the contact as verified.
+ *
+ * If the contact was created, the event will return [created] having the value of
+ * boolean "true". If the contact was updated, the event will return [created] 
+ * having the boolean value of "false".
+ *
+ * Regardless of whether or not the contact was created or not, it will return 
+ * the ID of the contact.
+ */
+create-event:sephia.contacts.create-or-update
+
+  /*
+   * Signal node, to separate arguments from the rest of the lambda.
+   */
+  .signal
+
+  /*
+   * Making sure invoker obeys by lambda contract.
+   */
+  micro.lambda.contract.min:x:/..
+    name:string
+    email:string
+
+  /*
+   * Sanity checking optional arguments.
+   */
+  micro.lambda.contract.optional:x:/..
+    fingerprint
+    verified:bool
+    unverify:bool
+    spam
+    type
+
+  /*
+   * Necessary to parametrise implementation event.
+   */
+  whoami
+
+  /*
+   * Connecting to database.
+   */
+  p5.mysql.connect:[sephia]
+
+    /*
+     * Applying the same arguments we got to implementation.
+     */
+    add:x:/./*/sephia._internals.contacts.create-or-update
+      src:x:/@.signal/--
+    eval-x:x:/+/*
+    sephia._internals.contacts.create-or-update
+      username:x:/@whoami/*/username?value
+
+    /*
+     * Returning results to caller.
+     */
+    add:x:/+
+      src:x:/@sephia._internals.contacts.create-or-update/*
+    return

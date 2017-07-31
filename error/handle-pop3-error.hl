@@ -78,7 +78,7 @@ if:x:/@p5.web.session.get/*?value.int
   /*
    * Restarting POP3 worker thread, and creating our JavaScript "poller".
    */
-  micro.evaluate.file:@SEPHIA/core/create-pop3-user-thread.hl
+  sephia._internals.create-pop3-user-thread
   sephia._internals.create-poller-javascript
 
   /*
@@ -127,7 +127,7 @@ create-widgets
                     :x:/@whoami/*/username?value
                     delete-data:x:/*/*/sephia.core.thread-signal-{0}
                       :x:/@whoami/*/username?value
-                  micro.evaluate.file:@SEPHIA/core/create-pop3-user-thread.hl
+                  sephia._internals.create-pop3-user-thread
                   delete-widget:sephia-error-window
                   sephia._internals.create-poller-javascript
 

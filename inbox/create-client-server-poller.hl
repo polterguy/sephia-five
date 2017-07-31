@@ -181,7 +181,7 @@ if (!p5.sephia_poller) {{
          * Thread was stopped and should be restarted for some reasons.
          * Might be caused by for instance that the user's settings was changed.
          */
-        micro.evaluate.file:@SEPHIA/core/create-pop3-user-thread.hl
+        sephia._internals.create-pop3-user-thread
           force-restart:bool:true
         sephia._internals.create-poller-javascript
 
@@ -208,8 +208,8 @@ if (!p5.sephia_poller) {{
          * Trying to invoke file that checks for emails, which will not work, unless the user
          * is allowed to check his emails at this particular time of the day.
          */
-        micro.evaluate.file:@SEPHIA/core/create-pop3-user-thread.hl
-        if:x:/@micro.evaluate.file?value
+        sephia._internals.create-pop3-user-thread
+        if:x:/@sephia._internals.create-pop3-user-thread?value
           =:bool:true
 
           /*

@@ -1,0 +1,113 @@
+﻿﻿﻿﻿﻿
+/*
+ * Creates a contact from the given [name], [email] and [username] arguments, and
+ * optionally [fingerprint], [verified], [type] and [spam].
+ *
+ * Returns the ID of the newly created contact to caller.
+ *
+ * Optionally pass in [fingerprint], which is the fingerprint of the public PGP key
+ * the contact should initially be created with. Notice, if you pass in a fingerprint,
+ * it will only be associated with the contact if it actually exists.
+ *
+ * If the [fingerprint] doesn't exist in your GnuPG database, this event will try 
+ * to search for that specified public PGP key using Sephia's key server configuration,
+ * and automatically download the public key with the specified fingerint, and put
+ * it into your GnuPG database.
+ *
+ * If the key with the specified [fingerprint] is found, either in the GnuPG database, 
+ * or successfully downloaded from your key server, only then the fingerprint will 
+ * actually be associated with the contact.
+ *
+ * If you pass in a [fingerprint] and [verified], and set [verified]'s value to 
+ * boolean "true", and the [fingerprint] key can somehow be found, the contact 
+ * will be created as initially verified.
+ *
+ * If you pass in [type], this will become a category for the contact. For instance, 
+ * the user's own contact is of type "self".
+ *
+ * You can also optionally pass in [spam], which can be either "0" or "1", where "0" 
+ * means that all future emails originating from the contact, is not to be treated 
+ * as spam, and "1" means that all future email from the contact, is to be treated
+ * as spam.
+ *
+ * If you don't pass in [spam], then the spam filters in Sephia will try to 
+ * determine if emails from the contact are to be considered spam or not as the
+ * contact sends you emails in the future. Which depends upon which spam filters
+ * you have configured Sephia to use.
+ *
+ * Notice, the event expects an open database connection to the Sephia database.
+ */
+create-event:sephia._internals.contacts.create
+
+  /*
+   * Making sure invoker obeys by lambda contract.
+   */
+  micro.lambda.contract.min:x:/..
+    name:string
+    email:string
+    username:string
+
+  /*
+   * Sanity checking optional arguments.
+   */
+  micro.lambda.contract.optional:x:/..
+    fingerprint
+    verified:bool
+    spam:int
+    type:string
+
+  /*
+   * Used to hold any fingerprints of public PGP key matching email.
+   */
+  _fingerprint
+
+  /*
+   * Checking if caller provided a [fingerprint] argument.
+   */
+  if:x:/../*/fingerprint?value
+
+    /*
+     * Attempting to find the given [fingerprint] key for the given [email].
+     *
+     * Notice, our invocation below, will return false if no key was found.
+     */
+    eval-x:x:/+/*
+    sephia.pgp.key-server.get
+      email:x:/../*/email?value
+      fingerprint:x:/../*/fingerprint?value
+    if:x:/-?value
+      set:x:/../*/_fingerprint?value
+        to-upper:x:/../*/fingerprint?value
+
+  /*
+   * Checking if caller requested contact to be initially created as a verified contact.
+   */
+  _is-verified:int:0
+  if:x:/../*/verified?value
+    and:x:/@_fingerprint?value
+
+    /*
+     * We have a fingerprint for contact, and caller requested that contact be created
+     * as initially verified - Hence, we set status of contact to verified.
+     */
+    set:x:/@_is-verified?value
+      src:1
+
+  /*
+   * Inserting new contact into database.
+   */
+  p5.mysql.insert:@"insert into contacts (name, email, username, fingerprint, isverified, type, spam) values (@name, @email, @username, @fingerprint, @isverified, @type, @spam)"
+    @name:x:/../*/name?value
+    @email:x:/../*/email?value
+    @username:x:/../*/username?value
+    @fingerprint:x:/@_fingerprint?value
+    @isverified:x:/@_is-verified?value
+    @type:x:/../*/type?value
+    @spam:x:/../*/spam?value
+
+  /*
+   * Returning newly inserted contact's ID to caller.
+   */
+  eval-x:x:/+/*
+  return
+    id:x:/@p5.mysql.insert/*/id?value

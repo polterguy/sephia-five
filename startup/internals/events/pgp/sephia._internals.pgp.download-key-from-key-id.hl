@@ -4,7 +4,7 @@
  *
  * [_arg] is expected to be the ID of a key.
  */
-create-event:sephia.pgp.key-server.download-key-from-key-id
+create-event:sephia._internals.pgp.download-key-from-key-id
 
   /*
    * Sanity checking invocation.

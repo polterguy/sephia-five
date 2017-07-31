@@ -186,7 +186,7 @@ micro.evaluate.file:@SEPHIA/init-user/ensure-initial-welcome-emails-and-contacts
  * Alternatively, it will check if user is allowed to fetch his emails, and if not,
  * return boolean "false" with a [message] explaining to the user why.
  */
-micro.evaluate.file:@SEPHIA/core/create-pop3-user-thread.hl
+sephia._internals.create-pop3-user-thread
 
 
 

@@ -1,0 +1,388 @@
+﻿
+/*
+ * Invoked when an email is retrieved from POP3 server.
+ *
+ * Will store the email into the user's database.
+ * Expects [envelope] being the email as returned from [p5.pop3.get] 
+ * and [username] being the username of the user the invocation should save emails for.
+ *
+ * Optionally pass in [settings] being the user's settings.
+ * If [settings] is passed in, the event will make sure the email passes through all spam
+ * filters the user has setup when saved to the database.
+ *
+ * Also expects an open database connection to the Sephia Five database.
+ *
+ * Returns boolean "true" if email was inserted, otherwise "false".
+ */
+create-event:sephia._internals.save-email-2-database
+
+  /*
+   * Sanity checking invocation.
+   */
+  micro.lambda.contract.min:x:/..
+    envelope:string
+      From
+
+      // Sometimes Subject is empty from POP3 server!
+      Subject
+      Date:date
+    username:string
+
+  /*
+   * Sanity checking optional arguments given to invocation.
+   */
+  micro.lambda.contract.optional:x:/..
+    settings
+      hollywood-spam-filter
+      signature-spam-filter
+      cryptography-spam-filter
+
+  /*
+   * Checking if email has alread been fetched from POP server.
+   */
+  p5.mysql.scalar:@"select count(*) from emails where mimeid = @mimeid and username = @username"
+    @mimeid:x:/../*/envelope?value
+    @username:x:/../*/username?value
+  if:x:/@p5.mysql.scalar?value.int
+    >:int:0
+
+    /*
+     * Email has already been fetched, no need to continue.
+     */
+    return:bool:false
+
+  /*
+   * Checking if email was cryptographically signed, and that signature was verified.
+   */
+  _signature
+  _fingerprint
+  if:x:/../*/envelope/*/multipart/*/signature/*?value
+
+    /*
+     * Email was cryptographically signed, and signature was verified.
+     *
+     * Storing both the User ID and fingerprint of key used to sign email.
+     */
+    set:x:/@_signature?value
+      src:x:/../*/envelope/*/multipart/*/signature/0?name
+    set:x:/@_fingerprint?value
+      src:x:/../*/envelope/*/multipart/*/signature/0/0?value
+
+  /*
+   * Checking if email was encrypted.
+   */
+  _encrypted:int:0
+  _babel-subject
+  if:x:/../*/envelope/*/multipart/=encrypted
+
+    /*
+     * Email was encrypted.
+     */
+    set:x:/@_encrypted?value
+      src:int:1
+
+    /*
+     * Checking if we have a "hidden subject" in email, which should be stored inside of our multipart,
+     * base64 encoded, inside the value of a "X-Subject" MIME header - If it exists.
+     *
+     * Notice, if email was encrypted, its original part should exist inside of an outer multipart,
+     * which was created as a consequence of wrapping our entire root part inside of a "multipart/encrypted",
+     * when email was encrypted.
+     */
+    if:x:/../*/envelope/*/multipart/=encrypted/*/*/X-Subject?value
+
+      /*
+       * There is a "hidden subject" in email, making sure we first store the "babel subject", before
+       * we retrieve the real subject.
+       *
+       * This is being done to be able to make it appear as any replies to this email, further keeps on
+       * discussing the "babel subject", and not having to generate a new "babel subject", which would have
+       * been suspicious for any adversaries picking up on the conversation, due to the "In-Reply-To" header
+       * making them see some meta data about our conversation.
+       */
+      set:x:/@_babel-subject?value
+        src:x:/../*/envelope/*/Subject?value
+      set:x:/../*/envelope/*/Subject?value
+        p5.string.decode-base64:x:/../*/envelope/*/multipart/=encrypted/*/*/X-Subject?value
+
+      /*
+       * Removing subject from body of email, which should have been added during creation.
+       *
+       * First removing it from any HTML parts, if there are any HTML parts.
+       * Notice, we only do this to the first HTML part.
+       */
+      if:x:/../*/envelope/*/multipart/=encrypted/**/text/=html/*/content?value
+
+        /*
+         * Email contained an HTML part, removing the first "h3" header from it.
+         */
+        html2lambda:x:/../*/envelope/*/multipart/=encrypted/**/text/=html/[0,1]/*/content?value
+
+        /*
+         * Email contained an HTML part, removing first "h3" header, which is our real subject,
+         * injected into body of HTML parts of email as email was created.
+         */
+        set:x:/@html2lambda/**/h3/[0,1]
+        set:x:/../*/envelope/*/multipart/=encrypted/**/text/=html/[0,1]/*/content?value
+          lambda2html:x:/@html2lambda/*
+
+      /*
+       * Then removing first line of text from text part, if email contains a "text:plain" part.
+       */
+      if:x:/../*/envelope/*/multipart/=encrypted/**/text/=plain/*/content?value
+
+        /*
+         * Email contained a "text:plain" part, removing the first two lines of its content.
+         *
+         * But only if two consecutive CR/LF sequences are found in email.
+         */
+        index-of:x:/../*/envelope/*/multipart/=encrypted/**/text/=plain/[0,1]/*/content?value
+          src:"\r\n\r\n"
+        if:x:/@index-of/0?value
+
+          /*
+           * We found at least one occurrency of two consecutive CR/LF sequences in "text:plain" parts of email.
+           */
+          +:x:/@index-of/0?value
+            _:4
+          split:x:/../*/envelope/*/multipart/=encrypted/**/text/=plain/[0,1]/*/content?value
+            =:x:/@+?value
+          set:x:/../*/envelope/*/multipart/=encrypted/**/text/=plain/[0,1]/*/content?value
+            src:x:/@split/1?name
+
+  /*
+   * Creating (or updating) our "sender" ("From" MIME header) as a contact.
+   */
+  if:x:/@_fingerprint?value
+    add:x:/../*/sephia._internals.contacts.create-or-update
+      src
+        fingerprint:x:/@_fingerprint?value
+  eval-x:x:/../*/sephia._internals.contacts.create-or-update/*
+  sephia._internals.contacts.create-or-update
+    email:x:/../*/envelope/*/From/*?value
+    name:x:/../*/envelope/*/From/*?name
+    username:x:/../*/username?value
+
+  /*
+   * Used to temporarily hold the status of our email.
+   *
+   * Notice, we default to "unsafe".
+   *
+   * 2 equals "unsafe", 1 equals "warnings" and 0 equals "safe".
+   */
+  _status:int:2
+  if:x:/@_fingerprint?value
+    and:x:/@_encrypted?value.int
+      =:int:1
+
+    /*
+     * Email was both encrypted and cryptographically signed.
+     *
+     * Bumping status of email from "unsafe" to "warning".
+     */
+    set:x:/@_status?value
+      src:int:1
+
+    /*
+     * Checking if contact's fingerprint is verified, and if so, we set the email's status to "safe".
+     */
+    p5.mysql.scalar:@"select isverified from contacts where id = @id"
+      @id:x:/@sephia._internals.contacts.create-or-update/*/id?value
+    if:x:/@p5.mysql.scalar?value.int
+      =:int:1
+
+      /*
+       * Sender signed email with a verified key.
+       *
+       * Hence email is "safe".
+       */
+      set:x:/@_status?value
+        src:int:0
+
+  /*
+   * Verifying that a subject was given by POP3 server, and if not, defaulting to
+   * empty string (""), since our database table don't tolerate null values for subjects of emails.
+   */
+  if:x:/../*/envelope/*/Subject?value
+    not
+
+    /*
+     * No subject was given, adding empty string as default value.
+     */
+    set:x:/../*/envelope/*/Subject?value
+      src:""
+
+  /*
+   * Then we can check if this email is to be considered spam or not, but first 
+   * checking if caller even supplied a [settings] section.
+   */
+  _type:received
+  if:x:/../*/settings
+
+    /*
+     * Settings was passed in, checking if email is spam according to spam filter configuration.
+     *
+     * First checking if contact is on "exception list", meaning the contact is explicitly marked
+     * as "spam" or "nospam" in database.
+     *
+     * NULL means don't know
+     * 0 means "nospam"
+     * 1 means "spam"
+     */
+    p5.mysql.scalar:@"select spam from contacts where id = @from"
+      @from:x:/@sephia._internals.contacts.create-or-update/*/id?value
+    if:x:/@p5.mysql.scalar?value
+      and:x:/@p5.mysql.scalar?value.int
+        =:int:1
+
+      /*
+       * Contact is explicitly marked as "spam" in database.
+       */
+      set:x:/@_type?value
+        src:spam
+
+    else-if:x:/@p5.mysql.scalar?value
+      not
+
+      /*
+       * Contact is not explicitly marked as neither "spam" nor "nospam" in database.
+       *
+       * Checking if "Hollywood" filter is turned on.
+       */
+      if:x:/../*/settings/*/hollywood-spam-filter?value
+        =:bool:true
+
+        /*
+         * "Hollywood" filter is turned on.
+         *
+         * This means that the email is considered spam, unless the user has sent the
+         * sender of the email an email first.
+         */
+        p5.mysql.scalar:@"select count(*) from emails where type = 'sent' and username = @username and exists (select * from recipients where emailid = emails.id and contactid = @from)"
+          @username:x:/../*/username?value
+          @from:x:/@sephia._internals.contacts.create-or-update/*/id?value
+        if:x:/@p5.mysql.scalar?value.int
+          =:int:0
+
+          /*
+           * User has never sent this contact an email, hence we treat this email as "spam".
+           */
+          set:x:/@_type?value
+            src:spam
+
+      /*
+       * Checking if "Signature" filter is turned on, and if so, making sure the email
+       * is to be considered spam, unless it was cryptographically signed.
+       */
+      if:x:/../*/settings/*/signature-spam-filter?value
+        =:bool:true
+        and:x:/@_fingerprint?value
+          not
+
+        /*
+         * Email was not cryptographically signed, and user has turned on "signature filter".
+         */
+        set:x:/@_type?value
+          src:spam
+
+      /*
+       * Checking if "Cryptography" filter is turned on, and if so, making sure the email
+       * is to be considered spam, unless it was encrypted.
+       */
+      if:x:/../*/settings/*/cryptography-spam-filter?value
+        =:bool:true
+        and:x:/@_encrypted?value
+          =:int:0
+        set:x:/@_type?value
+          src:spam
+
+  /*
+   * Now we can insert email into database.
+   */
+  p5.mysql.insert:@"insert into emails (subject, babelsubject, date, sender, username, isread, mimeid, signature, fingerprint, encrypted, type, inreplyto, status) 
+  values (@subject, @babelsubject, @date, @sender, @username, 0, @mimeid, @signature, @fingerprint, @encrypted, @type, @inreplyto, @status)"
+    @subject:x:/../*/envelope/*/Subject?value
+    @babelsubject:x:/@_babel-subject?value
+    @date:x:/../*/envelope/*/Date?value
+    @sender:x:/@sephia._internals.contacts.create-or-update/*/id?value
+    @username:x:/../*/username?value
+    @mimeid:x:/../*/envelope?value
+    @signature:x:/@_signature?value
+    @fingerprint:x:/@_fingerprint?value
+    @encrypted:x:/@_encrypted?value
+    @type:x:/@_type?value
+    @inreplyto:x:/../*/envelope/*/In-Reply-To?value
+    @status:x:/@_status?value
+
+  /*
+   * Then inserting into "attachments" table.
+   */
+  for-each:x:/../*/envelope/**/filename
+    p5.mysql.insert:@"insert into attachments (filename, prefix, folder, emailid) values (@filename, @prefix, @folder, @emailid)"
+      @filename:x:/@_dp/#?value
+      @prefix:x:/@_dp/#/*/prefix?value
+      @folder:x:/@_dp/#/*/folder?value
+      @emailid:x:/@for-each/@p5.mysql.insert/*/id?value
+
+  /*
+   * Now inserting all "parts" into "parts" table, but only "text:plain" and "text:html" parts,
+   * and only the parts that actually have any content - There's a lot of really weird email programs out there ...!! :P
+   */
+  if:x:/../*/envelope/**/text
+    for-each:x:/../*/envelope/**/text(/=plain|/=html)
+
+      /*
+       * Verifying there actually is any content in the part, before we insert it into our database.
+       */
+      if:x:/@_dp/#/*/content?value
+
+        /*
+         * Part had actual content.
+         */
+        p5.mysql.insert:@"insert into parts (type, content, emailid) values (@type, @content, @emailid)"
+          @type:x:/@_dp/#?value
+          @content:x:/@_dp/#/*/content?value
+          @emailid:x:/@for-each/@p5.mysql.insert/*/id?value
+
+  else
+
+    /*
+     * No parts, possible because of that email was encrypted for an encryption key 
+     * that user doesn't use anymore.
+     *
+     * Notice, to keep "structure" of database, we still insert a part, possibly empty though,
+     * or possibly with a "processing message" from p5.mime.
+     *
+     * Defaulting its value to "processing message" from p5.mime, if there exists such a thing.
+     */
+    _default:
+    p5.mysql.insert:@"insert into parts (type, content, emailid) values ('plain', @content, @emailid)"
+      @emailid:x:/@for-each/@p5.mysql.insert/*/id?value
+      @content:x:(/../*/envelope/*/multipart/=encrypted/**/processing-message|/@_default)/[0,1]?value
+
+  /*
+   * Stuffing email adresses into "contacts" and "recipients" tables.
+   */
+  for-each:x:/../*/envelope/*(/To|/Cc|/Bcc)/*
+
+    /*
+     * Inserting recipient into contacts table.
+     */
+    eval-x:x:/+/*
+    sephia._internals.contacts.create-or-update
+      name:x:/@_dp/#?name
+      email:x:/@_dp/#?value
+      username:x:/../*/username?value
+
+    /*
+     * Inserting into "recipients" table.
+     */
+    p5.mysql.insert:@"insert into recipients (contactid, type, emailid) values (@contactid, @type, @id)"
+      @contactid:x:/@sephia._internals.contacts.create-or-update/*/id?value
+      @type:x:/@_dp/#/.?name
+      @id:x:/..for-each/@p5.mysql.insert/*/id?value
+
+  /*
+   * Returning success to caller.
+   */
+  return:bool:true

@@ -1,8 +1,8 @@
 ﻿
 /*
- * Will submit the given public key [_arg] to the key server from your config settings.
+ * Will submit the given [fingerprint] public key to your key server.
+ * Expects the [fingerprint] key to exist in your GnuPG database.
  *
- * Expects the fingerprint of the key to submit to be supplied as [_arg].
  * Returns boolean true if upload was successful, otherwise false.
  */
 create-event:sephia.pgp.key-server.submit
@@ -11,12 +11,19 @@ create-event:sephia.pgp.key-server.submit
    * Sanity checking invocation.
    */
   micro.lambda.contract.min:x:/..
-    _arg:string
+    fingerprint:string
 
   /*
    * Retrieving public key.
    */
-  p5.crypto.get-public-key:x:/../*/_arg?value
+  p5.crypto.get-public-key:x:/../*/fingerprint?value
+  if:x:/-/*
+    not
+    throw:That key doesn't exist in your GnuPG database
+
+  /*
+   * URL encoding key, althought technically this is probablt not necessary.
+   */
   p5.html.url-encode:x:/@p5.crypto.get-public-key/*?value
 
   /*

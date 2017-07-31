@@ -1,0 +1,117 @@
+﻿
+/*
+ * Will create a new, or update an existing contact.
+ *
+ * Expects [name], [email], [username] and optionally [fingerprint], [verified], 
+ * [type], [spam] and [unverify].
+ *
+ * Will check if a contact with the given [email] exists for [username], and if
+ * it does, it will update the existing contact, instead of creating a new contact.
+ * If no contact exists for [username] with the given [email], a new contact will
+ * be created.
+ *
+ * If given a [fingerprint], it will associate that fingerprint with the contact,
+ * unless a contact already exists, and he has an existing fingerprint associated
+ * with him, which has been previously verified.
+ *
+ * If [unverify] is boolean "true", any existing fingerprints will be removed, and
+ * the contact will be set to not verified.
+ *
+ * [spam], if specified, can be either "0" or "1". If it is "1", then all future
+ * emails from this contact will be treated as spam. If it is "0", then all future
+ * email from this contact will not be treated as spam. If ommitted, the default
+ * spam filters in Sephia will try to determine if the email sent by the contact
+ * in the future are spam or not.
+ *
+ * If you supply [verified], and set its value to boolean "true", and the contact
+ * does not already have a verified fingerprint associated with him, then the
+ * [fingerprint] you pass in, will be associated with the contact as verified.
+ *
+ * Notice, this event requires an existing open connection to the Sephia database.
+ *
+ * If the contact was created, the event will return [created] having the value of
+ * boolean "true". If the contact was updated, the event will return [created] 
+ * having the boolean value of "false".
+ *
+ * Regardless of whether or not the contact was created or not, it will return 
+ * the ID of the contact.
+ */
+create-event:sephia._internals.contacts.create-or-update
+
+  /*
+   * Signal node, to separate arguments from the rest of the lambda.
+   */
+  .signal
+
+  /*
+   * Making sure invoker obeys by lambda contract.
+   */
+  micro.lambda.contract.min:x:/..
+    name:string
+    email:string
+    username:string
+
+  /*
+   * Sanity checking optional arguments.
+   */
+  micro.lambda.contract.optional:x:/..
+    fingerprint
+    verified:bool
+    spam
+    type
+    unverify:bool
+
+  /*
+   * Making sure name defaults to first parts of email, if it is empty or null.
+   */
+  if:x:/../*/name?value
+    =:
+    split:x:/../*/email?value
+      =:@
+    set:x:/../*/name?value
+      src:x:/@split/0?name
+
+  /*
+   * Checking if contact already exists, at which point we update the existing
+   * contact, instead of inserting a new one.
+   */
+  p5.mysql.scalar:@"select id from contacts where username = @username and email = @email"
+    @username:x:/../*/username?value
+    @email:x:/../*/email?value
+  if:x:/@p5.mysql.scalar?value
+
+    /*
+     * Contact already exists, updating instead of inserting.
+     */
+    add:x:/./*/@sephia._internals.contacts.update
+      src:x:/@.signal/--(!/username)
+    eval-x:x:/+/*
+    sephia._internals.contacts.update
+      id:x:/@p5.mysql.scalar?value
+
+    /*
+     * Returning to caller, making sure we return the id of the contact, and the
+     * fact that contact was not created.
+     */
+    eval-x:x:/+/*
+    return
+      created:bool:false
+      id:x:/@p5.mysql.scalar?value
+
+  else
+
+    /*
+     * Contact does not exist, inserting a new contact.
+     */
+    add:x:/./*/@sephia._internals.contacts.create
+      src:x:/@.signal/--(!/unverify)
+    sephia._internals.contacts.create
+
+    /*
+     * Returning to caller, making sure we return the id of the contact, and the
+     * fact that contact was created.
+     */
+    eval-x:x:/+/*
+    return
+      created:bool:true
+      id:x:/@sephia._internals.contacts.create/*/id?value

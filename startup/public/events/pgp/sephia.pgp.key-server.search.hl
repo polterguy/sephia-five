@@ -1,6 +1,14 @@
 ﻿
 /*
- * Will search the configured PGP key server for a key matching the given [_arg] query.
+ * Will search the configured PGP key server for a key matching the given [_arg] query,
+ * and return a collection of potential candidates.
+ *
+ * [_arg] can be an email address, a name or a key ID.
+ * Unfortunately, you cannot search for keys using fingerprints as your query.
+ *
+ * Return value will be a collection of keys, where the name is the fingerprint, the
+ * value the key ID, and each candidate containing [Created] being the creation date,
+ * in yyyy-MM-dd string format, and a [uid] being the first User ID associated with the key.
  */
 create-event:sephia.pgp.key-server.search
 

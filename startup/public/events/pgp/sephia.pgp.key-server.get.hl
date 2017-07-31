@@ -1,14 +1,18 @@
-﻿﻿﻿
+﻿﻿
 /*
  * Will try its best at finding the given [fingerprint] key, either by first
  * attempting to locate it in our GnuPG database, or trying to find it in our
- * key server.
+ * key server. 
+ *
+ * If it finds the PGP key, it will return true. If it does not find  the key, 
+ * it will return false.
  *
  * Requires [fingerprint] and [email].
  *
- * [email] is necessary in case it needs to search for the key on the key servers.
+ * [email] is necessary in case it needs to search for the key on the key server,
+ * since key servers don't allow users to search for fingerprints.
  */
-create-event:sephia.pgp.get-key
+create-event:sephia.pgp.key-server.get
 
   /*
    * Sanity checking invocation.
@@ -39,8 +43,7 @@ create-event:sephia.pgp.get-key
      * No need to download the key, since we've already got it, and simply need to
      * associate it with our contact.
      */
-    to-upper:x:/@p5.crypto.list-public-keys/0?name
-    return:x:/-?value
+    return:bool:true
 
   else
 
@@ -76,19 +79,19 @@ create-event:sephia.pgp.get-key
          * allow people to download keys according to fingerprints, but the key ID
          * seems to always work.
          */
-        sephia.pgp.key-server.download-key-from-key-id:x:/:x:/@sephia.pgp.key-server.search/*/{0}?value
+        sephia._internals.pgp.download-key-from-key-id:x:/:x:/@sephia.pgp.key-server.search/*/{0}?value
           :x:/../*/fingerprint?value
 
         /*
          * Verifying we actually got something from our above invocation.
          */
-        if:x:/@sephia.pgp.key-server.download-key-from-key-id?value
+        if:x:/@sephia._internals.pgp.download-key-from-key-id?value
 
           /*
            * Verifying that the key downloaded actually matches the [fingerprint]
            * argument supplied.
            */
-          p5.crypto.preview-public-pgp-key:x:/@sephia.pgp.key-server.download-key-from-key-id?value
+          p5.crypto.preview-public-pgp-key:x:/@sephia._internals.pgp.download-key-from-key-id?value
           if:x:/@p5.crypto.preview-public-pgp-key/0?name
             =:x:/../*/fingerprint?value
 
@@ -97,16 +100,20 @@ create-event:sephia.pgp.get-key
              *
              * Importing the results into our GnuPG database.
              */
-            p5.crypto.import-public-pgp-key:x:/@sephia.pgp.key-server.download-key-from-key-id?value
+            p5.crypto.import-public-pgp-key:x:/@sephia._internals.pgp.download-key-from-key-id?value
 
             /*
-             * Returning the fingerprint of the key we just imported.
+             * Returning true to caller.
              */
-            to-upper:x:/@p5.crypto.import-public-pgp-key/0?name
-            return:x:/-?value
+            return:bool:true
 
     catch
 
       /*
        * Silently catching, since we might be on another thread.
        */
+
+  /*
+   * Returning failure to caller.
+   */
+  return:bool:false

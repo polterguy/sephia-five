@@ -20,7 +20,7 @@
  *
  * If the email is successfully sent, boolean "true" will be returned to caller.
  */
-create-event:sephia.core.send-email
+create-event:sephia.send-email
 
   /*
    * Sanity check, verifies that at least [subject], [body] and [to] is given.
@@ -287,7 +287,7 @@ create-event:sephia.core.send-email
     /*
      * User's settings requested that Markdown should be used.
      */
-    sephia.core.markdown.to-html:x:/../*/body?value
+    sephia._internals.markdown-to-html:x:/../*/body?value
     eval-x:x:/+/*/*/*/*/content
 
     /*
@@ -311,7 +311,7 @@ create-event:sephia.core.send-email
             Content-Transfer-Encoding:QuotedPrintable
             content:x:/../*/body?value
           text:html
-            content:x:/@sephia.core.markdown.to-html?value
+            content:x:/@sephia._internals.markdown-to-html?value
 
   else
 

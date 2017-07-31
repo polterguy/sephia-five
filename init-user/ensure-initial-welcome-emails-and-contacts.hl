@@ -48,8 +48,8 @@ p5.mysql.connect:[sephia]
   p5.auth.my-settings.get
 
   /*
-   * Creating transaction object, to avoid having partial emails inserted 
-   * into our database.
+   * Creating transaction object, to avoid having partial emails and contacts 
+   * inserted into our database.
    */
   p5.mysql.transaction.begin
 
@@ -90,14 +90,14 @@ p5.mysql.connect:[sephia]
     for-each:x:/@load-file/*/*/contact
 
       /*
-       * Parametrizing and invoking [sephia._internals.contacts.create].
+       * Parametrizing and invoking [sephia._internals.contacts.create-or-update].
        */
-      add:x:/..for-each/*/sephia._internals.contacts.create
+      add:x:/..for-each/*/sephia._internals.contacts.create-or-update
         src:@"username:{0}"
           :x:/@whoami/*/username?value
-      add:x:/..for-each/*/sephia._internals.contacts.create
+      add:x:/..for-each/*/sephia._internals.contacts.create-or-update
         src:x:/@_dp/#/*
-      sephia._internals.contacts.create
+      sephia._internals.contacts.create-or-update
 
     /*
      * Loading configuration file that contains the initial welcoming email user
@@ -140,21 +140,21 @@ p5.mysql.connect:[sephia]
         /*
          * Converting text content to HTML, and inserting it into email as an alternative HTML view.
          */
-        sephia.core.markdown.to-html:x:/@_dp/#/*/multipart/*/text/=plain/*/content?value
+        sephia._internals.markdown-to-html:x:/@_dp/#/*/multipart/*/text/=plain/*/content?value
         eval-x:x:/+/*/*/*
         add:x:/@_dp/#/*/multipart
           src
             text:html
-              content:x:/@sephia.core.markdown.to-html?value
+              content:x:/@sephia._internals.markdown-to-html?value
 
       /*
        * Inserting currently iterated email, by invoking file responsible for 
        * doing that. Making sure we forward evaluate all arguments.
        */
-      add:x:/..for-each/*/micro.evaluate.file
+      add:x:/..for-each/*/sephia._internals.save-email-2-database
         src:x:/@_dp/#
-      eval-x:x:/..for-each/*/micro.evaluate.file/*
-      micro.evaluate.file:@SEPHIA/core/save-pop3-email-2-database.hl
+      eval-x:x:/..for-each/*/sephia._internals.save-email-2-database/*
+      sephia._internals.save-email-2-database
         username:x:/@whoami/*/username?value
 
     /*

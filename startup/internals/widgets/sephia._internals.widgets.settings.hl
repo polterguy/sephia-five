@@ -879,7 +879,9 @@ save your settings, and do something else in the meantime, and come back here af
                                                 /*
                                                  * This even returns false if it was unsuccessful in submitting the key.
                                                  */
-                                                sephia.pgp.key-server.submit:x:/@p5.crypto.create-pgp-keypair/*/fingerprint?value
+                                                eval-x:x:/+/*
+                                                sephia.pgp.key-server.submit
+                                                  fingerprint:x:/@p5.crypto.create-pgp-keypair/*/fingerprint?value
                                                 if:x:/-?value
                                                   not
 

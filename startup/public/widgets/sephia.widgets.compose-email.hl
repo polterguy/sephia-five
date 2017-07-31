@@ -87,7 +87,7 @@ p5.sephia_upload_files = function(e) {
   /*
    * Adding custom headers requested by caller.
    */
-  add:x:/../*/return/**/sephia.core.send-email
+  add:x:/../*/return/**/sephia.send-email
     src:x:/../*/headers
 
   /*
@@ -129,7 +129,7 @@ p5.sephia_upload_files = function(e) {
    */
   if:x:/../*/babelsubject?value
     eval-x:x:/+/*/*
-    add:x:/../*/return/**/sephia.core.send-email
+    add:x:/../*/return/**/sephia.send-email
       src
         babelsubject:x:/../*/babelsubject?value
 
@@ -336,14 +336,14 @@ p5.sephia_send_email = function(e) {
                        */
                       add:x:/+
                         src:x:/@micro.form.serialize/*(!/no-data)
-                      sephia.core.send-email
+                      sephia.send-email
 
                       /*
                        * Checking if email was successfully sent, and if not, explaining to
                        * user that one of the recipients was not on his list of contacts, and
                        * asking him if he still wants to send the email.
                        */
-                      if:x:/@sephia.core.send-email?value
+                      if:x:/@sephia.send-email?value
                         =:bool:false
 
                         /*
@@ -366,7 +366,7 @@ p5.sephia_send_email = function(e) {
 
                                 /*
                                  * Creating a hidden input element, that will be serialized when form is
-                                 * serialized, and pass in [force] to [sephia.core.send-email], forcing the
+                                 * serialized, and pass in [force] to [sephia.send-email], forcing the
                                  * email to be sent, even though one of the contacts was not in user's list of contacts.
                                  *
                                  * Then we simply invoke [.onclick] once again, which will force the email to be sent.
