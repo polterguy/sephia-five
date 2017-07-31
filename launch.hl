@@ -139,6 +139,7 @@ if:x:/@p5.auth.my-settings.get/*/sephia
             class:col
             widgets
               sephia._internals.widgets.settings
+                wizard-mode:true
 
   /*
    * Returning early to avoid evaluating the rest of this file.

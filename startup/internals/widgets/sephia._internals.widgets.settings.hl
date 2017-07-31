@@ -2,12 +2,17 @@
 /*
  * Creates our "settings" widget.
  *
- * Will create a settings form, from where the user can change his personal settings, such as his POP3
- * server, username, password, etc.
+ * Will create a settings form, from where the user can change his personal 
+ * settings, such as his POP3 server, username, password, etc.
  *
- * Takes no arguments.
+ * Pass in [wizard-mode] and set its value to boolean "true" if you wish to show
+ * the widget in "wizard mode", having a "Next" button, instead of a "Close" and
+ * "Save" buttons.
  */
 create-event:sephia._internals.widgets.settings
+
+  micro.lambda.contract.optional:x:/..
+    wizard-mode:bool
 
   /*
    * Retrieving settings and setting initial values.
@@ -101,6 +106,25 @@ create-event:sephia._internals.widgets.settings
       src:checked
 
   /*
+   * Checking if caller invoked us with "wizard-mode" or not.
+   */
+  if:x:/../*/wizard-mode?value.bool
+
+    /*
+     * Wizard mode is turned on, making both our save and close button invisible.
+     */
+    add:x:/../*/return/**/button(/=sephia-settings-close|/=sephia-settings-save)
+      src
+        visible:false
+
+  else
+
+    /*
+     * Wizard mode is turned off.
+     */
+    set:x:/../*/return/**/button/=sephia-settings-next
+
+  /*
    * Returning widget to caller, making sure we forward evaluate properties.
    */
   eval-x:x:/+2/**/micro.widgets.wizard-form/*/text/*/.data-field(/=password|/=password-repeat)/./*/value
@@ -155,6 +179,7 @@ create-event:sephia._internals.widgets.settings
                             type:text
                             placeholder:Your name ...
                             value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/name|/../*/.defaults/*/name)/$?value
+                            onkeydown:@"if (event.keyCode == 13) {p5.$('sephia-settings-next').raise('onclick');return false;}"
                             oninit
                               micro.page.set-focus:sephia-settings-name
                   div
@@ -171,6 +196,7 @@ create-event:sephia._internals.widgets.settings
                             type:text
                             placeholder:Your email ...
                             value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/email|/../*/.defaults/*/email)/$?value
+                            onkeydown:@"if (event.keyCode == 13) {p5.$('sephia-settings-next').raise('onclick');return false;}"
 
               div
                 class:row air-top
@@ -288,6 +314,7 @@ create-event:sephia._internals.widgets.settings
                             type:text
                             placeholder:Server ...
                             value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pop3-server|/../*/.defaults/*/pop3-server)/$?value
+                            onkeydown:@"if (event.keyCode == 13) {p5.$('sephia-settings-next').raise('onclick');return false;}"
                             oninit
                               micro.page.set-focus:sephia-settings-pop3-server
                   div
@@ -304,6 +331,7 @@ create-event:sephia._internals.widgets.settings
                             .data-field:pop3-port
                             placeholder:Port ...
                             value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pop3-port|/../*/.defaults/*/pop3-port)/$?value
+                            onkeydown:@"if (event.keyCode == 13) {p5.$('sephia-settings-next').raise('onclick');return false;}"
                           label
                             for:sephia-settings-pop3-ssl
                             innerValue:SSL
@@ -338,6 +366,7 @@ create-event:sephia._internals.widgets.settings
                             type:text
                             placeholder:Username ...
                             value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pop3-username|/../*/.defaults/*/pop3-username)/$?value
+                            onkeydown:@"if (event.keyCode == 13) {p5.$('sephia-settings-next').raise('onclick');return false;}"
                             oninit
 
                               /*
@@ -367,6 +396,7 @@ create-event:sephia._internals.widgets.settings
                             .data-field:pop3-password
                             placeholder:Password ...
                             value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pop3-password|/../*/.defaults/*/pop3-password)/$?value
+                            onkeydown:@"if (event.keyCode == 13) {p5.$('sephia-settings-next').raise('onclick');return false;}"
                   div
                     class:col-100
                     oninit
@@ -444,6 +474,7 @@ create-event:sephia._internals.widgets.settings
                             type:text
                             placeholder:Server ...
                             value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/smtp-server|/../*/.defaults/*/smtp-server)/$?value
+                            onkeydown:@"if (event.keyCode == 13) {p5.$('sephia-settings-next').raise('onclick');return false;}"
                             oninit
                               micro.page.set-focus:sephia-settings-smtp-server
                   div
@@ -460,6 +491,7 @@ create-event:sephia._internals.widgets.settings
                             .data-field:smtp-port
                             placeholder:Port ...
                             value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/smtp-port|/../*/.defaults/*/smtp-port)/$?value
+                            onkeydown:@"if (event.keyCode == 13) {p5.$('sephia-settings-next').raise('onclick');return false;}"
                           label
                             for:sephia-settings-smtp-ssl
                             innerValue:SSL
@@ -494,6 +526,7 @@ create-event:sephia._internals.widgets.settings
                             type:text
                             placeholder:Username ...
                             value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/smtp-username|/../*/.defaults/*/smtp-username)/$?value
+                            onkeydown:@"if (event.keyCode == 13) {p5.$('sephia-settings-next').raise('onclick');return false;}"
                             oninit
 
                               /*
@@ -523,6 +556,7 @@ create-event:sephia._internals.widgets.settings
                             .data-field:smtp-password
                             placeholder:Password ...
                             value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/smtp-password|/../*/.defaults/*/smtp-password)/$?value
+                            onkeydown:@"if (event.keyCode == 13) {p5.$('sephia-settings-next').raise('onclick');return false;}"
                             oninit
 
                               /*
@@ -727,6 +761,7 @@ create-event:sephia._internals.widgets.settings
                             type:password
                             placeholder:Your PGP password ...
                             value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pgp-password|/../*/.defaults/*/pgp-key-password)/$?value
+                            onkeydown:@"if (event.keyCode == 13) {p5.$('sephia-settings-next').raise('onclick');return false;}"
               div
                 class:row
                 widgets
@@ -745,6 +780,7 @@ create-event:sephia._internals.widgets.settings
                             value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pgp-subjects|/../*/.defaults/*/pgp-subjects)/$?value
                             placeholder:A comma separated list of URLs from where random subjects will be generated ...
                             title:A comma separated list of URLs from where random subjects will be generated, to hide the original subject of encrypted emails.
+                            onkeydown:@"if (event.keyCode == 13) {p5.$('sephia-settings-next').raise('onclick');return false;}"
               div
                 class:row
                 widgets
@@ -1040,7 +1076,7 @@ save your settings, and do something else in the meantime, and come back here af
                 /*
                  * Save button at the bottom of form, beneath the tab widget.
                  */
-                button
+                button:sephia-settings-save
                   innerValue:Save
                   title:Saves your settings and closes this form
                   onclick
@@ -1238,7 +1274,7 @@ save your settings, and do something else in the meantime, and come back here af
                 /*
                  * Close button that will close settings without updating them.
                  */
-                button
+                button:sephia-settings-close
                   innerValue:Close
                   title:Close settings without saving your changes
                   onclick
@@ -1247,3 +1283,55 @@ save your settings, and do something else in the meantime, and come back here af
                      * Re-launches Sephia for simplicity.
                      */
                     micro.evaluate.file:@SEPHIA/launch.hl
+
+                /*
+                 * "Next" button that will display the "next" tabview.
+                 */
+                button:sephia-settings-next
+                  innerValue:Next
+                  style:"border-left-style:solid;border-radius:var(--border-radius);"
+                  onclick
+
+                    /*
+                     * Figuring out the currently visible tab view.
+                     */
+                    p5.web.widgets.find-first-like:sephia-settings-tab
+                      class:micro-tab-buttons
+                    p5.web.widgets.find-first-like:x:/-/*/*?value
+                      class:micro-tab-active
+
+                    /*
+                     * Finding the next tab view button, if any.
+                     */
+                    p5.web.widgets.find-first:sephia-settings-tab
+                      after:x:/@p5.web.widgets.find-first-like/*/*?value
+
+                    /*
+                     * Checking if there are any next tab view buttons.
+                     */
+                    if:x:/@p5.web.widgets.find-first/*/*?value
+
+                      /*
+                       * There are at least one more button in our tabview.
+                       *
+                       * For simplicity, we simply trigger [onclick] for it.
+                       */
+                      p5.web.widgets.ajax-events.raise:x:/@p5.web.widgets.find-first/*/*?value
+                        onclick
+
+                      /*
+                       * Checking if this was our last button, and if so, showing
+                       * our "Save" button, and hiding our "Next" button.
+                       */
+                      p5.web.widgets.find-first:sephia-settings-tab
+                        after:x:/./@p5.web.widgets.find-first/*/*?value
+                      if:x:/-/*/*?value
+                        not
+
+                        /*
+                         * This was our last tab view button.
+                         */
+                        set-widget-property:sephia-settings-save
+                          visible:true
+                        set-widget-property:x:/../*/_event?value
+                          visible:false
