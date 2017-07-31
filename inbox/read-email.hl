@@ -646,4 +646,4 @@ create-widget
 /*
  * Updating page title, since we now (probably) have read one more email.
  */
-micro.evaluate.file:@SEPHIA/inbox/update-page-title.hl
+sephia._internals.update-page-title

@@ -213,7 +213,7 @@ create-event:sephia._internals.create-pop3-user-thread
    * Loading configuration for POP3 worker thread, and applying configuration
    * for our worker thread.
    */
-  load-file:@SEPHIA/configuration/pop3-thread.hl
+  load-file:@SEPHIA/configuration/pop3-thread-settings.hl
   set:x:/../*/fork/**/sleep?value
     src:x:/@load-file/*/*/sleep-between-fetch?value
   set:x:/../*/fork/**/_emails-2-fetch?value
@@ -277,7 +277,7 @@ create-event:sephia._internals.create-pop3-user-thread
          * if we should continue our loop.
          */
         eval-x:x:/+/*
-        micro.evaluate.file:@SEPHIA/core/increment-pop3-thread-count.hl
+        sephia._internals.increment-pop3-thread-count
           thread-signal:x:/@_thread-signal?value
         if:x:/-?value
           not

@@ -1,0 +1,37 @@
+
+/*
+ * Updates the displayed email count.
+ *
+ * Simply sets the title of the page to "Sephia emails/unread"
+ */
+create-event:sephia._internals.update-page-title
+
+  /*
+   * Necessary to parametrise SQL select statement.
+   */
+  whoami
+
+  /*
+   * Connecting to database.
+   */
+  p5.mysql.connect:[sephia]
+
+    /*
+     * Figuring out how many emails user has in total.
+     */
+    p5.mysql.scalar:@"select count(*) from emails where username = @username and type = 'received'"
+      @username:x:/@whoami/*/username?value
+
+    /*
+     * Figuring out how many unread emails user has.
+     */
+    p5.mysql.scalar:@"select count(*) from emails where username = @username and isread = 0 and type = 'received'"
+      @username:x:/@whoami/*/username?value
+
+    /*
+     * Updating the page's title to "Sephia x/y", where x is number of unread emails, and y is number of emails
+     * in total.
+     */
+    p5.web.page.set-title:Sephia {0}/{1}
+      :x:/..p5.mysql.connect/*/p5.mysql.scalar/[1,2]?value
+      :x:/..p5.mysql.connect/*/p5.mysql.scalar/[0,1]?value

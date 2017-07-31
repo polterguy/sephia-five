@@ -219,7 +219,7 @@ create-widget:sephia-search-wrapper
                 /*
                  * Making sure we update email count, in case we've had new emails.
                  */
-                micro.file.evaluate:@SEPHIA/inbox/update-page-title.hl
+                sephia._internals.update-page-title
 
             /*
              * Button to open settings.
@@ -335,4 +335,4 @@ micro.evaluate.file:@SEPHIA/inbox/databind-inbox.hl
 /*
  * Updating email count.
  */
-micro.evaluate.file:@SEPHIA/inbox/update-page-title.hl
+sephia._internals.update-page-title

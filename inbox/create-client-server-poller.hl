@@ -23,7 +23,7 @@
 /*
  * Loading configuration to check how frequently we should poll the server.
  */
-load-file:@SEPHIA/configuration/pop3-thread.hl
+load-file:@SEPHIA/configuration/pop3-thread-settings.hl
 set:x:/../*/create-literal-widget/**/_sleep-between-fetch?value
   src:x:/@load-file/*/*/sleep-between-fetch?value
 
@@ -193,7 +193,7 @@ if (!p5.sephia_poller) {{
          * Invoking our "error handler".
          */
         eval-x:x:/+/*
-        micro.evaluate.file:@SEPHIA/error/handle-pop3-error.hl
+        sephia._internals.handle-pop3-error
           message:x:/@read-lock/*/select-data/*/*/error/*/message?value
           stack-trace:x:/@read-lock/*/select-data/*/*/error/*/stack-trace?value
           type:x:/@read-lock/*/select-data/*/*/error/*/type?value
@@ -267,7 +267,7 @@ if (!p5.sephia_poller) {{
         /*
          * User has received new emails, making sure we update email count.
          */
-        micro.evaluate.file:@SEPHIA/inbox/update-page-title.hl
+        sephia._internals.update-page-title
 
         /*
          * Then we check if user has paged his inbox, or filtered it somehow, and if not,

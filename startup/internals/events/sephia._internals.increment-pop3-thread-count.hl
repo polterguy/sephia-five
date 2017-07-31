@@ -1,0 +1,64 @@
+﻿
+/*
+ * Increments the POP3 thread count, and returns boolean "true" if thread should be allow to finish.
+ * Otherwise it will return "false".
+ *
+ * Requires [thread-signal] having the thread synchronization p5.data item name for our thread.
+ */
+create-event:sephia._internals.increment-pop3-thread-count
+
+  /*
+   * Sanity checking invocation.
+   */
+  micro.lambda.contract.min:x:/..
+    thread-signal:string
+
+  /*
+   * Making sure we have synchronized access to our "thread signal object".
+   */
+  write-lock:x:/../*/thread-signal?value
+    select-data:x:/*/*/{0}
+      :x:/../*/thread-signal?value
+
+    /*
+     * Then checking if we have exceeded our iteration count.
+     */
+    if:x:/@select-data/*/*/running/*/count?value.int
+      >=:int:5
+
+      /*
+       * Thread should be stopped, since there has not been a client polling the server for 
+       * information for more than 5 iterations, which means that our thread is no longer needed.
+       *
+       * Hence, we delete signal object, and return false to caller, indicating that the thread 
+       * should be gracefully exited.
+       */
+      delete-data:x:/*/*/{0}
+        :x:/../*/thread-signal?value
+      return:bool:false
+
+    /*
+     * Then checking if some other part of our program has forced us to restart our
+     * thread, due to e.g. settings having been updated, etc.
+     */
+    if:x:/@select-data/*/*/restart?value
+
+      /*
+       * Thread should be stopped and restarted for some reasons, hence we return false to caller, 
+       * indicating that the thread should be gracefully exited.
+       */
+      return:bool:false
+
+    /*
+     * Making sure we increment our "thread iteration count" by one.
+     */
+    +:x:/@select-data/*/*/running/*/count?value.int
+      _:int:1
+    update-data:x:/*/*/{0}/*/running/*/count?value
+      :x:/../*/thread-signal?value
+      src:x:/@+?value
+
+  /*
+   * Returning true to caller to signal that he can proceed.
+   */
+  return:bool:true

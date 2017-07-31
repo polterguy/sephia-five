@@ -399,7 +399,7 @@ p5.sephia_send_email = function(e) {
                        */
                       add:x:/+
                         src:x:/..catch/*(/message|/type|/stack-trace)
-                      micro.evaluate.file:@SEPHIA/error/handle-exception.hl
+                      sephia._internals.handle-exception
                         error:Couldn't send email
 
                 /*

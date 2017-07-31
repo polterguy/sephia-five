@@ -255,7 +255,7 @@ create-event:sephia._internals.widgets.settings
                           p5.mysql.connect:[sephia]
                             p5.mysql.update:@"update emails set isread = 1 where username = @username"
                               @username:x:/@whoami/*/username?value
-                          micro.evaluate.file:@SEPHIA/inbox/update-page-title.hl
+                          sephia._internals.update-page-title
 
           /*
            * POP3 settings.
@@ -367,6 +367,51 @@ create-event:sephia._internals.widgets.settings
                             .data-field:pop3-password
                             placeholder:Password ...
                             value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pop3-password|/../*/.defaults/*/pop3-password)/$?value
+                  div
+                    class:col-100
+                    oninit
+
+                      /*
+                       * Needed to avoid notifying user multiple times about enabling 
+                       * POP3 settings for GMail, such as after ha has initially enabled
+                       * POP3 access for GMail.
+                       */
+                      p5.auth.my-settings.get
+
+                      /*
+                       * Checking if POP3 server is pointing to GMail, and if not, making sure we
+                       * set this widget's visibility property to "false".
+                       */
+                      get-widget-property:sephia-settings-pop3-server
+                        value
+                      if:x:/@get-widget-property/*/*?value
+                        !=:pop.gmail.com
+
+                        /*
+                         * Hiding widget.
+                         */
+                        set-widget-property:x:/../*/_event?value
+                          visible:false
+
+                      else-if:x:/@p5.auth.my-settings.get/*/sephia
+                        not
+
+                        /*
+                         * User hasn't created any settings previously, making sure we
+                         * inform him of allowing POP3 access to GMail's POP3 server.
+                         *
+                         * Notifying user.
+                         */
+                        micro.windows.info:You'll probably have to turn on POP3 access for your GMail account
+                          class:micro-windows-info success
+
+                    widgets
+                      p
+                        widgets
+                          a
+                            href:"https://myaccount.google.com/lesssecureapps"
+                            target:_blank
+                            innerValue:Enable POP3 access to GMail
 
           /*
            * SMTP settings.

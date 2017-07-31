@@ -290,9 +290,9 @@ order by id desc limit 15 offset @offset"
                     keep-page-filter:bool:true
 
                   /*
-                   * Updating email count.
+                   * Updating page title.
                    */
-                  micro.evaluate.file:@SEPHIA/inbox/update-page-title.hl
+                  sephia._internals.update-page-title
 
 
 /*

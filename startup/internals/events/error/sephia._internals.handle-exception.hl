@@ -1,0 +1,42 @@
+﻿
+/*
+ * Invoked when an error occurs in Sephia.
+ *
+ * Expects [error], [message], [stack-trace] and [type].
+ *
+ * [error] is a friendly descriptive text, typically about where the error originated.
+ * [message], [stack-trace] and [type] are exception values, retrieved from [catch] lambda when exception was raised.
+ */
+create-event:sephia._internals.handle-exception
+
+  /*
+   * Sanity checking invocation.
+   */
+  micro.lambda.contract.min:x:/..
+    error:string
+    message:string
+    stack-trace:string
+    type:string
+
+  /*
+   * Creating actual widget wrapping error feedback to user.
+   */
+  create-widgets
+    micro.widgets.modal:sephia-error-modal-widget
+      class:micro-modal micro-modal-smaller
+      widgets
+        h3
+          innerValue:Oops!
+        p
+          innerValue:{0}. Message from system was; '{1}'
+            :x:/../*/error?value
+            :x:/../*/message?value
+        div
+          class:right
+          widgets
+            button
+              innerValue:OK
+              oninit
+                micro.page.set-focus:x:/../*/_event?value
+              onclick
+                delete-widget:sephia-error-modal-widget

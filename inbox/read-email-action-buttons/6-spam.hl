@@ -62,4 +62,4 @@ button
     /*
      * Updating page title.
      */
-    micro.evaluate.file:@SEPHIA/inbox/update-page-title.hl
+    sephia._internals.update-page-title
