@@ -333,21 +333,6 @@ where emails.id = @id"
       src:Email was not cryptographically signed
 
   /*
-   * This part will contain status of email ("safe", "warning" or "unsafe").
-   */
-  _meta5
-  switch:x:/@p5.mysql.select/*/*/status?value.int
-    case:int:0
-      set:x:/@_meta5?value
-        src:"Email is safely encrypted and signed by a verified public PGP key"
-    case:int:1
-      set:x:/@_meta5?value
-        src:"Email is encrypted and signed, but PGP key is not verified"
-    case:int:2
-      set:x:/@_meta5?value
-        src:"Email is either not cryptographically signed or encrypted"
-
-  /*
    * This part will contain email's MIME ID.
    */
   _meta6
@@ -512,13 +497,6 @@ create-widget
                 p
                   class:sephia-meta
                   innerValue:x:/@p5.mysql.connect/*/_meta4?value
-
-                /*
-                 * Displays status of email, "safe", "warning" or "unsafe" parts.
-                 */
-                p
-                  class:sephia-meta
-                  innerValue:x:/@p5.mysql.connect/*/_meta5?value
 
                 /*
                  * Displays email's MIME ID.

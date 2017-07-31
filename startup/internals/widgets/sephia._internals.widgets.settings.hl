@@ -746,13 +746,6 @@ create-event:sephia._internals.widgets.settings
                             placeholder:Your PGP password ...
                             value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pgp-password|/../*/.defaults/*/pgp-key-password)/$?value
                             onkeydown:@"if (event.keyCode == 13) {p5.$('sephia-settings-next').raise('onclick');return false;}"
-                            oninit
-
-                              /*
-                               * Setting initial focus to passford for PGP key, to make navigation as
-                               * "keyboard friendly" as possible.
-                               */
-                              micro.page.set-focus:x:/../*/_event?value
               div
                 class:row
                 widgets
@@ -772,6 +765,13 @@ create-event:sephia._internals.widgets.settings
                             placeholder:A comma separated list of URLs from where random subjects will be generated ...
                             title:A comma separated list of URLs from where random subjects will be generated, to hide the original subject of encrypted emails.
                             onkeydown:@"if (event.keyCode == 13) {p5.$('sephia-settings-next').raise('onclick');return false;}"
+                            oninit
+
+                              /*
+                               * Setting initial focus to password for PGP key, to make navigation as
+                               * "keyboard friendly" as possible.
+                               */
+                              micro.page.set-focus:x:/../*/_event?value
               div
                 class:row
                 widgets
@@ -1278,7 +1278,7 @@ save your settings, and do something else in the meantime, and come back here af
                   onclick
 
                     /*
-                     * Re-launches Sephia for simplicity.
+                     * Re-launches Sephia for simplicity, no need to reload location.
                      */
                     micro.evaluate.file:@SEPHIA/launch.hl
 
