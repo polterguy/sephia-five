@@ -14,6 +14,14 @@ txt
   text:plain
 md
   text:plain
+xml
+  application:xml
+hl
+  text:plain
+asc
+  text:plain
+csv
+  text:csv
 
 
 /*
@@ -37,6 +45,8 @@ tif
 tiff
   image:tiff
     Content-Transfer-Encoding:binary
+svg
+  image:svg+xml
 
 
 /*
@@ -51,10 +61,19 @@ wav
 ogg
   audio:ogg
     Content-Transfer-Encoding:binary
+wav
+  audio:x-wav
+    Content-Transfer-Encoding:binary
+weba
+  audio:webm
+    Content-Transfer-Encoding:binary
+aac
+  audio:aac
+    Content-Transfer-Encoding:binary
 
 
 /*
- * Plain video types.
+ * Video types.
  */
 mpeg
   video:mpeg
@@ -62,17 +81,150 @@ mpeg
 ogv
   video:ogg
     Content-Transfer-Encoding:binary
+webm
+  video:webm
+    Content-Transfer-Encoding:binary
+avi
+  video:x-msvideo
+    Content-Transfer-Encoding:binary
 
 
 /*
- * Hyperlambda.
+ * OGG generic.
  */
-hl
-  application:x-hyperlambda
+ogg
+  application:ogg
+    Content-Transfer-Encoding:binary
 
 
 /*
- * Public PGP key.
+ * The rest of these file types are "questionable" at best, and might carry
+ * viruses, but since they are too commonly used, we still have to support
+ * them.
+ *
+ * If you'd like a "bullet proof" installation of Sephia, you might want 
+ * to consider removing them.
+ *
+ * However, the [.warning] node beneath, will still give the user a warning if
+ * he tries to download them for himself.
+ *
+ * Basically, everything after our [.warning] node, gives the user a warning
  */
-asc
-  text:plain
+.warning
+
+
+/*
+ * Zip files.
+ */
+zip
+  application:zip
+    Content-Transfer-Encoding:binary
+bz
+  application:x-bzip
+    Content-Transfer-Encoding:binary
+bz2
+  application:x-bzip2
+    Content-Transfer-Encoding:binary
+
+
+/*
+ * Word document file.
+ */
+doc
+  application:msword
+    Content-Transfer-Encoding:binary
+
+
+/*
+ * PowerPoint file.
+ */
+ppt
+  application:vnd.ms-powerpoint
+    Content-Transfer-Encoding:binary
+
+
+/*
+ * Excel file.
+ */
+xls
+  application:vnd.ms-excel
+    Content-Transfer-Encoding:binary
+
+
+/*
+ * Other office document types.
+ */
+dot
+  application:msword
+    Content-Transfer-Encoding:binary
+docx
+  application:vnd.openxmlformats-officedocument.wordprocessingml.document
+    Content-Transfer-Encoding:binary
+dotx
+  application:vnd.openxmlformats-officedocument.wordprocessingml.template
+    Content-Transfer-Encoding:binary
+xlsx
+  application:vnd.openxmlformats-officedocument.spreadsheetml.sheet
+    Content-Transfer-Encoding:binary
+xltx
+  application:vnd.openxmlformats-officedocument.spreadsheetml.template
+    Content-Transfer-Encoding:binary
+pptx
+  application:vnd.openxmlformats-officedocument.presentationml.presentation
+    Content-Transfer-Encoding:binary
+potx
+  application:vnd.openxmlformats-officedocument.presentationml.template
+    Content-Transfer-Encoding:binary
+ppsx
+  application:vnd.openxmlformats-officedocument.presentationml.slideshow
+    Content-Transfer-Encoding:binary
+
+
+/*
+ * Open Document presentation.
+ */
+odp
+  application:vnd.oasis.opendocument.presentation
+    Content-Transfer-Encoding:binary
+
+
+/*
+ * Open Document spreadsheet.
+ */
+ods
+  application:vnd.oasis.opendocument.spreadsheet
+    Content-Transfer-Encoding:binary
+
+
+/*
+ * Open Document text document.
+ */
+odt
+  application:vnd.oasis.opendocument.text
+    Content-Transfer-Encoding:binary
+
+
+/*
+ * PDF
+ */
+pdf
+  application:pdf
+    Content-Transfer-Encoding:binary
+
+
+/*
+ * JavaScript
+ */
+js
+  application:javascript
+json
+  application:json
+
+
+/*
+ * HTML
+ */
+html
+  text:html
+htm
+  text:html

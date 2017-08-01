@@ -108,6 +108,23 @@ p5.sephia_upload_files = function(e) {
    * user supplied during creating widget.
    */
   for-each:x:/../*/attachment
+
+    /*
+     * Checking if this is a legal attachment file type for Sephia Five.
+     */
+    sephia._internals.is-legal-attachment:x:/@_dp/#?value
+    if:x:/@sephia._internals.is-legal-attachment?value
+      =:warning
+
+      /*
+       * User should be warned.
+       */
+      add:x:/..for-each/**/sephia.widgets.compose-email._add-attachment
+        src:"warning:bool:true"
+
+    /*
+     * Making sure we add our attachment.
+     */
     eval-x:x:/+/*/*/*
     add:x:/../*/return/*/div/*/oninit
       src
@@ -190,7 +207,7 @@ p5.sephia_send_email = function(e) {
            * Finding main attachment wrapper widget for instance.
            */
           p5.web.widgets.find-first:x:/../*/_event?value
-            class:sephia-compose-attachments
+            class:sephia-attachments
 
           /*
            * Figuring out filename, without path.
@@ -202,6 +219,10 @@ p5.sephia_send_email = function(e) {
            * Creating widget wrapping given attachment, such that it will be automatically serialized
            * when form is serialized.
            */
+          if:x:/../*/warning?value
+            set:x:/../*/create-widget/*/class?value
+              src:{0} warning
+                :x:/../*/create-widget/*/class?value
           create-widget
             class:sephia-attachment
             parent:x:/@p5.web.widgets.find-first/*/*?value
@@ -270,7 +291,7 @@ p5.sephia_send_email = function(e) {
          * Wrapper for attachments.
          */
         container
-          class:sephia-compose-attachments
+          class:sephia-attachments
 
         /*
          * Our "select recipient" extension widget.
@@ -421,12 +442,12 @@ p5.sephia_send_email = function(e) {
                      * Retrieving the file name, and verifying it's a legal extension.
                      */
                     p5.web.post.get:sephia-file-name
-                    if
-                      sephia._internals.is-legal-attachment:x:/@p5.web.post.get/*?value
-                      not
+                    sephia._internals.is-legal-attachment:x:/@p5.web.post.get/*?value
+                    if:x:/@sephia._internals.is-legal-attachment?value
+                      =:false
 
                       /*
-                       * File's extension are not a legal type of attachment in Sephia.
+                       * File's extension is not a legal type of attachment in Sephia.
                        *
                        * Showing error "bubble window" to user, and returning early.
                        */
@@ -466,6 +487,9 @@ p5.sephia_send_email = function(e) {
                      * Invoking the event responsible for associating the attachment wilt email, that will
                      * create our button and hidden input element.
                      */
+                    if:x:/@sephia._internals.is-legal-attachment?value
+                      add:x:/../*/sephia.widgets.compose-email._add-attachment
+                        src:"warning:bool:true"
                     sephia.widgets.compose-email._add-attachment:x:/@p5.web.widgets.find-first-ancestor/*/*?value
 
                 /*

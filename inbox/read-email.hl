@@ -62,10 +62,11 @@ p5.mysql.connect:[sephia]
    */
   p5.mysql.select:@"select * from attachments where emailid = @id"
     @id:x:/../*/id?value
-  for-each:x:/@p5.mysql.select/*
+  for-each:x:/@p5.mysql.select/*/*/filename(!/=signature.pgp)/.
 
     /*
-     * Checking if this is a legal attachment.
+     * Checking if this is a legal attachment, or if the user should be warned 
+     * before being allowed to download the file.
      */
     eval-x:x:/+/*
     sephia._internals.mime.get-type-from-file-extension
@@ -73,6 +74,8 @@ p5.mysql.connect:[sephia]
       prefix:x:/@_dp/#/*/prefix?value
       folder:x:/@_dp/#/*/folder?value
     if:x:/@sephia._internals.mime.get-type-from-file-extension/*
+      and:x:/@sephia._internals.mime.get-type-from-file-extension/*/warning
+        not
 
       /*
        * Attachment has a legal file extension according to configurtion of Sephia.
@@ -80,7 +83,7 @@ p5.mysql.connect:[sephia]
        */
       add:x:/..for-each/*/add/*/src/*/button
         src
-          class:sephia-inbox-attachment
+          class:sephia-attachment
           onclick
 
             /*
@@ -110,7 +113,7 @@ p5.mysql.connect:[sephia]
        */
       add:x:/..for-each/*/add/*/src/*/button
         src
-          class:sephia-inbox-attachment sephia-inbox-illegal-attachment
+          class:sephia-attachment warning
           onclick
 
             /*
@@ -118,7 +121,7 @@ p5.mysql.connect:[sephia]
              * safe, asking him if he is really sure he wants to download the file.
              */
             eval-x:x:/+/**/_widget
-            micro.windows.info:These files are not considered safe, are you sure you wish to download it?
+            micro.windows.info:This is an usafe file, do you still want to download it?
               class:micro-windows-info warning
               widgets
                 button
@@ -449,7 +452,7 @@ create-widget
              * Displays attachments of email.
              */
             container
-              class:sephia-inbox-attachments
+              class:sephia-attachments
               widgets:attachments
 
             /*

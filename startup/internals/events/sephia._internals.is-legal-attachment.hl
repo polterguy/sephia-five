@@ -18,7 +18,14 @@ create-event:sephia._internals.is-legal-attachment
     filename:x:/../*/_arg?value
     folder:DUMMY
     prefix:DUMMY
-  if:x:/-/*
+  if:x:/@sephia._internals.mime.get-type-from-file-extension/*/warning
+
+    /*
+     * File is allowed, but user should be warned.
+     */
+    return:warning
+
+  else-if:x:/@sephia._internals.mime.get-type-from-file-extension/*
 
     /*
      * We have a MIME mapping for these types of files.

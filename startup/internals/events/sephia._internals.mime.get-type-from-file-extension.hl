@@ -20,6 +20,12 @@ create-event:sephia._internals.mime.get-type-from-file-extension
     prefix:string
 
   /*
+   * Making sure we do a "lowers" comparison.
+   */
+  set:x:/../*/filename?value
+    to-lower:x:/../*/filename?value
+
+  /*
    * Splitting [filename] to figure out its extension.
    */
   split:x:/../*/filename?value
@@ -40,7 +46,7 @@ create-event:sephia._internals.mime.get-type-from-file-extension
      * Adding "Content-Disposition" MIME header.
      */
     eval-x:x:/+/*/*
-    add:x:/../**/return/*
+    add:x:/../*/return/*
       src
         Content-Disposition:@"attachment; filename=""{0}"""
           :x:/../*/filename?value
@@ -48,6 +54,19 @@ create-event:sephia._internals.mime.get-type-from-file-extension
           :x:/../*/folder?value
           :x:/../*/prefix?value
           :x:/../*/filename?value
+
+    /*
+     * Checking if this is one of the file types that requires the user to be
+     * warned about its content.
+     */
+    if:x:/@load-file/*/*/{0}/--/.warning
+      :x:/@split/0/-?name
+
+      /*
+       * Adding our "warning return" value.
+       */
+      add:x:/../*/return
+        src:warning
 
   /*
    * Return invocation is dynamically populated in above code, 

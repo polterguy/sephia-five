@@ -267,7 +267,7 @@ create-event:sephia.send-email
        * Adding file to [.envelope].
        */
       add:x:/@.envelope/*/body/*/multipart
-        src:x:/@sephia._internals.mime.get-type-from-file-extension/*
+        src:x:/@sephia._internals.mime.get-type-from-file-extension/*(!/warning)
 
     else
 

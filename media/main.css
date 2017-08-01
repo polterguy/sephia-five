@@ -175,48 +175,35 @@
 
 
 /*
- * Attachments in reader.
+ * Attachments.
  */
-.sephia-inbox-attachments {
+.sephia-attachments {
     margin-top: 1rem;
+}
+.sephia-reader-received .sephia-attachments,
+.sephia-reader-sent .sephia-attachments {
     padding: 0 1.5rem;
 }
-.sephia-inbox-attachment {
-    background:linear-gradient(#ffffff, #ddffdd);
-    margin-right:1rem;
+.sephia-attachments:after {
+    content:"";
+    display:table;
+    clear:both;
 }
-.sephia-inbox-illegal-attachment {
-    background: linear-gradient(#ffffff, #ffdddd);
-    opacity:.3;
+.sephia-attachment {
+    margin-right:1rem;
+    margin-bottom:0;
+    float:left;
+}
+.sephia-attachments div.warning {
+    background:none;
+}
+.sephia-attachments div.warning button {
+    background: linear-gradient(#fee, #fcc);
 }
 
 /*
- * Attachments in composer.
+ * Ajax wait windoe (used when sending emails).
  */
-.sephia-compose-attachments {
-    overflow:auto;
-}
-.sephia-attachment {
-    float: left;
-    margin-right: 15px;
-}
-.sephia-attachment button {
-    position:relative;
-    background:linear-gradient(#ffffff, #ddffdd);
-    text-transform:none;
-    margin-bottom:15px !important;
-    padding-right:25px;
-}
-.sephia-attachment button:hover, .sephia-attachment button:active, .sephia-attachment button:focus {
-    background:var(--wid-lighter-col);
-}
-.sephia-attachment button:after {
-    position:absolute;
-    top:5px;
-    right:5px;
-    content:"X";
-    color:rgba(0,0,0,.2);
-}
 @keyframes sephia-composer-ajax-wait {
     0% {
         opacity: 0;
