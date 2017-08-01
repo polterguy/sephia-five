@@ -13,4 +13,17 @@ if
    * been sent, etc.
    */
   create-folder:@SEPHIA-USER-ATTACHMENTS/
+
+
+
+
+
+/*
+ * Notice, we also needs a "tmp" attachment folder, where attachments are uploaded,
+ * before the emails have been sent.
+ */
+if
+  fetch:x:/0/0?value
+    folder-exists:@SEPHIA-USER-ATTACHMENTS/tmp/
+  not
   create-folder:@SEPHIA-USER-ATTACHMENTS/tmp/

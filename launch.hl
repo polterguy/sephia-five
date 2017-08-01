@@ -60,7 +60,6 @@ micro.evaluate.file:@SEPHIA/init-user/ensure-user-attachment-folder.hl
 
 
 
-
 /*
  * Making sure we delete all file in temporary attachment folder.
  */

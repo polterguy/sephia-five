@@ -77,14 +77,14 @@ button
     /*
      * Getting "reply data" for email.
      */
-    sephia._internals.get-reply-data:x:/@get-widget-property/*/*?value
+    sephia._internals.get-response-email-data:x:/@get-widget-property/*/*?value
       all:bool:true
 
     /*
      * Creating our reply widget.
      */
     add:x:/../*/micro.evaluate.file
-      src:x:/@sephia._internals.get-reply-data/*
+      src:x:/@sephia._internals.get-response-email-data/*
     eval-x:x:/+/*
     micro.evaluate.file:@SEPHIA/inbox/read-email-action-buttons/common/create-reply-widget.hl
       id:x:/@get-widget-property/*/*?value

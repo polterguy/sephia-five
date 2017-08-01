@@ -276,8 +276,10 @@ create-event:sephia.send-email
        *
        * Trying to give user a sane and readable error message.
        */
+      split:x:/@_dp/#?value
+        =:/
       throw:@"File ""{0}"" is not supported by Sephia Five"
-        :x:/@split/@split/0/-?name
+        :x:/@split/0/-?name
 
   /*
    * Checking if we should create an HTML view, by converting content of email into Markdown.
