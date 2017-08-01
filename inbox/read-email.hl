@@ -236,19 +236,22 @@ where emails.id = @id"
    * signed, and if the fingerprint for the signature matches the fingerprint for the contact 
    * we have in our database, etc.
    */
-  _bg
+  _bg:sephia-reader
   switch:x:/@p5.mysql.select/*/*/status?value.int
     case:int:0
       set:x:/@_bg?value
-        src:sephia-safe
+        src:{0} sephia-safe
+          :x:/@_bg?value
 
     case:int:1
       set:x:/@_bg?value
-        src:sephia-unknown
+        src:{0} sephia-unknown
+          :x:/@_bg?value
 
     case:int:2
       set:x:/@_bg?value
-        src:sephia-unsafe
+        src:{0} sephia-unsafe
+          :x:/@_bg?value
 
   /*
    * Checking if this is a "sent" email or a "received".
@@ -613,7 +616,7 @@ create-widget
              * "Action strip" containing all buttons for actions user can do with email, such as "Reply", "Forward", "Delete", etc.
              */
             div
-              class:right air
+              class:right
               widgets
                 div
                   class:strip

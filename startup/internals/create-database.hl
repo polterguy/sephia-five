@@ -67,6 +67,7 @@ CREATE TABLE IF NOT EXISTS `parts` (
   `type` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `content` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `emailid` int(11) unsigned NOT NULL,
+  `markdown` int(10) unsigned NOT NULL DEFAULT 0,
   UNIQUE KEY `id_UNIQUE` (`id`),
   KEY `part_emailid_idx` (`emailid`),
   CONSTRAINT `fk_parts_emails` FOREIGN KEY (`emailid`) REFERENCES `emails` (`id`) ON DELETE CASCADE ON UPDATE CASCADE

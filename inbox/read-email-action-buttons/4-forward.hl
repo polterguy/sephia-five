@@ -52,6 +52,11 @@ button
       .email-id
 
     /*
+     * Getting settings for user.
+     */
+    p5.auth.my-settings.get
+
+    /*
      * Getting "reply data" for email.
      */
     sephia._internals.get-response-email-data:x:/@get-widget-property/*/*?value

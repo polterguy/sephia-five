@@ -15,6 +15,9 @@
  * You can also optionally pass in a [headers] collection, which will be MIME headers associated with the message
  * once it is sent.
  *
+ * In addition, you can pass in [markdown], and set its value to true, which will enable composing your
+ * email using Markdown syntax.
+ *
  * You can also optionally pass in [.onclose] and [.onsend] lambda callbacks, which will be invoked when
  * email composer is closed and/or email is sent, in addition to [class], which will be the root class
  * of the composer.
@@ -153,7 +156,7 @@ p5.sephia_upload_files = function(e) {
   /*
    * Returning actual widget to caller.
    */
-  eval-x:x:/../*/return/**/widgets/=content/*(/input|/literal)/*/value|/../*/return/*/*/class
+  eval-x:x:/../*/return/**/widgets/=content/*(/input|/literal)/*/value|/../*/return/*/*/class|/../*/return/**/sephia.send-email/*/markdown
   return
     div
       oninit
@@ -358,6 +361,7 @@ p5.sephia_send_email = function(e) {
                       add:x:/+
                         src:x:/@micro.form.serialize/*(!/no-data)
                       sephia.send-email
+                        markdown:x:/../*/markdown?value
 
                       /*
                        * Checking if email was successfully sent, and if not, explaining to

@@ -27,6 +27,7 @@ envelope:welcome-email-sephia-five-no1@gaiasoul.com
       Thomas Hansen <thomas@gaiasoul.com>:bool:true
         fingerprint:5E11AEF421CDB0A7A9A5C6B4AED9D04F43BE2AAD
     text:plain
+      X-Type:markdown
       content:@"Sephia Five is an Open Source and cryptographically secure email alternative to public services such as GMail and Hotmail. Sephia Five allows you to host your own data, on your own web server(s), and communicate securely, without any adversaries being able to know what you and your friends are communicating about. Sephia Five is a ultra safe and cryptographically secured email system, created to serve the needs of both companies, organisations, and individuals. Sephia Five brings the concept of privacy to a new level.
 
 If you look at the bottom left corner of this email, you will see a smiley. This smiley indicates that this email was sent encrypted, and that it was cryptographically signed, and that it was signed with a PGP key, that you have verified belongs to the email address of _'thomas@gaiasoul.com'_. This means that the email is safe, and that you can trust that it originated from the person you think it originated from.
@@ -74,6 +75,7 @@ envelope:welcome-email-sephia-five-no2@gaiasoul.com
       Thomas Hansen <thomas@gaiasoul.com>:bool:true
         fingerprint:5E11AEF421CDB0A7A9A5C6B4AED9D04F43BE2AAD
     text:plain
+      X-Type:markdown
       content:@"Sephia Five makes PGP cryptography ridiculously easy to use. There are almost no more complex things for you left to do, and you have your emails almost automagically secured for you. Sephia Five makes your email communication cryptographically secure, without you having to put in any effort for it to happen.
 
 Sephia is _'paranoid software'_, to such an extent that it will even encrypt your subject, to not give adversaries anything to start with, when trying to figure out what your emails contains. In fact, an adversary will only see some random subject, fetched from for instance the New York Times, Wall Street Journal, or some other customzied _'babelizing service'_. This feature encrypts and hides your original subject, and also makes your emails being perceived as innocent discussions about your local news. Which _'babelizing service'_ you wish to use, can easily be configure in your settings.
@@ -193,6 +195,7 @@ envelope:welcome-email-sephia-five-no3@gaiasoul.com
       Thomas Hansen <thomas@gaiasoul.com>:bool:true
         fingerprint:5E11AEF421CDB0A7A9A5C6B4AED9D04F43BE2AAD
     text:plain
+      X-Type:markdown
       content:@"![alt Bank vault security](/media/vault.png)
 
 When Phil Zimmerman created PGP cryptography, Bruce Schneier said; _'PGP cryptograhpy is the closest you come to military grade cryptography in the public space'_. When Edward Snowden was able to play cat and mouse with the CIA, the NSA, and the entire military industrial complex of the USA and its State Department - Mr. Snowden was using PGP cryptography to communicate with his friends. Julian Assange and WikiLeaks are using PGP cryptography, and so far, the CIA and the NSA have never been able to hack their emails. Every single intelligence organisation and secret police force on the planet, with respect for themselves, are using PGP cryptography one way or another.
@@ -236,6 +239,7 @@ envelope:welcome-email-sephia-five-no4@gaiasoul.com
       Thomas Hansen <thomas@gaiasoul.com>:bool:true
         fingerprint:5E11AEF421CDB0A7A9A5C6B4AED9D04F43BE2AAD
     text:plain
+      X-Type:markdown
       content:@"If you're still uncertain about Sephia Five, we can help you. This is the only thing we do in fact. We help people and companies to create and install custom enterprise software, that keeps them safe and secure online. Need help with setting up Sephia Five such that it is secure? Send us an email. Need other types of software products for your enterprise? Send us an email. We are experts in creating secure enterprise software with military grade cryptography, making your online presence 100% secure, while perfectly preserving your privacy.
 
 Ask yourself the following question.
@@ -271,6 +275,7 @@ envelope:welcome-email-sephia-five-no5@gaiasoul.com
       Thomas Hansen <thomas@gaiasoul.com>:bool:true
         fingerprint:5E11AEF421CDB0A7A9A5C6B4AED9D04F43BE2AAD
     text:plain
+      X-Type:markdown
       content:@"![alt Thomas Hansen the CEO and CTO of GaiaSoul](/media/thomas.jpg)
 
 Although we have done everything within our powers to secure your online communication in Sephia Five, accidents do happen. There might exist bugs in Sephia, that compromises your security. And we might have without knowing it, done something wrong when we created Sephia. Although, we have done everything within our reach to make sure you are as secure as it is possible to be, we would still like to state for the record that there are no guarantees in security, and none within reach of sanity will ever give you any either. Though I suspect, that if your email is compromised when using Sephia Five, it is highly likely not due to a bug in our code, but rather due to the way you installed it and/or configured/used it.

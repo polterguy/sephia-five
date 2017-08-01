@@ -337,12 +337,28 @@ create-event:sephia._internals.save-email-2-database
       if:x:/@_dp/#/*/content?value
 
         /*
-         * Part had actual content.
+         * Part had actual content, checking if it was of type Markdown.
          */
-        p5.mysql.insert:@"insert into parts (type, content, emailid) values (@type, @content, @emailid)"
+        _markdown:int:0
+        if:x:/@_dp/#/*/X-Type?value
+          =:markdown
+          and:x:/@_dp/#?value
+            =:plain
+
+          /*
+           * Part was actually Markdown.
+           */
+          set:x:/@_markdown?value
+            src:int:1
+
+        /*
+         * Inserting into parts table.
+         */
+        p5.mysql.insert:@"insert into parts (type, content, emailid, markdown) values (@type, @content, @emailid, @markdown)"
           @type:x:/@_dp/#?value
           @content:x:/@_dp/#/*/content?value
           @emailid:x:/@for-each/@p5.mysql.insert/*/id?value
+          @markdown:x:/@_markdown?value
 
   else
 

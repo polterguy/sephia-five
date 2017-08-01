@@ -40,7 +40,6 @@ create-widget
          * This is the actual "composer" widget, which allows user to compose/reply/etc an email.
          */
         sephia.widgets.compose-email
-          markdown-composer:bool:true
           subject:x:/../*/subject?value
           body:x:/../*/content?value
           recipients

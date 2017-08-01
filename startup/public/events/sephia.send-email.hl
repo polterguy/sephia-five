@@ -12,6 +12,12 @@
  *
  * You can also pass in an optional [headers] collection, which will be MIME headers associate with the message.
  *
+ * If you pass in [markdown], and set its value to boolean "true", an alternative HTML view will be created,
+ * by converting the text content to HTML using Markdown syntax.
+ *
+ * By default, Sephia will never send anything but "plain:text" parts, but you can explicitly choose to override
+ * this when invoking this event.
+ *
  * Notice, unless you pass in [force], and set its value to boolean "true", the email will not
  * be sent unless all recipients are in user's list of contacts, but instead the event will return "false" to
  * the caller.
@@ -284,10 +290,10 @@ create-event:sephia.send-email
   /*
    * Checking if we should create an HTML view, by converting content of email into Markdown.
    */
-  if:x:/@p5.auth.my-settings.get/*/sephia/*/markdown-composer?value
+  if:x:/../*/markdown?value
 
     /*
-     * User's settings requested that Markdown should be used.
+     * Caller requested that Markdown should be created as an alternative HTML view of email.
      */
     sephia._internals.markdown-to-html:x:/../*/body?value
     eval-x:x:/+/*/*/*/*/content
@@ -310,6 +316,7 @@ create-event:sephia.send-email
       src
         multipart:alternative
           text:plain
+            X-Type:markdown
             Content-Transfer-Encoding:QuotedPrintable
             content:x:/../*/body?value
           text:html
@@ -334,6 +341,7 @@ create-event:sephia.send-email
     add:x:(/@.envelope/*/body/*/multipart|/@.envelope/*/body)/[0,1]
       src
         text:plain
+          X-Type:markdown
           Content-Transfer-Encoding:QuotedPrintable
           content:x:/../*/body?value
 

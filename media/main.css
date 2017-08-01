@@ -27,6 +27,7 @@
  * Email reader's "action buttons".
  */
 .reader-action-button {
+    margin-bottom:0;
 }
 
 /*
@@ -132,6 +133,11 @@
     }
 }
 
+.sephia-reader {
+    padding:1rem;
+    position:relative;
+}
+
 .sephia-reader-received {
 }
 
@@ -140,26 +146,140 @@
 }
 
 .sephia-reader-subject {
-    padding:1rem 1.5rem 0 1.5rem;
     border-top-left-radius:var(--border-radius);
     border-top-right-radius:var(--border-radius);
 }
 
-.sephia-iframe-reader {
-    overflow: hidden;
-    height: 100%;
-    width: 100%;
-    border:none;
-    padding:0 1.5rem;
-}
-
-.sephia-text-reader {
+.sephia-reader-content {
     white-space: pre-wrap;
     width: 100%;
     overflow: hidden;
-    padding: 0 1.5rem;
 }
 
+/*
+ * Special handling of GMail signatures, to make them resemble a Sephia signature.
+ */
+.sephia-reader-content .gmail_signature {
+    opacity: 0.3;
+}
+
+.sephia-reader-content-error {
+    background: #fffafa;
+}
+
+/*
+ * Specialised tag handling for the reader.
+ */
+.sephia-reader-content pre {
+    padding:0;
+}
+.sephia-reader-content blockquote {
+    font-size: 1rem;
+    margin-left: 1rem;
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    box-shadow: 2px 2px 3px rgba(0,0,0,.2);
+    margin-right: 3px;
+    position: relative;
+}
+
+/*
+ * Then every even-odd inwards branch gets different colors to give visual clues about who said what.
+ * Notice, first for received emails.
+ */
+.sephia-five-received-email>blockquote,
+.sephia-five-received-email>blockquote>blockquote>blockquote,
+.sephia-five-received-email>blockquote>blockquote>blockquote>blockquote>blockquote,
+.sephia-five-received-email>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote {
+    /* You said */
+    background-color: #fcfcfc;
+}
+.sephia-five-received-email>blockquote:after,
+.sephia-five-received-email>blockquote>blockquote>blockquote:after,
+.sephia-five-received-email>blockquote>blockquote>blockquote>blockquote>blockquote:after,
+.sephia-five-received-email>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote:after {
+    /* You said */
+    content:'You said';
+    position:absolute;
+    bottom:5px;
+    right:5px;
+    color:#ccc;
+    font-size:.8rem;
+    font-style:italic;
+}
+
+
+.sephia-five-received-email>blockquote>blockquote,
+.sephia-five-received-email>blockquote>blockquote>blockquote>blockquote,
+.sephia-five-received-email>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote,
+.sephia-five-received-email>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote {
+    /* The other party said */
+    background-color: #ffffff;
+}
+.sephia-five-received-email>blockquote>blockquote:after,
+.sephia-five-received-email>blockquote>blockquote>blockquote>blockquote:after,
+.sephia-five-received-email>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote:after,
+.sephia-five-received-email>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote:after {
+    /* The other party said */
+    content:'The other party said';
+    position:absolute;
+    bottom:5px;
+    right:5px;
+    color:#ccc;
+    font-size:.8rem;
+    font-style:italic;
+}
+
+
+/*
+ * Then for sent emails.
+ */
+.sephia-five-sent-email>blockquote,
+.sephia-five-sent-email>blockquote>blockquote>blockquote,
+.sephia-five-sent-email>blockquote>blockquote>blockquote>blockquote>blockquote,
+.sephia-five-sent-email>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote {
+    /* The other party said */
+    background-color: #ffffff;
+}
+.sephia-five-sent-email>blockquote:after,
+.sephia-five-sent-email>blockquote>blockquote>blockquote:after,
+.sephia-five-sent-email>blockquote>blockquote>blockquote>blockquote>blockquote:after,
+.sephia-five-sent-email>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote:after {
+    /* The other party said */
+    content:'The other party said';
+    position:absolute;
+    bottom:5px;
+    right:5px;
+    color:#ccc;
+    font-size:.8rem;
+    font-style:italic;
+}
+
+
+.sephia-five-sent-email>blockquote>blockquote,
+.sephia-five-sent-email>blockquote>blockquote>blockquote>blockquote,
+.sephia-five-sent-email>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote,
+.sephia-five-sent-email>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote {
+    /* You said */
+    background-color: #fcfcfc;
+}
+.sephia-five-sent-email>blockquote>blockquote:after,
+.sephia-five-sent-email>blockquote>blockquote>blockquote>blockquote:after,
+.sephia-five-sent-email>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote:after,
+.sephia-five-sent-email>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote:after {
+    /* You said */
+    content:'You said';
+    position:absolute;
+    bottom:5px;
+    right:5px;
+    color:#ccc;
+    font-size:.8rem;
+    font-style:italic;
+}
+
+/*
+ * Meta information about email.
+ */
 .sephia-reader-meta-wrapper {
     padding:1.5rem;
     color:#999;

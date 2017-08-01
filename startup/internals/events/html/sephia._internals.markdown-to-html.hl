@@ -20,13 +20,53 @@ create-event:sephia._internals.markdown-to-html
     =:"\r\n-- \r\n"
 
   /*
-   * Converting content of email (minus signature) to Markdown.
+   * Used to hold the content of email.
    */
-  markdown2html:x:/-/0?name
+  _body
+
+  /*
+   * Checking if there was a signature in email, and if so, making sure
+   * we wrap it into a "<pre>" declaration, with some styling.
+   */
+  if:x:/@split/*?count
+    >:int:1
+
+    /*
+     * There was a signature in email's content.
+     *
+     * Notice, in case user has for some weird reasons typed in statically into
+     * his email "\r\n-- \r\n", we actually join everything we [split] further up,
+     * except the last split result.
+     */
+    set:x:/@_body?value
+      join:x:/@split/*(!/./0/-)?name
+        sep:"\r\n-- \r\n"
+
+    /*
+     * Adding signature to end of [_body].
+     */
+    set:x:/@_body?value
+      src:"{0} \r\n<pre style=\"opacity:.3;\">-- \r\n{1}</pre>"
+        :x:/@_body?value
+        :x:/@split/0/-?name
+
+  else
+
+    /*
+     * There was no signature in email's content.
+     */
+    set:x:/@_body?value
+      src:x:/../*/_arg?value
+
+  /*
+   * Converting content of email to Markdown.
+   */
+  markdown2html:x:/@_body?value
     root-url:@SEPHIA/
 
   /*
    * Converting all hyperlinks within email that are not explicitly set to hyperlinks to such.
+   *
    * Notice, this invocation will ignore any hyperlinks already created by our above [markdown2html] invocation.
    */
   sephia._internals.html.create-hyperlinks:x:/@markdown2html?value
@@ -36,10 +76,27 @@ create-event:sephia._internals.markdown-to-html
    * make them render left aligned, with some borders and margin.
    */
   html2lambda:x:/@sephia._internals.html.create-hyperlinks?value
-  for-each:x:/-/**/img
+  for-each:x:/@html2lambda/**/img
     add:x:/@_dp/#
       src
         @style:"max-width:50%;border-radius:5px;box-shadow:3px 3px 5px rgba(0,0,0,.5);float:left;margin:0 1rem 1rem 0;"
+
+  /*
+   * Running through "whitelist", making sure that email does not contain malicious HTML elements.
+   *
+   * Basically, this will remove everything not found in our "/configuration/html-whitelist.hl" file.
+   */
+  load-file:@SEPHIA/configuration/html-whitelist.hl
+  for-each:x:/@html2lambda/**
+    if:x:/@load-file/*/*/\{0}
+      :x:/@_dp/#?name
+      not
+
+      /*
+       * Malicious HTML tag or attribute!
+       * Simply removing it.
+       */
+      set:x:/@_dp/#
 
   /*
    * Converting lambda back to HTML, now with styling for all images.
@@ -47,30 +104,7 @@ create-event:sephia._internals.markdown-to-html
   lambda2html:x:/@html2lambda/*
 
   /*
-   * Checking if user actually had a signature in his email.
+   * Wrapping entire HTML content into its "wrapping div".
    */
-  if:x:/@split/*?count
-    =:int:1
-
-    /*
-     * User didn't have any signature, returning raw markdown with hyperlink conversion,
-     * making sure we "braid it" into our "wrapper HTML" template.
-     */
-    sephia._internals.markdown-to-html.wrap:x:/@lambda2html?value
-    return:x:/-?value
-
-  /*
-   * Converting URLs in signature to real hyperlinks.
-   */
-  sephia._internals.html.create-hyperlinks:x:/@split/0/-?name
-
-  /*
-   * User had a signature.
-   *
-   * Returning both Markdown and signature as pre-formatted,
-   * making sure we "braid" everything inside our "wrapper HTML" template.
-   */
-  sephia._internals.markdown-to-html.wrap:"{0}\r\n<pre style=\"opacity:.3;\">-- \r\n{1}</pre>"
-    :x:/../*/lambda2html/[0,1]?value
-    :x:/../*/sephia._internals.html.create-hyperlinks/[1,2]?value
+  sephia._internals.markdown-to-html.wrap:x:/@lambda2html?value
   return:x:/-?value

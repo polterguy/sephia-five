@@ -164,11 +164,25 @@ values (@subject, @date, @sender, @username, 1, @mimeid, @signature, @fingerprin
         @status:x:/@_status?value
 
       /*
+       * Checking if text content actually is Markdown.
+       */
+      _markdown:int:0
+      if:x:/../*/envelope/*/body/**/text/=plain/*/X-Type?value
+        =:markdown
+
+        /*
+         * Email's text/plain part is actually Markdown.
+         */
+        set:x:/@_markdown?value
+          src:int:1
+
+      /*
        * Inserting into "parts" table in database.
        */
-      p5.mysql.insert:@"insert into parts (type, content, emailid) values ('plain', @content, @emailid)"
+      p5.mysql.insert:@"insert into parts (type, content, emailid, markdown) values ('plain', @content, @emailid, @markdown)"
         @content:x:/../*/envelope/*/body/**/text/=plain/*/content?value
         @emailid:x:/@p5.mysql.insert/@p5.mysql.insert/*/id?value
+        @markdown:x:/@_markdown?value
 
       /*
        * Checking if HTML view was given.

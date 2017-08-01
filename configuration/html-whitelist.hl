@@ -19,7 +19,6 @@ bdi
 bdo
 big
 blockquote
-body
 br
 caption
 center
@@ -41,10 +40,8 @@ h3
 h4
 h5
 h6
-head
 header
 hr
-html
 i
 img
 ins

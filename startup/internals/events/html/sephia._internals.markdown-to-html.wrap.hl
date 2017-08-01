@@ -16,16 +16,5 @@ create-event:sephia._internals.markdown-to-html.wrap
   /*
    * Wrapping given [_arg] HTML inside of wrapper HTML.
    */
-  return:@"<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset=""utf-8"">
-    <title>Sephia Five email</title>
-  </head>
-  <body>
-    <div class=""sephia-five-received-email"">
-      {0}
-    </div>
-  </body>
-</html>"
+  return:@"<div class=""sephia-five-received-email"">{0}</div>"
     :x:/../*/_arg?value

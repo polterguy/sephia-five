@@ -46,8 +46,7 @@ create-event:sephia._internals.widgets.settings
     smtp-server:x:/@load-file/*/*/smtp-server?value
     smtp-port:x:/@load-file/*/*/smtp-port?value
     smtp-ssl:x:/@load-file/*/*/smtp-ssl?value
-    preferred-content-type:x:/@load-file/*/*/preferred-content-type?value
-    markdown-composer:x:/@load-file/*/*/markdown-composer?value
+    markdown:x:/@load-file/*/*/markdown?value
     pgp-subjects:x:/@load-file/*/*/pgp-subjects?value
     skin:x:/@load-file/*/*/skin?value
     signature:x:/@load-file/*/*/signature?value
@@ -87,8 +86,8 @@ create-event:sephia._internals.widgets.settings
   /*
    * Checking if user wants to compose emails using Markdown.
    */
-  if:x:(/../*/p5.auth.my-settings.get/*/sephia/*/markdown-composer|/../*/.defaults/*/markdown-composer)/$?value
-    add:x:/../*/return/**/input/*/type/=checkbox/./*/.data-field/=markdown-composer/.
+  if:x:(/../*/p5.auth.my-settings.get/*/sephia/*/markdown|/../*/.defaults/*/markdown)/$?value
+    add:x:/../*/return/**/input/*/type/=checkbox/./*/.data-field/=markdown/.
       src:checked
 
   /*
@@ -239,33 +238,11 @@ create-event:sephia._internals.widgets.settings
                     widgets
                       input:sephia-settings-compose-markdown
                         type:checkbox
-                        .data-field:markdown-composer
+                        .data-field:markdown
                       label
                         for:sephia-settings-compose-markdown
-                        innerValue:I'd like to compose emails using Markdown
-                        title:Is only valid when composing new emails, not when replying to emails, or forwarding emails
-              div
-                class:row
-                widgets
-                  div
-                    class:col
-                    widgets
-                      input:sephia-setting-prefer-html
-                        type:radio
-                        .data-field:preferred-content-type
-                        .data-value:html
-                        name:sephia-preferred-content-type
-                      label
-                        for:sephia-setting-prefer-html
-                        innerValue:I prefer to read HTML emails
-                      input:sephia-setting-prefer-plain
-                        type:radio
-                        .data-field:preferred-content-type
-                        .data-value:plain
-                        name:sephia-preferred-content-type
-                      label
-                        for:sephia-setting-prefer-plain
-                        innerValue:I prefer to read plain text emails
+                        innerValue:Use Markdown
+                        title:Attempt to convert content of emails into Markdown when reading emails, if possible
 
           /*
            * POP3 settings.
