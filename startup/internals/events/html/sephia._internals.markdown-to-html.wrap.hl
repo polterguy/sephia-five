@@ -1,4 +1,4 @@
-﻿﻿
+﻿
 /*
  * Will wrap the email content given as [_arg] inside of its "standard Sephia HTML template".
  *
@@ -16,5 +16,5 @@ create-event:sephia._internals.markdown-to-html.wrap
   /*
    * Wrapping given [_arg] HTML inside of wrapper HTML.
    */
-  return:@"<div class=""sephia-five-received-email"">{0}</div>"
+  return:@"<div class=""sephia-received-email"">{0}</div>"
     :x:/../*/_arg?value

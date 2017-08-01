@@ -1,12 +1,12 @@
-
+﻿
 /*
  * Databinds our inbox datagrid.
  *
  * Requires no arguments, but you can optionally pass in [offset] and [filter] when invoking file,
  * to start out on a specific page, with a specified filter condition.
  *
- * Filter can be "typed", by starting it out with a "type declaration" followed by a colon.
- * Legal types are 'inbox:', 'sent:' and 'unread:'
+ * Filter can be "typed", by starting it out with a "type declaration", followed by a colon.
+ * Legal types are 'inbox:', 'sent:', 'read:', 'unread:', 'safe:', 'all:', 'spam:' and 'attachment:'.
  */
 .defaults
   offset:int:0
@@ -95,18 +95,25 @@ if
     default
       micro.windows.info:I don't recognize your type declaration
         class:micro-windows-info warning
+      set:x:/@_filter-type?value
+        src:@"and emails.type='received'"
 
   /*
-   * Checking if we actually had a filter criteria.
+   * Checking if caller supplied a filter or only a type declaration.
    */
   if:x:/@split/*?count
     >:int:1
 
     /*
      * There was a filter, in addition to a type declaration.
+     *
+     * Since user might search for something containing a ":", we need to
+     * join everything but the first [split] result.
      */
+    join:x:/@split/*(!/./0)?name
+      sep:":"
     set:x:(/../*/filter|/../*/.defaults/*/filter)/$?value
-      src:x:/@split/0/-?name
+      src:x:/@join?value
 
   else
 
@@ -131,9 +138,12 @@ p5.mysql.connect:[sephia]
    * Notice, we do not order by date, since dates might sometimes be local, and/or slightly offsets.
    * Hence, we order our emails by "id" descendingly, which should always bring in the most recent email at the top.
    */
-  p5.mysql.select:@"select emails.id, subject, date, encrypted, signature, emails.fingerprint, emails.status, isread, emails.type, contacts.email, contacts.name from emails inner join contacts on contacts.id = emails.sender 
+  p5.mysql.select:@"select emails.id, subject, date, encrypted, signature, emails.fingerprint, emails.status, isread, emails.type, contacts.email, contacts.name from emails 
+inner join contacts on contacts.id = emails.sender 
 where emails.username = @username and (subject like @filter or contacts.name like @filter or contacts.email like @filter 
-or exists (select * from parts where content like @filter and parts.emailid = emails.id)) {0}
+or exists (select * from parts where content like @filter and parts.emailid = emails.id))
+or exists (select * from attachments where filename like @filter and attachments.emailid = emails.id)
+{0}
 order by id desc limit 15 offset @offset"
     :x:/@_filter-type?value
     @username:x:/@whoami/*/username?value
@@ -174,7 +184,7 @@ order by id desc limit 15 offset @offset"
       =:int:1
 
       /*
-       * This email was sent encrypted.
+       * This email was encrypted.
        */
       set:x:/@_class?value
         src:{0} sephia-encrypted
@@ -185,17 +195,21 @@ order by id desc limit 15 offset @offset"
         !=:
 
       /*
-       * This email was sent signed.
+       * This email was cryptographically signed.
        */
       set:x:/@_class?value
         src:{0} sephia-signed
           :x:/@_class?value
 
     /*
-     * Nicely formatting the date, and cleaning up CSS class.
+     * Nicely formatting the date.
      */
     p5.types.date.format:x:/@_dp/#/*/date?value
       format:"d. MMM yyyy - HH:mm"
+
+    /*
+     * Cleaning up our CSS class declaration for email row.
+     */
     set:x:/@_class?value
       trim:x:/@_class?value
 
@@ -206,7 +220,11 @@ order by id desc limit 15 offset @offset"
       @id:x:/@_dp/#/*/id?value
     if:x:/@p5.mysql.scalar?value.int
       >:int:0
-      add:x:/..for-each/*/add/**/Date/*/widgets/*/div/*/widgets
+
+      /*
+       * Email contains attachments.
+       */
+      add:x:/..for-each/*/add/**/Date/*/widgets
         src
           literal
             element:span
@@ -217,21 +235,21 @@ order by id desc limit 15 offset @offset"
      */
     switch:x:/@_dp/#/*/status?value.int
       case:int:0
-        add:x:/..for-each/*/add/**/Name/*/widgets/*/div/*/widgets
+        add:x:/..for-each/*/add/**/Subject/*/widgets/*/div/*/widgets
           src
             literal
               element:span
               class:icon-smile-o
 
       case:int:1
-        add:x:/..for-each/*/add/**/Name/*/widgets/*/div/*/widgets
+        add:x:/..for-each/*/add/**/Subject/*/widgets/*/div/*/widgets
           src
             literal
               element:span
               class:icon-meh-o
 
       case:int:2
-        add:x:/..for-each/*/add/**/Name/*/widgets/*/div/*/widgets
+        add:x:/..for-each/*/add/**/Subject/*/widgets/*/div/*/widgets
           src
             literal
               element:span
@@ -240,7 +258,7 @@ order by id desc limit 15 offset @offset"
     /*
      * Forward evaluating arguments, and creating our row.
      */
-    eval-x:x:/+/*/*/*|/+/*/*/*/Name/**|/+/*/*/*/.row/*(/*/*/id|/class|/.row-email-id)
+    eval-x:x:/+/*/*/*(/Name|/.row(/*/*/*/id|/*))|/+/*/*/*(/Subject|/Date)/**
     add:x:/../*/micro.widgets.grid.databind
       src
         item
@@ -256,15 +274,18 @@ order by id desc limit 15 offset @offset"
               micro.evaluate.file:@SEPHIA/inbox/read-email.hl
                 id:x:/@_dp/#/*/id?value
 
-          Name
+          Name:x:/@_dp/#/*/name?value
+          Subject
             widgets
               div
                 class:sephia-status
                 widgets
               span
-                innerValue:x:/@_dp/#/*/name?value
-          Subject:x:/@_dp/#/*/subject?value
-          Date:x:/@p5.types.date.format?value
+                innerValue:x:/@_dp/#/*/subject?value
+          Date
+            widgets
+              span
+                innerValue:x:/@p5.types.date.format?value
           Delete
             widgets
               button
@@ -286,7 +307,7 @@ order by id desc limit 15 offset @offset"
                   /*
                    * Databinding inbox again.
                    */
-                  sephia.inbox.open
+                  sephia.inbox.databind
                     keep-page-filter:bool:true
 
                   /*

@@ -1,4 +1,4 @@
-
+﻿
 /*
  * Creates an (invisible) widget that constantly polls the server to check
  * if new emails have arrived.
@@ -270,39 +270,12 @@ if (!p5.sephia_poller) {{
         sephia._internals.update-page-title
 
         /*
-         * Then we check if user has paged his inbox, or filtered it somehow, and if not,
-         * we automatically re-databind his inbox.
+         * Then we re-databind inbox.
          *
-         * Notice, before we do this, we need to check if his inbox is currently being displayed,
-         * which might not be the case, if user has opened his settings, etc.
+         * Making sure we keep the existing filter though.
          */
-        if
-          fetch:x:/0/0?value
-            widget-exists:sephia-search-txt
-
-          /*
-           * User's inbox is currently being displayed, now checking if he has filtered it.
-           */
-          get-widget-property:sephia-search-txt
-            value
-          if:x:/@get-widget-property/*/*?value
-            not
-            or:x:/@get-widget-property/*/*?value
-              =:
-
-            /*
-             * User has no filter in his search textbox, now checking if he has paged.
-             */
-            get-widget-property:sephia-search-wrapper
-              .offset
-            if:x:/@get-widget-property/*/*?value.int
-              =:int:0
-
-              /*
-               * User has his inbox up, he has not filtered it, and he has not paged it, hence
-               * we can automatically re-databind his inbox for him.
-               */
-              micro.evaluate.file:@SEPHIA/inbox/databind-inbox.hl
+        sephia.inbox.databind
+          keep-page-filter:bool:true
 
   .oncheck
 

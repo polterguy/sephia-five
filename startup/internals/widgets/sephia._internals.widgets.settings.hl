@@ -1012,6 +1012,15 @@ save your settings, and do something else in the meantime, and come back here af
                        */
                       micro.page.set-focus:sephia-settings-save
 
+                      /*
+                       * Making sure the "Save" button is visible, and the "Next"
+                       * button is invisible.
+                       */
+                      set-widget-property:sephia-settings-save
+                        visible:true
+                      set-widget-property:sephia-settings-next
+                        visible:false
+
                     class:col
                     widgets
                       input:sephia-settings-holloywood-spam-filter
@@ -1293,20 +1302,3 @@ save your settings, and do something else in the meantime, and come back here af
                        */
                       p5.web.widgets.ajax-events.raise:x:/@p5.web.widgets.find-first/*/*?value
                         onclick
-
-                      /*
-                       * Checking if this was our last button, and if so, showing
-                       * our "Save" button, and hiding our "Next" button.
-                       */
-                      p5.web.widgets.find-first:sephia-settings-tab
-                        after:x:/./@p5.web.widgets.find-first/*/*?value
-                      if:x:/-/*/*?value
-                        not
-
-                        /*
-                         * This was our last tab view button.
-                         */
-                        set-widget-property:sephia-settings-save
-                          visible:true
-                        set-widget-property:x:/../*/_event?value
-                          visible:false

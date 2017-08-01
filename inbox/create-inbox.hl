@@ -1,4 +1,4 @@
-﻿
+﻿﻿
 /*
  * Shows our inbox for Sephia Five
  */
@@ -28,10 +28,10 @@ create-widget:sephia-search-wrapper
     /*
      * Re-databinds inbox, setting [filter] and [offset] to zero and blank.
      *
-     * If you supply [keep-page-filter] and set its value to true, then existing [filter] and [offset]
-     * will be kept as is, and used to re-databind grid.
+     * If you supply [keep-page-filter] and set its value to true, then the 
+     * existing [filter] and [offset] will be kept as is, and used to re-databind grid.
      */
-    sephia.inbox.open
+    sephia.inbox.databind
 
       /*
        * Checking if caller requested that current page and filter should be kept.
@@ -56,19 +56,31 @@ create-widget:sephia-search-wrapper
          * Setting paging [offset] to zero and [filter] to "",
          * before re-databinding grid again.
          */
+        .defaults
+          filter:
+          offset:int:0
         set-widget-property:x:/../*/_event?value
-          .offset:0
+          .offset:x:(/../*/offset|/@.defaults/*/offset)/$?value
         set-widget-property:sephia-search-txt
-          value:
+          value:x:(/../*/filter|/@.defaults/*/filter)/$?value
+
+        /*
+         * Adding any (optional) filters and/or offsets
+         */
+        add:x:/./*/micro.evaluate.file
+          src:x:/../*(/filter|/offset)
+
+        /*
+         * Databinding inbox by evaluating file responsible for databinding it.
+         */
         micro.evaluate.file:@SEPHIA/inbox/databind-inbox.hl
 
   widgets
     div
-      class:col right
+      class:col-70 right
       widgets
         div
-          class:strip
-          style:"display:inline-block;"
+          class:strip fill
           widgets
 
             /*
@@ -96,19 +108,13 @@ create-widget:sephia-search-wrapper
                 get-widget-property:sephia-search-txt
                   value
                 eval-x:x:/+/*
-                micro.evaluate.file:@SEPHIA/inbox/databind-inbox.hl
+                sephia.inbox.databind
                   filter:x:/@get-widget-property/*/*?value
 
                 /*
                  * Making sure we set focus to search textbox.
                  */
                 micro.page.set-focus:sephia-search-txt
-
-                /*
-                 * Making sure we reset "offset".
-                 */
-                set-widget-property:sephia-search-wrapper
-                  .offset:0
 
             /*
              * Button to page to previous page.
@@ -140,7 +146,7 @@ create-widget:sephia-search-wrapper
                 get-widget-property:sephia-search-txt
                   value
                 eval-x:x:/+/*
-                micro.evaluate.file:@SEPHIA/inbox/databind-inbox.hl
+                sephia.inbox.databind
                   filter:x:/@get-widget-property/*/*?value
                   offset:x:/@-?value
 
@@ -163,7 +169,7 @@ create-widget:sephia-search-wrapper
                 get-widget-property:sephia-search-txt
                   value
                 eval-x:x:/+/*
-                micro.evaluate.file:@SEPHIA/inbox/databind-inbox.hl
+                sephia.inbox.databind
                   filter:x:/@get-widget-property/*/*?value
                   offset:x:/@+?value
                 if:x:/-?value
@@ -171,7 +177,7 @@ create-widget:sephia-search-wrapper
                     .offset:x:/@+?value
 
             /*
-             * Button that clear search, and opens email inbox from the beginning.
+             * Button that clears search, and opens email inbox from the beginning.
              */
             button
               innerValue:@"<span class=""icon-home""></span>"
@@ -181,17 +187,28 @@ create-widget:sephia-search-wrapper
                 /*
                  * Clears out any search queries, resets pager, and opens up inbox from beginning.
                  */
-                sephia.inbox.open
+                sephia.inbox.databind
 
                 /*
                  * Deleting any potential "error signal objects", making sure we've got synchronized access
                  * to signal object.
                  */
                 whoami
-                write-lock:sephia.core.thread-signal-{0}
+
+                /*
+                 * Checking if we have some error signal objects.
+                 */
+                select-data:x:/*/*/sephia.core.thread-signal-{0}/*/error
                   :x:/@whoami/*/username?value
-                  delete-data:x:/*/*/sephia.core.thread-signal-{0}/*/error/.
+                if:x:/-/*
+
+                  /*
+                   * Deleting "error signal object", making sure we've got synchronized access.
+                   */
+                  write-lock:sephia.core.thread-signal-{0}
                     :x:/@whoami/*/username?value
+                    delete-data:x:/*/*/sephia.core.thread-signal-{0}/*/error/.
+                      :x:/@whoami/*/username?value
 
                 /*
                  * Creating a new POP3 fetcher thread.
@@ -207,6 +224,14 @@ create-widget:sephia-search-wrapper
                  * Making sure we update email count, in case we've had new emails.
                  */
                 sephia._internals.update-page-title
+
+    div
+      class:col
+      widgets
+        div
+          class:strip right
+          style:"float:right;"
+          widgets
 
             /*
              * Button to open settings.
@@ -313,7 +338,7 @@ create-widget
 /*
  * Databinding grid.
  */
-micro.evaluate.file:@SEPHIA/inbox/databind-inbox.hl
+sephia.inbox.databind
 
 
 

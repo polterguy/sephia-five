@@ -1,9 +1,13 @@
-
+﻿﻿
 /*
  * Main CSS file for Sephia Five.
  */
 
 
+/*
+ * Overridden to make sure all strips that contains a label as their first child,
+ * has at least 120 pixels width, to make them nicely align with each other.
+ */
 .strip>label:first-child {
     min-width:120px;
 }
@@ -15,6 +19,15 @@
     background: url(/micro/media/skins/serious/floating-cogs.svg);
 }
 
+
+
+
+
+/*
+ * Inbox "datagrid" or table styles.
+ */
+
+
 /*
  * Making sure table layout of inbox becomes fixed width.
  */
@@ -24,26 +37,16 @@
 }
 
 /*
- * Email reader's "action buttons".
- */
-.reader-action-button {
-    margin-bottom:0;
-}
-
-/*
  * Wrapper for status icons that shows if email was encrypted, signed, etc.
  */
 .sephia-status {
-    float:right;
+    float:left;
     color:#c0c0c0;
     font-size:1.3rem;
 }
 .sephia-status span {
-    margin-left:2px;
-}
-
-.sephia-small-text {
-    font-size:.8rem;
+    margin-left:20px;
+    margin-right:20px;
 }
 
 /*
@@ -93,8 +96,12 @@
 .sephia-inbox td:nth-child(3) {
     width:250px;
 }
+.sephia-inbox td:nth-child(3) .icon-paperclip {
+    float:right;
+    color:#e0e0e0;
+}
 .sephia-inbox td:nth-child(4) {
-    width:100px;
+    width:50px;
     text-align:right;
 }
 .sephia-inbox td:nth-child(4) button {
@@ -133,23 +140,26 @@
     }
 }
 
+
+
+
+
+/*
+ * Styles used when reading an email (email has been opened for reading).
+ */
 .sephia-reader {
     padding:1rem;
     position:relative;
 }
-
 .sephia-reader-received {
 }
-
 .sephia-reader-sent {
     background-color: #fcfcfc;
 }
-
 .sephia-reader-subject {
     border-top-left-radius:var(--border-radius);
     border-top-right-radius:var(--border-radius);
 }
-
 .sephia-reader-content {
     white-space: pre-wrap;
     width: 100%;
@@ -163,19 +173,35 @@
     opacity: 0.3;
 }
 
+/*
+ * Style for an email that contains errors.
+ * Usually used for emails that has no parts.
+ */
 .sephia-reader-content-error {
     background: #fffafa;
 }
 
+
+
+
+
 /*
- * Specialised tag handling for the reader.
+ * Special tag handling for an email's content.
+ *
+ * Most of the times, content is created by converting from Markdown to HTML.
+ * Hence, we need to style the HTML tags that Sephia can potentially create, 
+ * specially for reading emails.
  */
 .sephia-reader-content pre {
     padding:0;
 }
+
+/*
+ * Blockquotes are used for "conversations", which is a little trick we use,
+ * to be able to track who said what, when things have been quoted.
+ */
 .sephia-reader-content blockquote {
     font-size: 1rem;
-    margin-left: 1rem;
     padding: 1rem;
     border-radius: var(--border-radius);
     box-shadow: 2px 2px 3px rgba(0,0,0,.2);
@@ -187,17 +213,17 @@
  * Then every even-odd inwards branch gets different colors to give visual clues about who said what.
  * Notice, first for received emails.
  */
-.sephia-five-received-email>blockquote,
-.sephia-five-received-email>blockquote>blockquote>blockquote,
-.sephia-five-received-email>blockquote>blockquote>blockquote>blockquote>blockquote,
-.sephia-five-received-email>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote {
+.sephia-reader .sephia-received-email > blockquote,
+.sephia-reader .sephia-received-email > blockquote > blockquote > blockquote,
+.sephia-reader .sephia-received-email > blockquote > blockquote > blockquote > blockquote > blockquote,
+.sephia-reader .sephia-received-email > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote {
     /* You said */
     background-color: #fcfcfc;
 }
-.sephia-five-received-email>blockquote:after,
-.sephia-five-received-email>blockquote>blockquote>blockquote:after,
-.sephia-five-received-email>blockquote>blockquote>blockquote>blockquote>blockquote:after,
-.sephia-five-received-email>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote:after {
+.sephia-reader .sephia-received-email > blockquote:after,
+.sephia-reader .sephia-received-email > blockquote > blockquote > blockquote:after,
+.sephia-reader .sephia-received-email > blockquote > blockquote > blockquote > blockquote > blockquote:after,
+.sephia-reader .sephia-received-email > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote:after {
     /* You said */
     content:'You said';
     position:absolute;
@@ -209,17 +235,17 @@
 }
 
 
-.sephia-five-received-email>blockquote>blockquote,
-.sephia-five-received-email>blockquote>blockquote>blockquote>blockquote,
-.sephia-five-received-email>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote,
-.sephia-five-received-email>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote {
+.sephia-reader .sephia-received-email > blockquote > blockquote,
+.sephia-reader .sephia-received-email > blockquote > blockquote > blockquote > blockquote,
+.sephia-reader .sephia-received-email > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote,
+.sephia-reader .sephia-received-email > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote {
     /* The other party said */
     background-color: #ffffff;
 }
-.sephia-five-received-email>blockquote>blockquote:after,
-.sephia-five-received-email>blockquote>blockquote>blockquote>blockquote:after,
-.sephia-five-received-email>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote:after,
-.sephia-five-received-email>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote:after {
+.sephia-reader .sephia-received-email > blockquote > blockquote:after,
+.sephia-reader .sephia-received-email > blockquote > blockquote > blockquote > blockquote:after,
+.sephia-reader .sephia-received-email > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote:after,
+.sephia-reader .sephia-received-email > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote:after {
     /* The other party said */
     content:'The other party said';
     position:absolute;
@@ -234,17 +260,17 @@
 /*
  * Then for sent emails.
  */
-.sephia-five-sent-email>blockquote,
-.sephia-five-sent-email>blockquote>blockquote>blockquote,
-.sephia-five-sent-email>blockquote>blockquote>blockquote>blockquote>blockquote,
-.sephia-five-sent-email>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote {
+.sephia-reader .sephia-sent-email > blockquote,
+.sephia-reader .sephia-sent-email > blockquote > blockquote > blockquote,
+.sephia-reader .sephia-sent-email > blockquote > blockquote > blockquote > blockquote > blockquote,
+.sephia-reader .sephia-sent-email > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote {
     /* The other party said */
     background-color: #ffffff;
 }
-.sephia-five-sent-email>blockquote:after,
-.sephia-five-sent-email>blockquote>blockquote>blockquote:after,
-.sephia-five-sent-email>blockquote>blockquote>blockquote>blockquote>blockquote:after,
-.sephia-five-sent-email>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote:after {
+.sephia-reader .sephia-sent-email > blockquote:after,
+.sephia-reader .sephia-sent-email > blockquote > blockquote > blockquote:after,
+.sephia-reader .sephia-sent-email > blockquote > blockquote > blockquote > blockquote > blockquote:after,
+.sephia-reader .sephia-sent-email > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote:after {
     /* The other party said */
     content:'The other party said';
     position:absolute;
@@ -256,17 +282,17 @@
 }
 
 
-.sephia-five-sent-email>blockquote>blockquote,
-.sephia-five-sent-email>blockquote>blockquote>blockquote>blockquote,
-.sephia-five-sent-email>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote,
-.sephia-five-sent-email>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote {
+.sephia-reader .sephia-sent-email > blockquote > blockquote,
+.sephia-reader .sephia-sent-email > blockquote > blockquote > blockquote > blockquote,
+.sephia-reader .sephia-sent-email > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote,
+.sephia-reader .sephia-sent-email > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote {
     /* You said */
     background-color: #fcfcfc;
 }
-.sephia-five-sent-email>blockquote>blockquote:after,
-.sephia-five-sent-email>blockquote>blockquote>blockquote>blockquote:after,
-.sephia-five-sent-email>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote:after,
-.sephia-five-sent-email>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote:after {
+.sephia-reader .sephia-sent-email > blockquote > blockquote:after,
+.sephia-reader .sephia-sent-email > blockquote > blockquote > blockquote > blockquote:after,
+.sephia-reader .sephia-sent-email > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote:after,
+.sephia-reader .sephia-sent-email > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote:after {
     /* You said */
     content:'You said';
     position:absolute;
@@ -277,14 +303,16 @@
     font-style:italic;
 }
 
+
+
+
+
 /*
- * Meta information about email.
+ * Meta information for an email.
  */
 .sephia-reader-meta-wrapper {
-    padding:1.5rem;
     color:#999;
 }
-
 .sephia-meta {
     margin-bottom:0;
 }
@@ -294,15 +322,16 @@
 }
 
 
+
+
+
 /*
- * Attachments.
+ * Attachments for an email.
+ *
+ * Some of these classes are common for both reading an email, and sending an email.
  */
 .sephia-attachments {
-    margin-top: 1rem;
-}
-.sephia-reader-received .sephia-attachments,
-.sephia-reader-sent .sephia-attachments {
-    padding: 0 1.5rem;
+    margin:1rem 0;
 }
 .sephia-attachments:after {
     content:"";
@@ -320,6 +349,21 @@
 .sephia-attachments div.warning button {
     background: linear-gradient(#fee, #fcc);
 }
+
+
+
+
+
+/*
+ * "Action buttons" for when reading emails.
+ */
+.reader-action-button {
+    margin-bottom: 0;
+}
+
+
+
+
 
 /*
  * Ajax wait windoe (used when sending emails).
@@ -357,15 +401,18 @@
     color:#fdfdfd;
 }
 
-.sephia-email-reader {
-    position:relative;
-}
-
-.sephia-unsafe, .sephia-safe, .sephia-unknown {
+/*
+ * Styles for safe, unsafe and unknown email types, used when composing a new email.
+ */
+.sephia-unsafe,
+.sephia-safe,
+.sephia-unknown {
     position:relative;
     overflow:hidden;
 }
-.sephia-unsafe:after, .sephia-safe:after, .sephia-unknown:after {
+.sephia-unsafe:after,
+.sephia-safe:after,
+.sephia-unknown:after {
     font-family:'icomoon' !important;
     position:absolute;
     bottom:1rem;

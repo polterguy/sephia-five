@@ -16,6 +16,8 @@
  *
  * When the user tries to download an attachment, the attachment he tries to download,
  * will be stored in a session variable, and the page will be reloaded.
+ * This will ensure that the file is downloaded, while the user stays in his current URL.
+ *
  * Here we check for that session variable, and if it exist, we simply serve that file,
  * for then to delete the session variable.
  */
@@ -27,11 +29,21 @@ if:x:/@p5.web.session.get/*/*
    *
    * Deleting session variable, echoing file, and returning early, 
    * making sure we get the HTTP "Content-Disposition" header correctly.
+   *
+   * Possible improvements would imply getting the MIME type right.
    */
   p5.web.header.set:Content-Disposition
     src:@"attachment; filename=""{0}"""
       :x:/@p5.web.session.get/*/*/*/filename?value
+
+  /*
+   * Clearing our session variable.
+   */
   p5.web.session.set:sephia.core.file-download
+
+  /*
+   * Echoing file to client.
+   */
   p5.web.echo-file:{0}{1}{2}
     :x:/@p5.web.session.get/*/*/*/folder?value
     :x:/@p5.web.session.get/*/*/*/prefix?value
@@ -50,10 +62,10 @@ if:x:/@p5.web.session.get/*/*
  * Making sure user has an attachment folder.
  *
  * The first time the user opens Sephia, it will automatically create the user's
- * attachment folder, in addition to a temporary folder where uploaded attachments will
- * be temporary stored, before the email is sent.
+ * attachment folder, in addition to a temporary folder, where uploaded attachments will
+ * be temporary stored, before an email is sent.
  *
- * Every time the user starts Sephia, this temporary attachment folder will be emptied.
+ * Every time the user refresh Sephia's page, this temporary attachment folder will be emptied.
  */
 micro.evaluate.file:@SEPHIA/init-user/ensure-user-attachment-folder.hl
 
@@ -120,7 +132,9 @@ if:x:/@p5.auth.my-settings.get/*/sephia
 
   /*
    * User has no settings, displaying settings form, and returning early.
-   * First making sure we include the necessary default CSS files (serious skin).
+   *
+   * First making sure we include the necessary default CSS skine files.
+   * By default, Sephia Five uses the "serious" skin.
    */
   p5.web.include-css-file:@MICRO/media/skins/serious.css
   p5.web.include-css-file:@SEPHIA/media/main.css
@@ -150,7 +164,7 @@ if:x:/@p5.auth.my-settings.get/*/sephia
 
 
 /*
- * Including Micro skin user has selected.
+ * Including the Micro skin user has selected in his settings.
  */
 p5.web.include-css-file:@MICRO/media/skins/{0}.css
   :x:/@p5.auth.my-settings.get/*/sephia/*/skin?value
@@ -161,6 +175,9 @@ p5.web.include-css-file:@MICRO/media/skins/{0}.css
 
 /*
  * Including main CSS file for Sephia.
+ *
+ * Notice, this is done after all other CSS files are included, to make sure we
+ * can override anything we wish in Sephia's main CSS file.
  */
 p5.web.include-css-file:@SEPHIA/media/main.css
 
@@ -169,7 +186,7 @@ p5.web.include-css-file:@SEPHIA/media/main.css
 
 
 /*
- * Ensuring user has his "welcome email(s)".
+ * Ensuring user has his "welcome email(s) and contact(s)".
  */
 micro.evaluate.file:@SEPHIA/init-user/ensure-initial-welcome-emails-and-contacts.hl
 
@@ -184,7 +201,7 @@ micro.evaluate.file:@SEPHIA/init-user/ensure-initial-welcome-emails-and-contacts
  * and constantly pulls new emails from the user's POP3 server.
  *
  * Alternatively, it will check if user is allowed to fetch his emails, and if not,
- * return boolean "false" with a [message] explaining to the user why.
+ * return boolean "false".
  */
 sephia._internals.create-pop3-user-thread
 

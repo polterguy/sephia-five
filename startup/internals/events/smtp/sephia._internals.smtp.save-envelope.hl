@@ -193,12 +193,12 @@ values (@subject, @date, @sender, @username, 1, @mimeid, @signature, @fingerprin
          * Inserting also alternative HTML view.
          *
          * Notice, before we do this, we replace the CSS class of the main wrapper element 
-         * created from "sephia-five-received-email" to "sephia-five-sent-email", to make our
+         * created from "sephia-received-email" to "sephia-sent-email", to make our
          * "conversations" render correctly when viewing a sent email.
          */
         html2lambda:x:/../*/envelope/*/body/**/text/=html/*/content?value
         set:x:/@html2lambda/**/body/*/div/*/\@class?value
-          src:sephia-five-sent-email
+          src:sephia-sent-email
         lambda2html:x:/@html2lambda/*
         p5.mysql.insert:@"insert into parts (type, content, emailid) values ('html', @content, @emailid)"
           @content:x:/@lambda2html?value

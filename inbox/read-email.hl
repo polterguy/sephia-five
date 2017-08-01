@@ -164,6 +164,18 @@ p5.mysql.connect:[sephia]
           innerValue:x:/@_dp/#/*/filename?value
 
   /*
+   * Checking if there was any attachments, and if not, hiding the attachment
+   * wrapper entirely.
+   */
+  if:x:/@p5.mysql.select/*/*/filename(!/=signature.pgp)
+    not
+
+    /*
+     * There was no attachments in this email, removing the attachments wrapper.
+     */
+    set:x:/../*/create-widget/**/widgets/=attachments/.
+
+  /*
    * Fetching all recipients for email.
    */
   p5.mysql.select:@"select name, email, recipients.type from contacts 
@@ -432,7 +444,7 @@ create-widget
   .email-id:x:/../*/id?value
   widgets
     div
-      class:col-100 sephia-email-reader
+      class:col-100
       widgets
         div
           class:{0} shaded rounded

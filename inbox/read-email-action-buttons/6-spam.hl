@@ -1,4 +1,4 @@
-
+﻿
 /*
  * Action button for marking email is "nospam".
  */
@@ -56,7 +56,7 @@ button
      * Entirely deleting reader widget, and re-databinding inbox.
      */
     delete-widget:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-    sephia.inbox.open
+    sephia.inbox.databind
       keep-page-filter:bool:true
 
     /*

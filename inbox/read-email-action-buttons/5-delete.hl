@@ -1,4 +1,4 @@
-
+﻿
 /*
  * Action button for deleting email.
  */
@@ -54,7 +54,7 @@ button
                       /*
                        * Databinding inbox again.
                        */
-                      sephia.inbox.open
+                      sephia.inbox.databind
                         keep-page-filter:bool:true
 
                       /*
