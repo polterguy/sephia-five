@@ -389,12 +389,22 @@ create-event:sephia._internals.widgets.settings
 
                         /*
                          * User hasn't created any settings previously, making sure we
-                         * inform him of allowing POP3 access to GMail's POP3 server.
-                         *
-                         * Notifying user.
+                         * inform him of allowing POP3 access to GMail's POP3 server, but only
+                         * if POP3 password has not been previously set, to avoid multiple warnings.
                          */
-                        micro.windows.info:You'll probably have to turn on POP3 access for your GMail account
-                          class:micro-windows-info success
+                        get-widget-property:sephia-settings-pop3-password
+                          value
+                        if:x:/-/*/*?value
+                          not
+                          or:x:/-/*/*?value
+                            =:
+
+                          /*
+                           * User has (probably) not been told to enable POP3 settings for GMail before,
+                           * informing him through a message bubble.
+                           */
+                          micro.windows.info:You'll probably have to turn on POP3 access for your GMail account
+                            class:micro-windows-info success
 
                     widgets
                       p
@@ -569,6 +579,8 @@ create-event:sephia._internals.widgets.settings
                       visible:false
                     set-widget-property:sephia-settings-pgp-pwd-wrapper
                       visible:false
+                    set-widget-property:sephia-settings-babelizer-wrapper
+                      visible:false
                     return
 
                   else
@@ -723,7 +735,7 @@ create-event:sephia._internals.widgets.settings
                             placeholder:Your PGP password ...
                             value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pgp-password|/../*/.defaults/*/pgp-key-password)/$?value
                             onkeydown:@"if (event.keyCode == 13) {p5.$('sephia-settings-next').raise('onclick');return false;}"
-              div
+              div:sephia-settings-babelizer-wrapper
                 class:row
                 widgets
                   div
@@ -742,13 +754,6 @@ create-event:sephia._internals.widgets.settings
                             placeholder:A comma separated list of URLs from where random subjects will be generated ...
                             title:A comma separated list of URLs from where random subjects will be generated, to hide the original subject of encrypted emails.
                             onkeydown:@"if (event.keyCode == 13) {p5.$('sephia-settings-next').raise('onclick');return false;}"
-                            oninit
-
-                              /*
-                               * Setting initial focus to password for PGP key, to make navigation as
-                               * "keyboard friendly" as possible.
-                               */
-                              micro.page.set-focus:x:/../*/_event?value
               div
                 class:row
                 widgets
@@ -758,6 +763,13 @@ create-event:sephia._internals.widgets.settings
                       button
                         style:"margin-bottom:0;"
                         innerValue:Create new PGP key pair
+                        oninit
+
+                          /*
+                           * Setting initial focus "create new PGP key".
+                           */
+                          micro.page.set-focus:x:/../*/_event?value
+
                         onclick
 
                           /*

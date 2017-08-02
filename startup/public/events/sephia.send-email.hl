@@ -104,7 +104,7 @@ create-event:sephia.send-email
     for-each:x:/@.envelope/*(/To|/Cc|/Bcc)/*
       p5.mysql.select:@"select name, fingerprint from contacts where username = @username and email = @email"
         @username:x:/@whoami/*/username?value
-        @email:x:/@_dp/#?name 
+        @email:x:/@_dp/#?name
 
       /*
        * Verifying contact exists, and if not, inserting new contact.
@@ -134,14 +134,13 @@ create-event:sephia.send-email
           username:x:/@whoami/*/username?value
 
         /*
-         * For simplicity, adding return value from above invocation into original SQL query results.
+         * Selecting contact again, and adding results into first [p5.mysql.select] invocation
+         * for simplicity.
          */
-        eval-x:x:/+/*/*/*
-        add:x:/@p5.mysql.select
-          src
-            row
-              name:x:/@sephia._internals.contacts.create/*/name?value
-              fingerprint:x:/@sephia._internals.contacts.create/*/fingerprint?value
+        p5.mysql.select:@"select name, fingerprint from contacts where id = @id"
+          @id:x:/@sephia._internals.contacts.create/*/id?value
+        add:x:/@p5.mysql.select/@p5.mysql.select
+          src:x:/@p5.mysql.select/*
 
       /*
        * Notice, we first switch the name of the node to become its value,
@@ -199,8 +198,8 @@ create-event:sephia.send-email
     /*
      * Checking if attachment's file extension is a legal type of attachment.
      */
-    if
-      sephia._internals.is-legal-attachment:x:/@_dp/#?value
+    sephia._internals.is-legal-attachment:x:/@_dp/#?value
+    if:x:/@sephia._internals.is-legal-attachment?value
 
       /*
        * Checking if we need to create a multipart for envelope.
@@ -296,7 +295,6 @@ create-event:sephia.send-email
      * Caller requested that Markdown should be created as an alternative HTML view of email.
      */
     sephia._internals.markdown-to-html:x:/../*/body?value
-    eval-x:x:/+/*/*/*/*/content
 
     /*
      * Notice, this expression might look "funny", but our email structure depends upon
@@ -312,6 +310,7 @@ create-event:sephia.send-email
      * among other places signatures, etc - We need to encode the text:plain content such 
      * that these trailing SP characters are not removed. QuotedPrintable will do just that.
      */
+    eval-x:x:/+/*/*/*/*/content
     add:x:(/@.envelope/*/body/*/multipart|/@.envelope/*/body)/[0,1]
       src
         multipart:alternative

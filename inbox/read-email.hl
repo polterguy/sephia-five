@@ -42,6 +42,9 @@ if:x:/-/*/*?value
   /*
    * Another widget is already showing this email, returning early,
    * making sure we scroll to the existing reader for email.
+   *
+   * Notice, this creates a little bit of a trick, which allows the user to
+   * "double click" to scroll to email.
    */
   p5.web.send-javascript:@"p5.$('{0}').el.scrollIntoView(true);"
     :x:/@p5.web.widgets.find/*/*?value
@@ -251,16 +254,28 @@ where emails.id = @id"
   _bg:sephia-reader
   switch:x:/@p5.mysql.select/*/*/status?value.int
     case:int:0
+
+      /*
+       * Email was safe.
+       */
       set:x:/@_bg?value
         src:{0} sephia-safe
           :x:/@_bg?value
 
     case:int:1
+
+      /*
+       * Email was unknown in regards to safety.
+       */
       set:x:/@_bg?value
         src:{0} sephia-unknown
           :x:/@_bg?value
 
     case:int:2
+
+      /*
+       * Email was unsafe.
+       */
       set:x:/@_bg?value
         src:{0} sephia-unsafe
           :x:/@_bg?value
@@ -352,11 +367,14 @@ where emails.id = @id"
 
   /*
    * This part will contain email's MIME ID.
+   *
+   * HTML encoding it, just to be one the safe side.
    */
   _meta6
+  p5.html.html-encode:x:/@p5.mysql.select/*/*/mimeid?value
   set:x:/@_meta6?value
     src:"Message ID: {0}"
-      :x:/@p5.mysql.select/*/*/mimeid?value
+      :x:/@p5.html.html-encode?value
 
   /*
    * This part will contain all recipients of the email.
@@ -365,11 +383,17 @@ where emails.id = @id"
   p5.mysql.select:@"select contacts.name, contacts.email, recipients.type from recipients inner join contacts on contacts.id = recipients.contactid where recipients.emailid = @id"
     @id:x:/../*/id?value
   for-each:x:/@p5.mysql.select/*
+
+    /*
+     * HTML encoding both email and name to be on the safe side.
+     */
+    p5.html.html-encode:x:/@_dp/#/*/name?value
+    p5.html.html-encode:x:/@_dp/#/*/email?value
     set:x:/@_meta7?value
       src:"{0}<li>{3} - {1} &lt;{2}&gt;</li>"
         :x:/@_meta7?value
-        :x:/@_dp/#/*/name?value
-        :x:/@_dp/#/*/email?value
+        :x:/..for-each/*/p5.html.html-encode/[0,1]?value
+        :x:/..for-each/*/p5.html.html-encode/[1,2]?value
         :x:/@_dp/#/*/type?value
   set:x:/@_meta7?value
     src:{0}</ul>
@@ -394,6 +418,9 @@ where emails.id = @id"
     @id:x:/../*/id?value
 
 
+
+
+
 /*
  * Loading all action buttons.
  */
@@ -404,6 +431,9 @@ add:x:/../*/create-widget/**/widgets/=action-strip
   src:x:/@load-file/*/*
 
 
+
+
+
 /*
  * Making sure email is displayed as read in grid.
  */
@@ -411,6 +441,9 @@ p5.web.widgets.find-like:sephia-main-container
   .row-email-id:x:/../*/id?value
 micro.css.delete:x:/@p5.web.widgets.find-like/*/*?value
   class:sephia-unread
+
+
+
 
 
 /*
@@ -436,6 +469,20 @@ else
       parent:sephia-main-container
 
 
+
+
+
+/*
+ * HTML encoding subject, to be on the safe side.
+ */
+_subject
+set:x:/@_subject?value
+  src:x:/@p5.mysql.connect/*/p5.mysql.select/[2,3]/*/*/subject?value
+
+
+
+
+
 /*
  * Creates actual widget showing email.
  */
@@ -455,7 +502,7 @@ create-widget
              * Displays header of email.
              */
             h3
-              innerValue:x:/@p5.mysql.connect/*/p5.mysql.select/[2,3]/*/*/subject?value
+              innerValue:x:/@_subject?value
               class:sephia-reader-subject
 
             /*

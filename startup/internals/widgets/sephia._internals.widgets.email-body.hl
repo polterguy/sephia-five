@@ -16,14 +16,12 @@ create-event:sephia._internals.widgets.email-body
    */
   micro.lambda.contract.min:x:/..
     row
-      id:long
       type:string
       content:string
-      emailid:long
       markdown:int
 
   /*
-   * Checking email part type, which must be "plain:text" to make Sephia able
+   * Checking email part type, which must be "plain/text" to make Sephia able
    * to display it.
    */
   if:x:/@.signal/--(!/_arg)/*/type/=plain
@@ -35,8 +33,9 @@ create-event:sephia._internals.widgets.email-body
     return
       literal
         element:div
-        innerValue:@"<div class=""sephia-reader-content sephia-reader-content-error""><p>Sephia Five couldn't display this email, since it contains only HTML parts.
-Please notify your contacts of that you prefer for them to send you plain text emails. HTML emails, are mostly used to spread marketing, in addition to that they're a security risk.</p></div>"
+        class:sephia-reader-content sephia-reader-content-error
+        innerValue:@"<p>Sephia Five couldn't display this email, since it contains only HTML parts.
+Please notify your contacts of that you prefer for them to send you plain text emails. HTML emails, are mostly used to spread marketing, in addition to that they're a security risk.</p>"
 
   /*
    * Checking if email can be converted to Markdown.

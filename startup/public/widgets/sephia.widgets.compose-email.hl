@@ -6,8 +6,8 @@
  * All recipients arguments is a list of email addresses, where the email address is expected to be found
  * as the name of the node.
  *
- * You can also pass in one [attachment] where the value of each [attachment] is expected to be a file that
- * already exists on server, with its complete path.
+ * You can also pass in several [attachment] arguments, where the value of each [attachment], is expected to 
+ * be a file that already exists on server, with its complete path.
  *
  * You can also optionally pass in a [babelsubject], which will make sure your email is using the specified
  * babelsubject, and doesn't create a new one, if the subject is supposed to be babelled.
@@ -19,14 +19,16 @@
  * email using Markdown syntax.
  *
  * You can also optionally pass in [.onclose] and [.onsend] lambda callbacks, which will be invoked when
- * email composer is closed and/or email is sent, in addition to [class], which will be the root class
- * of the composer.
+ * email composer is closed, and/or email is sent, in addition to [class], which will be the root class
+ * of the composer. Anything inside of an argument called [oninit] will be appended into the widget's [oninit]
+ * Ajax event.
  *
  * This widget will allow the user to compose an email, and send it, allowing the user to lookup contacts
  * from the contacts database, etc. When the email is sent, it will be stored as "sent" in Sephia's database.
  *
- * The class of the main root widget will be modified to contain either "sephia-unsafe" or "sephia-safe" according to whether or
- * not email can be sent encrypted or not.
+ * The class of the main root widget will be modified to contain either "sephia-unsafe", "sephia-unknown" or 
+ * "sephia-safe" according to whether or not the email can be sent encrypted or not, and if it can be cryptographically
+ * signed, and if all PGP keys involved have been verified.
  *
  * Notice, caller is reponsible for making sure the necessary CSS files are included on the page.
  *
@@ -34,7 +36,7 @@
  * main CSS file for Sephia Five. However, this could probably be changed as you see fit, if you want another type 
  * of styling for your widget.
  *
- * All major elements on widget has CSS classes which you can hook into, if you wish to style it yourself.
+ * All major elements on the widget has CSS classes which you can hook into, if you wish to style it yourself.
  */
 create-event:sephia.widgets.compose-email
 
@@ -80,24 +82,20 @@ p5.sephia_upload_files = function(e) {
 "
 
   /*
-   * Adding lambda callbacks for both [.onclose] and [.onsend].
+   * Adding lambda callbacks for both [.onclose], [.onsend] and [oninit].
    */
   add:x:/../*/return/*/div/*/.onsend
     src:x:/../*/.onsend/*
   add:x:/../*/return/*/div/*/.onclose
     src:x:/../*/.onclose/*
+  add:x:/../*/return/*/div/*/oninit
+    src:x:/../*/oninit/*
 
   /*
    * Adding custom headers requested by caller.
    */
   add:x:/../*/return/**/sephia.send-email
     src:x:/../*/headers
-
-  /*
-   * Adding contens of [oninit], if specified.
-   */
-  add:x:/../*/return/*/div/*/oninit
-    src:x:/../*/oninit/*
 
   /*
    * Adding recipients to recipients widget.
@@ -107,7 +105,7 @@ p5.sephia_upload_files = function(e) {
 
   /*
    * Making sure attachments supplied by caller is attached, by invoking the
-   * event responsible for attaching the file in [oinit] of widget for each [attachment]
+   * event responsible for attaching the file in [oninit] of widget for each [attachment]
    * user supplied during creating widget.
    */
   for-each:x:/../*/attachment
@@ -124,6 +122,17 @@ p5.sephia_upload_files = function(e) {
        */
       add:x:/..for-each/**/sephia.widgets.compose-email._add-attachment
         src:"warning:bool:true"
+
+    else-if:x:/@sephia._internals.is-legal-attachment?value
+      not
+
+      /*
+       * Attachment is not legal at all.
+       */
+      split:x:/@_dp/#?value
+        =:/
+      throw:Sorry, but the '{0}' file is not a legal attachment for Sephia Five
+        :x:/@split/0/-?name
 
     /*
      * Making sure we add our attachment.
@@ -219,13 +228,21 @@ p5.sephia_send_email = function(e) {
             =:/
 
           /*
-           * Creating widget wrapping given attachment, such that it will be automatically serialized
-           * when form is serialized.
+           * Checking if user should be warned about this attachment.
            */
           if:x:/../*/warning?value
+
+            /*
+             * User should be warned that this is a potential malicious attachment.
+             */
             set:x:/../*/create-widget/*/class?value
               src:{0} warning
                 :x:/../*/create-widget/*/class?value
+
+          /*
+           * Creating our actual attachment widget, such that when the form is
+           * serialised, a hidden input field will contain the attachment's filename.
+           */
           create-widget
             class:sephia-attachment
             parent:x:/@p5.web.widgets.find-first/*/*?value
@@ -339,6 +356,19 @@ p5.sephia_send_email = function(e) {
                     p5.web.widgets.find-first-ancestor:x:/../*/_event?value
                       .email-composer
                     micro.form.serialize:x:/-/*/*?value
+
+                    /*
+                     * Verifying user provided a subject.
+                     */
+                    if:x:/@micro.form.serialize/*/subject?value
+                      =:
+
+                      /*
+                       * User supplied no subject, informing him, and returning early.
+                       */
+                      micro.windows.info:No subject supplied
+                        class:micro-windows-info warning
+                      return
 
                     /*
                      * Making sure we HTML decode the body.
@@ -455,8 +485,10 @@ p5.sephia_send_email = function(e) {
                        *
                        * Showing error "bubble window" to user, and returning early.
                        */
+                      split:x:/@p5.web.post.get/*?value
+                        =:/
                       micro.windows.info:'{0}' is not a legal file type in Sephia Five
-                        :x:/@p5.web.post.get/*?value
+                        :x:/@split/0/-?name
                         class:micro-windows-info warning
                       return
 
@@ -492,8 +524,18 @@ p5.sephia_send_email = function(e) {
                      * create our button and hidden input element.
                      */
                     if:x:/@sephia._internals.is-legal-attachment?value
+                      =:warning
+
+                      /*
+                       * User should be warned about this attachment, since its file extension
+                       * is considered containing potential malicious content.
+                       */
                       add:x:/../*/sephia.widgets.compose-email._add-attachment
                         src:"warning:bool:true"
+
+                    /*
+                     * Invoking event responsible for adding attachment to email.
+                     */
                     sephia.widgets.compose-email._add-attachment:x:/@p5.web.widgets.find-first-ancestor/*/*?value
 
                 /*

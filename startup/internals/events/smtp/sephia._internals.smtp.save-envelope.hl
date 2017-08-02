@@ -45,29 +45,6 @@ create-event:sephia._internals.smtp.save-envelope
       whoami
 
       /*
-       * First adding any non existing contacts.
-       */
-      for-each:x:/../*/envelope/*(/To|/Cc|/Bcc)/*
-
-        /*
-         * Checking if contact exists from before.
-         */
-        p5.mysql.select:@"select count(*) from contacts where username = @username and email = @email"
-          @username:x:/@whoami/*/username?value
-          @email:x:/@_dp/#?value
-        if:x:/@p5.mysql.select/*?count.int
-          =:int:0
-
-          /*
-           * Inserting new contact.
-           */
-          eval-x:x:/+/*
-          sephia._internals.contacts.create
-            name:
-            email:x:/@_dp/#?value
-            username:x:/@whoami/*/username?value
-
-      /*
        * Retrieving "self" from database.
        */
       _sender
@@ -81,7 +58,7 @@ create-event:sephia._internals.smtp.save-envelope
        * Checking if email is encrypted.
        */
       _encrypt:int:0
-      if:x:/../*/envelope/*/body/*/multipart/*/encrypt
+      if:x:/../*/envelope/*/body/*(/multipart|/text)/[0,1]/*/encrypt
 
         /*
          * Email was encrypted.
@@ -94,7 +71,7 @@ create-event:sephia._internals.smtp.save-envelope
        */
       _signature
       _fingerprint
-      if:x:/../*/envelope/*/body/*/multipart/*/sign
+      if:x:/../*/envelope/*/body/*(/multipart|/text)/[0,1]/*/sign
 
         /*
          * Retrieving PGP key's fingerprint, and doing lookup into 
@@ -105,10 +82,10 @@ create-event:sephia._internals.smtp.save-envelope
          * fingerprints the same way.
          */
         set:x:/@_fingerprint?value
-          to-upper:x:/../*/envelope/*/body/*/multipart/*/sign/*/fingerprint?value
-        p5.crypto.get-key-details:x:/../*/envelope/*/body/*/multipart/*/sign/*/fingerprint?value
+          to-upper:x:/../*/envelope/*/body/*(/multipart|/text)/[0,1]/*/sign/*/fingerprint?value
+        p5.crypto.get-key-details:x:/../*/envelope/*/body/*(/multipart|/text)/[0,1]/*/sign/*/fingerprint?value
         set:x:/@_signature?value
-          src:x:/@p5.crypto.get-key-details/*/*/user-ids/0?value
+          src:x:/@p5.crypto.get-key-details/0/*/user-ids/0?value
 
       /*
        * Used to hold the "status" of email, 2 equals "unsafe", 1 equals "with warnings" and 0 equals "safe".
