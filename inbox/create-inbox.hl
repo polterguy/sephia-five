@@ -299,10 +299,7 @@ create-widget:sephia-search-wrapper
                       widgets
 
                         /*
-                         * This is the actual "composer" widget, which allows user to compose/reply/etc an email.
-                         *
-                         * Notice, we instantiate it such that it will send also an HTML view, created by converting
-                         * its content from Markdown to HTML.
+                         * This is the widget that actually allows user to compose an email.
                          */
                         sephia.widgets.compose-email
                           .onclose

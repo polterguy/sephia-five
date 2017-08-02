@@ -16,7 +16,8 @@
  * by converting the text content to HTML using Markdown syntax.
  *
  * By default, Sephia will never send anything but "plain:text" parts, but you can explicitly choose to override
- * this when invoking this event.
+ * this when invoking this event. This allows you to format your email's content, such that also clients that
+ * does not natively understand Markdown ca view them as your user intended for it to be viewed.
  *
  * Notice, unless you pass in [force], and set its value to boolean "true", the email will not
  * be sent unless all recipients are in user's list of contacts, but instead the event will return "false" to
@@ -122,6 +123,13 @@ create-event:sephia.send-email
           not
           or:x:/../*/force?value.bool
             =:bool:false
+
+          /*
+           * Caller did not supply a [force] argument, and at least one of the
+           * recipients were not on the user's list of contacts.
+           * Hence, returning "false" to caller, indicating that the email was
+           * never sent.
+           */
           return:bool:false
 
         /*
@@ -184,11 +192,10 @@ create-event:sephia.send-email
    * We try to keep construction of email as small as possible, and only
    * create a multipart if we really have to.
    *
-   * This makes sure that unless user both have attachments and has chosen to
-   * compose HTML emails (using Markdown) - Then only a single text:plain MIME type
-   * will be created.
+   * Hence, we only create a "multipart:mixed" MIME entity if email actually 
+   * has attachments.
    */
-  .has-multipart:bool:true
+  .has-multipart:bool:false
 
   /*
    * Then attachments.
@@ -202,15 +209,18 @@ create-event:sephia.send-email
     if:x:/@sephia._internals.is-legal-attachment?value
 
       /*
-       * Checking if we need to create a multipart for envelope.
+       * File was a legal Sephia Five attachment.
+       *
+       * Checking if we need to create a "multipart:mixed" part for envelope.
        */
       if:x:/@.has-multipart?value
+        not
 
         /*
          * We'll need to create a root multipart MIME entity.
          */
         set:x:/@.has-multipart?value
-          src:bool:false
+          src:bool:true
         add:x:/@.envelope/*/body
           src
             multipart:mixed
@@ -269,7 +279,9 @@ create-event:sephia.send-email
         filename:x:/@split/0/-?name
 
       /*
-       * Adding file to [.envelope].
+       * Adding file to [.envelope], making sure we remove the [warning] node,
+       * which is sometimes added if this is a potential malicious attachment, 
+       * which Sephia still needs to support, but with warnings.
        */
       add:x:/@.envelope/*/body/*/multipart
         src:x:/@sephia._internals.mime.get-type-from-file-extension/*(!/warning)
@@ -300,15 +312,23 @@ create-event:sephia.send-email
      * Notice, this expression might look "funny", but our email structure depends upon
      * whether or not user has added attachments or not.
      *
-     * If user has attached files in his email, then a "multipart:mixed" wrapper around
+     * If user has attachments to his email, then a "multipart:mixed" wrapper around
      * the entire email will have been created. We prioritize adding our "multipart:alternative"
-     * entity inside of this wrapper multipart.
+     * entity inside of this multipart.
+     *
      * If this wrapper "multipart:mixed" doesn't exist however, we simply make sure our 
      * "multipart:alternative" becomes the root MIME entity of our message.
      *
-     * Notice, to avoid trailing spaces being stripped in lines of text, which are used in
-     * among other places signatures, etc - We need to encode the text:plain content such 
-     * that these trailing SP characters are not removed. QuotedPrintable will do just that.
+     * Notice, to avoid trailing spaces being stripped away in lines of text, which are used in
+     * among other places signatures, etc - We need to encode our "text:plain" part such 
+     * that these trailing SP characters are not removed. "quoted-printable" will do that.
+     *
+     * The [X-Type] is a Sephia extension MIME header, which is a hint used by Sephia to
+     * realize that the "text:plain" content of the email is actually Markdown, and not
+     * just simple plain text.
+     *
+     * Notice also that we wrap our HTML part inside of a "<html><body></body></html>" wrapper
+     * HTML snippet, to make sure our HTML part is a valid HTML document by itself.
      */
     eval-x:x:/+/*/*/*/*/content
     add:x:(/@.envelope/*/body/*/multipart|/@.envelope/*/body)/[0,1]
@@ -316,64 +336,79 @@ create-event:sephia.send-email
         multipart:alternative
           text:plain
             X-Type:markdown
-            Content-Transfer-Encoding:QuotedPrintable
+            Content-Transfer-Encoding:quoted-printable
             content:x:/../*/body?value
           text:html
-            content:x:/@sephia._internals.markdown-to-html?value
+            content:@"<html><head><title>Sephia Five email</title></head><body><div class=""sephia-five-email"">{0}</div></body></html>"
+              :x:/@sephia._internals.markdown-to-html?value
 
   else
 
     /*
      * Caller did not want to create an HTML view.
-     */
-    eval-x:x:/+/*/*/*/content
-
-    /*
+     *
      * Notice, this expression might look "funny", but our email structure depends upon
      * whether or not user has added attachments or not.
      *
      * See above comments for explanation.
-     *
-     * QuotedPrintable encoding for content is necessary to avoid having MimeKit remove trailing
-     * SP characters in lines of text, which are used in e.g. signatures etc.
      */
+    eval-x:x:/+/*/*/*/content
     add:x:(/@.envelope/*/body/*/multipart|/@.envelope/*/body)/[0,1]
       src
         text:plain
           X-Type:markdown
-          Content-Transfer-Encoding:QuotedPrintable
+          Content-Transfer-Encoding:quoted-printable
           content:x:/../*/body?value
 
   /*
-   * Adding cryptography keys for all recipients,
-   * if we found public PGP keys for all recipients.
+   * Adding cryptography keys for all recipients, if we found public PGP keys 
+   * for all recipients, and there actually were any fingerprints found.
    */
-  p5.crypto.list-public-keys:x:/@.fingerprints/*?name
-  if:x:/-/*?count
-    =:x:/@.envelope/*(/To|/Cc|/Bcc)/*?count
+  if:x:/@.fingerprints/*
 
     /*
-     * We've got cryptography keys for all recipients.
+     * There were fingerprints found for at least one of our recipients.
      *
-     * First adding an [encrypt] node to our root MIME entity, which might be either
-     * a "multipart:mixed", "multipart:alternative" or a simple "text:plain", depending
-     * upon whether or not user has added attachments to email, chosen to create alternative 
-     * HTML views by converting text content into Markdown, or neither of the above.
-     *
-     * Hence, at this point, we shouldn't care what type of MIME entity is our root entity,
-     * and simply choose to encrypt the root MIME entity, regardless of its type.
+     * Now checking if there were fingerprints for all recipients.
      */
-    add:x:/@.envelope/*/body/0
-      src:encrypt
+    p5.crypto.list-public-keys:x:/@.fingerprints/*?name
+    if:x:/-/*?count
+      =:x:/@.envelope/*(/To|/Cc|/Bcc)/*?count
 
-    /*
-     * Then adding up our [fingerprint] to [encrypt] node we created above.
-     */
-    for-each:x:/@.fingerprints/*?name
-      eval-x:x:/+/*/*
-      add:x:/@.envelope/*/body/0/*/encrypt
-        src
-          fingerprint:x:/@_dp?value
+      /*
+       * We've got cryptography keys for all recipients.
+       *
+       * First adding an [encrypt] node to our root MIME entity, which might be either
+       * a "multipart:mixed", "multipart:alternative" or a simple "text:plain", depending
+       * upon whether or not user has added attachments to email, chosen to create alternative 
+       * HTML views by converting text content into Markdown, or neither of the above.
+       *
+       * Hence, at this point, we shouldn't care what type of MIME entity is our root entity,
+       * and simply choose to encrypt the root MIME entity, regardless of its type.
+       */
+      add:x:/@.envelope/*/body/0
+        src:encrypt
+
+      /*
+       * Then adding up our [fingerprint] to [encrypt] node we created above for all
+       * recipients of email, which now should have the fingerprints stored in our
+       * [.fingerprint] lambda above.
+       */
+      for-each:x:/@.fingerprints/*?name
+
+        /*
+         * Notice, at this point we don't know what root MIME part we actually have,
+         * since it might be a "multipart:mixed" if email has attachments, or a 
+         * "multipart:alternative" if email has an alternative HTML view, or a simple
+         * "text:plain" if neither of the above is true.
+         *
+         * Hence, as we encrypt our message, we simply encrypt the root MIME entity,
+         * whatever that entity's type happens to be.
+         */
+        eval-x:x:/+/*/*
+        add:x:/@.envelope/*/body/0/*/encrypt
+          src
+            fingerprint:x:/@_dp?value
 
   /*
    * Then checking if email should be signed.
@@ -383,7 +418,7 @@ create-event:sephia.send-email
       !=:
 
     /*
-     * Email should (possibly) be signed.
+     * User has a PGP key declared in his settings, hence email should (possibly) be signed.
      *
      * Before we know for sure, we must check up if the private PGP key exists in GnuPG database.
      */
@@ -398,7 +433,7 @@ create-event:sephia.send-email
        * chosen to create alternative HTML views by converting text content into Markdown, or neither 
        * of the above.
        *
-       * Hence, at this point, we shouldn't care what type of MIME entity is our root entity,
+       * Hence, at this point, we shouldn't care about what type of MIME entity is our root entity,
        * and simply choose to sign the root MIME entity, regardless of its type.
        */
       eval-x:x:/+/*/*/**
@@ -409,11 +444,11 @@ create-event:sephia.send-email
               password:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-password?value
 
   /*
-   * Now we have created our message, and we can send it and save it to our database.
+   * Now we have created our message, and we can send it, and save it to our database.
    *
    * Notice though, that when we send our message, we actually remove its subject, and 
-   * add it as a MIME header named "X-Subject" inside of our innermost multipart, if
-   * the email is supposed to be sent encrypted.
+   * add its true subject as a MIME header named "X-Subject" inside of our innermost multipart, 
+   * if the email is supposed to be sent encrypted.
    *
    * This is done to hide the actual subject of our email, and have its real subject be encrypted,
    * while using a randomly generated subject outside of our encrypted parts.
@@ -434,7 +469,7 @@ create-event:sephia.send-email
     src:x:/@.attachments/*
 
   /*
-   * Babeling our subject, but only if email is to be sent encrypted.
+   * Then we can "babelize" our subject, but only if email is to be sent encrypted.
    *
    * Notice, this is done on the data that now exists inside of [p5.smtp.send],
    * and will change the subject line, and move it into our encrypted parts of email.
@@ -442,7 +477,7 @@ create-event:sephia.send-email
   if:x:/../*/p5.smtp.send/*/envelope/*/body/0/*/encrypt
 
     /*
-     * Email is be sent encrypted, "babelizing" our subject.
+     * Email is be sent encrypted, therefor we "babelize" our subject.
      *
      * First base64 encoding real subject, and adding it to encrypted multipart entity as 
      * a custom MIME header called "X-Subject".
@@ -457,8 +492,8 @@ create-event:sephia.send-email
         X-Subject:x:/@p5.string.encode-base64?value
 
     /*
-     * Then getting a new random subject, and exchanging actual subject with "babel subject", or
-     * if supplied, using the babel subject specified when invoking event.
+     * Then getting a new random subject, and exchanging our real subject with a 
+     * "babel subject", or if supplied, using the babel subject specified when invoking event.
      */
     if:x:/../*/babelsubject?value
 
@@ -473,7 +508,7 @@ create-event:sephia.send-email
       /*
        * Caller did not supply an explicit babel subject.
        *
-       * Retrieving babelized subject from babelizer.
+       * Retrieving a new babelized subject from babelizer.
        */
       sephia._internals.smtp.get-babel-subject
       set:x:/../*/p5.smtp.send/*/envelope/*/Subject?value
@@ -485,7 +520,7 @@ create-event:sephia.send-email
      *
      * First we move subject into our "text:plain" MIME part's content.
      *
-     * Subject is added as a Markdown "h3" element at the top of our email in our "text:plain" part.
+     * Subject is first added as a Markdown "h3" element at the top of our email in our "text:plain" part.
      */
     set:x:/../*/p5.smtp.send/*/envelope/**/text/=plain/*/content?value
       src:@"### {0}

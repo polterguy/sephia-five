@@ -242,7 +242,7 @@ create-event:sephia._internals.widgets.settings
                       label
                         for:sephia-settings-compose-markdown
                         innerValue:Use Markdown
-                        title:Attempt to convert content of emails into Markdown when reading emails, if possible
+                        title:Will allow you to read and write emails having their content converted into Markdown, if possible
 
           /*
            * POP3 settings.

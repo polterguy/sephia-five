@@ -295,9 +295,26 @@ create-event:sephia._internals.create-pop3-user-thread
         while:bool:true
 
           /*
+           * Checking if user has a decryption key.
+           */
+          if:x:/@.settings/*/pgp-key?value
+            and:x:/@.settings/*/pgp-key?value
+              !=:
+
+            /*
+             * User has declared decryption keys in his settings.
+             */
+            eval-x:x:/+/*/*/**
+            add:x:/..while/*/p5.pop3.get
+              src
+                decrypt
+                  fingerprint:x:/@.settings/*/pgp-key?value
+                    password:x:/@.settings/*/pgp-password?value
+
+          /*
            * Fetching new emails from POP3 server, making sure we forward evaluate settings.
            */
-          eval-x:x:/+/*|/+/*/decrypt/**
+          eval-x:x:/+/*
           p5.pop3.get
             server:x:/@.settings/*/pop3-server?value
             port:x:/@.settings/*/pop3-port?value
@@ -307,9 +324,6 @@ create-event:sephia._internals.create-pop3-user-thread
             attachment-folder:x:/@_users-home-folder?value
             count:x:/@_emails-2-fetch?value
             delete:x:/@_delete-emails?value
-            decrypt
-              fingerprint:x:/@.settings/*/pgp-key?value
-                password:x:/@.settings/*/pgp-password?value
             .onfinished
 
               /*
