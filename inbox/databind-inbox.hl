@@ -3,10 +3,12 @@
  * Databinds our inbox datagrid.
  *
  * Requires no arguments, but you can optionally pass in [offset] and [filter] when invoking file,
- * to start out on a specific page, with a specified filter condition.
+ * to start out at a specific page, with a specified filter condition.
  *
  * Filter can be "typed", by starting it out with a "type declaration", followed by a colon.
  * Legal types are 'inbox:', 'sent:', 'read:', 'unread:', 'safe:', 'all:', 'spam:' and 'attachment:'.
+ *
+ * If you do not provide a "type", the default type is "inbox:".
  */
 .defaults
   offset:int:0
@@ -122,6 +124,14 @@ if
      */
     set:x:(/../*/filter|/../*/.defaults/*/filter)/$?value
       src:
+
+else
+
+  /*
+   * Defaulting filter type to "inbox:".
+   */
+  set:x:/@_filter-type?value
+    src:@"and emails.type='received'"
 
 
 
