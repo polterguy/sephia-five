@@ -288,7 +288,7 @@ create-widget:sephia-search-wrapper
               element:button
               class:sephia-logo-toolbar-button
               innerValue:@"<span></span>"
-              title:Show Sephia Five toolbar
+              title:Toggle Sephia Five Magic toolbar
               accesskey:F
               onclick
 

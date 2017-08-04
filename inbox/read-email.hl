@@ -427,8 +427,10 @@ where emails.id = @id"
 list-files:@SEPHIA/inbox/read-email-action-buttons/
   filter:.hl
 load-file:x:/-/*?name
-add:x:/../*/create-widget/**/widgets/=action-strip
-  src:x:/@load-file/*/*
+add:x:/../*/create-widget/**/widgets/=action-strip-primary
+  src:x:/@load-file/*/*/*/.primary/.
+add:x:/../*/create-widget/**/widgets/=action-strip-secondary
+  src:x:/@load-file/*/*(!/*/.primary/.)
 
 
 
@@ -671,16 +673,70 @@ create-widget
                           id:x:/@get-widget-property/*/*?value
                           after:x:/@p5.web.widgets.find-first-ancestor/*/*?value
 
+                /*
+                 * A simple separator between the email content, and its meta data.
+                 */
+                hr
+                  style:"margin-top:1rem;"
+
             /*
-             * "Action strip" containing all buttons for actions user can do with email, such as "Reply", "Forward", "Delete", etc.
+             * Action strip column.
              */
             div
-              class:right
+              class:row
               widgets
+
                 div
-                  class:strip
-                  style:"display:inline-block;"
-                  widgets:action-strip
+                  class:col-70 sephia-reply-toolbar right
+                  .secondary
+                  widgets
+
+                    /*
+                     * Secondary "action strip" containing all buttons for actions user can do with email, 
+                     * such as "Reply", "Forward", "Delete", etc.
+                     *
+                     * This one is initially invisible until user toggles visibility by clicking the "magic button".
+                     */
+                    div
+                      class:strip
+                      style:"display:inline-block;"
+                      widgets:action-strip-secondary
+                div
+                  class:col right
+                  widgets
+
+                    /*
+                     * Primary "action strip" containing all buttons for actions user can do with email, 
+                     * such as "Reply", "Forward", "Delete", etc.
+                     *
+                     * This one is initially visible, and allows the user to toggle the visibility of the secondary strip.
+                     */
+                    div
+                      class:strip
+                      style:"display:inline-block;"
+                      widgets:action-strip-primary
+
+                        /*
+                         * Button to toggle display of the search toolbar.
+                         */
+                        literal
+                          element:button
+                          class:sephia-logo-toolbar-button
+                          style:"margin-bottom:0;"
+                          innerValue:@"<span></span>"
+                          title:Toggle Sephia Five Magic toolbar
+                          accesskey:F
+                          onclick
+
+                            /*
+                             * Toggling display CSS class of our secondary strip.
+                             */
+                            p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                              .email-id
+                            p5.web.widgets.find-first:x:/-/*/*?value
+                              .secondary
+                            micro.css.toggle:x:/-/*/*?value
+                              class:sephia-reply-toolbar-show
 
 
 

@@ -6,6 +6,7 @@ button
   innerValue:@"<span class=""icon-close""></span>"
   title:Close
   class:reader-action-button
+  .primary
   onclick
 
     /*

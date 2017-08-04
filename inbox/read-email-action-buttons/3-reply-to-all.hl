@@ -60,8 +60,6 @@ button
           set-widget-property:x:/../*/_event?value
             visible:false
 
-        else
-
   onclick
 
     /*

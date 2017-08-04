@@ -1,0 +1,76 @@
+﻿
+/*
+ * Action button for marking an email as unread.
+ */
+button
+  .primary
+  innerValue:@"<span class=""icon-bookmark""></span>"
+  title:Mark as unread
+  class:reader-action-button
+  oninit
+
+    /*
+     * Figuring out ID of email we're reading, to make sure we hide this button, in case the
+     * email was sent by the user himself (in "outbox" that is).
+     */
+    p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+      .email-id
+    get-widget-property:x:/-/*/*?value
+      .email-id
+
+    /*
+     * Selecting email type from MySQL.
+     */
+    p5.mysql.connect:[sephia]
+
+      /*
+       * Checking if email was sent by user, or if it is spam.
+       */
+      p5.mysql.scalar:@"select type from emails where emails.id = @id"
+        @id:x:/@get-widget-property/*/*?value
+      if:x:/@p5.mysql.scalar?value
+        =:sent
+        or:x:/@p5.mysql.scalar?value
+          =:spam
+
+        /*
+         * This email was sent by user himself, and hence marking it as unread 
+         * makes no sense.
+         */
+        set-widget-property:x:/../*/_event?value
+          visible:false
+
+  onclick
+
+    /*
+     * Finding currently read email, to make sure we're able to inject
+     * reply widget into page just beneath reader widget, before we delete
+     * the reader widget itself.
+     */
+    p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+      .email-id
+    get-widget-property:x:/-/*/*?value
+      .email-id
+
+    /*
+     * Marking the email as unread.
+     */
+    p5.mysql.connect:[sephia]
+      p5.mysql.update:@"update emails set isread = 0 where id = @id"
+        @id:x:/@get-widget-property/*/*?value
+
+    /*
+     * Databinding inbox again.
+     */
+    sephia.inbox.databind
+      keep-page-filter:bool:true
+
+    /*
+     * Deleting main reader widget.
+     */
+    delete-widget:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+
+    /*
+     * Updating page title.
+     */
+    sephia._internals.update-page-title

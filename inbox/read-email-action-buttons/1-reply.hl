@@ -6,6 +6,7 @@ button
   innerValue:@"<span class=""icon-mail-reply""></span>"
   title:Reply to email
   class:reader-action-button
+  .primary
   oninit
 
     /*

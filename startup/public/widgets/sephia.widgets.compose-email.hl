@@ -436,7 +436,6 @@ p5.sephia_send_email = function(e) {
                                   value:true
                                 p5.web.widgets.ajax-events.raise:x:/@_widget?value
                                   .onclick
-                                delete-widget:micro-windows-info
 
                         return
 

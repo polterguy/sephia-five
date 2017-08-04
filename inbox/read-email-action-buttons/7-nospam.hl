@@ -47,10 +47,18 @@ button
     get-widget-property:x:/@p5.web.widgets.find-first-ancestor/*/*?value
       .email-id
     p5.mysql.connect:[sephia]
-      p5.mysql.update:@"update emails set type = 'received' where id = @id"
+      p5.mysql.scalar:@"select sender from emails where id = @id"
         @id:x:/@get-widget-property/*/*?value
-      p5.mysql.update:@"update contacts set spam = 0 where exists (select * from emails where emails.id = @id and contacts.id = emails.sender)"
-        @id:x:/@get-widget-property/*/*?value
+      p5.mysql.update:@"update emails set type = 'received' where sender = @sender"
+        @sender:x:/@p5.mysql.scalar?value
+      p5.mysql.update:@"update contacts set spam = 0 where id = @sender"
+        @sender:x:/@p5.mysql.scalar?value
+
+    /*
+     * Giving user feedback about how many emails were moved.
+     */
+    micro.windows.info:@"{0} email(s) were updated"
+      :x:/@p5.mysql.connect/*/p5.mysql.update/[0,1]?value
 
     /*
      * Entirely deleting reader widget, and re-databinding inbox.
