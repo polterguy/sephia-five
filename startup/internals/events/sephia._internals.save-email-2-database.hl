@@ -20,7 +20,7 @@ create-event:sephia._internals.save-email-2-database
    * Sanity checking invocation.
    */
   micro.lambda.contract.min:x:/..
-    envelope:string
+    envelope
       From
 
       // Sometimes Subject is empty from POP3 server!
@@ -33,9 +33,25 @@ create-event:sephia._internals.save-email-2-database
    */
   micro.lambda.contract.optional:x:/..
     settings
-      hollywood-spam-filter
-      signature-spam-filter
-      cryptography-spam-filter
+      hollywood-spam-filter:bool
+      signature-spam-filter:bool
+      cryptography-spam-filter:bool
+
+  /*
+   * Some email software seems to be generating initial welcome emails when first
+   * being used, which doesn't always seem to be generating MIME IDs.
+   *
+   * If this is one of those, we simply create some random GUID which does the trick
+   * for us.
+   */
+  p5.types.guid.new
+  if:x:/../*/envelope?value
+    not
+    or:x:/../*/envelope?value
+      =:
+    set:x:/../*/envelope?value
+      src:{0}@foo.com
+        :x:/@p5.types.guid.new?value
 
   /*
    * Checking if email has alread been fetched from POP server.
