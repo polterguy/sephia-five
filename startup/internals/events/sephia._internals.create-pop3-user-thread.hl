@@ -218,8 +218,6 @@ create-event:sephia._internals.create-pop3-user-thread
     src:x:/@load-file/*/*/sleep-between-fetch?value
   set:x:/../*/fork/**/_emails-2-fetch?value
     src:x:/@load-file/*/*/emails-2-fetch-in-batch?value
-  set:x:/../*/fork/**/_delete-emails?value
-    src:x:/@load-file/*/*/delete-emails?value
 
   /*
    * Creating a new POP3 worker thread.
@@ -240,7 +238,6 @@ create-event:sephia._internals.create-pop3-user-thread
     .settings
     _users-home-folder
     _emails-2-fetch
-    _delete-emails
     _thread-signal:sephia.core.thread-signal-{0}
       :x:/@whoami/*/username?value
 
@@ -323,7 +320,7 @@ create-event:sephia._internals.create-pop3-user-thread
             password:x:/@.settings/*/pop3-password?value
             attachment-folder:x:/@_users-home-folder?value
             count:x:/@_emails-2-fetch?value
-            delete:x:/@_delete-emails?value
+            delete:x:/@.settings/*/pop3-delete?value
             .onfinished
 
               /*

@@ -43,6 +43,7 @@ create-event:sephia._internals.widgets.settings
     pop3-server:x:/@load-file/*/*/pop3-server?value
     pop3-port:x:/@load-file/*/*/pop3-port?value
     pop3-ssl:x:/@load-file/*/*/pop3-ssl?value
+    pop3-delete:x:/@load-file/*/*/pop3-delete?value
     smtp-server:x:/@load-file/*/*/smtp-server?value
     smtp-port:x:/@load-file/*/*/smtp-port?value
     smtp-ssl:x:/@load-file/*/*/smtp-ssl?value
@@ -88,6 +89,13 @@ create-event:sephia._internals.widgets.settings
    */
   if:x:(/../*/p5.auth.my-settings.get/*/sephia/*/markdown|/../*/.defaults/*/markdown)/$?value
     add:x:/../*/return/**/input/*/type/=checkbox/./*/.data-field/=markdown/.
+      src:checked
+
+  /*
+   * Checking if user wants to delete emails on his POP3 server once they're fetched.
+   */
+  if:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pop3-delete|/../*/.defaults/*/pop3-delete)/$?value
+    add:x:/../*/return/**/input/*/type/=checkbox/./*/.data-field/=pop3-delete/.
       src:checked
 
   /*
@@ -278,6 +286,15 @@ create-event:sephia._internals.widgets.settings
                             onkeydown:@"if (event.keyCode == 13) {p5.$('sephia-settings-next').raise('onclick');return false;}"
                             oninit
                               micro.page.set-focus:sephia-settings-pop3-server
+                          label
+                            for:sephia-settings-pop3-delete
+                            innerValue:Delete
+                            title:Delete emails from POP3 server once they're fetched
+                          span
+                            widgets
+                              input:sephia-settings-pop3-delete
+                                .data-field:pop3-delete
+                                type:checkbox
                   div
                     class:col-50
                     widgets
@@ -296,6 +313,7 @@ create-event:sephia._internals.widgets.settings
                           label
                             for:sephia-settings-pop3-ssl
                             innerValue:SSL
+                            title:Use SSL/TLS to connect to POP3 server
                           span
                             widgets
                               input:sephia-settings-pop3-ssl
