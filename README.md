@@ -75,6 +75,18 @@ In addition, Sephia Five also supports something we have invented ourselves, whi
 
 ![alt screenshot of Sephia Five](media/screenshots/screenshot-9.png)
 
+Sephia Five will accept any Markdown, but still _"wash"_ any emails it displays for any potentially malicious HTML elements, such as script inclusions, etc.
+
+## Extreme availablity without compromising security
+
+Even though Sephia Five is first of all built to be secure, it is also extremely easy to use, and has extreme availability. If you wish, you can set it up on a web server, and access your emails from any device you own, regardless of where you are in this world. If you combine this with SSL, you can have the convenience of reading your email from anywhere you might be in the world, while still having bullet proof cryptography protecting your privacy.
+
+Since Sephia Five is loaded within an SSL context, this means that once you close your browser window, nothing stays cached in your client. So even if somebody physically steals your phone, tablet or computer - They will still not have access to your emails, which are safely stored on your server.
+
+If you can secure your server, Sephia Five can secure your emails, such that the only way an adversary could gain access to your emails, would be to physically break into your office or home, and steal your server. Needless to say, but this trait of Sephia Five significantly reduces your risk when sending emails to clients, friends and partners.
+
+Not even the private PGP key is stored on any of the clients you use to read your emails. All your data, including your private PGP key, is safely secured in your data vault, which you can secure any ways you wish.
+
 ## Do not trust us!
 
 Even if somebody points a gun to our heads, we couldn't disclose any of your secrets. Most security vendors starts out their sales pitch with the words _"trust us, we know what we're doing"_. I betcha Judas told Jesus the same words. With us however, trust is a technical implementation feature, and an intrinsic part of our business model, implying that you'd never even have to trust us, since you could yourself prove that what we are saying is accurate.
