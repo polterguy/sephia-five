@@ -67,6 +67,14 @@ To cryptographically sign a public PGP key, upload it to a key server, using the
 
 Basically, as long as you receive a happy email, you can be 100% perfectly confident on that the communication have been cryptographically secured. If you receive a neutral face email, you can be almost certain, but not entirely of that the communication is secured. If you receive a sad face email, you might as well start communicating using postcards.
 
+## Compose your emails using Markdown
+
+Although Sephia Five does not accept HTML emails, you can still apply formatting to your emails using Markdown. This allows you to easily create some simple formatting to your text, by writing your emails using Markdown.
+
+In addition, Sephia Five also supports something we have invented ourselves, which we are particularly proud of, which we refer to as _"conversations"_. Conversations allows you to keep the context in your email replies, by having Sephia Five automatically deduct who said what, as you bounce an email conversation back and forth a couple of times.
+
+![alt screenshot of Sephia Five](media/screenshots/screenshot-9.png)
+
 ## Do not trust us!
 
 Even if somebody points a gun to our heads, we couldn't disclose any of your secrets. Most security vendors starts out their sales pitch with the words _"trust us, we know what we're doing"_. I betcha Judas told Jesus the same words. With us however, trust is a technical implementation feature, and an intrinsic part of our business model, implying that you'd never even have to trust us, since you could yourself prove that what we are saying is accurate.
