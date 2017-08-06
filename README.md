@@ -113,6 +113,8 @@ Sephia Five is ridiculously small in its bandwidth consumption. This implies tha
 
 ![alt screenshot of Sephia Five](media/bandwidth-comparison.png)
 
+For the record, less is more, and smaller is better.
+
 ## Do not trust us!
 
 Even if somebody points a gun to our heads, we couldn't disclose any of your secrets. Most security vendors starts out their sales pitch with the words _"trust us, we know what we're doing"_. I betcha Judas told Jesus the same words. With us however, trust is a technical implementation feature, and an intrinsic part of our business model, implying that you'd never have to trust us, since you could yourself prove that what we are saying is accurate.
