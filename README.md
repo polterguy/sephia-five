@@ -110,6 +110,7 @@ These features of Sephia Five, gives you an enhanced user experience, allowing y
 ## Bandwidth consumption
 
 Sephia Five is ridiculously small in its bandwidth consumption. This implies that it will load faster over very slow internet connections, compared to other web mail clients. Below is a graph showing the difference in bandwidth consumption between GMail and Sephia Five.
+
 ![alt screenshot of Sephia Five](media/bandwidth-comparison.png)
 
 ## Do not trust us!
