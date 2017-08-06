@@ -7,7 +7,7 @@ Security starts with simplicity. Unless something is simple, it can never be sec
 
 ![alt screenshot of Sephia Five](media/screenshots/screenshot-1.png)
 
-The squid button, will toggle more options for you, allowing you to search your emails, page back and forth, access your settings, etc - But by default, this button is hidden, to create as little _"cognitive noise"_ for you as possible.
+The squid button, will toggle more options for you, allowing you to search your emails, page back and forth, access your settings, etc - But by default, these choices are hidden, to create as little _"cognitive noise"_ for you as possible.
 
 ## Security is more than cryptography
 
@@ -23,9 +23,11 @@ Sephia Five can be configured to be 100% secure in regards to virus and malware,
 
 ![alt screenshot of Sephia Five](media/screenshots/screenshot-3.png)
 
+You can easily configure yourself which files are legal, illegal, and suspect. But the default configuration, would probably be good enough for most installations.
+
 ## Privacy is more than avoiding data theft
 
-99% of all emails that are composed with rich HTML, are ads and distractions, intended to steal your attention. Microsoft once conducted research in this area, and found that even the smallest distractions, would often destroy 23 minutes of productive work. In Sephia Five, we have simply eliminated the ability to render HTML emails. Unless an email has an alternative plain text view, Sephia Five will simply not show it. This will reduce the amount of _"cognitive noise"_, and allow you to enjoy your privacy, and stay focused within your zone.
+99% of all emails that are composed with rich HTML, are ads and distractions, intended to steal your attention. Microsoft once conducted research in this area, and found that even the smallest distractions, would destroy 23 minutes of productive work. In Sephia Five, we have simply eliminated the ability to render HTML emails. Unless an email has an alternative plain text view, Sephia Five will simply not show it. This will reduce the amount of _"cognitive noise"_, and allow you to enjoy your privacy, and stay more focused within your zone.
 
 ![alt screenshot of Sephia Five](media/screenshots/screenshot-4.png)
 
@@ -37,13 +39,15 @@ In Hollywood there is a saying - _"Don't call us, we'll call you"_. In Sephia Fi
 
 ![alt screenshot of Sephia Five](media/screenshots/screenshot-5.png)
 
-Notice, you can still explicitly mark a sender to be allowed to send you emails. If you do, this would create exceptions to the Hollywood filter, allowing you to receive emails from some few people, whom you have not sent an email to first.
+You can create exceptions to the above rule, for explicitly chosen email adresses.
 
 ## Time slots for reading email
 
 _"Innocent distractions"_ are one of our primary productivity thieves. Often these can be social emails, sent by coworkers or friends, intended to allow people to socialise and interact with each other. In Sephia Five we have solved this by allowing you to declare at which times during the day its users are allowed to check for email. If an employee or user attempts to check his email outside of these times, Sephia Five will simply not check for email, and not allow him to update his or her inbox.
 
 This allows you and your employees to _"stay in the zone"_, and focus on the task at hand, without distractions. This can of course be configured on a per user and role basis, and filtered according to the user's role. This allows you to for instance have your sales staff be able to check their emails all the time, while your system developers can only check their emails 08:00, 12:00 and 15:00 for instance.
+
+If a user tries to check his email outside of his allocated time slots, he will simply not receive them.
 
 ## PGP miltary grade cryptography KISS
 
@@ -67,6 +71,8 @@ To cryptographically sign a public PGP key, upload it to a key server, using the
 
 Basically, as long as you receive a happy email, you can be 100% perfectly confident on that the communication have been cryptographically secured. If you receive a neutral face email, you can be almost certain, but not entirely of that the communication is secured. If you receive a sad face email, you might as well start communicating using postcards.
 
+The above screenshot also illustrates a crucial point, which is that every time Sephia Five requires you to carefully think before you act - It will show you a red warning. This is in fact the only use of colors we have in Sephia Five by default, which further reduces _"cognitive noise"_.
+
 ## Compose your emails using Markdown
 
 Although Sephia Five does not accept HTML emails, you can still apply formatting to your emails using Markdown. This allows you to easily create some simple formatting to your text, by writing your emails using Markdown.
@@ -75,25 +81,36 @@ In addition, Sephia Five also supports something we have invented ourselves, whi
 
 ![alt screenshot of Sephia Five](media/screenshots/screenshot-9.png)
 
-Sephia Five will accept any Markdown, but still _"wash"_ any emails it displays for any potentially malicious HTML elements, such as script inclusions, etc.
+Sephia Five will accept any Markdown, but still _"wash"_ all emails it displays for any potentially malicious HTML elements, such as script inclusions, etc.
 
 ## Extreme availablity without compromising security
 
 Even though Sephia Five is first of all built to be secure, it is also extremely easy to use, and has extreme availability. If you wish, you can set it up on a web server, and access your emails from any device you own, regardless of where you are in this world. If you combine this with SSL, you can have the convenience of reading your email from anywhere you might be in the world, while still having bullet proof cryptography protecting your privacy.
 
+**Disclaimer** - It is crucial that you setup your web server to only serve Sephia Five over SSL if you allow access to it over the general internet. Otherwise, all the security measures we have created for you, are pointless!
+
 Since Sephia Five is loaded within an SSL context, this means that once you close your browser window, nothing stays cached in your client. So even if somebody physically steals your phone, tablet or computer - They will still not have access to your emails, which are safely stored on your server.
 
 If you can secure your server, Sephia Five can secure your emails, such that the only way an adversary could gain access to your emails, would be to physically break into your office or home, and steal your server. Needless to say, but this trait of Sephia Five, significantly reduces your risk when communicating with clients, friends, and partners.
 
-Not even the private PGP key is stored on any of the clients you use to read your emails. All your data, including your private PGP key, is safely secured in your data vault, which you can secure in your home or office.
+Not even the private PGP key is stored on any of the clients you use to read your emails. All your data, including your private PGP key, is safely secured on your own personal server, which you can secure in your home or office.
+
+The database used to store your PGP key pairs is GnuPG, which the German government believed so strongly in, that they chose to sponsor the project with government money to help maintain. Every third party component used in Sephia Five, is what is recommended as best practices for seuring your communication and data.
 
 ## Extreme usability
 
 Sephia Five is carefully created to be as easy to use as possible. For instance, in Sephia, you can read multiple emails at the same time, and go back and forth between them, while replying to multiple emails, and composing several new emails at the same time.
 
-This allows you to cross-reference content from multiple emails, empowering you in your communication, without having to juggle multiple browser windows.
+This allows you to cross-reference content from multiple emails, empowering you in your communication, without having to juggle multiple browser windows. You can even perform a search for an email, open that email, perform another search, page back and forth several times, for then to open up another email - And the email you opened up originally will _"stick"_, and still be open.
 
 ![alt screenshot of Sephia Five](media/screenshots/screenshot-10.png)
+
+These features of Sephia Five, gives you an enhanced user experience, allowing you to work the way you wish to work - And not the way some software vendor's limitations forces you to work.
+
+## Bandwidth consumption
+
+Sephia Five is ridiculously small in its bandwidth consumption. This implies that it will load faster over very slow internet connections, compared to other web mail clients. Below is a graph showing the difference in bandwidth consumption between GMail and Sephia Five.
+![alt screenshot of Sephia Five](media/bandwidth-comparison.png)
 
 ## Do not trust us!
 
