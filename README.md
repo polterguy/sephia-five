@@ -109,7 +109,7 @@ The director of Intel once famously said _"Only the paranoid will survive"_. We 
 
 ## Getting started
 
-If you wish to try out Sephia Five, you can download it from [this link](https://github.com/polterguy/sephia-five/releases). For a simple test, you use it in combination with Visual Studio, Xamarin or Mono Develop. In addition, you will need to have MySQL installed.
+If you wish to try out Sephia Five, you can download it from [this link](https://github.com/polterguy/sephia-five/releases). For a simple test, you can use it in combination with Visual Studio, Xamarin, or Mono Develop. In addition, you will need to have MySQL installed.
 
 1. [Download Phosphorus Five](https://github.com/polterguy/phosphorusfive/releases) 
 2. [Download Sephia Five](https://github.com/polterguy/sephia-five/releases)
@@ -119,12 +119,49 @@ If you wish to try out Sephia Five, you can download it from [this link](https:/
 6. [Download MySQL](https://dev.mysql.com/downloads/) -You will probably want to download also the MySQL Workbench, in addition to the core database.
 7. Create a database in MySQL, name it e.g. _"sephia"_.
 8. Modify the connection string in the _"web.config"_ file, inside of the Phosphorus Five folder called _"p5.webapp"_ to point to your MySQL database.
-9. Open up the _"p5.sln"_ file in either Visual Studio, Xamarin or Mono Develop.
-10. Enjoy your privacy!
+9. Open up the _"p5.sln"_ file in either Visual Studio, Xamarin or Mono Develop and start your debugger.
+
+When System42 have started, create a server salt, a root password, and open up _"Apps/CMS"_, and create a new _"lambda"_ page, by clicking the _"+"_. Click the _"Settings"_ button, and make sure you use the _"empty"_ template. Paste in the following code into the CodeMirror Hyperlambda code editor.
+
+```
+sys42.utilities.execute-lambda-file:@SEPHIA/launch.hl
+```
+
+Click _"View page"_ and enjoy your privacy.
+
+### Using Sephia with your GMail address
+
+Sephia Five's default configuration, points to GMail's POP3 servers and SMTP servers. This means that as you start up Sephia Five, and go through the setup process - The only thing you'll have to do, to test it, is to supply your GMail username and password, and Sephia Five will immediately start using your GMail address.
+
+You might have to make sure you enable POP3 access for your GMail account, but Sephia Five's setup process will guide you through these steps.
+
+![alt screenshot of Sephia Five](media/screenshots/screenshot-11.png)
+
+If you use Sephia Five in combination with your GMail address, all your email will still be perfectly encrypted and safe, and not even the employees of GMail can read your email. Not even the subjects of your emails.
+
+### Using Sephia without a web server
+
+Although Sephia Five is a web server email system, you could still install it locally on e.g. something such as a Linux laptop, having Apache and MySQL running in the background, with mod_mono mappings to get Apache to serve your ASP.NET web application. If you do, you could simply create a shortcut on your desktop that points to _"localhost/xx"_, and Sephia would open up in your browser, running your local website. We are currently working on creating an automatic Debian based packet repository, that would significantly reduce the complexity of this setup process. However, for the time being, unfortunately you're on your own if you wish to create such a configuration.
+
+When we have done this though, to install Sephia Five on either a Linux laptop, or a Linux web server (Debian based), would imply nothing else than simply add our repository to your packet manager, choose Sephia Five, and start the installation process.
+
+### User management
+
+Sephia Five is a multiuser system (obviously), and we provide a _"professional addon"_ to Sephia Five, which allows you to manage your users. This module is not open source, since we too need bread and butter. However, if you would want to create multiple users for your system, you could do this with the _"Executor"_ in System42, by typing in something like the following, and evaluating it.
+
+```
+p5.auth.users.create:some-username
+  password:some-pa$$word
+  role:super
+```
+
+However, if you would want to have a more easy way to manage your users, we would be happy to talk to you about our professional user module. If so, feel free to toss our CTO an email at thomas@gaiasoul.com.
+
+The user management module, also features a lot of additional features, such as the ability to _"lock out"_ users from Sephia Five, run some diagnostics, in addition to that it easily allows you to manage your existing users, within the comforts of a nice GUI, easily accessible for any _"root"_ account on your system. For a professional company, with multiple employees, this would provide a highly more convenient way of managing your users and your Sephia Five installation. We also provide professional support and help, in addition to installation help for companies and organisations who purchase our user management module.
 
 ## Getting professional help
 
-The creators of Sephia Five, which is T.H. Rose Home Cloud, Ltd, are providing professional services, and helping companies and organisations to setup Sephia Five. If you wish to speak with us about our commercial offerings, or need help to initially secure your email server, you can contact our CTO at thomas@gaiasoul.com. We only ask two things of you.
+The creators of Sephia Five, are providing professional services, and helping companies and organisations to setup Sephia Five. If you wish to speak with us about our commercial offerings, or need help to initially secure your email server, you can contact our CTO at thomas@gaiasoul.com. We only ask two things of you.
 
 1. Change all your server passwords after we have initially setup your server
 2. [Read this](https://gaiasoul.com/2017/08/05/how-to-become-a-customer-of-us/), and realise we mean business!
