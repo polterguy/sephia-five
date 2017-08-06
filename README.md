@@ -115,6 +115,20 @@ Sephia Five is ridiculously small in its bandwidth consumption. This implies tha
 
 For the record, less is more, and smaller is better.
 
+## Add your own design
+
+Although we ourselves are not particularly happy about _"color salads"_, it is very easy to apply your own design to Sephia Five. In fact, out of the box, Sephia Five comes with no less than 5 different themes, that you can easily customise according to your own needs. Below is an example of how the settings form will look like with the _"Sea Breeze"_ theme. Each user can in fact also choose his own theme, and such apply whatever design he or she feels are covering their needs.
+
+![alt screenshot of Sephia Five](media/screenshots/screenshot-12.png)
+
+To modify any of the existing themes, to create your own design, should be easy for a desent designer.
+
+## Sephia Five is also a platform
+
+Sephia Five is in fact more than _"just an app"_. There are several publicly available Active Events you can consume in your own application, to such consume Sephia Five as a _"module"_ from within your own applications.
+
+This makes it easy for you to not only significantly extend Sephia Five, but to also consume it as a _"plugin"_ in your own applications, and easily interact with it, allowing you (or us) to create applications that seemlessly interact with Sephia, one way or another - Such as CRM applications for instance.
+
 ## Do not trust us!
 
 We will never ask you to trust us. We could be tortured or coerced by an adversary to give up your data, at which point most would yield after some time of experiencing tortur or being coerced. However, even if somebody points a gun to our heads, we couldn't disclose any of your secrets - Not even if we wanted to.
