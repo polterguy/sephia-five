@@ -242,6 +242,7 @@ Some missing features though, which we have on our TODO list, which is still not
 3. Implement user _"lock out"_ if the wrong password has been typed more than x times, to prevent brute force password attacks.
 4. Allow users to change their passwords from within Sephia Five.
 5. Create a Debian repository, allowing for a single click installation process, on Debian based servers and clients.
+6. Having Sephia Five function without needing System42 to be installed.
 
 Some of the above features are crucial for your privacy and security. Therefor, we do not recommend you installing Sephia Five in a real live production environment just yet. If you'd like to get notified of when Sephia Five becomes stable, and ready for production environments, feel free to for instance subscribe to my [blog](https://gaiasoul.com).
 
