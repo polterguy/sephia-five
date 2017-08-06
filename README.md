@@ -162,7 +162,7 @@ Click _"View page"_ and enjoy your privacy.
 
 ### Using Sephia with your GMail address
 
-Sephia Five's default configuration, points to GMail's POP3 servers and SMTP servers. This means that as you start up Sephia Five, and go through the setup process - The only thing you'll have to do, to test it, is to supply your GMail username and password, and Sephia Five will immediately start using your GMail address.
+Sephia Five's default configuration, points to GMail's POP3 servers and SMTP servers. This means that as you start up Sephia Five, and go through the setup process - The only thing you'll have to do to test it, is to supply your GMail username and password, and Sephia Five will immediately start using your GMail address.
 
 You might have to make sure you enable POP3 access for your GMail account, but Sephia Five's setup process will guide you through these steps.
 
@@ -172,7 +172,7 @@ If you use Sephia Five in combination with your GMail address, all your email wi
 
 ### Using Sephia without a web server
 
-Although Sephia Five is a web server email system, you could still install it locally on e.g. something such as a Linux laptop, having Apache and MySQL running in the background, with mod_mono mappings to get Apache to serve your ASP.NET web application. If you do, you could simply create a shortcut on your desktop that points to _"localhost/xx"_, and Sephia would open up in your browser, running your local website. We are currently working on creating an automatic Debian based packet repository, that would significantly reduce the complexity of this setup process. However, for the time being, unfortunately you're on your own if you wish to create such a configuration.
+Although Sephia Five is created for web servers, as a _"web mail client"_, you can still install it locally on e.g. something such as a Linux laptop, having Apache and MySQL running in the background, with mod_mono mappings to get Apache to serve your ASP.NET web application. If you do, you could simply create a shortcut on your desktop that points to _"localhost/xx"_, and Sephia would open up in your browser, running your local website. We are currently working on creating an automatic Debian based packet repository, that would significantly reduce the complexity of this setup process. However, for the time being, unfortunately you're on your own if you wish to create such a configuration.
 
 When we have done this though, to install Sephia Five on either a Linux laptop, or a Linux web server (Debian based), would imply nothing else than simply add our repository to your packet manager, choose Sephia Five, and start the installation process.
 
