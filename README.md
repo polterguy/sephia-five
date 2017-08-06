@@ -251,7 +251,7 @@ Although we have done everything to ensure your privacy and security, no absolut
 
 For instance, a lot of variables are out of our hands, such as the technical skillset of your sys-admins, and the loyalty of your friends/coworkers. These are variables which we have tried our best to control, and such reduce the threat-level to a minimum. However, 100% perfection can never be achieved.
 
-If you would like to reduce the threat-level further, it is probably wise to talk to us, and/or hire us, to help you getting started. We can provide best practices, perform the initial installation, and training of both your employees and sys admins - To such further reduce your exposure, and keep you even more secure. If you would like to hear more about our commercial offerings, feel free to toss our CTO an email at thomas@gaiasoul.com. And realise, [this is what we do](https://gaiasoul.com/2017/08/05/how-to-become-a-customer-of-us/).
+If you would like to reduce the threat-level further, it is probably wise to talk to us, and/or hire us, to help you getting started. We can provide best practices, perform the initial installation, and training of both your employees and sys admins - To such further reduce your exposure, and keep you even more secure. If you would like to hear more about our commercial offerings, feel free to toss our CTO an email at thomas@gaiasoul.com.
 
 Kind Regards,
 
