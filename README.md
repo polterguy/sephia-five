@@ -227,6 +227,14 @@ Some missing features though, which we have on our TODO list, which is still not
 
 Some of the above features are crucial for your privacy and security. Therefor, we do not recommend you installing Sephia Five in a real live production environment just yet. If you'd like to get notified of when Sephia Five becomes stable, and ready for production environments, feel free to for instance subscribe to my [blog](https://gaiasoul.com).
 
+## Disclaimer
+
+Although we have done everything to ensure your privacy and security, no absolute guarantees can ever be given - And anyone claiming to give you such, are lying. Bugs are real, and accidents do occur. We have done everything within our powers to eliminate as many security risks as possible, and we have done our best to keep your privacy secured - But we cannot guarantee you 100% security. None can in fact.
+
+For instance, a lot of variables are out of our hands, such as the technical skillset of your sys-admins, and the loyalty of your friends/coworkers. These are variables which we have tried our best to control, and such reduce the threat-level to a minimum. However, 100% perfection can never be achieved.
+
+If you would like to reduce the threat-level further, it is probably wise to talk to us, and/or hire us, to help you getting started. We can provide best practices, perform the initial installation, and training of both your employees and sys admins - To such further reduce your exposure, and keep you even more secure. If you would like to hear more about our commercial offerings, feel free to toss our CTO an email at thomas@gaiasoul.com. And realise, [this is what we do](https://gaiasoul.com/2017/08/05/how-to-become-a-customer-of-us/).
+
 Kind Regards,
 
 Thomas Hansen - CTO at T.H. Rose Home Cloud, Ltd
