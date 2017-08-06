@@ -259,4 +259,5 @@ Thomas Hansen - CTO at T.H. Rose Home Cloud, Ltd
 
 ![alt screenshot of Sephia Five](media/snowden.png)
 
+We care, do you ...?
 
