@@ -89,7 +89,7 @@ Even though Sephia Five is first of all built to be secure, it is also extremely
 
 **Disclaimer** - It is crucial that you setup your web server to only serve Sephia Five over SSL if you allow access to it over the general internet. Otherwise, all the security measures we have created for you, are pointless!
 
-Since Sephia Five is loaded within an SSL context, this means that once you close your browser window, nothing stays cached in your client. So even if somebody physically steals your phone, tablet or computer - They will still not have access to your emails, which are safely stored on your server.
+Since Sephia Five is loaded within an SSL context, this means that once you close your browser window, nothing stays cached in your client. So even if somebody physically steals your phone, tablet, or computer - They will still not have access to your emails, which are safely stored on your server.
 
 If you can secure your server, Sephia Five can secure your emails, such that the only way an adversary could gain access to your emails, would be to physically break into your office or home, and steal your server. Needless to say, but this trait of Sephia Five, significantly reduces your risk when communicating with clients, friends, and partners.
 
@@ -153,7 +153,7 @@ For the record, we also recommend to all of our customers, to never disclose to 
 
 Our list of clients is proprietary information, to the maximum extent of the law, that the Republic of Cyprus, and EU in general allows us to. We will never ask you to show us your data, or give us access to your system after it is installed. All we ask, is that you can obey by this simple [declaration of good faith](https://gaiasoul.com/2017/08/05/how-to-become-a-customer-of-us/), which is necessary for us to obey by European law, and Cyprus law.
 
-Your data is your business! Our data is our business! Or business is to keep both ours, and yours, as secure as is possible, within the maximum extent of the law!
+Your data is your business! Our data is our business! Our business is to keep both ours, and yours, as secure as is possible, within the maximum extent of the law!
 
 ## Getting started
 
@@ -243,6 +243,7 @@ Some missing features though, which we have on our TODO list, which is still not
 4. Allow users to change their passwords from within Sephia Five.
 5. Create a Debian repository, allowing for a single click installation process, on Debian based servers and clients.
 6. Having Sephia Five function without needing System42 to be installed.
+7. _"Panic button"_, which will do a hard delete of all data, PGP keys, and so on.
 
 Some of the above features are crucial for your privacy and security. Therefor, we do not recommend you installing Sephia Five in a real live production environment just yet. If you'd like to get notified of when Sephia Five becomes stable, and ready for production environments, feel free to for instance subscribe to my [blog](https://gaiasoul.com).
 
