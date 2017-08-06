@@ -211,9 +211,23 @@ The creators of Sephia Five, are providing professional services, and helping co
 1. Change all your server passwords after we have initially setup your server
 2. [Read this](https://gaiasoul.com/2017/08/05/how-to-become-a-customer-of-us/), and realise we mean business!
 
+## Sephia Five is not (yet) stable
+
+Notice, for the record. Sephia Five is still in _"BETA"_ mode. This means that it should not be used in production (yet). Still, you can easily set it up for performing tests, and we are ready to start talking to professional companies and organisations, who wants to hear about our commercial offerings.
+
+Some missing features though, which we have on our TODO list, which is still not yet implemented - Can be found below.
+
+1. Finish up the user module.
+2. Implement user _"lock out"_ if more than x emails are being read in a day, which would prevent an adversary from stealing a client that is already logged in, and rapidly reading every single email in a user's inbox, before you notice that your client has been stolen, and can change your password.
+3. Implement user _"lock out"_ if the wrong password has been typed more than x times, to prevent brute force password guessing attacks.
+4. Allow users to change their passwords from within Sephia Five.
+5. Create a Debian repository, allowing for a single click installation process, on Debian based servers and clients.
+
+Some of the above features are crucial for your privacy and security. Therefor, we do not recommend you installing Sephia Five in a real live production environment just yet. If you'd like to get notified of when Sephia Five becomes stable, and ready for production environments, feel free to for instance subscribe to my [blog](https://gaiasoul.com).
+
 Kind Regards,
 
-Thomas Hansen
+Thomas Hansen - CTO at T.H. Rose Home Cloud, Ltd
 
 ![alt screenshot of Sephia Five](media/snowden.png)
 
