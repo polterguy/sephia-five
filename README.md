@@ -249,6 +249,10 @@ Some of the above features are crucial for your privacy and security. Therefor, 
 
 If you have extreme security concerns, you can easily install Sephia Five on an intranet, only allowing access to it over your LAN. For the extremely paranoid amongst us, with extreme security concerns, such a solution would further tighten your security, at the cost of making your email less available. We would be happy to help you, regardless if what security concerns you have.
 
+## License
+
+Sephia Five is licensed under the terms of the GNU GPL version 3. See the attached LICENSE file for details.
+
 ## Disclaimer
 
 Although we have done everything to ensure your privacy and security, no absolute guarantees can ever be given - And anyone claiming to give you such, are lying. Bugs are real, and accidents do occur. We have done everything within our powers to eliminate as many security risks as possible, and we have done our best to keep your privacy secured - But we cannot guarantee you 100% security. None can in fact.
