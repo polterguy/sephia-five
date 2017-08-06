@@ -1,5 +1,5 @@
 
-# Sephia Five - Ridiculously simple cryptography
+# Sephia Five - Military grade cryptography for the people
 
 Sephia Five is a web server based email system, that among other things features military grade PGP cryptography, so ridiculously easy to use, that we refer to its design principles as KISS - _Keep It Simple and Stupid_.
 
