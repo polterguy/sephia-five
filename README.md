@@ -7,11 +7,11 @@ Security starts with simplicity. Unless something is simple, it can never be sec
 
 ![alt screenshot of Sephia Five](media/screenshots/screenshot-1.png)
 
-The squid button, will toggle more options for you, allowing you to search your emails, page back and forth, access your settings, etc - But by default, these choices are hidden, to create as little _"cognitive noise"_ for you as possible.
+The squid button, will toggle more options for you, allowing you to search your emails, page back and forth, access your settings, etc - But by default, these choices are hidden, to create as little _"cognitive noise"_ for you as possible. Sephia Five is _"Zen software"_.
 
 ## Security is more than cryptography
 
-Most intrusions and data leaks occurs due to human behavior. Kevin Mitnick often referred to himself as a social engineer, and not a hacker, since he would primarily take advantage of human weakness, instead of launching a direct attack on a computer system. Medio 2017, the Norwegian government had a huge data leak, which created a lot of problems to the Norwegian minister of fish Per Sandberg. The reason was that a fishing tycoon had sent an email to _"per.sandberg@gmail.com"_ instead of _"persandberg@gmail.com"_. The guy who owned this email address, informed Norwegian media, and the scandal was a fact. There were raised concerns about corruption, and the minister of fish had a very rought time. I don't think poor Sandberg particularly enjoyed having his private emails dissected on the front page of some of Norway's largest news papers.
+Most intrusions and data leaks occurs due to human behavior. Kevin Mitnick often referred to himself as a social engineer, and not a hacker, since he would primarily take advantage of human weakness, instead of launching a direct attack on a computer system. Medio 2017, the Norwegian government had a huge data leak, which created a lot of problems to the Norwegian minister of fish Per Sandberg. The reason was that a fishing tycoon had sent an email to _"per.sandberg@gmail.com"_ instead of _"persandberg@gmail.com"_. The guy who owned this email address, informed Norwegian media, and the scandal was a fact. There were raised concerns about corruption, and the minister of fish had a very rought time. I don't think Sandberg particularly enjoyed having his private emails dissected on the front page of some of Norway's largest news papers.
 
 ![alt screenshot of Sephia Five](media/screenshots/screenshot-2.png)
 
@@ -95,7 +95,7 @@ If you can secure your server, Sephia Five can secure your emails, such that the
 
 Not even the private PGP key is stored on any of the clients you use to read your emails. All your data, including your private PGP key, is safely secured on your own personal server, which you can secure in your home or office.
 
-The database used to store your PGP key pairs is GnuPG, which the German government believed so strongly in, that they chose to sponsor the project with government money to help maintain. Every third party component used in Sephia Five, is what is recommended as best practices for seuring your communication and data.
+The database used to store your PGP key pairs is GnuPG, which the German government believed so strongly in, that they chose to sponsor the project with government money to help maintain. Every third party component used in Sephia Five, is what is recommended as best practices for securing your communication and data.
 
 ## Extreme usability
 
@@ -121,7 +121,7 @@ We will never ask you to trust us. We could be tortured or coerced by an adversa
 
 Most security vendors starts out their sales pitch with the words _"trust us, we know what we're doing"_. I betcha Judas told Jesus the very same words. With us however, trust is a technical implementation feature, and an intrinsic part of our business model, implying that you'd never have to trust us, since you can verify that what we are saying is correct.
 
-First of all, Sephia Five is open source, and does not contain as much as a single closed source component. All the way from the core of Linux, to MySQL as its database, to Sephia Five itself. Which means that what we say, can be verified by any technically savvy system developer, wanting to verify our claims. And even if you choose to purchase our professional user management module, you will get access to its code - Even though technically, it is not open source.
+First of all, Sephia Five is open source, and does not contain as much as a single closed source component. All the way from the core of Linux, through MySQL as its database, to Sephia Five itself. Which means that what we say, can be verified by any technically savvy system developer, wanting to verify our claims. And even if you choose to purchase our professional user management module, you will get access to its code - Even though legally, it is not open source.
 
 This means that if there were to be created a backdoor in Sephia Five, due to us being coerced into creating one - It would simply be a matter of time before the general public got to know about it, and we would be lynched.
 
