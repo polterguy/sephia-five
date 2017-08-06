@@ -151,7 +151,9 @@ Take a look at the screenshots I have supplied here please. Can you see somethin
 
 For the record, we also recommend to all of our customers, to never disclose to anyone what email system you are using. Simply because it is a security risk! Please don't brag about us, it is not healthy, and we don't need the credits for having secured your communication. You should also only inform your most trusted employees about which email system you are using, simply because people have difficulties understanding these risks, and might tell a stranger on town, as they're out having a beer - And such having unwillingly given an adversary knowledge about the first steps he needs to take, in order to break into your data, and compromise your privacy and security. Your happiness, security, privacy, and a simple thank, is enough for us!
 
-Our list of clients is proprietary information, to the maximum extent of the law, that the Republic of Cyprus, and EU in general allows us to.
+Our list of clients is proprietary information, to the maximum extent of the law, that the Republic of Cyprus, and EU in general allows us to. We will never ask you to show us your data, or give us access to your system after it is installed. All we ask, is that you can obey by this simple [declaration of good faith](https://gaiasoul.com/2017/08/05/how-to-become-a-customer-of-us/), which is necessary for us to obey by European law, and Cyprus law.
+
+Your data is your business! Our data is our business! Or business is to keep both ours, and yours, as secure as is possible, within the maximum extent of the law!
 
 ## Getting started
 
