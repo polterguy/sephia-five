@@ -11,11 +11,9 @@ The squid button, will toggle more options for you, allowing you to search your 
 
 ## Security is more than cryptography
 
-Most intrusions and data leaks occurs due to human behavior. Kevin Mitnick often referred to himself as a social engineer, and not a hacker, since he would primarily take advantage of human weakness, instead of launching a direct attack on a computer system. Medio 2017, the Norwegian government had a huge data leak, which created a lot of problems to the Norwegian minister of fish Per Sandberg. The reason was that a fishing tycoon had sent an email to _"per.sandberg@gmail.com"_ instead of _"persandberg@gmail.com"_. The guy who owned this email address, informed Norwegian media, and the scandal was a fact. There were raised concerns about corruption, and the minister of fish had a very rought time. I don't think Sandberg particularly enjoyed having his private emails dissected on the front page of some of Norway's largest news papers.
+Most intrusions and data leaks occurs due to human behavior. Kevin Mitnick often referred to himself as a social engineer, and not a hacker, since he would primarily take advantage of human weakness, instead of launching a direct attack on a computer system. Medio 2017, the Norwegian government had a huge data leak, which created a lot of problems to the Norwegian minister of fish Per Sandberg. The reason was that a fishing tycoon had sent an email to _"per.sandberg@gmail.com"_ instead of _"persandberg@gmail.com"_. The guy who owned this email address, informed Norwegian media, and the scandal was a fact. There were raised concerns about corruption, and the minister of fish had a very rought time. In Sephia Five you will be thoroughly warned if you attempt to send an email to somebody who is not on your list of contacts, largely eliminating these types of problems.
 
 ![alt screenshot of Sephia Five](media/screenshots/screenshot-2.png)
-
-In Sephia Five you will be thoroughly warned if you attempt to send an email to somebody who is not on your list of contacts, largely eliminating these types of problems.
 
 ## Virus elimination
 
@@ -23,7 +21,7 @@ Sephia Five can be configured to be 100% secure in regards to virus and malware,
 
 ![alt screenshot of Sephia Five](media/screenshots/screenshot-3.png)
 
-You can easily configure yourself which files are legal, illegal, and suspect. But the default configuration, would probably be good enough for most installations.
+You can easily configure yourself which files are legal, illegal, and suspect.
 
 ## Privacy is more than avoiding data theft
 
@@ -143,9 +141,9 @@ In addition, we will never host your data or Sephia Five installation. In fact, 
 
 The reasons why, is because we do not offer hosting. We simply offer you the tools, to setup your own server park, giving you 100% control over your own data. And even if we were to help you setup your own server, we would demand of you that you change any server passwords and such, after we have finished setting it up. This allows you to host your email system, anywhere you would want to, without even having to trust us. The director of Intel once famously said _"Only the paranoid will survive"_. We are survivors, are you?
 
-According to Chinese tradition, him who _"hear no evil, and see no evil, cannot tell any evil"_. We are blind, deaf, and mute, and it is a part of our core vision and business model. Do you want to know a secret? Then ask someone else, we know none!
+According to Chinese tradition, _"him who hear no evil, and see no evil, cannot tell any evil"_. We are blind, deaf, and mute, and this is a part of our core vision and business model. Do you want to know a secret? Ask someone else, we know none!
 
-For the record, we obviously treat all of our clients with 100% confidentiality, which shows in the fact that you won't find any list of customers of ours, anywhere - Neither on our website, nor any other places, you will find a _"happy customer testimonial"_. Sephia Five neither identifies itself anywhere in the data it transmits to other servers in any ways. So nobody would even know whether or not you're using Sephia Five, or some other email system.
+For the record, we obviously treat all of our clients with 100% confidentiality, which shows in the fact that you won't find any list of customers of ours, anywhere. You will never find a _"happy customer testimonial"_ on our website, or any other places. Sephia Five neither identifies itself anywhere in the data it transmits to other servers in any ways. So nobody would even know whether or not you're using Sephia Five, or some other email system.
 
 Take a look at the screenshots I have supplied here please. Can you see something missing? There is not a single logo, brand name, or anything that identifies your email system in any ways. The first step towards breaking into a system, is to understand what system you are dealing with. Sephia Five will never even give an adversary any clues as to which system he is even facing. Not even if he bends over your shoulders, and looks at you while you are composing an email, he will understand what email system you are using.
 
@@ -246,6 +244,10 @@ Some missing features though, which we have on our TODO list, which is still not
 7. _"Panic button"_, which will do a hard delete of all data, PGP keys, and so on.
 
 Some of the above features are crucial for your privacy and security. Therefor, we do not recommend you installing Sephia Five in a real live production environment just yet. If you'd like to get notified of when Sephia Five becomes stable, and ready for production environments, feel free to for instance subscribe to my [blog](https://gaiasoul.com).
+
+## Choose your paranoia level
+
+If you have extreme security concerns, you can easily install Sephia Five on an intranet, only allowing access to it over your LAN. For the extremely paranoid amongst us, with extreme security concerns, such a solution would further tighten your security, at the cost of making your email less available. We would be happy to help you, regardless if what security concerns you have.
 
 ## Disclaimer
 
