@@ -178,7 +178,7 @@ When we have done this though, to install Sephia Five on either a Linux laptop, 
 
 ### User management
 
-Sephia Five is a multiuser system (obviously), and we provide a _"professional addon"_ to Sephia Five, which allows you to manage your users. This module is not open source, since we too need bread and butter. However, if you would want to create multiple users for your system, you could do this with the _"Executor"_ in System42, by typing in something like the following, and evaluating it.
+Sephia Five is a multiuser system (obviously), and we provide a _"professional addon"_ to Sephia Five, which allows you to manage your users. This module is not technically _"open source"_, since we too need bread and butter. However, if you would want to create multiple users for your system, you could do this with the _"Apps/Executor"_ in System42, by typing in something like the following, and evaluating it.
 
 ```
 p5.auth.users.create:some-username
@@ -186,11 +186,13 @@ p5.auth.users.create:some-username
   role:super
 ```
 
-However, if you would want to have a more easy way to manage your users, we would be happy to talk to you about our professional user module. If so, feel free to toss our CTO an email at thomas@gaiasoul.com.
+Notice, if you evaluate the above code, while running your website in the XSP web server (development web server, included in e.g. Xamarin and Mono Develop) - Then your website will crash, and you will have to restart it, due to that the above code will create a new folder on disc for you, containing among other things a web.config file. This is only a problem when you are testing your Sephia Five installation on a development box though, and not a problem in a real live environment.
+
+If you would want to have a more easy way to manage your users, we would be happy to talk to you about our professional user module. If so, feel free to toss our CTO an email at thomas@gaiasoul.com.
 
 The user management module, also features a lot of additional features, such as the ability to _"lock out"_ users from Sephia Five, run some diagnostics, in addition to that it easily allows you to manage your existing users, within the comforts of a nice GUI, easily accessible for any _"root"_ account on your system. For a professional company, with multiple employees, this would provide a highly more convenient way of managing your users and your Sephia Five installation. We also provide professional support and help, in addition to installation help for companies and organisations who purchase our user management module.
 
-Notice, even though our user module is not legally _"Open Source"_, you still gain access to its source code, allowing you to verify that there are no backdoors in it, or other implementation details, that could compromise your security!
+Notice, even though our user module is not technically _"open source"_, you still gain access to its source code, allowing you to verify that there are no backdoors in it, or other implementation details, that could compromise your security. You are however not allowed to distribute it to other individuals, and/or companies/organisations.
 
 ## Technical implementation details
 
@@ -219,7 +221,7 @@ Some missing features though, which we have on our TODO list, which is still not
 
 1. Finish up the user module.
 2. Implement user _"lock out"_ if more than x emails are being read in a day, which would prevent an adversary from stealing a client that is already logged in, and rapidly reading every single email in a user's inbox, before you notice that your client has been stolen, and can change your password.
-3. Implement user _"lock out"_ if the wrong password has been typed more than x times, to prevent brute force password guessing attacks.
+3. Implement user _"lock out"_ if the wrong password has been typed more than x times, to prevent brute force password attacks.
 4. Allow users to change their passwords from within Sephia Five.
 5. Create a Debian repository, allowing for a single click installation process, on Debian based servers and clients.
 
