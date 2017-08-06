@@ -139,7 +139,7 @@ Do you want to know a secret? Then ask someone else, we know none!
 
 ## Getting started
 
-If you wish to try out Sephia Five, you can download it from [this link](https://github.com/polterguy/sephia-five/releases). For a simple test, you can use it in combination with Visual Studio, Xamarin, or Mono Develop. In addition, you will need to have MySQL installed.
+If you wish to try out Sephia Five, you can follow the guide below.
 
 1. [Download Phosphorus Five](https://github.com/polterguy/phosphorusfive/releases) 
 2. [Download Sephia Five](https://github.com/polterguy/sephia-five/releases)
