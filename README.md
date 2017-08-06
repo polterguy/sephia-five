@@ -190,6 +190,8 @@ However, if you would want to have a more easy way to manage your users, we woul
 
 The user management module, also features a lot of additional features, such as the ability to _"lock out"_ users from Sephia Five, run some diagnostics, in addition to that it easily allows you to manage your existing users, within the comforts of a nice GUI, easily accessible for any _"root"_ account on your system. For a professional company, with multiple employees, this would provide a highly more convenient way of managing your users and your Sephia Five installation. We also provide professional support and help, in addition to installation help for companies and organisations who purchase our user management module.
 
+Notice, even though our user module is not legally _"Open Source"_, you still gain access to its source code, allowing you to verify that there are no backdoors in it, or other implementation details, that could compromise your security!
+
 ## Technical implementation details
 
 Sephia Five is built with the following core technologies.
