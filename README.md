@@ -83,19 +83,27 @@ Even though Sephia Five is first of all built to be secure, it is also extremely
 
 Since Sephia Five is loaded within an SSL context, this means that once you close your browser window, nothing stays cached in your client. So even if somebody physically steals your phone, tablet or computer - They will still not have access to your emails, which are safely stored on your server.
 
-If you can secure your server, Sephia Five can secure your emails, such that the only way an adversary could gain access to your emails, would be to physically break into your office or home, and steal your server. Needless to say, but this trait of Sephia Five significantly reduces your risk when sending emails to clients, friends and partners.
+If you can secure your server, Sephia Five can secure your emails, such that the only way an adversary could gain access to your emails, would be to physically break into your office or home, and steal your server. Needless to say, but this trait of Sephia Five, significantly reduces your risk when communicating with clients, friends, and partners.
 
-Not even the private PGP key is stored on any of the clients you use to read your emails. All your data, including your private PGP key, is safely secured in your data vault, which you can secure any ways you wish.
+Not even the private PGP key is stored on any of the clients you use to read your emails. All your data, including your private PGP key, is safely secured in your data vault, which you can secure in your home or office.
+
+## Extreme usability
+
+Sephia Five is carefully created to be as easy to use as possible. For instance, in Sephia, you can read multiple emails at the same time, and go back and forth between them, while replying to multiple emails, and composing several new emails at the same time.
+
+This allows you to cross-reference content from multiple emails, empowering you in your communication, without having to juggle multiple browser windows.
+
+![alt screenshot of Sephia Five](media/screenshots/screenshot-10.png)
 
 ## Do not trust us!
 
-Even if somebody points a gun to our heads, we couldn't disclose any of your secrets. Most security vendors starts out their sales pitch with the words _"trust us, we know what we're doing"_. I betcha Judas told Jesus the same words. With us however, trust is a technical implementation feature, and an intrinsic part of our business model, implying that you'd never even have to trust us, since you could yourself prove that what we are saying is accurate.
+Even if somebody points a gun to our heads, we couldn't disclose any of your secrets. Most security vendors starts out their sales pitch with the words _"trust us, we know what we're doing"_. I betcha Judas told Jesus the same words. With us however, trust is a technical implementation feature, and an intrinsic part of our business model, implying that you'd never have to trust us, since you could yourself prove that what we are saying is accurate.
 
-First of all, Sephia Five is open source, and does not contain as much as a single closed source component. All the way from the core of Linux to MySQL as its database, to Sephia Five itself. Which means that what we say, can be verified by any technically savvy system developer, wanting to verify our claims.
+First of all, Sephia Five is open source, and does not contain as much as a single closed source component. All the way from the core of Linux, to MySQL as its database, to Sephia Five itself. Which means that what we say, can be verified by any technically savvy system developer, wanting to verify our claims.
 
-In addition, we will never host your data or Sephia Five installation. In fact, even if you begged us to, we would refuse! This means that even if an adversary where to physically break into our office, put a gun to our head, and force us to disclose your secrets, we would simply have to answer him; _"Shot us, we do not have the ability to do what you are coercing us into doing, it is simply impossible"_.
+In addition, we will never host your data or Sephia Five installation. In fact, even if you begged us to, we would refuse! This means that even if an adversary where to physically break into our office, put a gun to our head, and force us to disclose your secrets, we would simply have to answer him; _"Shot us, we cannot to do what you are asking, it is simply impossible"_.
 
-The reasons why, is because contrary to many other email providers, we do not offer hosting. We simply offer you the tools, to setup your own server park, giving you 100% control over your own data.
+The reasons why, is because contrary to many other email providers, we do not offer hosting. We simply offer you the tools, to setup your own server park, giving you 100% control over your own data. And even if we were to help you setup your own server, we would demand of you that you change any server passwords and such, after we have finished setting it up.
 
 The director of Intel once famously said _"Only the paranoid will survive"_. We are survivors, are you ...?
 
