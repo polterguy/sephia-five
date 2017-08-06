@@ -117,15 +117,25 @@ For the record, less is more, and smaller is better.
 
 ## Do not trust us!
 
-Even if somebody points a gun to our heads, we couldn't disclose any of your secrets. Most security vendors starts out their sales pitch with the words _"trust us, we know what we're doing"_. I betcha Judas told Jesus the same words. With us however, trust is a technical implementation feature, and an intrinsic part of our business model, implying that you'd never have to trust us, since you could yourself prove that what we are saying is accurate.
+We will never ask you to trust us. We could be tortured or coerced by an adversary to give up your data, at which point most would yield after some time of experiencing tortur or being coerced. However, even if somebody points a gun to our heads, we couldn't disclose any of your secrets - Not even if we wanted to.
 
-First of all, Sephia Five is open source, and does not contain as much as a single closed source component. All the way from the core of Linux, to MySQL as its database, to Sephia Five itself. Which means that what we say, can be verified by any technically savvy system developer, wanting to verify our claims.
+Most security vendors starts out their sales pitch with the words _"trust us, we know what we're doing"_. I betcha Judas told Jesus the very same words. With us however, trust is a technical implementation feature, and an intrinsic part of our business model, implying that you'd never have to trust us, since you can verify that what we are saying is correct.
 
-In addition, we will never host your data or Sephia Five installation. In fact, even if you begged us to, we would refuse! This means that even if an adversary where to physically break into our office, put a gun to our head, and force us to disclose your secrets, we would simply have to answer him; _"Shot us, we cannot to do what you are asking, it is simply impossible"_.
+First of all, Sephia Five is open source, and does not contain as much as a single closed source component. All the way from the core of Linux, to MySQL as its database, to Sephia Five itself. Which means that what we say, can be verified by any technically savvy system developer, wanting to verify our claims. And even if you choose to purchase our professional user management module, you will get access to its code - Even though technically, it is not open source.
+
+This means that if there were to be created a backdoor in Sephia Five, due to us being coerced into creating one - It would simply be a matter of time before the general public got to know about it, and we would be lynched.
+
+In addition, we will never host your data or Sephia Five installation. In fact, even if you begged us to, we would refuse. This means that even if an adversary where to physically break into our office, put a gun to our head, and force us to disclose your secrets, we would simply have to answer him; _"Shot us, it is simply not possible"_.
 
 The reasons why, is because contrary to many other email providers, we do not offer hosting. We simply offer you the tools, to setup your own server park, giving you 100% control over your own data. And even if we were to help you setup your own server, we would demand of you that you change any server passwords and such, after we have finished setting it up.
 
 The director of Intel once famously said _"Only the paranoid will survive"_. We are survivors, are you ...?
+
+According to Chinese tradition, him who _"hear no evil, and see no evil, cannot tell any evil"_. We are blind, deaf, and mute, and it is a part of our core vision and business model!
+
+![alt screenshot of Sephia Five](media/screenshots/Hear-No-Evil-See-No-Evil-Speak-No-Evil.png)
+
+Do you want to know a secret? Then ask someone else, we know none!
 
 ## Getting started
 
@@ -139,7 +149,8 @@ If you wish to try out Sephia Five, you can download it from [this link](https:/
 6. [Download MySQL](https://dev.mysql.com/downloads/) -You will probably want to download also the MySQL Workbench, in addition to the core database.
 7. Create a database in MySQL, name it e.g. _"sephia"_.
 8. Modify the connection string in the _"web.config"_ file, inside of the Phosphorus Five folder called _"p5.webapp"_ to point to your MySQL database.
-9. Open up the _"p5.sln"_ file in either Visual Studio, Xamarin or Mono Develop and start your debugger.
+9. Make sure you have GnuPG installed on your system. On Mac OS, this can be accomplished by installing _"GPG Keychain"_.
+10. Open up the _"p5.sln"_ file in either Visual Studio, Xamarin, or Mono Develop, and start your debugger.
 
 When System42 have started, create a server salt, a root password, and open up _"Apps/CMS"_, and create a new _"lambda"_ page, by clicking the _"+"_. Click the _"Settings"_ button, and make sure you use the _"empty"_ template. Paste in the following code into the CodeMirror Hyperlambda code editor.
 
@@ -178,6 +189,18 @@ p5.auth.users.create:some-username
 However, if you would want to have a more easy way to manage your users, we would be happy to talk to you about our professional user module. If so, feel free to toss our CTO an email at thomas@gaiasoul.com.
 
 The user management module, also features a lot of additional features, such as the ability to _"lock out"_ users from Sephia Five, run some diagnostics, in addition to that it easily allows you to manage your existing users, within the comforts of a nice GUI, easily accessible for any _"root"_ account on your system. For a professional company, with multiple employees, this would provide a highly more convenient way of managing your users and your Sephia Five installation. We also provide professional support and help, in addition to installation help for companies and organisations who purchase our user management module.
+
+## Technical implementation details
+
+Sephia Five is built with the following core technologies.
+
+1. Phosphorus Five and Hyperlambda, which is built on top of C# and .Net/Mono
+2. MySQL
+3. Bouncy Castle
+4. MimeKit and MailKit
+5. Gnu Privacy Guard (GnuPG)
+
+It works perfectly fine on both Windows, Linux, and Mac OS. Although, for a serious installation, in a live environment, we recommend installing it on a Linux server.
 
 ## Getting professional help
 
