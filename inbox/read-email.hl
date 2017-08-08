@@ -516,7 +516,7 @@ create-widget
              * Displays attachments of email.
              */
             container
-              class:sephia-attachments
+              class:sephia-attachments air-top
               widgets:attachments
 
             /*
@@ -683,7 +683,7 @@ create-widget
              * Action strip column.
              */
             div
-              class:row
+              class:row air-top
               widgets
 
                 div
