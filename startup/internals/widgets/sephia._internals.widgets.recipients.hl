@@ -45,6 +45,268 @@ create-event:sephia._internals.widgets.recipients
   return
     container
       class:sephia-compose-recipients
+      .ondrop-auto
+
+        /*
+         * Invoked by client when autocompleter should be destroyed.
+         */
+        p5.web.post.get:sephia-five-search
+        p5.web.widgets.get-parent:x:/-/*?value
+        p5.web.widgets.find-first:x:/-/*/*?value
+          .auto
+        delete-widget:x:/-/*/*?value
+
+      .onclick-first
+
+        /*
+         * Invoked by client when user press carriage return from textbox.
+         *
+         * We simply select the first item from autocompleter.
+         */
+        p5.web.post.get:sephia-five-search
+        p5.web.widgets.get-parent:x:/-/*?value
+        p5.web.widgets.find-first:x:/-/*/*?value
+          .auto
+        if:x:/@p5.web.widgets.find-first/*/*?value
+
+          /*
+           * Autocompleter is visible, finding first item, and clicking it,
+           * before we destroy autocompleter itself.
+           */
+          p5.web.widgets.find-first-like:x:/@p5.web.widgets.find-first/*/*?value
+            class:sephia-contacts-autocompleter-item
+          p5.web.widgets.ajax-events.raise:x:/-/*/*?value
+            onclick
+
+      .onsearch-contacts
+
+        /*
+         * Retrieving the text widget that triggered the search, and the value
+         * of the search.
+         */
+        p5.web.post.get:sephia-five-search
+        get-widget-property:x:/-/*?value
+          value
+
+        /*
+         * Splitting up value of widget on ",", in case it has multiple emails
+         * from before.
+         */
+        split:x:/@get-widget-property/*/*?value
+          trim:true
+          =:,
+
+        /*
+         * Used to store what the user is actually searching for.
+         */
+        eval-x:x:/+
+        _search:x:/@split/0/-?name
+
+        /*
+         * Checking if user has an empty search, which is true if textbox value
+         * ends with a ",", after being trimmed.
+         */
+        set:x:/@get-widget-property/*/*?value
+          trim-right:x:/@get-widget-property/*/*?value
+        if
+          ends-with:x:/@get-widget-property/*/*?value
+            src:","
+
+          /*
+           * User has not yet typed any query at all, defaulting to "empty search",
+           * to show the last 5 contacts.
+           */
+          set:x:/@_search?value
+
+        /*
+         * Checking if user already has existing emails added, atwhich point we
+         * remove them out of the search query results.
+         */
+        _extra
+        if:x:/@split/*
+          set:x:/@_extra?value
+            src:"and c.email not in (@emails)"
+          add:x:/+/*/*
+            src:x:/@split/*?name
+          add:x:/../*/p5.mysql.connect/*/p5.mysql.select
+            src
+              @emails
+
+        /*
+         * Opening connection, and performing the search.
+         *
+         * Notice, this query will select the 5 top contacts whom you have 
+         * previously received emails from, starting out with the given query, 
+         * in the name or email, in addition to that it will sort according to 
+         * whom you last received an email from, and exclude contacts that have
+         * been explicitly marked as spam senders.
+         *
+         * Which further will reduce the risk of sending an email to the wrong 
+         * contact, since it is more likely that you would want to send an email 
+         * to a person whom you have recently received an email from.
+         *
+         * Credits goes to my lawyer, and Jeffrey Steadfast, who proposed this 
+         * little trick.
+         */
+        whoami
+        p5.mysql.connect:[sephia]
+          p5.mysql.select:@"select c.name, c.email, c.id from contacts c
+inner join emails e on e.sender = c.id
+inner join (select sender, MAX(date) maxDate from emails group by sender) e2 on e.sender = e2.sender and e.date = e2.maxDate
+where (c.name like @query or c.email like @query) and (c.spam is null or c.spam = 0) 
+and c.email not like '%noreply%' and c.email not like '%no-reply%' and c.email not like '%+%' and c.email not like 'mailer-daemon%'
+and (c.type is null or c.type != 'self') 
+and c.username = @username
+{0}
+order by e.date desc
+limit 5"
+            :x:/@_extra?value
+            @query:"{0}%"
+              :x:/@_search?value
+            @username:x:/@whoami/*/username?value
+
+          /*
+           * Checking if above SQL yielded less than 5 items, and if so, 
+           * appending a handful of more items, that are less "restrictive", to
+           * make sure we can actually search all contacts, if necessary.
+           *
+           * These contacts however, will end up always at the bottom of the 
+           * autocompleter.
+           */
+          if:x:/@p5.mysql.select/*?count
+            <:int:5
+
+            /*
+             * Above SQL didn't return 5 results, therefor we select a couple 
+             * of additional results to make sure we are able to search all contacts.
+             */
+            add:x:/+2/*/*/\@ids
+              src:x:/@p5.mysql.select/*/*/id?value
+            if:x:/@p5.mysql.select/*/*
+              not
+              p5.mysql.select:@"select c.name, c.email from contacts c 
+where username = @username and (c.email like @query or c.name like @query)
+order by c.name
+limit 5"
+                @query:"{0}%"
+                  :x:/@_search?value
+                @username:x:/@whoami/*/username?value
+            else
+              p5.mysql.select:@"select c.name, c.email from contacts c 
+where username = @username and (c.email like @query or c.name like @query) {0}
+order by c.name
+limit 5"
+                :"and c.id not in (@ids)"
+                @query:"{0}%"
+                  :x:/@_search?value
+                @username:x:/@whoami/*/username?value
+                @ids
+
+        /*
+         * Retrieving parent container widget which we will be creating our
+         * autocompleter, and stuff into.
+         */
+        p5.web.widgets.get-parent:x:/@p5.web.post.get/*?value
+
+        /*
+         * Checking if a previous autocompleter exists, and if so,
+         * making sure we delete it.
+         */
+        p5.web.widgets.find:x:/@p5.web.widgets.get-parent/*/*?value
+          .auto
+        if:x:/@p5.web.widgets.find/*/*?value
+
+          /*
+           * Previous autocompleter exists, deleting it.
+           */
+          delete-widget:x:/@p5.web.widgets.find/*/*?value
+
+        /*
+         * Checking if we have any matches at all, and if not, returning early.
+         */
+        if:x:/@p5.mysql.connect/**/p5.mysql.select/*/row
+          not
+          return
+
+        /*
+         * Adding a widget for each SQL result from above query.
+         */
+        for-each:x:/@p5.mysql.connect/**/p5.mysql.select/*/row/[0,5]
+          eval-x:x:/+/*/*/*|/+/*/*/*/onclick/*/_widget
+          add:x:/../*/create-widget/*/widgets
+            src
+              a
+                href:#
+                class:sephia-contacts-autocompleter-item
+                role:button
+                .value:x:/@_dp/#/*/email?value
+                tabindex:-1
+                innerValue:{0} &lt;{1}&gt;
+                  :x:/@_dp/#/*/name?value
+                  :x:/@_dp/#/*/email?value
+                onclick
+
+                  /*
+                   * Forward evaluated above, and is a reference to the text 
+                   * input widget this autocompleter is associated with.
+                   */
+                  _widget:x:/@p5.web.post.get/*?value
+
+                  /*
+                   * Retrieving the email address user selected.
+                   */
+                  get-widget-property:x:/../*/_event?value
+                    .value
+
+                  /*
+                   * Adding the email address to the widget's value.
+                   */
+                  get-widget-property:x:/@_widget?value
+                    value
+                  split:x:/-/*/*?value
+                    =:,
+                  set:x:/-/0/-
+                  join:x:/@split/*?name
+                    sep:,
+                  if:x:/@join?value
+                    and:x:/@join?value
+                      !=:
+                    set:x:/@join?value
+                      src:"{0}, "
+                        :x:/@join?value
+                  set-widget-property:x:/@_widget?value
+                    value:"{0}{1}, "
+                      :x:/@join?value
+                      :x:/../*/get-widget-property/[0,1]/*/*?value
+
+                  /*
+                   * Deleting autocomplete widget.
+                   */
+                  p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                    .auto
+                  delete-widget:x:/-/*/*?value
+
+
+                  /*
+                   * Settings focus to recipient text field.
+                   */
+                  micro.page.set-focus:x:/@_widget?value
+                    no-select:bool:true
+
+                  /*
+                   * Making sure we update status of email, since we've got
+                   * another recipe now.
+                   */
+                  sephia.contacts._changed:x:/@_widget?value
+        /*
+         * Creating autocompletion widget.
+         */
+        create-widget
+          parent:x:/@p5.web.widgets.get-parent/*/*?value
+          .auto
+          class:sephia-contacts-autocompleter shaded rounded
+          widgets
+
       oninit
 
         /*
@@ -53,100 +315,127 @@ create-event:sephia._internals.widgets.recipients
          */
         sephia.contacts._changed:x:/../*/_event?value
 
+        /*
+         * Making sure we include JavaScript that creates our "autocompleter" for
+         * searching for contacts as the user types in characters.
+         */
+        p5.web.include-javascript:@"
+p5.sephia_search_contacts = function(e) {{
+  setTimeout (function () {{
+    p5.$('{0}').raise('.onsearch-contacts', {{
+      onbefore:function (pars, evt) {{
+        pars.push(['sephia-five-search', e.target.id]);
+      }}
+    }});
+  }}, 1);
+}}
+p5.sephia_search_keydown = function (e) {{
+  if (e.keyCode == 8 || e.keyCode == 46) {{
+    p5.sephia_search_contacts (e);
+  }} else if (e.keyCode == 13) {{
+    p5.$('{0}').raise('.onclick-first', {{
+      onbefore:function (pars, evt) {{
+        pars.push(['sephia-five-search', e.target.id]);
+      }}
+    }});
+    return false;
+  }}
+}}
+p5.sephia_search_focus = function (e) {{
+  if(e.target.value == '') {{
+    p5.sephia_search_contacts (e);
+  }}
+}}
+p5.sephia_search_blur = function (e) {{
+  setTimeout (function() {{
+  p5.$('{0}').raise('.ondrop-auto', {{
+    onbefore:function (pars, evt) {{
+      pars.push(['sephia-five-search', e.target.id]);
+    }}
+  }});
+}}, 500);}}"
+          :x:/../*/_event?value
+
       class:row
       widgets
         div
           class:col-50 strip fill sephia-compose-to-wrapper
           style:"padding:0;"
           widgets
+            label
+              innerValue:To
+              oninit
+
+                /*
+                 * Making sure label is associated with text input field.
+                 */
+                p5.web.widgets.get-parent:x:/../*/_event?value
+                p5.web.widgets.find-first:x:/-/*/*?value
+                  element:input
+                set-widget-property:x:/../*/_event?value
+                  for:x:/@p5.web.widgets.find-first/*/*?value
+
             input
               type:text
               class:sephia-compose-recipients-to
               .data-field:to
               .recipient
-              onchange
-
-                /*
-                 * Since our recipient list has potentiall changed, we might have to change background of
-                 * main reply widget, to signify whether or not email can be sent encrypted or not.
-                 */
-                sephia.contacts._changed:x:/../*/_event?value
-
-            button
-              innerValue:To
-              class:sephia-compose-recipients-to-btn
-              title:Add to recipient
-              onclick
-
-                /*
-                 * Shows contacts window, and allows user to select 
-                 * a contact to add to recipient list.
-                 */
-                p5.web.widgets.get-parent:x:/../*/_event?value
-                p5.web.widgets.find:x:/-/*/*?value
-                  .data-field
-                sephia.contacts._find:x:/-/*/*?value
+              onkeypress:@"p5.sephia_search_contacts(event);"
+              onkeydown:@"return p5.sephia_search_keydown(event);"
+              onfocus:@"p5.sephia_search_focus(event);"
+              onblur:@"p5.sephia_search_blur(event);"
 
         div
           class:col-25 strip fill sephia-compose-cc-wrapper
           widgets
+            label
+              innerValue:Cc
+              oninit
+
+                /*
+                 * Making sure label is associated with text input field.
+                 */
+                p5.web.widgets.get-parent:x:/../*/_event?value
+                p5.web.widgets.find-first:x:/-/*/*?value
+                  element:input
+                set-widget-property:x:/../*/_event?value
+                  for:x:/@p5.web.widgets.find-first/*/*?value
+
             input
               type:text
               class:sephia-compose-recipients-cc
               .data-field:cc
               .recipient
-              onchange
+              onkeypress:@"p5.sephia_search_contacts(event);"
+              onkeydown:@"return p5.sephia_search_keydown(event);"
+              onfocus:@"p5.sephia_search_focus(event);"
+              onblur:@"p5.sephia_search_blur(event);"
 
-                /*
-                 * Since our recipient list has potentiall changed, we might have to change background of
-                 * main reply widget, to signify whether or not email can be sent encrypted or not.
-                 */
-                sephia.contacts._changed:x:/../*/_event?value
-
-            button
-              innerValue:Cc
-              class:sephia-compose-recipients-cc-btn
-              title:Add cc recipient
-              onclick
-
-                /*
-                 * Shows contacts window, and allows user to select 
-                 * a contact to add to recipient list.
-                 */
-                p5.web.widgets.get-parent:x:/../*/_event?value
-                p5.web.widgets.find:x:/-/*/*?value
-                  .data-field
-                sephia.contacts._find:x:/-/*/*?value
         div
           class:col-25 strip fill sephia-compose-bcc-wrapper
           widgets
+            label
+              innerValue:Bcc
+              oninit
+
+                /*
+                 * Making sure label is associated with text input field.
+                 */
+                p5.web.widgets.get-parent:x:/../*/_event?value
+                p5.web.widgets.find-first:x:/-/*/*?value
+                  element:input
+                set-widget-property:x:/../*/_event?value
+                  for:x:/@p5.web.widgets.find-first/*/*?value
+
             input
               type:text
               class:sephia-compose-recipients-bcc
               .data-field:bcc
               .recipient
-              onchange
-
-                /*
-                 * Since our recipient list has potentiall changed, we might have to change background of
-                 * main reply widget, to signify whether or not email can be sent encrypted or not.
-                 */
-                sephia.contacts._changed:x:/../*/_event?value
-
-            button
-              innerValue:Bcc
-              class:sephia-compose-recipients-bcc-btn
-              title:Add bcc recipient
-              onclick
-
-                /*
-                 * Shows contacts window, and allows user to select 
-                 * a contact to add to recipient list.
-                 */
-                p5.web.widgets.get-parent:x:/../*/_event?value
-                p5.web.widgets.find:x:/-/*/*?value
-                  .data-field
-                sephia.contacts._find:x:/-/*/*?value
+              onkeypress:@"p5.sephia_search_contacts(event);"
+              onkeydown:@"return p5.sephia_search_keydown(event);"
+              onfocus:@"p5.sephia_search_focus(event);"
+              onblur:@"p5.sephia_search_blur(event);"
 
 
 

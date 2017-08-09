@@ -3,7 +3,6 @@
  * Main CSS file for Sephia Five.
  */
 
-
 /*
  * Overridden to make sure all strips that contains a label as their first child,
  * has at least 120 pixels width, to make them nicely align with each other.
@@ -19,6 +18,13 @@
     background: url(/micro/media/skins/serious/floating-cogs.svg);
 }
 
+
+/*
+ * Overridden to give some additional spacing at the bottom.
+ */
+.container {
+    margin-bottom: 150px;
+}
 
 
 
@@ -421,7 +427,7 @@
 
 
 /*
- * Ajax wait windoe (used when sending emails).
+ * Ajax wait window (used when sending emails).
  */
 @keyframes sephia-composer-ajax-wait {
     0% {
@@ -461,13 +467,50 @@
 
 
 /*
+ * Composer's styles.
+ */
+.sephia-compose-to-wrapper,
+.sephia-compose-cc-wrapper,
+.sephia-compose-bcc-wrapper {
+    position: relative;
+}
+.sephia-contacts-autocompleter {
+    position:absolute;
+    left:35px;
+    top:calc(100% - 10px);
+    z-index:1000;
+    background:var(--wid-dark-col);
+
+}
+
+.sephia-contacts-autocompleter-item {
+    cursor:pointer;
+    display:list-item;
+    list-style-type:none;
+    white-space:nowrap;
+    color:var(--form-txt-col);
+    padding:7px 20px;
+    font-size:.7rem;
+}
+.sephia-contacts-autocompleter-item:hover {
+    background:var(--wid-darker-col);
+}
+.sephia-contacts-autocompleter-item:first-child {
+    font-weight:bold;
+}
+
+
+
+
+
+/*
  * Styles for safe, unsafe and unknown email types, used when composing a new email.
  */
 .sephia-unsafe,
 .sephia-safe,
 .sephia-unknown {
     position:relative;
-    overflow:hidden;
+    overflow:visible;
 }
 .sephia-unsafe:after,
 .sephia-safe:after,
