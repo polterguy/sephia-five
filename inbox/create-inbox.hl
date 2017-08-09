@@ -334,6 +334,8 @@ create-widget:sephia-search-wrapper
                             p5.web.widgets.find-first-ancestor:x:/../*/_event?value
                               .email-id
                             delete-widget:x:/-/*/*?value
+                p5.web.send-javascript:@"p5.$('{0}').el.scrollIntoView(true);"
+                  :x:/@create-widget?value
 
 
 
