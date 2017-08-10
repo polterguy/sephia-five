@@ -49,12 +49,19 @@ create-event:sephia._internals.widgets.recipients
 
         /*
          * Invoked by client when autocompleter should be destroyed.
+         *
+         * First deleting autocompleter.
          */
         p5.web.post.get:sephia-five-search
         p5.web.widgets.get-parent:x:/-/*?value
         p5.web.widgets.find-first:x:/-/*/*?value
           .auto
         delete-widget:x:/-/*/*?value
+
+        /*
+         * Then making sure we update our "status".
+         */
+        sephia.contacts._changed:x:/@p5.web.post.get/*?value
 
       .onclick-first
 
@@ -405,7 +412,7 @@ create-event:sephia.contacts._changed
   join:x:/-/*/*?value
     sep:,
   trim:x:/-?value
-    chars:,
+    chars:", "
   if:x:/-?value
     =:
 
@@ -419,9 +426,12 @@ create-event:sephia.contacts._changed
       class:sephia-unknown
     return
 
+  /*
+   * Then splitting up each email address from our above comma separated list.
+   */
   split:x:/@trim?value
     =:,
-    =:" "
+    trim:bool:true
 
   /*
    * Used to temporary hold status of email.
