@@ -1,0 +1,446 @@
+﻿
+/*
+ * Shows the details for the given [_arg] contact.
+ */
+create-event:sephia.contacts.show
+
+  /*
+   * Opening up database connection.
+   */
+  p5.mysql.connect:[sephia]
+
+    /*
+     * Selecting contact's data.
+     */
+    p5.mysql.select:@"select * from contacts where id = @id"
+      @id:x:/../*/_arg?value
+
+    /*
+     * Checking if contact is verified,and if so, adding "checked" status to
+     * checkbox in wizard form.
+     */
+    if:x:/@p5.mysql.select/*/*/fingerprint?value
+      and:x:/@p5.mysql.select/*/*/isverified?value.int
+        =:int:1
+
+      /*
+       * Contact is verified.
+       */
+      add:x:/..p5.mysql.connect/*/create-widgets/**/input/=sephia-contact-is-verified
+        src:checked
+
+    else-if:x:/@p5.mysql.select/*/*/fingerprint?value
+      not
+
+      /*
+       * No fingerprint for contact, disabling our "is verfied" checkbox.
+       */
+      add:x:/..p5.mysql.connect/*/create-widgets/**/input/=sephia-contact-is-verified
+        src:disabled
+
+    /*
+     * Creating a modal widget, showing contact's details, making sure we forward
+     * evaluate all arguments.
+     */
+    eval-x:x:/+/*/*/*/micro.widgets.wizard-form/*(/*|/div/**/input/*/value)
+    create-widgets
+      micro.widgets.modal:sephia-contact-show
+        widgets
+
+          /*
+           * Header for window.
+           */
+          h3
+            innerValue:Editing contact
+
+          /*
+           * Wizard form containing actual data for contact.
+           */
+          micro.widgets.wizard-form:sephia-contacts-data
+            text:sephia-contacts-email
+              .data-field:email
+              info:Email
+              value:x:/@p5.mysql.select/*/*/email?value
+              readonly
+              tabindex:-1
+            text
+              .data-field:name
+              info:Name
+              value:x:/@p5.mysql.select/*/*/name?value
+              tabindex:-1
+              onkeydown:@"if (event.keyCode == 13) {p5.$('sephia-contacts-save').raise('onclick');return false;}"
+            div
+              class:strip fill
+              widgets
+                label
+                  for:sephia-contact-fingerprint
+                  innerValue:Fingerprint
+                input:sephia-contact-fingerprint
+                  type:text
+                  placeholder:Fingerprint ...
+                  .data-field:fingerprint
+                  value:x:/@p5.mysql.select/*/*/fingerprint?value
+                  onkeydown:@"if (event.keyCode == 13) {p5.$('sephia-contacts-save').raise('onclick');return false;}"
+                  onchange
+
+                    /*
+                     * Checking if user typed something into textbox, and if so, 
+                     * checking if that PGP key exists, and if so, enabling the 
+                     * "Is verified" checkbox.
+                     */
+                    _exists:bool:false
+                    get-widget-property:x:/../*/_event?value
+                      value
+                    if:x:/@get-widget-property/*/*?value
+                      !=:
+
+                      /*
+                       * Getting key from key server, and putting it into our
+                       * GnuPG database.
+                       */
+                      get-widget-property:sephia-contacts-email
+                        value
+                      eval-x:x:/+/*/*
+                      set:x:/@_exists?value
+                        sephia.pgp.key-server.get
+                          email:x:/@get-widget-property/*/*?value
+                          fingerprint:x:/../*/get-widget-property/*/*?value
+
+                    /*
+                     * If exists is true at this point, we have a public PGP key
+                     * matching whatever the user typed into textbox, and we should hence
+                     * enable our "Verify key" checkbox.
+                     */
+                    if:x:/@_exists?value
+
+                      /*
+                       * Enabling "Set verified" checkbox, and informing user.
+                       */
+                      delete-widget-property:sephia-contact-is-verified
+                        disabled
+                      p5.web.widgets.find-first-ancestor-like:x:/../*/_event?value
+                        class:micro-modal-content
+                      eval-x:x:/+/*
+                      micro.windows.info:Key found
+                        parent:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
+                        class:micro-windows-info success
+
+                    else
+
+                      /*
+                       * Key didn't exists, warning user, but only if he actually 
+                       * typed something.
+                       */
+                      if:x:/@get-widget-property/*/*?value
+                        !=:
+
+                        /*
+                         * Warning user that key didn't exist.
+                         */
+                        p5.web.widgets.find-first-ancestor-like:x:/../*/_event?value
+                          class:micro-modal-content
+                        eval-x:x:/+/*
+                        micro.windows.info:Couldn't find that key
+                          parent:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
+                          class:micro-windows-info warning
+
+                      /*
+                       * Since we have no existing key, we disable the "Is verified"
+                       * checkbox, and set its checked status to false.
+                       */
+                      set-widget-property:sephia-contact-is-verified
+                        disabled
+                      delete-widget-property:sephia-contact-is-verified
+                        checked
+
+                button:sephia-contacts-search-for-pgp-key
+                  innerValue:Lookup
+                  title:Look for a PGP key on key server matching contact's email address
+                  onclick
+
+                    /*
+                     * Searching for a PGP key on key server, 
+                     * matching the contact's email address.
+                     */
+                    get-widget-property:sephia-contacts-email
+                      value
+                    sephia.pgp.key-server.search:x:/-/*/*?value
+
+                    /*
+                     * Checking if we got any results, and if so, how many.
+                     */
+                    if:x:/@sephia.pgp.key-server.search/*?count
+                      =:int:0
+
+                      /*
+                       * No results.
+                       */
+                      p5.web.widgets.find-first-ancestor-like:x:/../*/_event?value
+                        class:micro-modal-content
+                      eval-x:x:/+/*
+                      micro.windows.info:No matches
+                        parent:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
+
+                    else-if:x:/@sephia.pgp.key-server.search/*?count
+                      =:int:1
+
+                      /*
+                       * Only one result, populating fingerprint textbox with the 
+                       * result returned, downloading key, and informing user.
+                       */
+                      set-widget-property:sephia-contact-fingerprint
+                        value:x:/@sephia.pgp.key-server.search/0?name
+                      eval-x:x:/+/*
+                      sephia.pgp.key-server.get
+                        email:x:/@get-widget-property/*/*?value
+                        fingerprint:x:/@sephia.pgp.key-server.search/0?name
+                      p5.web.widgets.find-first-ancestor-like:x:/../*/_event?value
+                        class:micro-modal-content
+                      eval-x:x:/+/*
+                      micro.windows.info:Key found
+                        parent:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
+                        class:micro-windows-info success
+                      micro.page.set-focus:sephia-contact-fingerprint
+
+                      /*
+                       * Making search textbox readonly, disabling search button,
+                       * and enabling "Verified" checkbox.
+                       */
+                      delete-widget-property:sephia-contact-is-verified
+                        disabled
+
+                    else
+
+                      /*
+                       * Multiple keys found, allowing user to select a specific key.
+                       * Looping through each result, adding a datagrid row for each.
+                       */
+                      for-each:x:/@sephia.pgp.key-server.search/*
+
+                        /*
+                         * HTML encoding UID, since it often contains angle brackets.
+                         */
+                        p5.html.html-encode:x:/@_dp/#/*/uid?value
+                        eval-x:x:/+/*/*(/*|/*/.row/*/.fingerprint)
+                        add:x:/..else/*/create-widgets/**/micro.widgets.grid/*/rows
+                          src
+                            item
+                              .row
+                                .fingerprint::x:/@_dp/#?name
+                                onclick
+
+                                  /*
+                                   * Setting fingerprint textbox to currently selected 
+                                   * key's fingerprint, downloading key, and informing user.
+                                   */
+                                  get-widget-property:x:/../*/_event?value
+                                    .fingerprint
+                                  get-widget-property:sephia-contacts-email
+                                    value
+
+                                  /*
+                                   * Downloading key from key server.
+                                   */
+                                  eval-x:x:/+/*
+                                  sephia.pgp.key-server.get
+                                    email:x:/../*/get-widget-property/[1,2]/*/*?value
+                                    fingerprint:x:/../*/get-widget-property/[0,1]/*/*?value
+
+                                  /*
+                                   * Making sure nothing went wrong during download of key.
+                                   */
+                                  if:x:/@sephia.pgp.key-server.get?value
+                                    not
+
+                                    /*
+                                     * Oops ...!!
+                                     */
+                                    p5.web.widgets.find-first-ancestor-like:x:/../*/_event?value
+                                      class:micro-modal-content
+                                    eval-x:x:/+/*
+                                    micro.windows.info:Something went wrong during download
+                                      parent:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
+                                      class:micro-windows-info warning
+                                    return
+
+                                  /*
+                                   * Updating fingerprint textbox for contact.
+                                   */
+                                  set-widget-property:sephia-contact-fingerprint
+                                    value:x:/../*/get-widget-property/[0,1]/*/*?value
+
+                                  /*
+                                   * Deleting outermost modal widget.
+                                   */
+                                  delete-widget:sephia-contacts-choose-fingerprint
+
+                                  /*
+                                   * Informing user.
+                                   */
+                                  p5.web.widgets.find-first-like
+                                    class:micro-modal-content
+                                  eval-x:x:/+/*
+                                  micro.windows.info:Key found
+                                    parent:x:/@p5.web.widgets.find-first-like/*/*?value
+                                    class:micro-windows-info success
+
+                                  /*
+                                   * Setting focus to fingerprint textbox.
+                                   */
+                                  micro.page.set-focus:sephia-contact-fingerprint
+
+                                  /*
+                                   * Enabling "is verified" checkbox.
+                                   */
+                                  delete-widget-property:sephia-contact-is-verified
+                                    disabled
+
+                              UID:x:/@p5.html.html-encode?value
+                              Created:x:/@_dp/#/*/Created?value
+                              Fingerprint:x:/@_dp/#?name
+
+                      /*
+                       * Creating actual modal widget displaying fingerprints that were found.
+                       */
+                      create-widgets
+                        micro.widgets.modal:sephia-contacts-choose-fingerprint
+                          widgets
+                            h3
+                              innerValue:Results
+                            micro.widgets.grid
+                              class:hover
+                              columns
+                                UID
+                                Created
+                                Fingerprint
+                              rows
+                            div
+                              class:right
+                              widgets
+                                button
+                                  innerValue:Close
+                                  onclick
+
+                                    /*
+                                     * Deleting outermost modal widget.
+                                     */
+                                    delete-widget:sephia-contacts-choose-fingerprint
+
+                label
+                  for:sephia-contact-is-verified
+                  innerValue:Verified
+                  title:Sign contact's PGP key, and set his public key as verified
+                span
+                  widgets
+                    input:sephia-contact-is-verified
+                      type:checkbox
+                      .data-field:verified
+
+          /*
+           * Wrapper for "close" and "save" buttons.
+           */
+          div
+            class:right
+            widgets
+              div
+                class:strip
+                style:"display:inline-block;"
+                widgets
+                  button:sephia-contacts-save
+                    innerValue:Save
+                    onclick
+
+                      /*
+                       * Serializing form and saving new information for contact 
+                       * to database.
+                       */
+                      micro.widgets.wizard-form.value:sephia-contacts-data
+
+                      /*
+                       * Updating contact.
+                       *
+                       * Checking if a fingerprint was supplied by user, and if it was,
+                       * in addition to that the PGP key exists in GnuPG context, as
+                       * associate it with contact.
+                       */
+                      whoami
+                      if:x:/@micro.widgets.wizard-form.value/*/fingerprint?value
+                        !=:
+                        and
+                          fetch:x:/0/0?name
+                            p5.crypto.list-public-keys:x:/@micro.widgets.wizard-form.value/*/fingerprint?value
+
+                        /*
+                         * User supplied a fingerprint, and it exists, hence we
+                         * update also fingerprint of contact.
+                         */
+                        add:x:/../*/sephia.contacts.create-or-update
+                          src
+                            fingerprint:x:/@micro.widgets.wizard-form.value/*/fingerprint?value
+
+                        /*
+                         * Checking if user wants to verify fingerprint of contact.
+                         */
+                        if:x:/@micro.widgets.wizard-form.value/*/verified?value
+
+                          /*
+                           * User wants to verify fingerprint of contact.
+                           */
+                          add:x:/../*/sephia.contacts.create-or-update
+                            src
+                              verified:bool:true
+
+                          /*
+                           * Signing PGP public key with user's private PGP key.
+                           * TODO: Uncomment as Jeffrey fixes MimeKit ...
+                           */
+                          _p5.auth.my-settings.get
+                          _p5.crypto.sign-public-key:x:/@micro.widgets.wizard-form.value/*/fingerprint?value
+                            private-key:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-key?value
+                            password:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-password?value
+
+                      else
+
+                        /*
+                         * User removed fingerprint for contact, or did not add one.
+                         */
+                        add:x:/../*/sephia.contacts.create-or-update
+                          src
+                            unverify:bool:true
+
+                      /*
+                       * Doing the actual update of our contact.
+                       */
+                      eval-x:x:/+/*
+                      sephia.contacts.create-or-update
+                        username:x:/@whoami/*/username?value
+                        name:x:/@micro.widgets.wizard-form.value/*/name?value
+                        email:x:/@micro.widgets.wizard-form.value/*/email?value
+                        force:bool:true
+
+                      /*
+                       * Deleting modal widget.
+                       */
+                      delete-widget:sephia-contact-show
+
+                      /*
+                       * Updating our settings datagrid, if it exists.
+                       */
+                      sephia.contacts.refresh
+
+                  button
+                    innerValue:Close
+                    oninit
+
+                      /*
+                       * Setting focus to close button initially.
+                       */
+                      micro.page.set-focus:x:/../*/_event?value
+
+                    onclick
+
+                      /*
+                       * Simply deleting modal widget.
+                       */
+                      delete-widget:sephia-contact-show
+

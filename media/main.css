@@ -1,14 +1,10 @@
-﻿﻿﻿﻿
-/*
- * Main CSS file for Sephia Five.
- */
-
+﻿
 /*
  * Overridden to make sure all strips that contains a label as their first child,
  * has at least 120 pixels width, to make them nicely align with each other.
  */
-.strip>label:first-child {
-    min-width:120px;
+.strip > label:first-child {
+    min-width: 120px;
 }
 
 /*
@@ -474,6 +470,11 @@
 .sephia-compose-bcc-wrapper {
     position: relative;
 }
+.sephia-compose-to-wrapper > label:first-child,
+.sephia-compose-cc-wrapper > label:first-child,
+.sephia-compose-bcc-wrapper > label:first-child {
+    min-width:auto;
+}
 .sephia-contacts-autocompleter {
     position:absolute;
     left:35px;
@@ -497,6 +498,36 @@
 }
 .sephia-contacts-autocompleter-item:first-child {
     font-weight:bold;
+}
+
+
+
+
+
+/*
+ * Styles for contacts datagrid in our settings form.
+ */
+.sephia-contacts-grid {
+    table-layout:fixed;
+}
+.sephia-contacts-grid tr td:nth-child(1),
+.sephia-contacts-grid tr th:nth-child(1) {
+    width:250px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+.sephia-contacts-grid tr td:nth-child(2),
+.sephia-contacts-grid tr th:nth-child(2) {
+    max-width:calc(100% - 300px);
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+.sephia-contacts-grid tr td:nth-child(3),
+.sephia-contacts-grid tr th:nth-child(3) {
+    width:50px;
+    text-align:right;
 }
 
 

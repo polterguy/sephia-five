@@ -77,8 +77,7 @@ create-event:sephia._internals.widgets.recipients
         if:x:/@p5.web.widgets.find-first/*/*?value
 
           /*
-           * Autocompleter is visible, finding first item, and clicking it,
-           * before we destroy autocompleter itself.
+           * Autocompleter is visible, clicking first item.
            */
           p5.web.widgets.find-first-like:x:/@p5.web.widgets.find-first/*/*?value
             class:sephia-contacts-autocompleter-item
@@ -143,14 +142,14 @@ create-event:sephia._internals.widgets.recipients
         if:x:/@split/*
           add:x:/+/*/*
             src:x:/@split/*?name
-          add:x:/../*/sephia.contacts.search
+          add:x:/../*/sephia.contacts.find
             src
               exclude
 
         /*
-         * Searching contacts list for a match.
+         * Searching contacts list for a match of 5 first contacts.
          */
-        sephia.contacts.search:x:/@_search?value
+        sephia.contacts.find:x:/@_search?value
           max:5
 
         /*
@@ -175,14 +174,18 @@ create-event:sephia._internals.widgets.recipients
         /*
          * Checking if we have any matches at all, and if not, returning early.
          */
-        if:x:/@sephia.contacts.search/*
+        if:x:/@sephia.contacts.find/*
           not
+
+          /*
+           * No results.
+           */
           return
 
         /*
-         * Adding a widget for each SQL result from above query.
+         * Adding a widget for each result from above search.
          */
-        for-each:x:/@sephia.contacts.search/*
+        for-each:x:/@sephia.contacts.find/*
           eval-x:x:/+/*/*/*|/+/*/*/*/onclick/*/_widget
           add:x:/../*/create-widget/*/widgets
             src
@@ -239,7 +242,7 @@ create-event:sephia._internals.widgets.recipients
 
 
                   /*
-                   * Settings focus to recipient text field.
+                   * Setting focus to recipient text field.
                    */
                   micro.page.set-focus:x:/@_widget?value
                     no-select:bool:true
@@ -249,6 +252,7 @@ create-event:sephia._internals.widgets.recipients
                    * another recipe now.
                    */
                   sephia.contacts._changed:x:/@_widget?value
+
         /*
          * Creating autocompletion widget.
          */
@@ -261,19 +265,28 @@ create-event:sephia._internals.widgets.recipients
       oninit
 
         /*
-         * Invoking this guy initially to set the CSS classes correct for the
-         * parent widget according to whether or not email can be sent encrypted or not.
+         * Invoking this guy initially, to set the CSS classes correct for the
+         * parent widget, according to whether or not email can be sent encrypted 
+         * or not.
          */
         sephia.contacts._changed:x:/../*/_event?value
 
         /*
-         * Making sure we include JavaScript that creates our "autocompleter" for
-         * searching for contacts as the user types in characters.
+         * Making sure we include JavaScript, that handles our client side JavaScript
+         * for our autocompleter.
+         *
+         * We handle "onfocus", "onkeydown" and "onblur", at which point we
+         * raise server side events accordingly, that correctly shows or hides
+         * our autocompleter.
+         *
+         * In addition, we also handle "onkeypress" in the widgets' themselves.
          */
         p5.web.include-javascript:@"
 p5.sephia_search_contacts = function(e) {{
   setTimeout (function () {{
-    p5.$('{0}').raise('.onsearch-contacts', {{
+    var el = p5.$('{0}');
+    if (!el) {{return;}}
+    el.raise('.onsearch-contacts', {{
       onbefore:function (pars, evt) {{
         pars.push(['sephia-five-search', e.target.id]);
       }}
@@ -284,7 +297,9 @@ p5.sephia_search_keydown = function (e) {{
   if (e.keyCode == 8 || e.keyCode == 46) {{
     p5.sephia_search_contacts (e);
   }} else if (e.keyCode == 13) {{
-    p5.$('{0}').raise('.onclick-first', {{
+    var el = p5.$('{0}');
+    if (!el) {{return;}}
+    el.$('{0}').raise('.onclick-first', {{
       onbefore:function (pars, evt) {{
         pars.push(['sephia-five-search', e.target.id]);
       }}
@@ -299,12 +314,15 @@ p5.sephia_search_focus = function (e) {{
 }}
 p5.sephia_search_blur = function (e) {{
   setTimeout (function() {{
-  p5.$('{0}').raise('.ondrop-auto', {{
-    onbefore:function (pars, evt) {{
-      pars.push(['sephia-five-search', e.target.id]);
-    }}
-  }});
-}}, 500);}}"
+    var el = p5.$('{0}');
+    if (!el) {{return;}}
+    el.$('{0}').raise('.ondrop-auto', {{
+      onbefore:function (pars, evt) {{
+        pars.push(['sephia-five-search', e.target.id]);
+      }}
+    }});
+  }}, 500);
+}}"
           :x:/../*/_event?value
 
       class:row
@@ -394,8 +412,13 @@ p5.sephia_search_blur = function (e) {{
 
 /*
  * Given a widget as [_arg], will find all recipients of email, 
- * and verify that email can be sent encrypted or not, and modify background
+ * and verify that email can be sent encrypted or not, and modify status
  * of email composer accordingly.
+ *
+ * Basically, a smiley means email only has verified PGP fingerprints in its
+ * list of recipients. Neutral means all recipients have PGP fingerprints, but 
+ * not all of them are verified. Sad means that at least one recipient does not
+ * have a PGP fingerprint associated with it at all.
  */
 create-event:sephia.contacts._changed
 

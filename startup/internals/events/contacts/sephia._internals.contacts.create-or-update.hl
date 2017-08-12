@@ -3,7 +3,7 @@
  * Will create a new, or update an existing contact.
  *
  * Expects [name], [email], [username] and optionally [fingerprint], [verified], 
- * [type], [spam] and [unverify].
+ * [type], [spam], [unverify] and [force].
  *
  * Will check if a contact with the given [email] exists for [username], and if
  * it does, it will update the existing contact, instead of creating a new contact.
@@ -33,6 +33,10 @@
  * boolean "true". If the contact was updated, the event will return [created] 
  * having the boolean value of "false".
  *
+ * If [force] is set to boolean true, regardless of what the contact has from
+ * before, the values you provide will override whatever is in the database from 
+ * before.
+ *
  * Regardless of whether or not the contact was created or not, it will return 
  * the ID of the contact.
  */
@@ -60,6 +64,7 @@ create-event:sephia._internals.contacts.create-or-update
     spam
     type
     unverify:bool
+    force:bool
 
   /*
    * Making sure name defaults to first parts of email, if it is empty or null.

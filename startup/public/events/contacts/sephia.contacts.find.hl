@@ -1,0 +1,168 @@
+﻿
+/*
+ * Will search through the currently logged in user's list of contacts.
+ *
+ * Pass in [_arg], and optionally [exclude], being a list of emails, you do
+ * not want to match, in addition to [max] being an integer number,
+ * declaring how many contacts you'd like the event to maximumly return.
+ *
+ * [max] defaults to 10 if not given.
+ *
+ * Will return one [row] for each contact matching your query, having an [id],
+ * [name], [email], [fingerprint], [isverified], [type] and [spam] for each row.
+ *
+ * Notice, this event will sort its results according to which of the user's 
+ * contacts that last sent the user an email, such that the contact that most
+ * recently sent the user an email, will be returned first, etc.
+ *
+ * It will also not return contacts explicitly marked as "spam" contacts.
+ */
+create-event:sephia.contacts.find
+
+  /*
+   * Defaults value of arguments.
+   */
+  .defaults
+    max:int:10
+
+  /*
+   * Making sure invoker obeys by lambda contract.
+   */
+  micro.lambda.contract.min:x:/..
+    _arg:string
+
+  /*
+   * Sanity checking optional arguments.
+   */
+  micro.lambda.contract.optional:x:/..
+    exclude
+    max:int
+
+  /*
+   * Checking if caller supplied an [exclude] argument, at which point, we should
+   * exclude all contacts having an email address that can be found as the name
+   * of the collection inside of our [exclude] argument.
+   */
+  _extra
+  if:x:/../*/exclude/*
+    set:x:/@_extra?value
+      src:"and c.email not in (@emails)"
+    add:x:/+/*/*
+      src:x:/../*/exclude/*?name
+    add:x:/../*/p5.mysql.connect/**/p5.mysql.select
+      src
+        @emails
+
+  /*
+   * Needed to parametrise SQL commands.
+   */
+  whoami
+
+
+  /*
+   * Opening connection, and performing the search.
+   *
+   * Notice, this query will select the x top contacts whom you have 
+   * previously received emails from, starting out with the given query, 
+   * in the name or email, in addition to that it will sort according to 
+   * whom you last received an email from, and exclude contacts that have
+   * been explicitly marked as spam senders.
+   *
+   * Which further will reduce the risk of sending an email to the wrong 
+   * contact, since it is more likely that you would want to send an email 
+   * to a person whom you have recently received an email from.
+   *
+   * Credits goes to my lawyer Stelios Asproftas, and Jeffrey Steadfast, 
+   * who proposed this little trick.
+   *
+   * In addition, it will exclude obvious "mailer daemons", such as "noreply"
+   * senders, addresses with "+" within them, "no-reply", "mailer-daemon", etc.
+   * These are almost always exclusively mailer daemons, that are not intended
+   * to receive emails, but only send. Hence, there is no point in adding
+   * them as potential receivers of emails the user composes.
+   *
+   * However, to make sure we are allowing user to access his entire contact
+   * list, we run another SQL afterwards, which will be more "exhaustive",
+   * which then will include everything, appended after the initial SQL's results.
+   * This list will also include mailer daemon email addresses, to make
+   * sure user has access to his entire list of contacts.
+   */
+  p5.mysql.connect:[sephia]
+
+    /*
+     * First selecting top x contacts that user received emails from.
+     */
+    p5.mysql.select:@"select c.* from contacts c
+inner join emails e on e.sender = c.id
+inner join (select sender, MAX(id) maxID from emails group by sender) e2 on e.sender = e2.sender and e.id = e2.maxID
+where (c.name like @query or c.email like @query) and (c.spam is null or c.spam = 0) 
+and c.email not like '%noreply%' and c.email not like '%no-reply%' and c.email not like '%+%' and c.email not like 'mailer-daemon%'
+and c.username = @username
+{0}
+order by e.id desc
+limit @max"
+      :x:/@_extra?value
+      @query:"{0}%"
+        :x:/../*/_arg?value
+      @username:x:/@whoami/*/username?value
+      @max:x:(/../*/max|/../*/.defaults/*/max)/$?value.int
+
+    /*
+     * Then selecting top x contacts matching query.
+     *
+     * Notice, we don't run this SQL, if above SQL returned [max] results.
+     *
+     * Notice, if previous SQL returned something, we exclude email addresses
+     * returned by previous result, otherwise we simply remove these parameters
+     * to our SQL.
+     */
+    if:x:/@p5.mysql.select/*?count
+      <:x:(/../*/max|/../*/.defaults/*/max)/$?value.int
+
+      /*
+       * First SQL didn't return [max] results, hence fetching more contacts.
+       */
+      add:x:/+2/*/\@ids
+        src:x:/@p5.mysql.select/*/*/id?value
+      if:x:/@p5.mysql.select/*/*/
+        not
+
+        /*
+         * No results from previous SQL, hence removing the exclusion of
+         * the previous results, otherwise our SQL will "perform funny".
+         */
+        set:x:/./+/1?value
+          src:
+        set:x:/./+/*/\@ids
+
+      /*
+       * Evaluating SQL.
+       */
+      p5.mysql.select:@"select c.* from contacts c
+where (c.name like @query or c.email like @query) and (c.spam is null or c.spam = 0) 
+and c.username = @username
+{0}
+{1}
+order by c.name
+limit @max"
+        :x:/@_extra?value
+        :"and c.id not in (@ids)"
+        @query:"{0}%"
+          :x:/@_arg?value
+        @username:x:/@whoami/*/username?value
+        @ids
+        @max:x:(/../*/max|/../*/.defaults/*/max)/$?value.int
+
+    /*
+     * Making sure we never have more than 5 contacts in total in our result 
+     * set in total.
+     */
+    set:x:/@p5.mysql.connect/**/p5.mysql.select/*(!/[0,{0}])
+      :x:(/../*/max|/../*/.defaults/*/max)/$?value
+
+  /*
+   * Returning results to caller.
+   */
+  add:x:/+
+    src:x:/../*/p5.mysql.connect/**/p5.mysql.select/*/row
+  return

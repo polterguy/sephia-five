@@ -382,7 +382,7 @@ create-event:sephia._internals.widgets.settings
 
                       /*
                        * Needed to avoid notifying user multiple times about enabling 
-                       * POP3 settings for GMail, such as after ha has initially enabled
+                       * POP3 settings for GMail, such as after he or she has initially enabled
                        * POP3 access for GMail.
                        */
                       p5.auth.my-settings.get
@@ -426,11 +426,19 @@ create-event:sephia._internals.widgets.settings
 
                     widgets
                       p
+                        innerValue:Below are two links you must visit, in order to enable POP3 access from your GMail account.
+                      p
                         widgets
                           a
                             href:"https://myaccount.google.com/lesssecureapps"
                             target:_blank
-                            innerValue:Enable POP3 access to GMail
+                            innerValue:Enable POP3 access to GMail 1
+                          span
+                            innerValue:" - "
+                          a
+                            href:"https://mail.google.com/mail/#settings/fwdandpop"
+                            target:_blank
+                            innerValue:Enable POP3 access to GMail 2
 
           /*
            * SMTP settings.
@@ -1075,6 +1083,291 @@ save your settings, and do something else in the meantime, and come back here af
                         innerValue:Enable cryptography spam filter
                         title:All emails that are not encrypted will be treated as spam
 
+          /*
+           * Contacts.
+           */
+          view
+            name:Contacts
+            widgets
+
+              /*
+               * Our actual "datagrid" which will display our contacts.
+               */
+              micro.widgets.grid:sephia-settings-contacts
+                class:hover sephia-contacts-grid
+                oninit
+
+                  /*
+                   * Initial databinding of grid, without any arguments.
+                   */
+                  sephia.settings.contacts.databind
+
+                events
+
+                  /*
+                   * Refreshes the datagrid with the same filter and offset
+                   * parameters it has from before.
+                   */
+                  sephia.contacts.refresh
+
+                    /*
+                     * Retrieving [filter] and [offset].
+                     */
+                    get-widget-property:sephia-settings-search-contacts
+                      value
+                    get-widget-property:sephia-settings-search-contacts-wrapper
+                      .offset
+                    eval-x:x:/+/*
+                    sephia.settings.contacts.databind
+                      filter:x:/../*/get-widget-property/[0,1]/*/*?value
+                      offset:x:/../*/get-widget-property/[1,2]/*/*?value
+
+                  /*
+                   * Event that databinds the datagrid.
+                   *
+                   * Optionally pass in [filter] and [offset].
+                   */
+                  sephia.settings.contacts.databind
+
+                    /*
+                     * Default values for optional arguments.
+                     */
+                    .defaults
+                      offset:int:0
+
+                    /*
+                     * Searching contacts, passing in [filter] if given.
+                     */
+                    eval-x:x:/+/*
+                    sephia.contacts.search:x:/../*/filter?value
+                      offset:x:(/../*/offset|/../*/.defaults/*/offset)/$?value
+
+                    /*
+                     * Verifying above invocation returned results, and if not,
+                     * returning false to caller, implying "failure" of databinding.
+                     */
+                    if:x:/@sephia.contacts.search/*
+                      not
+
+                      /*
+                       * No more items.
+                       */
+                      return:bool:false
+
+                    /*
+                     * Looping through results from above invocation, creating
+                     * one databound item for each result.
+                     */
+                    for-each:x:/@sephia.contacts.search/*
+
+                      /*
+                       * Checking status of contact.
+                       */
+                      if:x:/@_dp/#/*/fingerprint?value
+                        and:x:/@_dp/#/*/isverified?value.int
+                          =:int:1
+
+                        /*
+                         * Contact's fingerprint is verified.
+                         */
+                        set:x:/..for-each/*/add/**/Status/*/*/*/class?value
+                          src:icon-smile-o
+
+                      else-if:x:/@_dp/#/*/fingerprint?value
+
+                        /*
+                         * Contact has a fingerprint associated with it, but
+                         * it is not verified.
+                         */
+                        set:x:/..for-each/*/add/**/Status/*/*/*/class?value
+                          src:icon-meh-o
+
+                      else
+
+                        /*
+                         * Contact does not have a fingerprint.
+                         */
+                        set:x:/..for-each/*/add/**/Status/*/*/*/class?value
+                          src:icon-frown-o
+
+                      /*
+                       * Adding row to databind invocation.
+                       */
+                      eval-x:x:/+/*/*/**
+                      add:x:/../*/micro.widgets.grid.databind
+                        src
+                          item
+                            .row
+                              onclick
+
+                                /*
+                                 * Showing contact's "data page".
+                                 */
+                                _id:x:/@_dp/#/*/id?value
+                                sephia.contacts.show:x:/@_id?value
+
+                            Name:x:/@_dp/#/*/name?value
+                            Email:x:/@_dp/#/*/email?value
+                            Status
+                              widgets
+                                literal
+                                  element:span
+                                  class
+
+                    /*
+                     * Databinding grid.
+                     */
+                    micro.widgets.grid.databind:sephia-settings-contacts
+
+                    /*
+                     * Returning "success" to caller.
+                     */
+                    return:bool:true
+
+                columns
+                  Name
+                  Email
+                  Status
+
+              /*
+               * Search for contacts wrapper.
+               */
+              div
+                class:right
+                widgets
+                  div:sephia-settings-search-contacts-wrapper
+                    class:strip
+                    style:"display:inline-block;"
+                    .offset:0
+                    widgets
+                      input:sephia-settings-search-contacts
+                        type:text
+                        placeholder:Search ...
+                        style:"margin-bottom:0;"
+                        accesskey:F
+                        onkeydown:@"if (event.keyCode == 13){p5.$('sephia-settings-search-contacts-button').raise('onclick');return false;}"
+                      button:sephia-settings-search-contacts-button
+                        style:"margin-bottom:0;"
+                        onclick
+
+                          /*
+                           * Making sure we set offset to 0.
+                           */
+                          set-widget-property:sephia-settings-search-contacts-wrapper
+                            .offset:0
+
+                          /*
+                           * Retrieving search query, and re-databinding grid again.
+                           */
+                          get-widget-property:sephia-settings-search-contacts
+                            value
+                          eval-x:x:/+/*
+                          sephia.settings.contacts.databind
+                            filter:x:/@get-widget-property/*/*?value
+
+                          /*
+                           * Making sure we set focus back to search text box.
+                           */
+                          micro.page.set-focus:sephia-settings-search-contacts
+
+                        widgets
+                          literal
+                            element:span
+                            class:icon-search
+
+                      button
+                        style:"margin-bottom:0;"
+                        onclick
+
+                          /*
+                           * Paging to previous page, if possible.
+                           */
+                          get-widget-property:sephia-settings-search-contacts-wrapper
+                            .offset
+                          if:x:/-/*/*?value.int
+                            =:int:0
+
+                            /*
+                             * We're already at the beginning of dataset.
+                             */
+                            return
+
+                          /*
+                           * Decrementing offset, updating widget's property,
+                           * and re-databinding grid again.
+                           */
+                          -:x:/@get-widget-property/*/*?value.int
+                            _:10
+                          set-widget-property:sephia-settings-search-contacts-wrapper
+                            .offset:x:/@-?value
+
+                          /*
+                           * Retrieving current filter, to make sure we pass it 
+                           * into our databind invocation below.
+                           */
+                          get-widget-property:sephia-settings-search-contacts
+                            value
+
+                          /*
+                           * Databinding contacts again.
+                           */
+                          eval-x:x:/+/*
+                          sephia.settings.contacts.databind
+                            filter:x:/@get-widget-property/*/*?value
+                            offset:x:/@-?value
+
+                        widgets
+                          literal
+                            element:span
+                            class:icon-chevron-left
+
+                      button
+                        style:"margin-bottom:0;"
+                        onclick
+
+                          /*
+                           * Paging to previous page, if possible.
+                           */
+                          get-widget-property:sephia-settings-search-contacts-wrapper
+                            .offset
+
+                          /*
+                           * Incrementing offset.
+                           */
+                          +:x:/@get-widget-property/*/*?value.int
+                            _:10
+
+                          /*
+                           * Retrieving current filter, to make sure we pass it 
+                           * into our databind invocation below.
+                           */
+                          get-widget-property:sephia-settings-search-contacts
+                            value
+
+                          /*
+                           * Databinding contacts again.
+                           */
+                          eval-x:x:/+/*
+                          sephia.settings.contacts.databind
+                            filter:x:/@get-widget-property/*/*?value
+                            offset:x:/@+?value
+
+                          /*
+                           * Updating offset, but only if above databind invocation
+                           * was successful.
+                           */
+                          if:x:/@sephia.settings.contacts.databind?value
+
+                            /*
+                             * Databind invocation was successful.
+                             */
+                            set-widget-property:sephia-settings-search-contacts-wrapper
+                              .offset:x:/@+?value
+
+                        widgets
+                          literal
+                            element:span
+                            class:icon-chevron-right
 
         /*
          * Save button, beneath our tab widget.
