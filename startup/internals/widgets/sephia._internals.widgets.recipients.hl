@@ -180,6 +180,7 @@ create-event:sephia._internals.widgets.recipients
           /*
            * No results.
            */
+          p5.web.send-javascript:@"p5.sephia_contacts_has_data = false;"
           return
 
         /*
@@ -282,7 +283,9 @@ create-event:sephia._internals.widgets.recipients
          * In addition, we also handle "onkeypress" in the widgets' themselves.
          */
         p5.web.include-javascript:@"
+p5.sephia_contacts_has_data = true;
 p5.sephia_search_contacts = function(e) {{
+  if (!p5.sephia_contacts_has_data) {{return;}}
   setTimeout (function () {{
     var el = p5.$('{0}');
     if (!el) {{return;}}
@@ -295,33 +298,44 @@ p5.sephia_search_contacts = function(e) {{
 }}
 p5.sephia_search_keydown = function (e) {{
   if (e.keyCode == 8 || e.keyCode == 46) {{
+    p5.sephia_contacts_has_data = true;
     p5.sephia_search_contacts (e);
   }} else if (e.keyCode == 13) {{
     var el = p5.$('{0}');
     if (!el) {{return;}}
-    el.$('{0}').raise('.onclick-first', {{
+    el.raise('.onclick-first', {{
       onbefore:function (pars, evt) {{
         pars.push(['sephia-five-search', e.target.id]);
       }}
     }});
+    p5.sephia_contacts_has_data = true;
     return false;
+  }} else if (p5.sephia_isTextSelected (e.target)) {{
+    p5.sephia_contacts_has_data = true;
+    p5.sephia_search_contacts (e);
   }}
 }}
 p5.sephia_search_focus = function (e) {{
   if(e.target.value == '') {{
     p5.sephia_search_contacts (e);
   }}
+  p5.sephia_contacts_has_data = true;
 }}
 p5.sephia_search_blur = function (e) {{
   setTimeout (function() {{
     var el = p5.$('{0}');
-    if (!el) {{return;}}
-    el.$('{0}').raise('.ondrop-auto', {{
+    if (el === null) {{return;}}
+    el.raise('.ondrop-auto', {{
       onbefore:function (pars, evt) {{
         pars.push(['sephia-five-search', e.target.id]);
       }}
     }});
   }}, 500);
+}}
+p5.sephia_isTextSelected = function(txt) {{
+    if (typeof txt.selectionStart == 'number') {{
+        return txt.selectionStart != txt.selectionEnd;
+    }}
 }}"
           :x:/../*/_event?value
 
