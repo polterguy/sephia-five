@@ -70,3 +70,25 @@ button
         force:bool:true
         fingerprint:x:/@p5.mysql.select/*/*/fingerprint?value
         verified:bool:true
+
+      /*
+       * Re-databinding inbox.
+       */
+      sephia.inbox.databind
+        keep-page-filter:bool:true
+
+      /*
+       * Removing "unknown" CSS class, and adding "safe" class to main reader
+       * widget.
+       */
+      p5.web.widgets.find-first-like:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+        class:sephia-reader
+      micro.css.delete:x:/@p5.web.widgets.find-first-like/*/*?value
+        class:sephia-unknown
+      micro.css.add:x:/@p5.web.widgets.find-first-like/*/*?value
+        class:sephia-safe
+
+      /*
+       * Deleting button widget, since it's no longer required.
+       */
+      delete-widget:x:/../*/_event?value

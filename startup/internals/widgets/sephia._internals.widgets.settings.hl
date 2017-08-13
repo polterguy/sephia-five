@@ -1125,7 +1125,9 @@ save your settings, and do something else in the meantime, and come back here af
                   /*
                    * Event that databinds the datagrid.
                    *
-                   * Optionally pass in [filter] and [offset].
+                   * Optionally pass in [filter], [offset] and [force].
+                   * If [force] is true, the grid will be databound, even if there
+                   * are no results, hence it'll be cleared.
                    */
                   sephia.settings.contacts.databind
 
@@ -1134,6 +1136,7 @@ save your settings, and do something else in the meantime, and come back here af
                      */
                     .defaults
                       offset:int:0
+                      force:bool:false
 
                     /*
                      * Searching contacts, passing in [filter] if given.
@@ -1148,6 +1151,8 @@ save your settings, and do something else in the meantime, and come back here af
                      */
                     if:x:/@sephia.contacts.search/*
                       not
+                      and:x:(/../*/force|/../*/.defaults/*/force)/$?value
+                        not
 
                       /*
                        * No more items.
@@ -1293,6 +1298,7 @@ save your settings, and do something else in the meantime, and come back here af
                           eval-x:x:/+/*
                           sephia.settings.contacts.databind
                             filter:x:/@get-widget-property/*/*?value
+                            force:bool:true
 
                           /*
                            * Making sure we set focus back to search text box.

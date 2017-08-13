@@ -47,7 +47,7 @@ and c.username = @username
 order by c.name
 limit @max offset @offset"
       :x:/@_extra?value
-      @query:"{0}%"
+      @query:"%{0}%"
         :x:/../*/_arg?value
       @username:x:/@whoami/*/username?value
       @max:x:(/../*/max|/../*/.defaults/*/max)/$?value.int
