@@ -162,6 +162,13 @@ order by id desc limit 15 offset @offset"
       :x:(/../*/filter|/../*/.defaults/*/filter)/$?value
 
   /*
+   * Returning early if above invocation didn't return any results.
+   */
+  if:x:/@p5.mysql.select/*
+    not
+    return
+
+  /*
    * Creating rows for our grid databind operation below.
    */
   for-each:x:/@p5.mysql.connect/*/p5.mysql.select/*
