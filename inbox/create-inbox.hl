@@ -89,9 +89,20 @@ create-widget:sephia-search-wrapper
             input:sephia-search-txt
               type:text
               class:smaller
-              placeholder:"inbox:"
               title:@"Use 'inbox:', 'sent:', 'read:', 'unread:', 'safe:', 'all:', 'spam:' and 'attachment:' to specify type of emails to search for"
               onkeydown:@"if (event.keyCode == 13) {p5.$('sephia-search-btn').raise('onclick');return false;}"
+              oninit
+
+                /*
+                 * Setting placeholder value of widget to total number of emails.
+                 */
+                whoami
+                p5.mysql.connect:[sephia]
+                  p5.mysql.scalar:@"select count(*) from emails where username = @username"
+                    @username:x:/@whoami/*/username?value
+                  set-widget-property:sephia-search-txt
+                    placeholder:"Search amongst {0} emails, default filter is 'inbox:' ..."
+                      :x:/@p5.mysql.scalar?value
 
             /*
              * Button to search inbox.
