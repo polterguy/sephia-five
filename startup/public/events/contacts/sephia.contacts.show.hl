@@ -358,64 +358,26 @@ create-event:sephia.contacts.show
 
                       /*
                        * Updating contact.
-                       *
-                       * Checking if a fingerprint was supplied by user, and if it was,
-                       * in addition to that the PGP key exists in GnuPG context, as
-                       * associate it with contact.
                        */
                       whoami
+
+                      /*
+                       * Checking serialized value, and removing those not providing
+                       * relevant data.
+                       */
                       if:x:/@micro.widgets.wizard-form.value/*/fingerprint?value
-                        !=:
-                        and
-                          fetch:x:/0/0?name
-                            p5.crypto.list-public-keys:x:/@micro.widgets.wizard-form.value/*/fingerprint?value
-
-                        /*
-                         * User supplied a fingerprint, and it exists, hence we
-                         * update also fingerprint of contact.
-                         */
-                        add:x:/../*/sephia.contacts.create-or-update
-                          src
-                            fingerprint:x:/@micro.widgets.wizard-form.value/*/fingerprint?value
-
-                        /*
-                         * Checking if user wants to verify fingerprint of contact.
-                         */
-                        if:x:/@micro.widgets.wizard-form.value/*/verified?value
-
-                          /*
-                           * User wants to verify fingerprint of contact.
-                           */
-                          add:x:/../*/sephia.contacts.create-or-update
-                            src
-                              verified:bool:true
-
-                          /*
-                           * Signing PGP public key with user's private PGP key.
-                           * TODO: Uncomment as Jeffrey fixes MimeKit ...
-                           */
-                          _p5.auth.my-settings.get
-                          _p5.crypto.sign-public-key:x:/@micro.widgets.wizard-form.value/*/fingerprint?value
-                            private-key:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-key?value
-                            password:x:/@p5.auth.my-settings.get/*/sephia/*/pgp-password?value
-
-                      else
-
-                        /*
-                         * User removed fingerprint for contact, or did not add one.
-                         */
-                        add:x:/../*/sephia.contacts.create-or-update
-                          src
-                            unverify:bool:true
+                        =:
+                        set:x:/@micro.widgets.wizard-form.value/*/fingerprint?value
+                        set:x:/@micro.widgets.wizard-form.value/*/verified
 
                       /*
                        * Doing the actual update of our contact.
                        */
-                      eval-x:x:/+/*
+                      add:x:/+2
+                        src:x:/@micro.widgets.wizard-form.value/*
+                      eval-x:x:/+/*/username
                       sephia.contacts.create-or-update
                         username:x:/@whoami/*/username?value
-                        name:x:/@micro.widgets.wizard-form.value/*/name?value
-                        email:x:/@micro.widgets.wizard-form.value/*/email?value
                         force:bool:true
 
                       /*

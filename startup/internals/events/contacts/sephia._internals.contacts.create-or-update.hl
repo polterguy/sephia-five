@@ -2,8 +2,8 @@
 /*
  * Will create a new, or update an existing contact.
  *
- * Expects [name], [email], [username] and optionally [fingerprint], [verified], 
- * [type], [spam], [unverify] and [force].
+ * Expects [name], [email], [username], and optionally [fingerprint], [verified], 
+ * [type], [spam], and [force].
  *
  * Will check if a contact with the given [email] exists for [username], and if
  * it does, it will update the existing contact, instead of creating a new contact.
@@ -12,10 +12,7 @@
  *
  * If given a [fingerprint], it will associate that fingerprint with the contact,
  * unless a contact already exists, and he has an existing fingerprint associated
- * with him, which has been previously verified.
- *
- * If [unverify] is boolean "true", any existing fingerprints will be removed, and
- * the contact will be set to not verified.
+ * with him, which has been previously verified, and [force] is not given as "true".
  *
  * [spam], if specified, can be either "0" or "1". If it is "1", then all future
  * emails from this contact will be treated as spam. If it is "0", then all future
@@ -24,17 +21,20 @@
  * in the future are spam or not.
  *
  * If you supply [verified], and set its value to boolean "true", and the contact
- * does not already have a verified fingerprint associated with him, then the
- * [fingerprint] you pass in, will be associated with the contact as verified.
+ * does not already have a verified fingerprint associated with him, or you supply
+ * a [force] with the boolean value of "true", then the [fingerprint] you pass in, 
+ * or the one contact already has, will be associated with the contact as verified.
  *
  * Notice, this event requires an existing open connection to the Sephia database.
  *
  * If the contact was created, the event will return [created] having the value of
  * boolean "true". If the contact was updated, the event will return [created] 
- * having the boolean value of "false".
+ * having the boolean value of "false". If no changes to the database occurred,
+ * the event will not return a [created] argument at all, but rather a [no-change],
+ * having a value of boolean "true".
  *
  * If [force] is set to boolean true, regardless of what the contact has from
- * before, the values you provide will override whatever is in the database from 
+ * before, the values you provide, will override whatever is in the database from 
  * before.
  *
  * Regardless of whether or not the contact was created or not, it will return 
@@ -63,7 +63,6 @@ create-event:sephia._internals.contacts.create-or-update
     verified:bool
     spam
     type
-    unverify:bool
     force:bool
 
   /*
@@ -95,12 +94,33 @@ create-event:sephia._internals.contacts.create-or-update
       id:x:/@p5.mysql.scalar?value
 
     /*
+     * Checking that our update invocation returned true, and if so, making sure
+     * we signal to caller that contact was updated.
+     */
+    if:x:/@sephia._internals.contacts.update?value
+
+      /*
+       * Contact was updated.
+       */
+      add:x:/././*/return
+        src
+          created:bool:false
+
+    else
+
+      /*
+       * No change occurred.
+       */
+      add:x:/././*/return
+        src
+          no-change:bool:true
+
+    /*
      * Returning to caller, making sure we return the id of the contact, and the
      * fact that contact was not created.
      */
     eval-x:x:/+/*
     return
-      created:bool:false
       id:x:/@p5.mysql.scalar?value
 
   else
@@ -109,7 +129,7 @@ create-event:sephia._internals.contacts.create-or-update
      * Contact does not exist, inserting a new contact.
      */
     add:x:/./*/@sephia._internals.contacts.create
-      src:x:/@.signal/--(!/unverify)
+      src:x:/@.signal/--
     sephia._internals.contacts.create
 
     /*

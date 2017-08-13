@@ -1,6 +1,6 @@
 
 /*
- * Action button for closing reader.
+ * Action button for displaying meta data for email.
  */
 button
   innerValue:@"<span class=""icon-eye""></span>"
@@ -9,13 +9,30 @@ button
   onclick
 
     /*
-     * Deleting widgets wrapping currently read email.
+     * Retrieving meta data wrapper widget.
      */
     p5.web.widgets.find-first-ancestor:x:/../*/_event?value
       .email-id
     p5.web.widgets.find:x:/-/*/*?value
       .meta-data
-    set-widget-property:x:/-/*/*?value
-      visible:true
-    delete-widget:x:/../*/_event?value
 
+    /*
+     * Checking if meta data is already visible.
+     */
+    get-widget-property:x:/@p5.web.widgets.find/*/*?value
+      visible
+    if:x:/-/*/*?value
+
+      /*
+       * Meta data is already visible, hiding it.
+       */
+      set-widget-property:x:/@p5.web.widgets.find/*/*?value
+        visible:false
+
+    else
+
+      /*
+       * Meta data is invisible, making sure we show it.
+       */
+      set-widget-property:x:/@p5.web.widgets.find/*/*?value
+        visible:true

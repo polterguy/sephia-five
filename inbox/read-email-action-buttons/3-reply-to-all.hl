@@ -52,7 +52,7 @@ button
         p5.mysql.scalar:@"select count(*) from recipients where emailid = @id"
           @id:x:/@get-widget-property/*/*?value
         if:x:/@p5.mysql.scalar?value.int
-          =:int:0
+          =:int:1
 
           /*
            * This email had only one recipient, hence reply to all makes no sense.

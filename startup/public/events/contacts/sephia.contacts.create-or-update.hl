@@ -2,8 +2,8 @@
 /*
  * Will create a new contact, or update an existing.
  *
- * Expects [name], [email] and optionally [fingerprint], [verified], [type], 
- * [spam], [unverify] and [force].
+ * Expects [name], [email], and optionally [fingerprint], [verified], [type], 
+ * [spam], and [force].
  *
  * Will check if a contact with the given [email] exists for logged in user, and if
  * it does, it will update the existing contact, instead of creating a new contact.
@@ -11,10 +11,9 @@
  *
  * If given a [fingerprint], it will associate that fingerprint with the contact,
  * unless a contact already exists, and he has an existing fingerprint associated
- * with him, which has been previously verified.
- *
- * If [unverify] is boolean "true", any existing fingerprints will be removed, and
- * the contact will be set to not verified.
+ * with him, which has been previously verified. Notice, if you supply [force],
+ * and set its value to "true", it will override this logic, and force whatever
+ * [fingerprint] and [verified] argument you supply.
  *
  * [spam], if specified, can be either "0" or "1". If it is "1", then all future
  * emails from this contact will be treated as spam. If it is "0", then all future
@@ -31,11 +30,8 @@
  *
  * If the contact was created, the event will return [created] having the value of
  * boolean "true". If the contact was updated, the event will return [created] 
- * having the boolean value of "false".
- *
- * If [force] is set to boolean true, regardless of what the contact has from
- * before, the values you provide will override whatever is in the database from 
- * before.
+ * having the boolean value of "false". If no change occurred, the event will
+ * return [no-change], having a value of "true".
  *
  * Regardless of whether or not the contact was created or not, it will return 
  * the ID of the contact.
@@ -60,7 +56,6 @@ create-event:sephia.contacts.create-or-update
   micro.lambda.contract.optional:x:/..
     fingerprint
     verified:bool
-    unverify:bool
     force:bool
     spam
     type

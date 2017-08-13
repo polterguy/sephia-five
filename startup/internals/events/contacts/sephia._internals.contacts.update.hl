@@ -2,28 +2,22 @@
 /*
  * Updates the given [id] contact.
  *
- * Expects [name], [email], [id] and optionally [fingerprint], [verified], [type],
- * [spam], [unverify] and [force].
+ * Expects [id] and optionally [name], [email], [fingerprint], [verified], [type],
+ * [spam], and [force].
  *
  * Optionally pass in [fingerprint], which is the fingerprint of the public PGP key
  * the contact should be associated with. Notice, if you pass in a fingerprint,
- * it will only be associated with the contact if we can find the public PGP key, 
+ * it will only be associated with the contact, if we can find the public PGP key, 
  * and contact does not already have a verified fingerprint from before.
+ * The supplied [fingerprint] will only be associated with the contacts if we
+ * can somehow find the public PGP key associated with the fingerprint, either
+ * in GnuPG database, or in our key server.
  *
  * If the [fingerprint] doesn't exist in your GnuPG database, this event will try 
  * to search for that specified public PGP key using Sephia's key server configuration,
  * and automatically download the public key with the specified fingerint, and put
  * it into your GnuPG database. Yet again, only if contact does not have an existing
  * verified fingerprint.
- *
- * If you pass in [unverify] as boolean "true", any existing fingerprints will be
- * removed, and the contact will be set to not verified, regardless of whether or
- * not his existing fingerprint is verified or not. This is a security measure,
- * explicitly put in place, to make sure you don't accidentally in your own code,
- * updates an existing verified contact's fingerprint to to something else.
- *
- * Hence, to change an existing verified fingerprint, actually requires two 
- * invocations to this event.
  *
  * If the key with the specified [fingerprint] is found, either in the GnuPG database, 
  * or successfully downloaded from your key server, only then the fingerprint will 
@@ -32,7 +26,12 @@
  * If you pass in a [fingerprint] and [verified], and set [verified]'s value to 
  * boolean "true", and the [fingerprint] key can somehow be found, the contact 
  * will have his fingerprint set to verified, unless the contact already has another
- * verified fingerprint.
+ * verified fingerprint. To override this logic, and "forcing" your new fingerprint
+ * to be used, you can pass in [force], at which time your specified fingerprint
+ * value, or lack thereof, will be used even if the contact has already been verified.
+ *
+ * If you choose to verify a contact, and the verification process is successful,
+ * all previous emails sent with the specified [fingerprint] will be set to verified.
  *
  * You can also optionally pass in [spam], which can be either "0" or "1", where "0" 
  * means that all future emails originating from the contact, is not to be treated 
@@ -40,7 +39,7 @@
  * spam.
  *
  * If you don't pass in [spam], then the spam filters in Sephia will try to 
- * determine if emails from the contact are to be considered spam or not as the
+ * determine if emails from the contact are to be considered spam or not, as the
  * contact sends you emails in the future. Which depends upon which spam filters
  * you have configured Sephia to use.
  *
@@ -48,7 +47,7 @@
  * For instance, the user's own contact is of type "self".
  *
  * If [force] is set to boolean true, regardless of what the contact has from
- * before, the values you provide will override whatever is in the database from 
+ * before, the values you provide, will override whatever is in the database from 
  * before.
  *
  * Notice, the event expects an open database connection to the Sephia database.
@@ -59,20 +58,19 @@ create-event:sephia._internals.contacts.update
    * Making sure invoker obeys by lambda contract.
    */
   micro.lambda.contract.min:x:/..
-    name:string
-    email:string
     id:long
 
   /*
    * Sanity checking optional arguments.
    */
   micro.lambda.contract.optional:x:/..
+    name:string
+    email:string
     fingerprint
     verified:bool
     force:bool
     spam
     type
-    unverify:bool
 
   /*
    * Used to hold any fingerprints of public PGP key matching email, and whether
@@ -82,71 +80,87 @@ create-event:sephia._internals.contacts.update
   _is-verified:int:0
 
   /*
-   * Checking if contact has an existing fingerprint, and it is verified, at which
-   * point we do NOT update the fingerprint for the contact.
+   * We must select contact's old values, such that we can check if we should update
+   * the contact or not, and if so, which fields we should actually update.
    */
   p5.mysql.select:@"select name, email, fingerprint, isverified, type, spam from contacts where id = @id"
     @id:x:/../*/id?value
 
   /*
    * Checking if caller provided a [fingerprint] argument, and the contact does
-   * not have an existing fingerprint association, or that his fingerprint have
-   * not yet been verified. Only then we allow for updating the contact's fingerprint.
-   *
-   * Notice, if [force] is set to true, it overrides, and forces a roundtrip to
-   * update (and optionally verify) the given fingerprint.
+   * not have an existing fingerprint association, or that his fingerprint has
+   * not yet been verified, or that caller provided a [force] argument - And if
+   * so, we update the fingerprint, and/or verified status of contact.
    */
   if:x:/../*/fingerprint?value
     and:x:/@p5.mysql.select/*/*/isverified?value.int
       =:int:0
       or:x:/@p5.mysql.select/*/*/fingerprint?value
         not
-    and:x:/../*/unverify?value
-      !=:bool:true
     or:x:/../*/force?value
-      and:x:/../*/fingerprint?value
 
     /*
      * Caller provided a new fingerprint, and the contact's existing fingerprint
-     * was not verified, or the contact's fingerprint has been deleted.
-     *
-     * Hence, attempting to find the given [fingerprint] key for the given [email]
-     * using our key server.
+     * was not verified, or the contact's fingerprint has been deleted, or caller
+     * supplied a [force] true value.
      */
-    eval-x:x:/+/*
-    sephia.pgp.key-server.get
-      email:x:/../*/email?value
-      fingerprint:x:/../*/fingerprint?value
-    if:x:/-?value
+    set:x:/@_fingerprint?value
+      src:x:/../*/fingerprint?value
+
+    /*
+     * Setting fingerprint to verified, if given, and caller wants it to become 
+     * verified.
+     */
+    if:x:/../*/verified?value
+      and:x:/../*/fingerprint?value
 
       /*
-       * We found the public PGP key on key server.
+       * Caller supplied a new [fingerprint], and wants it to be verified.
        */
-      set:x:/../*/_fingerprint?value
-        to-upper:x:/../*/fingerprint?value
+      set:x:/@_is-verified?value
+        src:int:1
 
-  else-if:x:/@p5.mysql.select/*/*/fingerprint?value
-    and:x:/../*/unverify?value
-      !=:bool:true
+  else
 
     /*
      * Using existing fingerprint, and verification, regardless of whether or 
-     * not the caller provided a [fingerprint] argument.
+     * not the caller provided a [fingerprint] argument, since existing fingerprint
+     * has already been verified, and caller did not provide a [force] true value.
      */
     set:x:/@_fingerprint?value
       src:x:/@p5.mysql.select/*/*/fingerprint?value
     set:x:/../*/_is-verified?value
       src:x:/@p5.mysql.select/*/*/isverified?value.int
 
-  else-if:x:/../*/unverify?value
+  /*
+   * Checking if above logic resulted in a fingerprint being used, which is
+   * different from the old fingerprint, and if so, checking if key exists,
+   * making sure we compare the fingerprints correctly, by making specified
+   * fingerprint UPPER case, if given.
+   */
+  set:x:/@_fingerprint?value
+    to-upper:x:/@_fingerprint?value
+  if:x:/@_fingerprint?value
+    and:x:/@_fingerprint?value
+      !=:x:/@p5.mysql.select/*/*/fingerprint?value
 
     /*
-     * Caller requested to "unverify" the contact.
+     * Trying to fetch the specified public PGP key.
      */
-    set:x:/@_fingerprint?value
-      src
-    set:x:/@_is-verified?value
-      src:int:0
+    eval-x:x:/+/*
+    sephia.pgp.key-server.get
+      email:x:(/../*/email|/@p5.mysql.select/*/*/email)/$?value
+      fingerprint:x:/@_fingerprint?value
+    if:x:/-?value
+      not
+
+      /*
+       * We did not find the public PGP key on key server, hence we cannot use
+       * any [fingerprint] arguments supplied by caller.
+       */
+      set:x:/@_fingerprint?value
+      set:x:/@_is-verified?value
+        src:int:0
 
   /*
    * Checking if caller requested contact to be updated to a verified contact.
@@ -155,8 +169,8 @@ create-event:sephia._internals.contacts.update
     and:x:/@_fingerprint?value
 
     /*
-     * We have a fingerprint for contact, and caller requested that contact be updated
-     * to become verified - Hence, we set status of contact to verified.
+     * We have a fingerprint for contact, and caller requested that contact be 
+     * updated to become verified - Hence, we set status of contact to verified.
      */
     set:x:/@_is-verified?value
       src:int:1
@@ -166,21 +180,23 @@ create-event:sephia._internals.contacts.update
    */
   if:x:/@p5.mysql.select/*/*/name?value
     =:x:/../*/name?value
+    and:x:/../*/name?value
     and:x:/@p5.mysql.select/*/*/email?value
       =:x:/../*/email?value
+    and:x:/@p5.mysql.select/*/*/email?value
     and:x:/@p5.mysql.select/*/*/fingerprint?value
       =:x:/@_fingerprint?value
     and:x:/@p5.mysql.select/*/*/isverified?value.int
       =:x:/@_is-verified?value
-    and:x:/@p5.mysql.select/*/*/spam?value
-      =:x:/../*/spam?value
+    and:x:/@p5.mysql.select/*/*/spam?value.int
+      =:x:/../*/spam?value.int
     and:x:/@p5.mysql.select/*/*/type?value
       =:x:/../*/type?value
 
     /*
      * Nothing changed, returning early.
      */
-    return
+    return:bool:false
 
   /*
    * Checking if caller supplied a [spam] argument, and if not, keeping the
@@ -190,6 +206,10 @@ create-event:sephia._internals.contacts.update
    */
   if:x:/../*/spam
     not
+
+    /*
+     * Caller did not supply a [spam] argument.
+     */
     set:x:/../*/p5.mysql.update/*/\@spam?value
       src:x:/@p5.mysql.select/*/*/spam?value
 
@@ -201,6 +221,10 @@ create-event:sephia._internals.contacts.update
    */
   if:x:/../*/type
     not
+
+    /*
+     * Caller did not supply a [type] argument.
+     */
     set:x:/../*/p5.mysql.update/*/\@type?value
       src:x:/@p5.mysql.select/*/*/type?value
 
@@ -208,10 +232,49 @@ create-event:sephia._internals.contacts.update
    * Updating our contact.
    */
   p5.mysql.update:@"update contacts set name = @name, email = @email, fingerprint = @fingerprint, isverified = @isverified, type = @type, spam = @spam where id = @id"
-    @name:x:/../*/name?value
-    @email:x:/../*/email?value
+    @name:x:(/../*/name|/@p5.mysql.select/*/*/name)/$?value
+    @email:x:(/../*/email|/@p5.mysql.select/*/*/email)/$?value
     @fingerprint:x:/@_fingerprint?value
     @isverified:x:/@_is-verified?value
     @type:x:/../*/type?value
     @spam:x:/../*/spam?value
     @id:x:/../*/id?value
+
+  /*
+   * Checking if isverified was changed, and if so, making sure we change the 
+   * status of all emails sent by contact.
+   */
+  if:x:/@p5.mysql.select/*/*/isverified?value.int
+    !=:x:/@_is-verified?value
+
+    /*
+     * Contact's verified status changed.
+     *
+     * Making sure we change the status of all emails that were sent using the
+     * contact's PGP fingerprint in accordance.
+     */
+    if:x:/@_is-verified?value.int
+      =:int:1
+
+      /*
+       * Emails are to be considered safe, but only those with the specified
+       * fingerprint, and that are received, and having been sent as encrypted.
+       */
+      p5.mysql.update:@"update emails e set e.status = 0 where e.sender = @id and e.fingerprint = @fingerprint and e.encrypted = 1 and type = 'received'"
+        @id:x:/../*/id?value
+        @fingerprint:x:/@_fingerprint?value
+
+    else
+
+      /*
+       * Emails are to be considered unknown, but only those having the old 
+       * fingerprint, and that are received, and having been sent as encrypted.
+       */
+      p5.mysql.update:@"update emails e set e.status = 1 where e.sender = @id and e.fingerprint = @fingerprint and e.encrypted = 1 and type = 'received'"
+        @id:x:/../*/id?value
+        @fingerprint:x:/@p5.mysql.select/*/*/fingerprint?value
+
+  /*
+   * Returning success to caller, to indicate that something was actually changed.
+   */
+  return:bool:true
