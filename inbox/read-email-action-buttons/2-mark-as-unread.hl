@@ -3,7 +3,6 @@
  * Action button for marking an email as unread.
  */
 button
-  .primary
   innerValue:@"<span class=""icon-bookmark""></span>"
   title:Mark as unread
   class:reader-action-button
