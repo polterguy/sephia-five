@@ -1242,10 +1242,39 @@ save your settings, and do something else in the meantime, and come back here af
                     widgets
                       input:sephia-settings-search-contacts
                         type:text
-                        placeholder:Search ...
                         style:"margin-bottom:0;"
                         accesskey:F
                         onkeydown:@"if (event.keyCode == 13){p5.$('sephia-settings-search-contacts-button').raise('onclick');return false;}"
+                        oninit
+
+                          /*
+                           * In case user goes back and forth between tab views,
+                           * we reset the search query when tabview is displayed.
+                           *
+                           * In addition, we set initial focus to search textbox,
+                           * to create better workflow, and sets the placeholder
+                           * of the widget, such that it displays the total
+                           * number of contacts the user has in his database.
+                           */
+                          set-widget-property:sephia-settings-search-contacts
+                            value:
+                          micro.page.set-focus:sephia-settings-search-contacts
+
+                          /*
+                           * Counting contacts for user.
+                           */
+                          whoami
+                          p5.mysql.connect:[sephia]
+                            p5.mysql.scalar:@"select count(*) from contacts where username = @username"
+                              @username:x:/@whoami/*/username?value
+
+                            /*
+                             * Displaying count as a part of our widget's placeholder value.
+                             */
+                            set-widget-property:sephia-settings-search-contacts
+                              placeholder:Search amongst your {0} contacts ...
+                                :x:/@p5.mysql.scalar?value
+
                       button:sephia-settings-search-contacts-button
                         style:"margin-bottom:0;"
                         onclick
