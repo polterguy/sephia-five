@@ -128,7 +128,7 @@ p5.sephia_upload_files = function(e) {
        */
       split:x:/@_dp/#?value
         =:/
-      throw:Sorry, but the '{0}' file is not a legal attachment for Sephia Five
+      throw:Sorry, but the '{0}' file is not a legal attachment
         :x:/@split/0/-?name
 
     /*
@@ -549,7 +549,7 @@ p5.sephia_send_email = function(e) {
                        */
                       split:x:/@p5.web.post.get/*?value
                         =:/
-                      micro.windows.info:'{0}' is not a legal file type in Sephia Five
+                      micro.windows.info:'{0}' is not a legal file type
                         :x:/@split/0/-?name
                         class:micro-windows-info warning
                       return

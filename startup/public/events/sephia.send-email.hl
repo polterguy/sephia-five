@@ -295,7 +295,7 @@ create-event:sephia.send-email
        */
       split:x:/@_dp/#?value
         =:/
-      throw:@"File ""{0}"" is not supported by Sephia Five"
+      throw:@"File ""{0}"" is not supported
         :x:/@split/0/-?name
 
   /*
@@ -339,7 +339,7 @@ create-event:sephia.send-email
             Content-Transfer-Encoding:quoted-printable
             content:x:/../*/body?value
           text:html
-            content:@"<html><head><title>Sephia Five email</title></head><body><div class=""sephia-five-email"">{0}</div></body></html>"
+            content:@"<html><head><title>Email</title></head><body><div>{0}</div></body></html>"
               :x:/@sephia._internals.markdown-to-html?value
 
   else

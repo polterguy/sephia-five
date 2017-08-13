@@ -34,7 +34,7 @@ create-event:sephia._internals.widgets.email-body
       literal
         element:div
         class:sephia-reader-content sephia-reader-content-error
-        innerValue:@"<p>Sephia Five couldn't display this email, since it contains only HTML parts.
+        innerValue:@"<p>Sorry, we couldn't display this email, since it contains only HTML parts.
 Please notify your contacts of that you prefer for them to send you plain text emails. HTML emails, are mostly used to spread marketing, in addition to that they're a security risk.</p>"
 
   /*
