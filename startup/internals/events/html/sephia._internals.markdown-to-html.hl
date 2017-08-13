@@ -65,21 +65,43 @@ create-event:sephia._internals.markdown-to-html
     root-url:@SEPHIA/
 
   /*
-   * Converting all hyperlinks within email that are not explicitly set to hyperlinks to such.
-   *
-   * Notice, this invocation will ignore any hyperlinks already created by our above [markdown2html] invocation.
+   * Converting HTML semantically to lambda, to be able to intelligently parse it.
    */
-  sephia._internals.html.create-hyperlinks:x:/@markdown2html?value
+  html2lambda:x:/@markdown2html?value
 
   /*
-   * Converting all images to Sephia images, which implies adding some styles to them, to
-   * make them render left aligned, with some borders and margin.
+   * Making sure any videos and images are styled nicely.
    */
-  html2lambda:x:/@sephia._internals.html.create-hyperlinks?value
-  for-each:x:/@html2lambda/**/img
+  for-each:x:/@html2lambda/**(/img|/video)
     add:x:/@_dp/#
       src
-        @style:"max-width:50%;border-radius:5px;box-shadow:3px 3px 5px rgba(0,0,0,.5);float:left;margin:0 1rem 1rem 0;"
+        @style:"border-radius:5px;box-shadow:3px 3px 5px rgba(0,0,0,.5);margin-left:auto;margin-right:auto;display:block;max-width:calc(100% - 10px);"
+
+  /*
+   * Running through each hyperlink that doesn't have a [@target], and making
+   * sure it gets a '_blank' target.
+   */
+  for-each:x:/@html2lambda/**(/a!/a/*/\@target/.)
+    add:x:/@_dp/#
+      src
+        @target:_blank
+
+  /*
+   * Running through each hyperlink, and making sure every hyperlink displays its
+   * actual href.
+   *
+   * Notice, this is a security feature, that significantly reduces an adversary's 
+   * chances of success!
+   */
+  for-each:x:/@html2lambda/**/a
+    split:x:/@_dp/#/*/\@href?value
+      =:"://"
+    split:x:/@split/0/-?name
+      =:/
+    set:x:/@_dp/#/*/\#text?value
+      src:{0} (<strong>{1}</strong>)
+        :x:/@_dp/#/*/\#text?value
+        :x:/@split/0?name
 
   /*
    * Running through "whitelist", making sure that email does not contain malicious HTML elements.
@@ -93,8 +115,7 @@ create-event:sephia._internals.markdown-to-html
       not
 
       /*
-       * Malicious HTML tag or attribute!
-       * Simply removing it.
+       * HTML tag or attribute was not on whitelist, simply removing it.
        */
       set:x:/@_dp/#
 
@@ -104,6 +125,13 @@ create-event:sephia._internals.markdown-to-html
   lambda2html:x:/@html2lambda/*
 
   /*
+   * Converting all hyperlinks within email that are not explicitly set to hyperlinks to such.
+   *
+   * Notice, this invocation will ignore any hyperlinks already created by our above [markdown2html] invocation.
+   */
+  sephia._internals.html.create-hyperlinks:x:/@lambda2html?value
+
+  /*
    * Returning HTML created above.
    */
-  return:x:/@lambda2html?value
+  return:x:/@sephia._internals.html.create-hyperlinks?value
