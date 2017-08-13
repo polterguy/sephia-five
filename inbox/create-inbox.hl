@@ -297,9 +297,8 @@ create-widget:sephia-search-wrapper
              */
             literal
               element:button
-              class:sephia-logo-toolbar-button
-              innerValue:@"<span></span>"
-              title:Toggle Sephia Five Magic toolbar
+              innerValue:@"<span class=""icon-cog""></span>"
+              title:Toggle toolbar
               accesskey:F
               onclick
 

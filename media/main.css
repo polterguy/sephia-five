@@ -47,17 +47,6 @@
     animation-duration:.5s;
     animation-fill-mode:forwards;
 }
-.sephia-logo-toolbar-button {
-    padding: 8px 15px 7px 15px;
-}
-.sephia-logo-toolbar-button span {
-    /* The Squid svg is copyright flaticon.com, and is licensed as Creative Commons BY 3.0 */
-    background-image: url(squid.svg);
-    background-repeat: no-repeat;
-    display: block;
-    width:1rem;
-    height:1rem;
-}
 
 
 

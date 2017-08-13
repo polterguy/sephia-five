@@ -721,11 +721,9 @@ create-widget
                          */
                         literal
                           element:button
-                          class:sephia-logo-toolbar-button
+                          innerValue:@"<span class=""icon-cog""></span>"
                           style:"margin-bottom:0;"
-                          innerValue:@"<span></span>"
-                          title:Toggle Sephia Five Magic toolbar
-                          accesskey:F
+                          title:Toggle toolbar
                           onclick
 
                             /*
