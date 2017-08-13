@@ -63,7 +63,7 @@ create-event:sephia.contacts.show
               value:x:/@p5.mysql.select/*/*/email?value
               readonly
               tabindex:-1
-            text
+            text:sephia-contacts-name
               .data-field:name
               info:Name
               value:x:/@p5.mysql.select/*/*/name?value
@@ -123,7 +123,6 @@ create-event:sephia.contacts.show
                       eval-x:x:/+/*
                       micro.windows.info:Key found
                         parent:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
-                        class:micro-windows-info success
 
                     else
 
@@ -199,7 +198,6 @@ create-event:sephia.contacts.show
                       eval-x:x:/+/*
                       micro.windows.info:Key found
                         parent:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
-                        class:micro-windows-info success
                       micro.page.set-focus:sephia-contact-fingerprint
 
                       /*
@@ -282,7 +280,6 @@ create-event:sephia.contacts.show
                                   eval-x:x:/+/*
                                   micro.windows.info:Key found
                                     parent:x:/@p5.web.widgets.find-first-like/*/*?value
-                                    class:micro-windows-info success
 
                                   /*
                                    * Setting focus to fingerprint textbox.
@@ -348,6 +345,7 @@ create-event:sephia.contacts.show
                 widgets
                   button:sephia-contacts-save
                     innerValue:Save
+                    style:"margin-bottom:0;"
                     onclick
 
                       /*
@@ -392,6 +390,7 @@ create-event:sephia.contacts.show
 
                   button
                     innerValue:Close
+                    style:"margin-bottom:0;"
                     oninit
 
                       /*
