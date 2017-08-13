@@ -2,8 +2,7 @@
 /*
  * Configuration file for which default settings to use for users.
  */
-signature:@"Got Privacy ...?
-https://gaiasoul.com"
+signature:@"Got Privacy ...?"
 pop3-server:pop.gmail.com
 pop3-port:995
 pop3-ssl:bool:true
@@ -14,6 +13,7 @@ markdown:bool:true
 pgp-subjects:"https://www.nytimes.com, https://www.wsj.com"
 skin:serious
 pgp-key-password:ThisIs$omeR4ndomPa$$w0rd4U
+license:GPL
 
 
 

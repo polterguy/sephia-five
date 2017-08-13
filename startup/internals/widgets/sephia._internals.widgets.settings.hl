@@ -1246,6 +1246,7 @@ save your settings, and do something else in the meantime, and come back here af
                     .offset:0
                     widgets
                       input:sephia-settings-search-contacts
+                        .data-field:no-data
                         type:text
                         style:"margin-bottom:0;"
                         accesskey:F
@@ -1433,6 +1434,7 @@ save your settings, and do something else in the meantime, and come back here af
                      */
                     p5.web.widgets.get-parent:sephia-settings-tab
                     micro.form.serialize:x:/-/*/*?value
+                    set:x:/-/*/no-data
 
                     /*
                      * Making sure we set PGP fingerprint value to "null" unless it actually has a value.
@@ -1500,6 +1502,12 @@ save your settings, and do something else in the meantime, and come back here af
                          */
                         add:x:/../*/p5.auth.my-settings.set/*/sephia
                           src:x:/../*/load-file/*/*/fetch-emails/=~/[0,1]
+
+                    /*
+                     * Adding [license] from default settings file.
+                     */
+                    add:x:/../*/p5.auth.my-settings.set/*/sephia
+                      src:x:/../*/load-file/*/*/license
 
                     /*
                      * Making sure we preserve any non-Sephia settings for user.

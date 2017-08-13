@@ -295,8 +295,24 @@ create-event:sephia.send-email
        */
       split:x:/@_dp/#?value
         =:/
-      throw:@"File ""{0}"" is not supported
+      throw:@"File ""{0}"" is not supported"
         :x:/@split/0/-?name
+
+  /*
+   * Checking what license user is using, and if it's GPL, we append our own
+   * link at the bottom of body.
+   */
+  if:x:/@p5.auth.my-settings.get/*/sephia/*/license?value
+    =:GPL
+
+    /*
+     * Adding link to Sephia Five's main information page.
+     */
+    set:x:/../*/body?value
+      src:@"{0}
+
+https://gaiasoul.com/got-privacy"
+        :x:/../*/body?value
 
   /*
    * Checking if we should create an HTML view, by converting content of email into Markdown.
