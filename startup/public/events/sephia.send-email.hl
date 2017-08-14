@@ -301,6 +301,8 @@ create-event:sephia.send-email
   /*
    * Checking what license user is using, and if it's GPL, we append our own
    * link at the bottom of body.
+   * TODO: Should we append this part before the signature ...?
+   * GMail is hiding signatures, for instance ...!! :P
    */
   if:x:/@p5.auth.my-settings.get/*/sephia/*/license?value
     =:GPL
