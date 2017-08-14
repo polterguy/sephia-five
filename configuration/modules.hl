@@ -25,10 +25,10 @@ module
 module
   name:User Management
   subtype:x-large
-  description:@"Allows you to create and maintain up to 100 users in your Sephia Five installation."
-  price:€6998
+  description:@"Allows you to create and maintain up to 50 users in your Sephia Five installation."
+  price:€4498
 module
   name:User Management
   subtype:infinite
-  description:@"Allows you to create and maintain an infinite amount of users in your Sephia Five installation."
-  price:€9998
+  description:@"Allows you to create and maintain up to 100 users in your Sephia Five installation."
+  price:€7498
