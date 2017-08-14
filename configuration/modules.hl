@@ -1,0 +1,24 @@
+
+/*
+ * Contains all additional modules for Sephia Five.
+ */
+
+
+/*
+ * User Management module.
+ */
+module
+  name:User Management - small
+  description:@"Allows you to create and maintain up to 5 users in your Sephia Five installation."
+module
+  name:User Management - medium
+  description:@"Allows you to create and maintain up to 15 users in your Sephia Five installation."
+module
+  name:User Management - large
+  description:@"Allows you to create and maintain up to 25 users in your Sephia Five installation."
+module
+  name:User Management - x-large
+  description:@"Allows you to create and maintain up to 100 users in your Sephia Five installation."
+module
+  name:User Management - xxx-large
+  description:@"Allows you to create and maintain an infinite amount of users in your Sephia Five installation."
