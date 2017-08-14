@@ -8,17 +8,22 @@
  * User Management module.
  */
 module
-  name:User Management - small
+  name:User Management
+  subtype:small
   description:@"Allows you to create and maintain up to 5 users in your Sephia Five installation."
 module
-  name:User Management - medium
+  name:User Management
+  subtype:medium
   description:@"Allows you to create and maintain up to 15 users in your Sephia Five installation."
 module
-  name:User Management - large
+  name:User Management
+  subtype:large
   description:@"Allows you to create and maintain up to 25 users in your Sephia Five installation."
 module
-  name:User Management - x-large
+  name:User Management
+  subtype:x-large
   description:@"Allows you to create and maintain up to 100 users in your Sephia Five installation."
 module
-  name:User Management - xxx-large
+  name:User Management
+  subtype:xxx-large
   description:@"Allows you to create and maintain an infinite amount of users in your Sephia Five installation."
