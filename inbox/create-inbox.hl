@@ -193,7 +193,7 @@ create-widget:sephia-search-wrapper
              * Button that clears search, and opens email inbox from the beginning.
              */
             button
-              innerValue:@"<span class=""icon-home""></span>"
+              innerValue:@"<span class=""icon-refresh""></span>"
               title:Open inbox
               accesskey:O
               onclick
@@ -272,7 +272,7 @@ create-widget:sephia-search-wrapper
              */
             button
               innerValue:@"<span class=""icon-key""></span>"
-              title:Log out of Sephia
+              title:Log out
               accesskey:L
               onclick
 
@@ -283,6 +283,23 @@ create-widget:sephia-search-wrapper
                 delete-files:x:/-/*?name
                 logout
                 p5.web.reload-location
+
+            /*
+             * Button to close Sephia, without logging out.
+             *
+             * Leads the user to the main root URL of system.
+             */
+            button
+              innerValue:@"<span class=""icon-home""></span>"
+              title:Leave ...
+              accesskey:Q
+              onclick
+
+                /*
+                 * Changing location to root URL of P5.
+                 */
+                p5.web.get-root-location
+                p5.web.set-location:x:/-?value
 
     div
       class:col
