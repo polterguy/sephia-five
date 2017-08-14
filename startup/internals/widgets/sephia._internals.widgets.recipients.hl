@@ -324,7 +324,7 @@ p5.sephia_search_focus = function (e) {{
 p5.sephia_search_blur = function (e) {{
   setTimeout (function() {{
     var el = p5.$('{0}');
-    if (el === null) {{return;}}
+    if (el.el === null) {{return;}}
     el.raise('.ondrop-auto', {{
       onbefore:function (pars, evt) {{
         pars.push(['sephia-five-search', e.target.id]);
