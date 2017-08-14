@@ -40,7 +40,7 @@ Sephia Five has reduced the complexity of using PGP encrypted emails, to the poi
 
 ### Security starts with simplicity!
 
-![alt Edward Snowden in regards to Privacy](/media/snowden.png)
+<img src=""/sephia-five/media/snowden.png"" alt=""Edward Snowden in regards to Privacy"" style=""border-radius:5px;box-shadow:3px 3px 5px rgba(0,0,0,.5);display:block;max-width:50%;float:left;margin-right:15px;margin-bottom:15px;"" />
 
 _'Unless something is easy to use, it can never be secure'_ - Sephia Five is so easy to use, that the only remaining thing you'll have to remember yourself, to make sure your online communication is cryptographically secured, is to verify your contacts' PGP fingerprints. Apart from this, everything else simply magically happens in the background for you.
 
@@ -148,7 +148,7 @@ Possibly the best part of Sephia Five, is that you don't need to change your exi
 
 ### Performance
 
-![alt Bandwidth comparison between Sephia Five and GMail](media/bandwidth-comparison.png)
+<img src=""/sephia-five/media/bandwidth-comparison.png"" alt=""Bandwidth comparison between Sephia Five and GMail"" style=""border-radius:5px;box-shadow:3px 3px 5px rgba(0,0,0,.5);display:block;max-width:50%;float:left;margin-right:15px;margin-bottom:15px;"" />
 
 Sephia Five is ridiculously fast. GMail uses more than 4MB of bandwidth consumption when opened without cache turned on, and 1.5MB if cache is turned on. Sephia Five will use 0.25 MB at the max with cache turned off, and roughly 0.02 MB with cache turned on. This means that Sephia Five is perfectly fine working over very slow internet connections.
 
@@ -196,7 +196,7 @@ envelope:welcome-email-sephia-five-no3@gaiasoul.com
         fingerprint:5E11AEF421CDB0A7A9A5C6B4AED9D04F43BE2AAD
     text:plain
       X-Type:markdown
-      content:@"![alt Bank vault security](/media/vault.png)
+      content:@"<img src=""/sephia-five/media/vault.png"" alt=""Bank vault security"" style=""border-radius:5px;box-shadow:3px 3px 5px rgba(0,0,0,.5);display:block;max-width:50%;float:left;margin-right:15px;margin-bottom:15px;"" />
 
 When Phil Zimmerman created PGP cryptography, Bruce Schneier said; _'PGP cryptograhpy is the closest you come to military grade cryptography in the public space'_. When Edward Snowden was able to play cat and mouse with the CIA, the NSA, and the entire military industrial complex of the USA and its State Department - Mr. Snowden was using PGP cryptography to communicate with his friends. Julian Assange and WikiLeaks are using PGP cryptography, and so far, the CIA and the NSA have never been able to hack their emails. Every single intelligence organisation and secret police force on the planet, with respect for themselves, are using PGP cryptography one way or another.
 
@@ -276,7 +276,7 @@ envelope:welcome-email-sephia-five-no5@gaiasoul.com
         fingerprint:5E11AEF421CDB0A7A9A5C6B4AED9D04F43BE2AAD
     text:plain
       X-Type:markdown
-      content:@"![alt Thomas Hansen the CEO and CTO of GaiaSoul](/media/thomas.jpg)
+      content:@"<img src=""/sephia-five/media/thomas.jpg"" alt=""Thomas Hansen, CTO at GaiaSoul"" style=""border-radius:5px;box-shadow:3px 3px 5px rgba(0,0,0,.5);display:block;max-width:50%;float:left;margin-right:15px;margin-bottom:15px;"" />
 
 Although we have done everything within our powers to secure your online communication in Sephia Five, accidents do happen. There might exist bugs in Sephia, that compromises your security. And we might have without knowing it, done something wrong when we created Sephia. Although, we have done everything within our reach to make sure you are as secure as it is possible to be, we would still like to state for the record that there are no guarantees in security, and none within reach of sanity will ever give you any either. Though I suspect, that if your email is compromised when using Sephia Five, it is highly likely not due to a bug in our code, but rather due to the way you installed it and/or configured/used it.
 
