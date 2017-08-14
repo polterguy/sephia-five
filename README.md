@@ -251,7 +251,7 @@ If you have extreme security concerns, you can easily install Sephia Five on an 
 
 ## License
 
-Sephia Five is licensed under the terms of the GNU GPL version 3. See the attached LICENSE file for details.
+Sephia Five is licensed under the terms of the GNU GPL version 3. See the attached LICENSE file for details. Sephia Five is not included in the _"GaiaSoul Suite"_ which you purchase when you obtain a commercial license of Phosphorus Five.
 
 ## Disclaimer
 
