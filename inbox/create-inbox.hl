@@ -194,7 +194,7 @@ create-widget:sephia-search-wrapper
              */
             button
               innerValue:@"<span class=""icon-refresh""></span>"
-              title:Open inbox
+              title:Reload inbox
               accesskey:O
               onclick
 
@@ -291,7 +291,7 @@ create-widget:sephia-search-wrapper
              */
             button
               innerValue:@"<span class=""icon-home""></span>"
-              title:Leave ...
+              title:Open desktop
               accesskey:Q
               onclick
 
