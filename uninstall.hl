@@ -1,0 +1,15 @@
+
+/*
+ * Uninstall file for Sephia Five.
+ */
+
+
+
+
+
+/*
+ * Deleting all Sephia Five relevant Active Events, and that's it.
+ */
+delete-event:p5.io.unroll-path.@SEPHIA
+vocabulary:sephia.
+delete-event:x:/-/*?name
