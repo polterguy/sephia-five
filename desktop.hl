@@ -10,7 +10,7 @@ container
   oninit
 
     /*
-     * Getting link URL to point to our "launch.hl" file.
+     * Getting link URL to point correctly.
      */
     p5.io.unroll-path:@SEPHIA/
     set-widget-property:x:/../*/_event?value
