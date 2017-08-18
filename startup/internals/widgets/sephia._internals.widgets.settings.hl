@@ -118,13 +118,11 @@ create-event:sephia._internals.widgets.settings
   if:x:/../*/wizard-mode?value.bool
 
     /*
-     * Wizard mode is turned on, making sure our "Close" and "Save" buttons are
-     * invisible, in addition to our "change password" button.
+     * Wizard mode is turned on, making sure our "Close" and "Save" buttons are invisible.
      */
     add:x:/../*/return/**/button(/=sephia-settings-close|/=sephia-settings-save)
       src
         visible:false
-    set:x:/../*/return/**/div/=sephia-settings-change-pwd-wrapper
 
   else
 
@@ -253,21 +251,6 @@ create-event:sephia._internals.widgets.settings
                         for:sephia-settings-compose-markdown
                         innerValue:Use Markdown
                         title:Will allow you to read and write emails having their content converted into Markdown, if possible
-
-              div:sephia-settings-change-pwd-wrapper
-                class:row
-                widgets
-                  div
-                    class:col
-                    widgets
-                      button
-                        innerValue:Change password ...
-                        onclick
-
-                          /*
-                           * Using micro helper event to accomplish task.
-                           */
-                          micro.windows.change-password
 
           /*
            * POP3 settings.
