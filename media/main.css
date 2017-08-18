@@ -11,7 +11,7 @@
  * Overridden to create some cogs while in settings form.
  */
 .sephia-settings .micro-tab .micro-tab-views {
-    background: url(/micro/media/skins/serious/floating-cogs.svg);
+    background: url(/modules/micro/media/skins/serious/floating-cogs.svg);
 }
 
 
