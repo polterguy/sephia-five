@@ -13,8 +13,9 @@
  * otherwise you might get weird bugs when inserting emails into your database that uses high characters,
  * such as smileys, etc.
  */
-p5.mysql.connect:[sephia]
-  p5.mysql.execute:@"
+try
+  p5.mysql.connect:[sephia]
+    p5.mysql.execute:@"
 CREATE TABLE IF NOT EXISTS `contacts` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(1024) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -84,3 +85,24 @@ CREATE TABLE IF NOT EXISTS `recipients` (
   CONSTRAINT `fk_recipients_contacts` FOREIGN KEY (`contactid`) REFERENCES `contacts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_recipients_emails` FOREIGN KEY (`emailid`) REFERENCES `emails` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;"
+
+catch
+
+  /*
+   * Attempting to create database, unless this is our second invocation, for then
+   * to invoke self again, for simplicity reasons.
+   */
+  if:x:/../*/second?value
+    not
+
+    /*
+     * Creating database schema.
+     */
+    p5.mysql.connect:[sys]
+      p5.mysql.execute:@"CREATE SCHEMA `sephia`;"
+
+    /*
+     * Invoking self, with [second] being true, to avoid never ending recursion.
+     */
+    micro.evaluate.file:x:/..?name
+      second:bool:true
