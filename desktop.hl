@@ -13,8 +13,11 @@ container
      * Getting link URL to point correctly.
      */
     p5.io.unroll-path:@SEPHIA/
+    split:x:/-?value
+      =:/
     set-widget-property:x:/../*/_event?value
-      href:x:/@p5.io.unroll-path?value
+      href:/{0}
+        :x:/@split/0/-?name
 
   widgets
     span
