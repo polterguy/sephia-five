@@ -10,7 +10,7 @@ container
   oninit
 
     /*
-     * Getting link URL to point correctly.
+     * Getting URL to point correctly.
      */
     p5.io.unroll-path:@SEPHIA/
     split:x:/-?value
@@ -26,7 +26,7 @@ container
       oninit
 
         /*
-         * Doing a count of unread emails for user, and adding to [innerValue].
+         * Doing a count of unread emails for user, and adding to icon.
          */
         whoami
         p5.mysql.connect:[sephia]
