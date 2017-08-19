@@ -267,23 +267,6 @@ create-widget:sephia-search-wrapper
                           widgets
                             sephia._internals.widgets.settings
 
-            /*
-             * Button to close Sephia, without logging out.
-             *
-             * Leads the user to the main root URL of system.
-             */
-            button
-              innerValue:@"<span class=""icon-home""></span>"
-              title:Open desktop
-              accesskey:Q
-              onclick
-
-                /*
-                 * Changing location to root URL of P5.
-                 */
-                p5.web.get-root-location
-                p5.web.set-location:x:/-?value
-
     div
       class:col
       widgets
@@ -350,6 +333,23 @@ create-widget:sephia-search-wrapper
                  */
                 p5.web.send-javascript:@"p5.$('{0}').el.scrollIntoView(true);"
                   :x:/@create-widget?value
+
+            /*
+             * Button to close Sephia, without logging out.
+             *
+             * Leads the user to the main root URL of system.
+             */
+            button
+              innerValue:@"<span class=""icon-close""></span>"
+              title:Close email
+              accesskey:Q
+              onclick
+
+                /*
+                 * Changing location to root URL of P5.
+                 */
+                p5.web.get-root-location
+                p5.web.set-location:x:/-?value
 
 
 
