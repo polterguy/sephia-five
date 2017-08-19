@@ -127,32 +127,6 @@ Sephia Five is in fact more than _"just an app"_. There are several publicly ava
 
 This makes it easy for you to not only significantly extend Sephia Five, but to also consume it as a _"plugin"_ in your own applications, and easily interact with it, allowing you (or us) to create applications that seemlessly interact with Sephia, one way or another - Such as CRM applications for instance.
 
-## Trust is irrelevant
-
-We will never ask you to trust us. We could be tortured or coerced by an adversary to give up your data, at which point most would yield. This is in fact a very real problem, and referred to as _"whip cryptanalysis"_. However, even if somebody points a gun to our heads, we couldn't disclose any of your secrets - Not even if we wanted to.
-
-With us, trust is a technical implementation feature, and an intrinsic part of our business model, implying that you'd never need to trust us, since you can easily verify that what we are saying is correct.
-
-First of all, Sephia Five is open source, and does not contain as much as a single line of closed source code. All the way from the core of Linux, through MySQL as its database, to Sephia Five itself. Which means that what we say, can be verified by any technically savvy system developer, wanting to verify our claims. And even if you choose to purchase our professional user management module, you will get access to its code - Even though technically, it is not open source, since you are not allowed to distribute it.
-
-This means that if there were to be created a backdoor in Sephia Five, due to us being coerced into creating one - It would simply be a matter of time before the general public got to know about it, and we would be lynched.
-
-In addition, we will never host your data or Sephia Five installation. In fact, even if you begged us to, we would refuse. This means that even if an adversary where to physically break into our office, put a gun to our head, and force us to disclose your secrets, we would simply have to answer him; _"Shot us, it is simply not possible"_.
-
-The reasons why, is because we do not offer hosting. We simply offer you the tools, to setup your own server park, giving you 100% control over your own data. And even if we were to help you setup your own server, we would demand of you that you change any server passwords and such, after we have finished setting it up. This allows you to host your email system, anywhere you would want to, without even having to trust us. The director of Intel once famously said _"Only the paranoid will survive"_. We are survivors, are you?
-
-According to Chinese tradition, _"him who hear no evil, and see no evil, cannot tell any evil"_. We are blind, deaf, and mute, and this is a part of our core vision and business model. Do you want to know a secret? Ask someone else, we know none!
-
-For the record, we obviously treat all of our clients with 100% confidentiality, which shows in the fact that you won't find any list of customers of ours, anywhere. You will never find a _"happy customer testimonial"_ on our website, or any other places. Sephia Five neither identifies itself anywhere in the data it transmits to other servers in any ways. So nobody would even know whether or not you're using Sephia Five, or some other email system.
-
-Take a look at the screenshots I have supplied here please. Can you see something missing? There is not a single logo, brand name, or anything that identifies your email system in any ways. The first step towards breaking into a system, is to understand what system you are dealing with. Sephia Five will never even give an adversary any clues as to which system he is even facing. Not even if he bends over your shoulders, and looks at you while you are composing an email, he will understand what email system you are using.
-
-For the record, we also recommend to all of our customers, to never disclose to anyone what email system you are using. Simply because it is a security risk! Please don't brag about us, it is not healthy, and we don't need the credits for having secured your communication. You should also only inform your most trusted employees about which email system you are using, simply because people have difficulties understanding these risks, and might tell a stranger on town, as they're out having a beer - And such having unwillingly given an adversary knowledge about the first steps he needs to take, in order to break into your data, and compromise your privacy and security. Your happiness, security, privacy, and a simple thank, is enough for us!
-
-Our list of clients is proprietary information, to the maximum extent of the law, that the Republic of Cyprus, and EU in general allows us to. We will never ask you to show us your data, or give us access to your system after it is installed. All we ask, is that you can obey by this simple [declaration of good faith](https://gaiasoul.com/2017/08/05/how-to-become-a-customer-of-us/), which is necessary for us to obey by European law, and Cyprus law.
-
-Your data is your business! Our data is our business! Our business is to keep both ours, and yours, as secure as is possible, within the maximum extent of the law!
-
 ## Getting started
 
 If you wish to try out Sephia Five, you can follow the guide below.
