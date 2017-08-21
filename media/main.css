@@ -141,13 +141,15 @@
     white-space: nowrap;
 }
 .sephia-inbox td:nth-child(1) {
-    width:200px;
+    width:100px;
 }
 .sephia-inbox td:nth-child(2) {
-    max-width:calc(100% - 450px)
 }
 .sephia-inbox td:nth-child(3) {
-    width:250px;
+    width:180px;
+    white-space:nowrap;
+    overflow:visible;
+    text-align:right;
 }
 .sephia-inbox td:nth-child(3) .icon-paperclip {
     float:right;
@@ -189,6 +191,19 @@
     .sephia-inbox th:nth-child(1),
     .sephia-inbox td:nth-child(3),
     .sephia-inbox th:nth-child(3) {
+        display: table-cell;
+    }
+    .sephia-inbox td:nth-child(1) {
+        width: 200px;
+    }
+}
+@media screen and (min-width:700px) {
+    .sephia-inbox td:nth-child(3) {
+        display: table-cell;
+    }
+}
+@media screen and (min-width:600px) {
+    .sephia-inbox td:nth-child(1) {
         display: table-cell;
     }
 }
