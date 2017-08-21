@@ -30,8 +30,16 @@ create-widget:sephia-search-wrapper
      *
      * If you supply [keep-page-filter] and set its value to true, then the 
      * existing [filter] and [offset] will be kept as is, and used to re-databind grid.
+     *
+     * If you add [force], it will databind the grid, even if there are no records to databind against.
      */
     sephia.inbox.databind
+
+      /*
+       * Adding [force] to all invocations.
+       */
+      add:x:/../**/micro.evaluate.file
+        src:x:/../*/force
 
       /*
        * Checking if caller requested that current page and filter should be kept.
@@ -53,18 +61,6 @@ create-widget:sephia-search-wrapper
       else
 
         /*
-         * Setting paging [offset] to zero and [filter] to "",
-         * before re-databinding grid again.
-         */
-        .defaults
-          filter:
-          offset:int:0
-        set-widget-property:x:/../*/_event?value
-          .offset:x:(/../*/offset|/@.defaults/*/offset)/$?value
-        set-widget-property:sephia-search-txt
-          value:x:(/../*/filter|/@.defaults/*/filter)/$?value
-
-        /*
          * Adding any (optional) filters and/or offsets
          */
         add:x:/./*/micro.evaluate.file
@@ -74,6 +70,17 @@ create-widget:sephia-search-wrapper
          * Databinding inbox by evaluating file responsible for databinding it.
          */
         micro.evaluate.file:@SEPHIA/inbox/databind-inbox.hl
+
+        /*
+         * Checking if above yielded any results, and if so, updating offset.
+         */
+        if:x:/@micro.evaluate.file?value
+
+          /*
+           * Databind operation yielded results, hence we update offset value for grid.
+           */
+          set-widget-property:x:/../*/_event?value
+            .offset:x:/../*/offset?value
 
   widgets
     div:sephia-search-toolbar-wrapper
@@ -121,6 +128,8 @@ create-widget:sephia-search-wrapper
                 eval-x:x:/+/*
                 sephia.inbox.databind
                   filter:x:/@get-widget-property/*/*?value
+                  offset:int:0
+                  force:true
 
                 /*
                  * Making sure we set focus to search textbox.
@@ -138,7 +147,7 @@ create-widget:sephia-search-wrapper
 
                 /*
                  * Retrieving filter condition and re-databinding inbox, 
-                 * subtracting 15 from "offset".
+                 * subtracting 10 from "offset".
                  */
                 get-widget-property:sephia-search-wrapper
                   .offset
@@ -151,7 +160,7 @@ create-widget:sephia-search-wrapper
                   return
 
                 -:x:/@get-widget-property/*/*?value.int
-                  _:15
+                  _:10
                 set-widget-property:sephia-search-wrapper
                   .offset:x:/@-?value
 
@@ -173,21 +182,18 @@ create-widget:sephia-search-wrapper
 
                 /*
                  * Retrieving filter condition and re-databinding inbox, 
-                 * adding 15 from "offset".
+                 * adding 10 from "offset".
                  */
                 get-widget-property:sephia-search-wrapper
                   .offset
                 +:x:/@get-widget-property/*/*?value.int
-                  _:15
+                  _:10
                 get-widget-property:sephia-search-txt
                   value
                 eval-x:x:/+/*
                 sephia.inbox.databind
                   filter:x:/@get-widget-property/*/*?value
                   offset:x:/@+?value
-                if:x:/-?value
-                  set-widget-property:sephia-search-wrapper
-                    .offset:x:/@+?value
 
             /*
              * Button that clears search, and opens email inbox from the beginning.
@@ -201,7 +207,12 @@ create-widget:sephia-search-wrapper
                 /*
                  * Clears out any search queries, resets pager, and opens up inbox from beginning.
                  */
+                set-widget-property:sephia-search-txt
+                  value:
                 sephia.inbox.databind
+                  filter:
+                  offset:int:0
+                  force:true
 
                 /*
                  * Deleting any potential "error signal objects", making sure we've got synchronized access
@@ -367,6 +378,8 @@ create-widget
       widgets
         micro.widgets.grid:sephia-inbox
           class:hover sephia-inbox
+        hr:sephia-end-of-dataset
+          visible:false
 
 
 
@@ -376,6 +389,8 @@ create-widget
  * Databinding grid.
  */
 sephia.inbox.databind
+  filter:
+  offset:int:0
 
 
 

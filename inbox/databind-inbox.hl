@@ -138,12 +138,12 @@ else
 
 
 /*
- * Opening database and selecting top 15 emails, sorted descendingly by date.
+ * Opening database and selecting top 10 emails, sorted descendingly by date.
  */
 p5.mysql.connect:[sephia]
 
   /*
-   * Selecting 15 newest emails.
+   * Selecting 10 newest emails.
    *
    * Notice, we do not order by date, since dates might sometimes be local, and/or slightly offsets.
    * Hence, we order our emails by "id" descendingly, which should always bring in the most recent email at the top.
@@ -154,19 +154,12 @@ where emails.username = @username and (subject like @filter or contacts.name lik
 or exists (select * from parts where content like @filter and parts.emailid = emails.id)
 or exists (select * from attachments where filename like @filter and attachments.emailid = emails.id))
 {0}
-order by id desc limit 15 offset @offset"
+order by id desc limit 10 offset @offset"
     :x:/@_filter-type?value
     @username:x:/@whoami/*/username?value
     @offset:x:(/../*/offset|/../*/.defaults/*/offset)/$?value.int
     @filter:%{0}%
       :x:(/../*/filter|/../*/.defaults/*/filter)/$?value
-
-  /*
-   * Returning early if above invocation didn't return any results.
-   */
-  if:x:/@p5.mysql.select/*
-    not
-    return
 
   /*
    * Creating rows for our grid databind operation below.
@@ -337,7 +330,57 @@ order by id desc limit 15 offset @offset"
 
 
 /*
- * Actual databind operation for grid.
+ * Before we databind grid, we check to see if there were any items actually
+ * retrieved, and if not, we simply remove invocation to databinding of grid,
+ * to avoid having grid cleared.
+ */
+if:x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]/*
+  not
+
+  /*
+   * Removing databind invocation, unless [force] was given.
+   */
+  if:x:/../*/force?value
+    not
+    set:x:/../*/micro.widgets.grid.databind
+
+  /*
+   * Giving user a visual clue of that we're at end of dataset.
+   */
+  set-widget-property:sephia-end-of-dataset
+    visible:true
+
+else
+
+  /*
+   * Removing any potential visual clues signaling that we're at the end of our dataset.
+   */
+  set-widget-property:sephia-end-of-dataset
+    visible:false
+
+
+
+
+
+/*
+ * Checking if we've got less than 10 records in our dataset, at which point we're
+ * atthe end of our dataset, and need to give user a visual clue.
+ */
+if:x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]/*?count
+  <:int:10
+
+  /*
+   * Giving user a visual clue of that we're at end of dataset.
+   */
+  set-widget-property:sephia-end-of-dataset
+    visible:true
+
+
+
+
+
+/*
+ * Databinding grid.
  */
 micro.widgets.grid.databind:sephia-inbox
 
@@ -346,7 +389,19 @@ micro.widgets.grid.databind:sephia-inbox
 
 
 /*
- * Returning true to signal that we actually had items, and were
- * able to re-databind grid.
+ * Making sure we had any results, and returning accordingly to caller.
  */
-return:bool:true
+if:x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]/*
+
+  /*
+   * Returning true to signal that we actually had items, and were
+   * able to re-databind grid.
+   */
+  return:bool:true
+
+else
+
+  /*
+   * Returning false, since there were no items matching criteria.
+   */
+  return:bool:false

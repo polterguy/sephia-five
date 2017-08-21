@@ -66,6 +66,7 @@ button
     delete-widget:x:/@p5.web.widgets.find-first-ancestor/*/*?value
     sephia.inbox.databind
       keep-page-filter:bool:true
+      force:true
 
     /*
      * Updating page title.

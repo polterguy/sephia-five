@@ -71,3 +71,10 @@ button
      * Updating page title.
      */
     sephia._internals.update-page-title
+
+    /*
+     * Re-databinding grid, keeping existing filter.
+     */
+    sephia.inbox.databind
+      keep-page-filter:true
+      force:true
