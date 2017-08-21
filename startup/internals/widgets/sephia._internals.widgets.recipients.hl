@@ -343,7 +343,6 @@ p5.sephia_isTextSelected = function(txt) {{
       widgets
         div
           class:col-50 strip fill sephia-compose-to-wrapper
-          style:"padding:0;"
           widgets
             label
               innerValue:To
