@@ -243,7 +243,7 @@ create-widget:sephia-search-wrapper
              * Button to open settings.
              */
             button
-              innerValue:@"<span class=""icon-wrench""></span>"
+              innerValue:@"<span class=""icon-cog""></span>"
               title:Opens settings
               accesskey:S
               onclick
@@ -280,7 +280,7 @@ create-widget:sephia-search-wrapper
              */
             literal
               element:button
-              innerValue:@"<span class=""icon-cog""></span>"
+              innerValue:@"<span class=""icon-wrench""></span>"
               title:Toggle toolbar
               accesskey:F
               onclick
@@ -340,7 +340,7 @@ create-widget:sephia-search-wrapper
              * Leads the user to the main root URL of system.
              */
             button
-              innerValue:@"<span class=""icon-close""></span>"
+              innerValue:@"<span class=""icon-home""></span>"
               title:Close email
               accesskey:Q
               onclick
