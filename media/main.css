@@ -97,10 +97,9 @@
     float:left;
     color:#c0c0c0;
     font-size:1.3rem;
+    padding-right:1rem;
 }
 .sephia-status span {
-    margin-left:20px;
-    margin-right:20px;
 }
 
 /*
