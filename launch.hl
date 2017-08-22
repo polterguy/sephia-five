@@ -97,8 +97,7 @@ p5.web.include-css-file:@MICRO/media/fonts.css
 
 
 /*
- * Verifying user is logged in, and if not, redirecting the user to the root URL
- * of server.
+ * Verifying user is logged in, and if not, forcing the user to login before we proceed.
  */
 whoami
 if:x:/@whoami/*/default?value
@@ -106,30 +105,10 @@ if:x:/@whoami/*/default?value
   /*
    * User is not logged in.
    *
-   * Notice, we cannot directly user our "login" feature from our "desktop OS" here,
-   * without explicitly checking if it exists first.
-   *
    * Notice, we also explicitly include the "serious" skin here, as default skin for Micro.
    */
   p5.web.include-css-file:@MICRO/media/skins/serious.css
-  if
-    fetch:x:/0/0?value
-      file-exists:/desktop/login.hl
-
-    /*
-     * Desktop OS exists, hence we can directly invoke the login function from it.
-     */
-    load-file:/desktop/login.hl
-    eval:x:/-/*
-
-  else
-
-    /*
-     * Desktop "OS" doesn't exist, and hence we have no real options but to simply
-     * redirect the user to root URL.
-     */
-    p5.web.get-root-location
-    p5.web.set-location:x:/-?value
+  p5.core.login
 
   /*
    * Returning early to abort evaluating the rest of our file.
