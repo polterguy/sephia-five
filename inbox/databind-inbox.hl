@@ -23,7 +23,7 @@
  */
 micro.lambda.contract.optional:x:/..
   offset:long
-  filter:string
+  filter
 
 
 
