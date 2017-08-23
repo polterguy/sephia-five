@@ -5,7 +5,6 @@
 container
   element:a
   class:desktop-app shaded rounded air-inner bg
-  style:"position:relative;"
   title:Open emails
   oninit
 
@@ -66,7 +65,7 @@ container
              * There are no unread emails.
              */
             set-widget-property:x:/../*/_event?value
-              innerValue:@"<span style=""margin-top:19%;display:block;font-size:4rem;"" class=""icon-envelope""></span>"
+              innerValue:@"<span class=""icon-envelope desktop-app-icon""></span>"
 
           else
 
@@ -74,5 +73,5 @@ container
              * There's at least one unread email.
              */
             set-widget-property:x:/../*/_event?value
-              innerValue:@"<span style=""margin-top:19%;display:block;font-size:4rem;"" class=""icon-envelope""></span><span style=""position:absolute;top:10px;right:10px;"">{0}</span>"
+              innerValue:@"<span class=""icon-envelope desktop-app-icon""></span><span style=""position:absolute;top:5px;right:5px;font-size:.8rem;"">{0}</span>"
                 :x:/@p5.mysql.scalar?value
