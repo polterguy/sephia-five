@@ -11,3 +11,4 @@
  * from your p5.data database.
  */
 delete-data:x:/*/*/~sephia.core.thread-signal-
+delete-data:x:/*/*/~sephia.create-pgp-key.synchronization-object-
