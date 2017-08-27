@@ -584,164 +584,178 @@ create-event:sephia._internals.widgets.settings
                 oninit
 
                   /*
-                   * Listing all private keys, and databinding our grid 
-                   * towards all existing private keys from GnuPG database.
-                   *
-                   * Making sure we only list keys that have an "@" in their User IDs, to
-                   * only list keys that seems to be intended for sending emails.
+                   * Initial databinding of our available PGP keys.
                    */
-                  p5.crypto.list-private-keys:@
+                  sephia.settings.pgp-grid.databind
+
+                events
 
                   /*
-                   * Hiding grid of keys and password wrapper if no private keys exists.
+                   * Databinds our available PGP keys.
                    */
-                  if:x:/@p5.crypto.list-private-keys/*?count
-                    =:int:0
+                  sephia.settings.pgp-grid.databind
 
                     /*
-                     * No private keys in GnuPG database.
+                     * Listing all private keys, and databinding our grid 
+                     * towards all existing private keys from GnuPG database.
+                     *
+                     * Making sure we only list keys that have an "@" in their User IDs, to
+                     * only list keys that seems to be intended for sending emails.
                      */
-                    set-widget-property:pgp-keys
-                      visible:false
-                    set-widget-property:sephia-settings-pgp-pwd-wrapper
-                      visible:false
-                    set-widget-property:sephia-settings-babelizer-wrapper
-                      visible:false
-                    return
-
-                  else
+                    p5.crypto.list-private-keys:@
 
                     /*
-                     * To be sure we re-display widgets again, we explicitly invoke set visible.
+                     * Hiding grid of keys and password wrapper if no private keys exists.
                      */
-                    set-widget-property:pgp-keys
-                      visible:true
-                    set-widget-property:sephia-settings-pgp-pwd-wrapper
-                      visible:true
+                    if:x:/@p5.crypto.list-private-keys/*?count
+                      =:int:0
 
-                  /*
-                   * Getting the details of all keys listed from above, which we will
-                   * use when databinding the grid containing all private PGP keys, before
-                   * we loop through each key and add it up to our databind invocation below.
-                   */
-                  p5.crypto.get-key-details:x:/@p5.crypto.list-private-keys/*?name
-                  for-each:x:/-/*
+                      /*
+                       * No private keys in GnuPG database.
+                       */
+                      set-widget-property:pgp-keys
+                        visible:false
+                      set-widget-property:sephia-settings-pgp-pwd-wrapper
+                        visible:false
+                      set-widget-property:sephia-settings-babelizer-wrapper
+                        visible:false
+                      return
+
+                    else
+
+                      /*
+                       * To be sure we re-display widgets again, we explicitly invoke set visible.
+                       */
+                      set-widget-property:pgp-keys
+                        visible:true
+                      set-widget-property:sephia-settings-pgp-pwd-wrapper
+                        visible:true
+                      set-widget-property:sephia-settings-babelizer-wrapper
+                        visible:true
 
                     /*
-                     * To have a uniform way of displaying keys, we make sure they're always displayed as UPPERS.
+                     * Getting the details of all keys listed from above, which we will
+                     * use when databinding the grid containing all private PGP keys, before
+                     * we loop through each key and add it up to our databind invocation below.
                      */
-                    set:x:/@_dp/#?name
-                      to-upper:x:/@_dp/#?name
+                    p5.crypto.get-key-details:x:/@p5.crypto.list-private-keys/*?name
+                    for-each:x:/-/*
 
-                    /*
-                     * Adding item, and formatting both the creation and expires date nicely for
-                     * displaying in our grid.
-                     */
-                    add:x:/../*/micro.widgets.grid.databind
-                      src:item
-                    p5.types.date.format:x:/@_dp/#/*/creation-time?value
-                      format:"dd. MMM yyyy"
-                    p5.types.date.format:x:/@_dp/#/*/expires?value
-                      format:"dd. MMM yyyy"
+                      /*
+                       * To have a uniform way of displaying keys, we make sure they're always displayed as UPPERS.
+                       */
+                      set:x:/@_dp/#?name
+                        to-upper:x:/@_dp/#?name
 
-                    /*
-                     * User IDs normally contains angle brackets, hence we must HTML encode the User ID
-                     * before we can display it to the user.
-                     */
-                    p5.html.html-encode:x:/@_dp/#/*/user-ids/0?value
+                      /*
+                       * Adding item, and formatting both the creation and expires date nicely for
+                       * displaying in our grid.
+                       */
+                      add:x:/../*/micro.widgets.grid.databind
+                        src:item
+                      p5.types.date.format:x:/@_dp/#/*/creation-time?value
+                        format:"dd. MMM yyyy"
+                      p5.types.date.format:x:/@_dp/#/*/expires?value
+                        format:"dd. MMM yyyy"
 
-                    /*
-                     * Adding each cell to our grid, making sure we forward evaluate their values.
-                     */
-                    eval-x:x:/+/*/**
-                    add:x:/../*/micro.widgets.grid.databind/0/-
-                      src
-                        User ID:x:/@p5.html.html-encode?value
-                        Strength:x:/@_dp/#/*/strength?value
-                        Created:x:/..for-each/*/p5.types.date.format/[0,1]?value
-                        Expires:x:/..for-each/*/p5.types.date.format/[1,2]?value
-                        .row
-                          title:"Fingerprint:{0}"
-                            :x:/@_dp/#?name
+                      /*
+                       * User IDs normally contains angle brackets, hence we must HTML encode the User ID
+                       * before we can display it to the user.
+                       */
+                      p5.html.html-encode:x:/@_dp/#/*/user-ids/0?value
 
-                    /*
-                     * Making sure our grid rows becomes clickable.
-                     */
-                    eval-x:x:/+/*/*/*/*/_fingerprint
-                    add:x:/../*/micro.widgets.grid.databind/0/-
-                      src
-                        .row
+                      /*
+                       * Adding each cell to our grid, making sure we forward evaluate their values.
+                       */
+                      eval-x:x:/+/*/**
+                      add:x:/../*/micro.widgets.grid.databind/0/-
+                        src
+                          User ID:x:/@p5.html.html-encode?value
+                          Strength:x:/@_dp/#/*/strength?value
+                          Created:x:/..for-each/*/p5.types.date.format/[0,1]?value
+                          Expires:x:/..for-each/*/p5.types.date.format/[1,2]?value
+                          .row
+                            title:"Fingerprint:{0}"
+                              :x:/@_dp/#?name
 
-                          /*
-                           * Handled to make sure we set the selected fingerprint into selected mode,
-                           * if the user has previously selected a PGP key in this tab view.
-                           *
-                           * This is done by setting a hidden field's value to the fingerprint of the
-                           * key the user has previously selected.
-                           */
-                          oninit
+                      /*
+                       * Making sure our grid rows becomes clickable.
+                       */
+                      eval-x:x:/+/*/*/*/*/_fingerprint
+                      add:x:/../*/micro.widgets.grid.databind/0/-
+                        src
+                          .row
 
                             /*
-                             * Forward evaluated above.
+                             * Handled to make sure we set the selected fingerprint into selected mode,
+                             * if the user has previously selected a PGP key in this tab view.
+                             *
+                             * This is done by setting a hidden field's value to the fingerprint of the
+                             * key the user has previously selected.
                              */
-                            _fingerprint:x:/@_dp/#?name
-
-                            /*
-                             * Checking if this is the active PGP key.
-                             */
-                            get-widget-property:sephia-settings-pgp-key
-                              value
-                            if:x:/@get-widget-property/*/*?value
-                              =:x:/@_fingerprint?value
+                            oninit
 
                               /*
-                               * Making sure "tr" row becomes "selected".
+                               * Forward evaluated above.
+                               */
+                              _fingerprint:x:/@_dp/#?name
+
+                              /*
+                               * Checking if this is the active PGP key.
+                               */
+                              get-widget-property:sephia-settings-pgp-key
+                                value
+                              if:x:/@get-widget-property/*/*?value
+                                =:x:/@_fingerprint?value
+
+                                /*
+                                 * Making sure "tr" row becomes "selected".
+                                 */
+                                set-widget-property:x:/../*/_event?value
+                                  class:selected
+
+                            /*
+                             * Handled to make user able to select a PGP key
+                             * by simply clicking the row associated with the key.
+                             *
+                             * The actual key fingerprint is stored in a hidden input 
+                             * element in the tab control itself, with a [.data-field] such that
+                             * when we later serialize form, we can easily retrieve the fingerprint
+                             * of the selected key.
+                             */
+                            onclick
+
+                              /*
+                               * Forward evaluated above.
+                               */
+                              _fingerprint:x:/@_dp/#?name
+
+                              /*
+                               * Removing the "selected" class on all rows in grid.
+                               */
+                              p5.web.widgets.get-parent:x:/../*/_event?value
+                              p5.web.widgets.get-children:x:/-/*/*?value
+                              delete-widget-property:x:/-/*/*?value
+                                class
+
+                              /*
+                               * Adding the "selected" class on currently clicked row.
                                */
                               set-widget-property:x:/../*/_event?value
                                 class:selected
 
-                          /*
-                           * Handled to make user able to select a PGP key
-                           * by simply clicking the row associated with the key.
-                           *
-                           * The actual key fingerprint is stored in a hidden input 
-                           * element in the tab control itself, with a [.data-field] such that
-                           * when we later serialize form, we can easily retrieve the fingerprint
-                           * of the selected key.
-                           */
-                          onclick
+                              /*
+                               * Settings the value of our hidden input field to the fingerprint
+                               * of the currently clicked key.
+                               */
+                              set-widget-property:sephia-settings-pgp-key
+                                value:x:/@_fingerprint?value
 
-                            /*
-                             * Forward evaluated above.
-                             */
-                            _fingerprint:x:/@_dp/#?name
-
-                            /*
-                             * Removing the "selected" class on all rows in grid.
-                             */
-                            p5.web.widgets.get-parent:x:/../*/_event?value
-                            p5.web.widgets.get-children:x:/-/*/*?value
-                            delete-widget-property:x:/-/*/*?value
-                              class
-
-                            /*
-                             * Adding the "selected" class on currently clicked row.
-                             */
-                            set-widget-property:x:/../*/_event?value
-                              class:selected
-
-                            /*
-                             * Settings the value of our hidden input field to the fingerprint
-                             * of the currently clicked key.
-                             */
-                            set-widget-property:sephia-settings-pgp-key
-                              value:x:/@_fingerprint?value
-
-                  /*
-                   * Now we can finally databind our grid towards the private 
-                   * PGP keys in GnuPG storage.
-                   */
-                  micro.widgets.grid.databind:pgp-keys
+                    /*
+                     * Now we can finally databind our grid towards the private 
+                     * PGP keys in GnuPG storage.
+                     */
+                    micro.widgets.grid.databind:pgp-keys
 
               div:sephia-settings-pgp-pwd-wrapper
                 class:row air-top
@@ -758,9 +772,11 @@ create-event:sephia._internals.widgets.settings
                           input:sephia-settings-pgp-password
                             .data-field:pgp-password
                             type:password
+                            autocomplete:new-password
                             placeholder:Your PGP password ...
                             value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pgp-password|/../*/.defaults/*/pgp-key-password)/$?value
                             onkeydown:@"if (event.keyCode == 13) {p5.$('sephia-settings-next').raise('onclick');return false;}"
+
               div:sephia-settings-babelizer-wrapper
                 class:row
                 widgets
@@ -814,11 +830,7 @@ create-event:sephia._internals.widgets.settings
                                 h3
                                   innerValue:Create new PGP keypair
                                 p
-                                  innerValue:@"Here you can create a new PGP key, which is necessary to be able to send encrypted emails, unless you have a PGP key from before.
-Click the 'Advanced' button if you wish to control how your PGP key is created."
-                                p
-                                  innerValue:@"Notice, it can take several minutes to create a new PGP key. If you don't want to wait, you can just start the key creation process, 
-save your settings, and do something else in the meantime, and come back here after some 5-30 minutes, depending upon what bit strength you have chosen for your key."
+                                  innerValue:@"The creation of a new PGP key pair might take some few minutes. Please let it finish its job without interruptions."
                                 micro.widgets.wizard-form:sephia-create-new-pgp-key
                                   style:"display:none;"
                                   text:sephia-key-name
@@ -936,16 +948,40 @@ save your settings, and do something else in the meantime, and come back here af
                                               return
 
                                             /*
+                                             * In case user changed the password for PGP key pair creation, we
+                                             * set the "settings password" field to the value of the password
+                                             * from our wizard form.
+                                             */
+                                            set-widget-property:sephia-settings-pgp-password
+                                              value:x:/@micro.form.serialize/*/password?value
+
+                                            /*
+                                             * Creating a new "synchronization object", making sure we
+                                             * delete any old ones.
+                                             */
+                                            whoami
+                                            delete-data:x:/*/*/sephia.create-pgp-key.synchronization-object-{0}
+                                              :x:/@whoami/*/username?value
+                                            set:x:/../*/insert-data/*?name
+                                              src:sephia.create-pgp-key.synchronization-object-{0}
+                                                :x:/@whoami/*/username?value
+                                            insert-data
+                                              foo
+                                                finished:bool:false
+
+                                            /*
                                              * Forking a new thread, having PGP keypair created on worker thread.
                                              */
                                             add:x:/../*/fork/*/.settings
                                               src:x:/@micro.form.serialize/*
+                                            eval-x:x:/+/*/.username
                                             fork
 
                                               /*
                                                * Settings for our keypair, added before fork is created.
                                                */
                                               .settings
+                                              .username:x:/@whoami/*/username?value
 
                                               /*
                                                * Creating keypair.
@@ -976,32 +1012,73 @@ save your settings, and do something else in the meantime, and come back here af
                                                    * TODO: Implement some sort of cross threading general error support signal.
                                                    */
 
+                                              /*
+                                               * Updating synchronization object.
+                                               */
+                                              update-data:x:/*/*/sephia.create-pgp-key.synchronization-object-{0}/*/finished?value
+                                                :x:/@.username?value
+                                                src:x:/@p5.crypto.create-pgp-keypair/*/fingerprint?value
+
                                             /*
                                              * Deleting modal widget.
                                              */
                                             delete-widget:sephia-create-pgp-key-modal
 
                                             /*
-                                             * Providing feedback to user.
+                                             * Making sure we "lock" screen, until PGP key is generated.
                                              */
-                                            create-widgets
-                                              micro.widgets.modal:sephia-create-new-pgp-key-info
-                                                class:micro-modal micro-modal-smaller
-                                                widgets
-                                                  h3
-                                                    innerValue:Information
-                                                  p
-                                                    innerValue:@"Notice, this might take some few minutes, depending upon your key size. 
-  Feel free to do something else in the meantime, and come back here later to see if it's done a couple of minutes from now."
-                                                  div
-                                                    class:right
-                                                    widgets
-                                                      button
-                                                        innerValue:OK
-                                                        oninit
-                                                          micro.page.set-focus:x:/../*/_event?value
-                                                        onclick
-                                                          delete-widget:sephia-create-new-pgp-key-info
+                                            create-widget:sephia-pgp-obscurer
+                                              class:sephia-composer-ajax-wait
+                                              oninit
+
+                                                /*
+                                                 * Creating a client side "poller", which periodically checks
+                                                 * to see if our PGP key has been created, and if not, re-creating
+                                                 * itself.
+                                                 */
+                                                p5.web.send-javascript:@"
+setTimeout(function(){
+  p5.$('sephia-pgp-obscurer').raise('.oncheck');
+}, 5000);"
+
+                                              .oncheck
+
+                                                /*
+                                                 * Checks to see if creation of PGP key is done, and if so,
+                                                 * deleting obscurer, and repopulating grid with available
+                                                 * PGP keys.
+                                                 */
+                                                whoami
+                                                select-data:x:/*/*/sephia.create-pgp-key.synchronization-object-{0}
+                                                  :x:/@whoami/*/username?value
+                                                if:x:/@select-data/*/*/finished?value
+
+                                                  /*
+                                                   * Worker thread is finished creating our PGP key, deleting obscurer,
+                                                   * setting the active PGP key, re-databinding our PGP key grid, 
+                                                   * and deleting our signal object.
+                                                   */
+                                                  delete-widget:sephia-pgp-obscurer
+                                                  set-widget-property:sephia-settings-pgp-key
+                                                    value:x:/@select-data/*/*?value
+                                                  sephia.settings.pgp-grid.databind
+                                                  whoami
+                                                  delete-data:x:/*/*/sephia.create-pgp-key.synchronization-object-{0}
+                                                    :x:/@whoami/*/username?value
+
+                                                else
+
+                                                  /*
+                                                   * Re-creating our "poller".
+                                                   */
+                                                  p5.web.send-javascript:@"
+setTimeout(function(){
+  p5.$('sephia-pgp-obscurer').raise('.oncheck');
+}, 5000);"
+
+                                              widgets
+                                                h1
+                                                  innerValue:Please wait ...
 
                                         /*
                                          * Button that will show the "Advanced settings" for creation of PGP key.
