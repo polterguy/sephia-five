@@ -460,6 +460,72 @@
     margin-top:25%;
     color:#fdfdfd;
 }
+.ajax-wait {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: inline-block;
+    vertical-align: middle;
+    top:15px;
+    right:15px;
+}
+
+
+/*
+ * CSS animation for Ajax wait.
+ * Thx to Anya Melnyk fo sharing this at https://codepen.io/slyka85/pen/QvBQPb
+ */
+@keyframes ajax-wait-star {
+    0% {
+        transform: scale(0) rotate(0deg);
+    }
+
+    100% {
+        transform: scale(0.7) rotate(360deg);
+    }
+}
+@keyframes ajax-wait-circles {
+    0% {
+        box-shadow: 0 0 0 #18ffff;
+        opacity: 1;
+        transform: rotate(0deg);
+    }
+
+    50% {
+        box-shadow: 24px -22px #18ffff, 30px -15px 0 -3px #18ffff, 31px 0px #18ffff, 29px 9px 0 -3px #18ffff, 24px 23px #18ffff, 17px 30px 0 -3px #18ffff, 0px 33px #18ffff, -10px 28px 0 -3px #18ffff, -24px 22px #18ffff, -29px 14px 0 -3px #18ffff, -31px -3px #18ffff, -30px -11px 0 -3px #18ffff, -20px -25px #18ffff, -12px -30px 0 -3px #18ffff, 5px -29px #18ffff, 13px -25px 0 -3px #18ffff;
+        transform: rotate(180deg);
+    }
+
+    100% {
+        opacity: 0;
+        transform: rotate(360deg);
+        box-shadow: 25px -22px #18ffff, 15px -22px 0 -3px black, 31px 2px #18ffff, 21px 2px 0 -3px black, 23px 25px #18ffff, 13px 25px 0 -3px black, 0px 33px #18ffff, -10px 33px 0 -3px black, -26px 24px #18ffff, -19px 17px 0 -3px black, -32px 0px #18ffff, -23px 0px 0 -3px black, -25px -23px #18ffff, -16px -23px 0 -3px black, 0px -31px #18ffff, -2px -23px 0 -3px black;
+    }
+}
+.star {
+    position: absolute;
+    top: calc(50% - 12px);
+}
+.ajax-wait .star {
+    position: static;
+    width: 60px;
+    height: 60px;
+    transform: scale(0.7);
+    animation: ajax-wait-star 1s ease alternate infinite;
+}
+
+.ajax-wait .circles {
+    width: 8px;
+    height: 8px;
+    background: #18ffff;
+    border-radius: 50%;
+    position: absolute;
+    left: calc(50% - 4px);
+    top: calc(50% - 4px);
+    transition: all 1s ease;
+    animation: ajax-wait-circles 1s ease-in-out alternate infinite;
+}
 
 
 
