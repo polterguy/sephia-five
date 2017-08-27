@@ -1027,74 +1027,55 @@ create-event:sephia._internals.widgets.settings
                                             /*
                                              * Making sure we "lock" screen, until PGP key is generated.
                                              */
-                                            create-widget:sephia-pgp-obscurer
-                                              class:sephia-composer-ajax-wait
-                                              oninit
-
-                                                /*
-                                                 * Creating a client side "poller", which periodically checks
-                                                 * to see if our PGP key has been created, and if not, re-creating
-                                                 * itself.
-                                                 */
-                                                p5.web.send-javascript:@"
-setTimeout(function(){
-  p5.$('sephia-pgp-obscurer').raise('.oncheck');
-}, 5000);"
-
-                                              .oncheck
-
-                                                /*
-                                                 * Checks to see if creation of PGP key is done, and if so,
-                                                 * deleting obscurer, and repopulating grid with available
-                                                 * PGP keys.
-                                                 */
-                                                whoami
-                                                select-data:x:/*/*/sephia.create-pgp-key.synchronization-object-{0}
-                                                  :x:/@whoami/*/username?value
-                                                if:x:/@select-data/*/*/finished?value
+                                            create-widgets
+                                              micro.widgets.obscurer:sephia-pgp-obscurer
+                                                message:Please wait while we create your PGP key pair ...
+                                                oninit
 
                                                   /*
-                                                   * Worker thread is finished creating our PGP key, deleting obscurer,
-                                                   * setting the active PGP key, re-databinding our PGP key grid, 
-                                                   * and deleting our signal object.
-                                                   */
-                                                  delete-widget:sephia-pgp-obscurer
-                                                  set-widget-property:sephia-settings-pgp-key
-                                                    value:x:/@select-data/*/*?value
-                                                  sephia.settings.pgp-grid.databind
-                                                  whoami
-                                                  delete-data:x:/*/*/sephia.create-pgp-key.synchronization-object-{0}
-                                                    :x:/@whoami/*/username?value
-
-                                                else
-
-                                                  /*
-                                                   * Re-creating our "poller".
+                                                   * Creating a client side "poller", which periodically checks
+                                                   * to see if our PGP key has been created, and if not, re-creating
+                                                   * itself.
                                                    */
                                                   p5.web.send-javascript:@"
 setTimeout(function(){
   p5.$('sephia-pgp-obscurer').raise('.oncheck');
 }, 5000);"
 
-                                              widgets
-                                                div
-                                                  class:ajax-wait
-                                                  widgets
-                                                    svg
-                                                      class:star
-                                                      xmlns:"http://www.w3.org/2000/svg"
-                                                      "xmlns:xlink":"http://www.w3.org/1999/xlink"
-                                                      version:1.1
-                                                      widgets
-                                                        literal
-                                                          element:polygon
-                                                          points:29.8 0.3 22.8 21.8 0 21.8 18.5 35.2 11.5 56.7 29.8 43.4 48.2 56.7 41.2 35.1 59.6 21.8 36.8 21.8
-                                                          fill:#18ffff
-                                                    literal
-                                                      element:div
-                                                      class:circles
-                                                h1
-                                                  innerValue:Please wait ...
+                                                .oncheck
+
+                                                  /*
+                                                   * Checks to see if creation of PGP key is done, and if so,
+                                                   * deleting obscurer, and repopulating grid with available
+                                                   * PGP keys.
+                                                   */
+                                                  whoami
+                                                  select-data:x:/*/*/sephia.create-pgp-key.synchronization-object-{0}
+                                                    :x:/@whoami/*/username?value
+                                                  if:x:/@select-data/*/*/finished?value
+
+                                                    /*
+                                                     * Worker thread is finished creating our PGP key, deleting obscurer,
+                                                     * setting the active PGP key, re-databinding our PGP key grid, 
+                                                     * and deleting our signal object.
+                                                     */
+                                                    delete-widget:sephia-pgp-obscurer
+                                                    set-widget-property:sephia-settings-pgp-key
+                                                      value:x:/@select-data/*/*?value
+                                                    sephia.settings.pgp-grid.databind
+                                                    whoami
+                                                    delete-data:x:/*/*/sephia.create-pgp-key.synchronization-object-{0}
+                                                      :x:/@whoami/*/username?value
+
+                                                  else
+
+                                                    /*
+                                                     * Re-creating our "poller".
+                                                     */
+                                                    p5.web.send-javascript:@"
+setTimeout(function(){
+  p5.$('sephia-pgp-obscurer').raise('.oncheck');
+}, 5000);"
 
                                         /*
                                          * Button that will show the "Advanced settings" for creation of PGP key.
