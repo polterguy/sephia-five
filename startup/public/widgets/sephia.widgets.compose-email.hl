@@ -171,23 +171,24 @@ p5.sephia_upload_files = function(e) {
          * Intercepting [onclick] of "Send" button to create an Ajax "wait window", since this action can take some time.
          */
         p5.web.include-javascript:@"
-p5.sephia_send_email = function(e) {
-  var obsc = document.createElement('div');
-  obsc.id = 'sephia-composer-obscurer';
-  obsc.className = 'sephia-composer-ajax-wait';
-  var header = document.createElement('h1');
-  var cnt = document.createTextNode('Please wait ...');
-  header.appendChild(cnt);
-  obsc.appendChild(header);
-  document.body.appendChild(obsc);
-  p5.$(e.currentTarget.id).raise('.onclick', {
-    onsuccess:function(){
-      var obsc = p5.$('sephia-composer-obscurer').el;
-      obsc.parentElement.removeChild(obsc);
-    }});
+p5.sephia_send_email = function(e) {{
+  var main = p5.$('{0}').el;
+  var obsc;
+  for(var idx = 0; idx < main.childNodes.length; idx++) {{
+    if(main.childNodes[idx].className == 'micro-ajax-wait') {{
+      obsc = main.childNodes[idx];
+      break;
+    }}
+  }}
+  obsc.style.display = 'block';
+  p5.$(e.currentTarget.id).raise('.onclick', {{
+    onsuccess:function(){{
+      obsc.style.display = 'none';
+    }}}});
   e.stopPropagation();
   return false;
-}"
+}}"
+          :x:/../*/_event?value
       .onsend
       .onclose
       .email-composer
@@ -268,6 +269,13 @@ p5.sephia_send_email = function(e) {
                   delete-widget:x:/-/*/*?value
 
       widgets:content
+
+        /*
+         * Obscurer widget, used when user is sending an email.
+         */
+        micro.widgets.obscurer
+          message:Sending your email, please wait ...
+          style:"display:none;"
 
         /*
          * Subject of reply.
