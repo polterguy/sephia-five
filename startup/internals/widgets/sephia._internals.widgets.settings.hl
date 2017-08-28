@@ -1067,6 +1067,11 @@ setTimeout(function(){
                                                     delete-data:x:/*/*/sephia.create-pgp-key.synchronization-object-{0}
                                                       :x:/@whoami/*/username?value
 
+                                                    /*
+                                                     * Setting focus to Babelizer widget.
+                                                     */
+                                                    micro.page.set-focus:sephia-settings-subject-generator
+
                                                   else
 
                                                     /*
