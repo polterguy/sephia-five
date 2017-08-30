@@ -161,7 +161,19 @@ if:x:/@p5.auth.my-settings.get/*/sephia
         class:row air-top
         widgets
           div
-            class:col
+            class:col-100
+            widgets
+              div
+                class:right
+                widgets
+                  button
+                    style:"margin-bottom:0;"
+                    innerValue:@"<span class=""icon-home""></span>"
+                    onclick
+                      p5.web.get-root-location
+                      p5.web.set-location:x:/-?value
+          div
+            class:col-100
             widgets
               sephia._internals.widgets.settings
                 wizard-mode:true
