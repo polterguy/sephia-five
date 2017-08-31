@@ -84,7 +84,7 @@ create-widget:sephia-search-wrapper
 
   widgets
     div:sephia-search-toolbar-wrapper
-      class:sephia-search-toolbar col-70 right
+      class:col-70 right
       widgets
         div
           class:strip fill
@@ -110,6 +110,7 @@ create-widget:sephia-search-wrapper
                   set-widget-property:sephia-search-txt
                     placeholder:"Search amongst {0} emails, default filter is 'inbox:' ..."
                       :x:/@p5.mysql.scalar?value
+                micro.page.set-focus:x:/../*/_event?value
 
             /*
              * Button to search inbox.
@@ -285,23 +286,6 @@ create-widget:sephia-search-wrapper
           class:strip right
           style:"float:right;"
           widgets
-
-            /*
-             * Button to toggle display of the search toolbar.
-             */
-            literal
-              element:button
-              innerValue:@"<span class=""icon-wrench""></span>"
-              title:Toggle toolbar
-              accesskey:F
-              onclick
-
-                /*
-                 * Toggling display CSS class of our search toolbar
-                 */
-                micro.css.toggle:sephia-search-toolbar-wrapper
-                  class:sephia-search-toolbar-show
-                micro.page.set-focus:sephia-search-txt
 
             /*
              * Button to compose a new email.

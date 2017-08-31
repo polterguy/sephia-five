@@ -687,7 +687,7 @@ create-widget
               widgets
 
                 div
-                  class:col-70 sephia-reply-toolbar right
+                  class:col-70 right
                   .secondary
                   widgets
 
@@ -715,26 +715,6 @@ create-widget
                       class:strip
                       style:"display:inline-block;"
                       widgets:action-strip-primary
-
-                        /*
-                         * Button to toggle display of the search toolbar.
-                         */
-                        literal
-                          element:button
-                          innerValue:@"<span class=""icon-cog""></span>"
-                          style:"margin-bottom:0;"
-                          title:Toggle toolbar
-                          onclick
-
-                            /*
-                             * Toggling display CSS class of our secondary strip.
-                             */
-                            p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                              .email-id
-                            p5.web.widgets.find-first:x:/-/*/*?value
-                              .secondary
-                            micro.css.toggle:x:/-/*/*?value
-                              class:sephia-reply-toolbar-show
 
 
 

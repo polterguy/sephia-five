@@ -13,6 +13,9 @@
 .sephia-settings .micro-tab .micro-tab-views {
     background: url(/modules/micro/media/skins/serious/floating-cogs.svg);
 }
+.sephia-settings {
+    min-width: 534px;
+}
 
 
 /*
@@ -20,62 +23,6 @@
  */
 .container {
     margin-bottom: 150px;
-}
-
-
-
-
-/*
- * Search toolbar styles.
- */
-@keyframes sephia-search-toolbar-show {
-    from {
-        opacity:0;
-        margin-left:-1000px;
-    }
-    to {
-        opacity:1;
-        margin-left:0;
-    }
-}
-.sephia-search-toolbar {
-    display:none;
-}
-.sephia-search-toolbar-show {
-    display:block;
-    animation-name:sephia-search-toolbar-show;
-    animation-duration:.5s;
-    animation-fill-mode:forwards;
-}
-
-
-
-
-
-/*
- * Reply toolbar toggling styles.
- */
-@keyframes sephia-reply-toolbar-show {
-    from {
-        opacity: 0;
-        margin-left: -1000px;
-    }
-
-    to {
-        opacity: 1;
-        margin-left: 0;
-    }
-}
-
-.sephia-reply-toolbar {
-    display: none;
-}
-
-.sephia-reply-toolbar-show {
-    display: block;
-    animation-name: sephia-reply-toolbar-show;
-    animation-duration: .5s;
-    animation-fill-mode: forwards;
 }
 
 

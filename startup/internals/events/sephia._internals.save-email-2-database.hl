@@ -247,7 +247,16 @@ create-event:sephia._internals.save-email-2-database
      */
     p5.mysql.scalar:@"select spam from contacts where id = @from"
       @from:x:/@sephia._internals.contacts.create-or-update/*/id?value
-    if:x:/@p5.mysql.scalar?value
+    if:x:/../*/settings/*/email?value
+      =:x:/../*/envelope/*/From/0?value
+
+      /*
+       * Some POP3 servers will return also emails that was sent by user previously.
+       */
+      set:x:/@_type?value
+        src:sent
+
+    else-if:x:/@p5.mysql.scalar?value
       and:x:/@p5.mysql.scalar?value.int
         =:int:1
 
