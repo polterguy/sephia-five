@@ -3,9 +3,6 @@
  * Overridden to make sure all strips that contains a label as their first child,
  * has at least 120 pixels width, to make them nicely align with each other.
  */
-.strip > label:first-child {
-    min-width: 120px;
-}
 
 /*
  * Overridden to create some cogs while in settings form.
@@ -14,9 +11,19 @@
     background: url(/modules/micro/media/skins/serious/floating-cogs.svg);
 }
 .sephia-settings {
-    min-width: 534px;
 }
-
+table.sephia-settings-pgp-keys tr td:nth-child(2),
+table.sephia-settings-pgp-keys tr th:nth-child(2),
+table.sephia-settings-pgp-keys tr td:nth-child(3),
+table.sephia-settings-pgp-keys tr th:nth-child(3),
+table.sephia-settings-pgp-keys tr td:nth-child(4),
+table.sephia-settings-pgp-keys tr th:nth-child(4) {
+    display:none;
+}
+table.sephia-contacts-grid tr td:nth-child(1),
+table.sephia-contacts-grid tr th:nth-child(1) {
+    display: none;
+}
 
 /*
  * Overridden to give some additional spacing at the bottom.
@@ -134,15 +141,30 @@
  * if width of viewport exceeds 800px.
  */
 @media screen and (min-width:800px) {
-    .sephia-inbox td:nth-child(1),
-    .sephia-inbox th:nth-child(1),
-    .sephia-inbox td:nth-child(3),
-    .sephia-inbox th:nth-child(3) {
-        display: table-cell;
-    }
-    .sephia-inbox td:nth-child(1) {
-        width: 200px;
-    }
+.sephia-inbox td:nth-child(1),
+.sephia-inbox th:nth-child(1),
+.sephia-inbox td:nth-child(3),
+.sephia-inbox th:nth-child(3) {
+    display: table-cell;
+}
+.strip > label:first-child {
+    min-width: 120px;
+}
+.sephia-inbox td:nth-child(1) {
+    width: 200px;
+}
+table.sephia-settings-pgp-keys tr td:nth-child(2),
+table.sephia-settings-pgp-keys tr th:nth-child(2),
+table.sephia-settings-pgp-keys tr td:nth-child(3),
+table.sephia-settings-pgp-keys tr th:nth-child(3),
+table.sephia-settings-pgp-keys tr td:nth-child(4),
+table.sephia-settings-pgp-keys tr th:nth-child(4) {
+    display:table-cell;
+}
+table.sephia-contacts-grid tr td:nth-child(1),
+table.sephia-contacts-grid tr th:nth-child(1) {
+    display:table-cell;
+}
 }
 @media screen and (min-width:700px) {
     .sephia-inbox td:nth-child(3) {

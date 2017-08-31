@@ -170,7 +170,7 @@ create-event:sephia._internals.widgets.settings
                     class:col
                     widgets
                       label
-                        innerValue:Name and email
+                        innerValue:Your name and email
               div
                 class:row
                 widgets
@@ -182,7 +182,7 @@ create-event:sephia._internals.widgets.settings
                         widgets
                           label
                             for:sephia-settings-name
-                            innerValue:Your name
+                            innerValue:Name
                           input:sephia-settings-name
                             .data-field:name
                             type:text
@@ -199,7 +199,7 @@ create-event:sephia._internals.widgets.settings
                         widgets
                           label
                             for:sephia-settings-email
-                            innerValue:Your email
+                            innerValue:Email
                           input:sephia-settings-email
                             .data-field:email
                             type:text
@@ -276,7 +276,7 @@ create-event:sephia._internals.widgets.settings
                         class:strip fill
                         widgets
                           label
-                            innerValue:Server
+                            innerValue:Srv
                             for:sephia-settings-pop3-server
                           input:sephia-settings-pop3-server
                             .data-field:pop3-server
@@ -288,7 +288,7 @@ create-event:sephia._internals.widgets.settings
                               micro.page.set-focus:sephia-settings-pop3-server
                           label
                             for:sephia-settings-pop3-delete
-                            innerValue:Delete
+                            innerValue:Del
                             title:Delete emails from POP3 server once they're fetched
                           span
                             widgets
@@ -575,7 +575,7 @@ create-event:sephia._internals.widgets.settings
             name:Crypto
             widgets
               micro.widgets.grid:pgp-keys
-                class:hover
+                class:hover sephia-settings-pgp-keys
                 columns
                   User ID
                   Strength
@@ -762,6 +762,22 @@ create-event:sephia._internals.widgets.settings
                 widgets
                   div
                     class:col
+                    oninit
+
+                      /*
+                       * Settings focus to "Save" button.
+                       */
+                      micro.page.set-focus:sephia-settings-save
+
+                      /*
+                       * Making sure the "Save" button is visible, and the "Next"
+                       * button is invisible.
+                       */
+                      set-widget-property:sephia-settings-save
+                        visible:true
+                      set-widget-property:sephia-settings-next
+                        visible:false
+
                     widgets
                       div
                         class:strip fill
@@ -890,7 +906,7 @@ create-event:sephia._internals.widgets.settings
                                   br
                                   checkbox
                                     .data-field:submit
-                                    info:Submit public key to your key server
+                                    info:Submit public key
                                     checked
                                 div
                                   class:right
@@ -1086,7 +1102,7 @@ setTimeout(function(){
                                          * Button that will show the "Advanced settings" for creation of PGP key.
                                          */
                                         button
-                                          innerValue:Advanced
+                                          innerValue:Adv.
                                           title:Allows you to parametrize your PGP key
                                           onclick
 
@@ -1122,22 +1138,6 @@ setTimeout(function(){
                 class:row
                 widgets
                   div
-                    oninit
-
-                      /*
-                       * Settings focus to "Save" button.
-                       */
-                      micro.page.set-focus:sephia-settings-save
-
-                      /*
-                       * Making sure the "Save" button is visible, and the "Next"
-                       * button is invisible.
-                       */
-                      set-widget-property:sephia-settings-save
-                        visible:true
-                      set-widget-property:sephia-settings-next
-                        visible:false
-
                     class:col
                     widgets
                       div
@@ -1341,6 +1341,7 @@ setTimeout(function(){
                         type:text
                         style:"margin-bottom:0;"
                         accesskey:F
+                        class:smaller
                         onkeydown:@"if (event.keyCode == 13){p5.$('sephia-settings-search-contacts-button').raise('onclick');return false;}"
                         oninit
 
