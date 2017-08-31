@@ -433,8 +433,10 @@ create-event:sephia._internals.widgets.settings
                             href:"https://myaccount.google.com/lesssecureapps"
                             target:_blank
                             innerValue:Enable POP3 access to GMail 1
+                          br
                           span
-                            innerValue:" - "
+                            innerValue:-
+                          br
                           a
                             href:"https://mail.google.com/mail/#settings/fwdandpop"
                             target:_blank
