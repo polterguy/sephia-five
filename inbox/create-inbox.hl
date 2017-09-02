@@ -8,15 +8,6 @@
 
 
 /*
- * Clearing main container.
- */
-clear-widget:sephia-main-container
-
-
-
-
-
-/*
  * Creating filtering and paging widget toolbar at top of page.
  */
 create-widget:sephia-search-wrapper

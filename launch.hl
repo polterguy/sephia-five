@@ -48,18 +48,6 @@ if:x:/@p5.web.session.get/*/*/*/filename?value
 
 
 /*
- * Clearing out anything previously added to page, to make sure we start
- * out Sephia with a blank slate.
- */
-clear-widget:cnt
-delete-widget-property:cnt
-  class
-
-
-
-
-
-/*
  * Creating main content container.
  *
  * This is the place where "everything" is stored in Sephia, and is used to display

@@ -5,7 +5,7 @@
 container
   element:a
   class:desktop-app shaded rounded air-inner
-  title:Open emails
+  title:Emails
   oninit
 
     /*
