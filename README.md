@@ -122,86 +122,8 @@ You might have to make sure you enable POP3 access for your GMail account, but S
 
 If you use Sephia Five in combination with your GMail address, all your email will still be perfectly encrypted and safe, and not even the employees of GMail can read your email. Not even the subjects of your emails.
 
-### Using Sephia without a web server
-
-Although Sephia Five is created for web servers, as a _"web mail client"_, you can still install it locally on e.g. something such as a Linux laptop, having Apache and MySQL running in the background, with mod_mono mappings to get Apache to serve your ASP.NET web application. If you do, you could simply create a shortcut on your desktop that points to _"localhost/xx"_, and Sephia would open up in your browser, running your local website. We are currently working on creating an automatic Debian based packet repository, that would significantly reduce the complexity of this setup process. However, for the time being, unfortunately you're on your own if you wish to create such a configuration.
-
-When we have done this though, to install Sephia Five on either a Linux laptop, or a Linux web server (Debian based), would imply nothing else than simply add our repository to your packet manager, choose Sephia Five, and start the installation process.
-
-### User management
-
-Sephia Five is a multiuser system (obviously), and we provide a _"professional addon"_ to Sephia Five, which allows you to manage your users. This module is not technically _"open source"_, since we too need bread and butter. However, if you would want to create multiple users for your system, you could do this with the _"Apps/Executor"_ in System42, by typing in something like the following, and evaluating it.
-
-```
-p5.auth.users.create:some-username
-  password:some-pa$$word
-  role:super
-```
-
-Notice, if you evaluate the above code, while running your website in the XSP web server (development web server, included in e.g. Xamarin and Mono Develop) - Then your website will crash, and you will have to restart it, due to that the above code will create a new folder on disc for you, containing among other things a web.config file. This is only a problem when you are testing your Sephia Five installation on a development box though, and not a problem in a real live environment.
-
-If you would want to have a more easy way to manage your users, we would be happy to talk to you about our professional user module. If so, feel free to toss our CTO an email at thomas@gaiasoul.com.
-
-The user management module, also features a lot of additional features, such as the ability to _"lock out"_ users from Sephia Five, run some diagnostics, in addition to that it easily allows you to manage your existing users, within the comforts of a nice GUI, easily accessible for any _"root"_ account on your system. For a professional company, with multiple employees, this would provide a highly more convenient way of managing your users and your Sephia Five installation. We also provide professional support and help, in addition to installation help for companies and organisations who purchase our user management module.
-
-Notice, even though our user module is not technically _"open source"_, you still gain access to its source code, allowing you to verify that there are no backdoors in it, or other implementation details, that could compromise your security. You are however not allowed to distribute it to other individuals, and/or companies/organisations.
-
-## Technical implementation details
-
-Sephia Five is built with the following core technologies.
-
-1. Phosphorus Five and Hyperlambda, which is built on top of C# and .Net/Mono
-2. MySQL
-3. Bouncy Castle
-4. MimeKit and MailKit
-5. Gnu Privacy Guard (GnuPG)
-
-It works perfectly fine on both Windows, Linux, and Mac OS. Although, for a serious installation, in a live environment, we recommend installing it on a Linux server.
-
-## Getting professional help
-
-The creators of Sephia Five, are providing professional services, and helping companies and organisations to setup Sephia Five. If you wish to speak with us about our commercial offerings, or need help to initially secure your email server, you can contact our CTO at thomas@gaiasoul.com. We only ask two things of you.
-
-1. Change all your server passwords after we have initially setup your server
-2. [Read this](https://gaiasoul.com/2017/08/05/how-to-become-a-customer-of-us/), and realise we mean business!
-
-## Sephia Five is not (yet) stable
-
-Notice, for the record. Sephia Five is still in _"BETA"_ mode. This means that it should not be used in production (yet). Still, you can easily set it up for performing tests, and we are ready to start talking to professional companies and organisations, who wants to hear about our commercial offerings.
-
-Some missing features though, which we have on our TODO list, which is still not yet implemented - Can be found below.
-
-1. Finish up the user module.
-2. Implement user _"lock out"_ if more than x emails are being read in a day, which would prevent an adversary from stealing a client that is already logged in, and rapidly reading every single email in a user's inbox, before you notice that your client has been stolen, and can change your password.
-3. Implement user _"lock out"_ if the wrong password has been typed more than x times, to prevent brute force password attacks.
-4. Allow users to change their passwords from within Sephia Five.
-5. Create a Debian repository, allowing for a single click installation process, on Debian based servers and clients.
-6. Having Sephia Five function without needing System42 to be installed.
-7. _"Panic button"_, which will do a hard delete of all data, PGP keys, and so on.
-
-Some of the above features are crucial for your privacy and security. Therefor, we do not recommend you installing Sephia Five in a real live production environment just yet. If you'd like to get notified of when Sephia Five becomes stable, and ready for production environments, feel free to for instance subscribe to my [blog](https://gaiasoul.com).
-
-## Choose your paranoia level
-
-If you have extreme security concerns, you can easily install Sephia Five on an intranet, only allowing access to it over your LAN. For the extremely paranoid amongst us, with extreme security concerns, such a solution would further tighten your security, at the cost of making your email less available. We would be happy to help you, regardless if what security concerns you have.
-
 ## License
 
-Sephia Five is licensed under the terms of the GNU GPL version 3. See the attached LICENSE file for details. Sephia Five is not included in the _"GaiaSoul Suite"_ which you purchase when you obtain a commercial license of Phosphorus Five.
+Sephia Five is licensed under the terms of the GNU GPL version 3. See the attached LICENSE file for details.
 
-## Disclaimer
-
-Although we have done everything to ensure your privacy and security, no absolute guarantees can ever be given - And anyone claiming to give you such, are lying. Bugs are real, and accidents do occur. We have done everything within our powers to eliminate as many security risks as possible, and we have done our best to keep your privacy secured - But we cannot guarantee you 100% security. None can in fact.
-
-For instance, a lot of variables are out of our hands, such as the technical skillset of your sys-admins, and the loyalty of your friends/coworkers. These are variables which we have tried our best to control, and such reduce the threat-level to a minimum. However, 100% perfection can never be achieved.
-
-If you would like to reduce the threat-level further, it is probably wise to talk to us, and/or hire us, to help you getting started. We can provide best practices, perform the initial installation, and training of both your employees and sys admins - To such further reduce your exposure, and keep you even more secure. If you would like to hear more about our commercial offerings, feel free to toss our CTO an email at thomas@gaiasoul.com.
-
-Kind Regards,
-
-Thomas Hansen - CTO at T.H. Rose Home Cloud, Ltd
-
-![alt screenshot of Sephia Five](media/snowden.png)
-
-We care, do you ...?
-
+There also exists [commercial sub-licensing options](https://gaiasoul.com/license/) for those wanting to sub-license Sephia Five.
