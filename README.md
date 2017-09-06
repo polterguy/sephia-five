@@ -61,9 +61,7 @@ Look carefully at the above screenshot, and notice the smiley. A happy face impl
 
 If you print your PGP fingerprint on for instance your business cards, then anyone you meet, and hand out a business card to, can easily verify that an email conversation has been cryptographically secured between you two.
 
-Basically, as long as you receive a happy email, you can be 100% perfectly confident on that the communication have been cryptographically secured. If you receive a neutral face email, you can be almost certain, but not entirely of that the communication is secured. If you receive a sad face email, you might as well start communicating using postcards.
-
-The above screenshot also illustrates a crucial point, which is that every time Sephia Five requires you to carefully think before you act - It will show you a red warning. This is in fact the only use of colors we have in Sephia Five by default, which further reduces _"cognitive noise"_.
+Basically, as long as you receive a happy email, you can be 100% perfectly confident on that the communication have been cryptographically secured. If you receive a neutral face email, you can be almost certain, but not entirely sure of that the communication is secured. If you receive a sad face email, the email was not sent encrypted, but rather in plain text.
 
 ## Compose your emails using Markdown
 
@@ -81,13 +79,7 @@ Even though Sephia Five is first of all built to be secure, it is also extremely
 
 **Disclaimer** - It is crucial that you setup your web server to only serve Sephia Five over SSL if you allow access to it over the general internet. Otherwise, all the security measures we have created for you, are pointless!
 
-Since Sephia Five is loaded within an SSL context, this means that once you close your browser window, nothing stays cached in your client. So even if somebody physically steals your phone, tablet, or computer - They will still not have access to your emails, which are safely stored on your server.
-
 If you can secure your server, Sephia Five can secure your emails, such that the only way an adversary could gain access to your emails, would be to physically break into your office or home, and steal your server. Needless to say, but this trait of Sephia Five, significantly reduces your risk when communicating with clients, friends, and partners.
-
-Not even the private PGP key is stored on any of the clients you use to read your emails. All your data, including your private PGP key, is safely secured on your own personal server, which you can secure in your home or office.
-
-The database used to store your PGP key pairs is GnuPG, which the German government believed so strongly in, that they chose to sponsor the project with government money to help maintain. Every third party component used in Sephia Five, is what is recommended as best practices for securing your communication and data.
 
 ## Extreme usability
 
@@ -105,7 +97,7 @@ Sephia Five is ridiculously small in its bandwidth consumption. This implies tha
 
 ![alt screenshot of Sephia Five](media/bandwidth-comparison.png)
 
-For the record, less is more, and smaller is better.
+For the record, less is more, and smaller is better. This implies that Sephia Five will load 25 times faster than GMail on a slow internet connection.
 
 ## Add your own design
 
@@ -115,34 +107,10 @@ Although we ourselves are not particularly happy about _"color salads"_, it is v
 
 To modify any of the existing themes, to create your own design, should be easy for a desent designer.
 
-## Sephia Five is also a platform
-
-Sephia Five is in fact more than _"just an app"_. There are several publicly available Active Events you can consume in your own application, to such consume Sephia Five as a _"module"_ from within your own applications.
-
-This makes it easy for you to not only significantly extend Sephia Five, but to also consume it as a _"plugin"_ in your own applications, and easily interact with it, allowing you (or us) to create applications that seemlessly interact with Sephia, one way or another - Such as CRM applications for instance.
-
 ## Getting started
 
-If you wish to try out Sephia Five, you can follow the guide below.
-
-1. [Download Phosphorus Five](https://github.com/polterguy/phosphorusfive/releases) 
-2. [Download Sephia Five](https://github.com/polterguy/sephia-five/releases)
-3. [Download Micro](https://github.com/polterguy/micro/releases)
-4. [Download System42](https://github.com/polterguy/system42/releases)
-5. Put the unzipped _"micro"_, _"sephia-five"_ and _"system42"_ folders into the _"p5.webapp"_ folder inside of your Phosphorus Five folder. Make sure you rename the _"system42-xx-yy"_ folder to be named **only** _"system42"_.
-6. [Download MySQL](https://dev.mysql.com/downloads/) -You will probably want to download also the MySQL Workbench, in addition to the core database.
-7. Create a database in MySQL, name it e.g. _"sephia"_.
-8. Modify and uncomment the connection string in the _"web.config"_ file, inside of the Phosphorus Five folder called _"p5.webapp"_ to point to your MySQL database. It is important that the name of your connection string is _"sephia"_.
-9. Make sure you have GnuPG installed on your system. On Mac OS, this can be accomplished by installing _"GPG Keychain"_.
-10. Open up the _"p5.sln"_ file in either Visual Studio, Xamarin, or Mono Develop, and start your debugger.
-
-When System42 have started, create a server salt, a root password, and open up _"Apps/CMS"_, and create a new _"lambda"_ page, by clicking the _"+"_. Click the _"Settings"_ button, and make sure you use the _"empty"_ template. Paste in the following code into the CodeMirror Hyperlambda code editor.
-
-```
-sys42.utilities.execute-lambda-file:@SEPHIA/launch.hl
-```
-
-Click _"View page"_ and enjoy your privacy.
+The easiest way to install Sephia Five is through the _"Bazar"_ of [Phosphorus Five](https://github.com/polterguy/phosphorusfive). Follow the installation
+instructions over at the Phosphorus Five repository, visit the _"Bazar"_, choose Sephia Five, and enjoy your privacy!
 
 ### Using Sephia with your GMail address
 
