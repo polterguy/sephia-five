@@ -25,7 +25,7 @@ You can easily configure yourself which files are legal, illegal, and suspect.
 
 ![alt screenshot of Sephia Five](media/screenshots/screenshot-4.png)
 
-Compare the above email to your latest email from YouTube, and you will understand what this implies for your privacy.
+Compare the above email to your latest email from YouTube, and you will understand what this implies for your privacy. Notice, you can still apply some basic formatting to emails you send and receive, since Sephia Five supports composing emails using Markdown.
 
 ## Hollywood spam filter
 
@@ -48,6 +48,8 @@ If a user tries to check his email outside of his allocated time slots, he will 
 When Edward Snowden fled to Russia, he was communicating with journalists using PGP cryptography. Bruce Schneier once said _"PGP cryptography is the closest you come to military grade cryptography in the public space"_. PGP is however unfortunately ridiculously complex to use for people who are not computer geniouses. In Sephia Five we have reduced the complexity of using PGP cryptography, to the point where it almost automagically happens.
 
 ![alt screenshot of Sephia Five](media/screenshots/screenshot-6.png)
+
+### Encrypting the subjects of your emails
 
 In Sephia Five we will even _"babelize"_ the subject line, by encrypting the original subject, and inserting a randomly fetched subject. This _"babelized"_ subject will be automatically fetched from a news provider, such as the New York Times, Wall Street Journal, or any other website you wish to use as a _"babelizing service"_. For an adversary picking up on your conversation, the email will be perceived as an innocent discussion about some random news article - While it could actually be a conversation between the US President to his minister of defense, carrying nuclear rocket launch codes, without any adversary having as much as a single suspicion.
 
