@@ -26,6 +26,23 @@ create-event:sephia._internals.widgets.email-body
    */
   if:x:/@.signal/--(!/_arg)/*/type/=plain
     not
+    and:x:/@.signal/--(!/_arg)/*/type/=html
+
+    /*
+     * Email only contains an HTML view.
+     *
+     * Trying our best to show it.
+     */
+    sephia._internals.whitewash-html:x:/@.signal/--(!/_arg)/*/type/=html/[0,1]/./*/content?value
+    eval-x:x:/+/*/*
+    return
+      literal
+        element:div
+        class:sephia-reader-content
+        innerValue:x:/@sephia._internals.whitewash-html?value
+
+  else-if:x:/@.signal/--(!/_arg)/*/type/=plain
+    not
 
     /*
      * We have no idea how to display this email...!!

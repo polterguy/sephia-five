@@ -1,0 +1,95 @@
+﻿
+/*
+ * Given a piece of HTML as [_arg], will whitewash it, such that no potential malicious tags
+ * are in its resulting output.
+ */
+create-event:sephia._internals.whitewash-html
+
+  /*
+   * Sanity checking invocation.
+   */
+  micro.lambda.contract.min:x:/..
+    _arg:string
+
+  /*
+   * Converting HTML semantically to lambda, to be able to intelligently parse it.
+   */
+  html2lambda:x:/../*/_arg?value
+
+  /*
+   * Running through each hyperlink that doesn't have a [@target], and making
+   * sure it gets a '_blank' target.
+   */
+  for-each:x:/@html2lambda/**(/a!/a/*/\@target/.)
+    add:x:/@_dp/#
+      src
+        @target:_blank
+
+  /*
+   * Running through each hyperlink, and making sure every hyperlink displays its
+   * actual domain as a part of its anchor text, in addition to a rel="noreferrer" 
+   * attribute.
+   *
+   * Notice, this is a security feature, that significantly reduces an adversary's 
+   * chances of success!
+   *
+   * In addition, we add up an explicit rel='noreferrer' to all hyperlinks, to
+   * make sure any links visited, never knows the origin of the visitor, and which
+   * website the visitor comes from.
+   *
+   * This is basically "super defensive coding" in practive!!
+   */
+  for-each:x:/@html2lambda/**/a
+    split:x:/@_dp/#/*/\@href?value
+      =:"://"
+    split:x:/@split/0/-?name
+      =:/
+    set:x:/@_dp/#/*/\#text?value
+      src:{0} (<strong>{1}</strong>)
+        :x:/@_dp/#/*/\#text?value
+        :x:/@split/0?name
+
+    /*
+     * Removing any previous "rel" attributes, before we add our own.
+     */
+    set:x:/@_dp/#/*/rel
+    add:x:/@_dp/#
+      src
+        @rel:noreferrer
+
+  /*
+   * Removing any potential "html/body" elements from our email.
+   */
+  _content
+  if:x:/@html2lambda/*/html/*/body
+    add:x:/@_content
+      src:x:/@html2lambda/*/html/*/body/*(!/~@)
+  else
+    add:x:/@_content
+      src:x:/@html2lambda/*
+
+  /*
+   * Running through "whitelist", making sure that email does not contain malicious HTML elements.
+   *
+   * Basically, this will remove everything not found in our "/configuration/html-whitelist.hl" file.
+   */
+  load-file:@SEPHIA/configuration/html-whitelist.hl
+  for-each:x:/@_content/**
+    if:x:/@load-file/*/*/\{0}
+      :x:/@_dp/#?name
+      not
+
+      /*
+       * HTML tag or attribute was not on whitelist, simply removing it.
+       */
+      set:x:/@_dp/#
+
+  /*
+   * Converting lambda back to HTML, now with styling for all images.
+   */
+  lambda2html:x:/@_content/*
+
+  /*
+   * Returning HTML created above.
+   */
+  return:x:/@lambda2html?value

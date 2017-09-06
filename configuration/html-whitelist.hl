@@ -33,6 +33,13 @@ small
 span
 strike
 strong
+table
+tbody
+thead
+tfoot
+tr
+th
+td
 ul
 video
 
@@ -41,10 +48,10 @@ video
 
 // Attributes.
 @target
+@rel
 @title
 @href
 @src
-@class
 @style
 @alt
 @controls
