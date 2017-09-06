@@ -499,6 +499,21 @@ create-widget
           widgets:content
 
             /*
+             * Close reader button.
+             */
+            button
+              class:sephia-reader-close
+              innerValue:@"<span class=""icon-close""></span>"
+              onclick
+
+                /*
+                 * Deleting widgets wrapping currently read email.
+                 */
+                p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                  .email-id
+                delete-widget:x:/-/*/*?value
+
+            /*
              * Displays header of email.
              */
             h3
