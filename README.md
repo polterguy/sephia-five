@@ -5,7 +5,7 @@ Sephia Five is an Open Source webmail system, that among other things features m
 
 Security starts with simplicity. Unless something is simple, it can never be secure. Complexity in the user interface makes people do erronous things. Simplicity eliminates a lot of these pitfalls, and such becomes a guarantor of security. When you open up Sephia Five, you are by default only presented the choices, that are the actions you most likely want to do. Two buttons, period! Compare our UX to that of GMail or Outlook, and you will realise the value of _"less is more"_.
 
-![alt screenshot of Sephia Five](media/screenshots/screenshot-1.png)
+![alt screenshot of Sephia Five](media/screenshots/screenshot-13.png)
 
 The squid button, will toggle more options for you, allowing you to search your emails, page back and forth, access your settings, etc - But by default, these choices are hidden, to create as little _"cognitive noise"_ for you as possible. Sephia Five is _"Zen software"_.
 
