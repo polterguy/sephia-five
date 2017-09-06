@@ -100,14 +100,15 @@ table.sephia-contacts-grid tr th:nth-child(1) {
 .sephia-inbox td:nth-child(2) {
 }
 .sephia-inbox td:nth-child(3) {
-    width:180px;
+    width:200px;
     white-space:nowrap;
     overflow:visible;
-    text-align:right;
+    text-align:left;
 }
 .sephia-inbox td:nth-child(3) .icon-paperclip {
     float:right;
     color:#e0e0e0;
+    padding-left:20px;
 }
 .sephia-inbox td:nth-child(4) {
     width:50px;

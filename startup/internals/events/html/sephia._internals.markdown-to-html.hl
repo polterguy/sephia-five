@@ -88,10 +88,17 @@ create-event:sephia._internals.markdown-to-html
 
   /*
    * Running through each hyperlink, and making sure every hyperlink displays its
-   * actual href.
+   * actual domain as a part of its anchor text, in addition to a rel="noreferrer" 
+   * attribute.
    *
    * Notice, this is a security feature, that significantly reduces an adversary's 
    * chances of success!
+   *
+   * In addition, we add up an explicit rel='noreferrer' to all hyperlinks, to
+   * make sure any links visited, never knows the origin of the visitor, and which
+   * website the visitor comes from.
+   *
+   * This is basically "super defensive coding" in practive!!
    */
   for-each:x:/@html2lambda/**/a
     split:x:/@_dp/#/*/\@href?value
@@ -102,6 +109,14 @@ create-event:sephia._internals.markdown-to-html
       src:{0} (<strong>{1}</strong>)
         :x:/@_dp/#/*/\#text?value
         :x:/@split/0?name
+
+    /*
+     * Removing any previous "rel" attributes, before we add our own.
+     */
+    set:x:/@_dp/#/*/rel
+    add:x:/@_dp/#
+      src
+        @rel:noreferrer
 
   /*
    * Running through "whitelist", making sure that email does not contain malicious HTML elements.
