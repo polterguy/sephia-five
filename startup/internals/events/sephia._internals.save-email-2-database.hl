@@ -403,8 +403,11 @@ create-event:sephia._internals.save-email-2-database
 
   /*
    * Stuffing email adresses into "contacts" and "recipients" tables.
+   *
+   * Notice, sometimes the same recipient shows up twice in the "To" field, and possibly other
+   * places too, hence we only iterate unique recipients here.
    */
-  for-each:x:/../*/envelope/*(/To|/Cc|/Bcc)/*
+  for-each:x:/../*/envelope/*(/To|/Cc|/Bcc)/*/=$
 
     /*
      * Inserting recipient into contacts table.
