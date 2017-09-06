@@ -414,7 +414,6 @@ p5.sephia_send_email = function(e) {{
                         eval-x:x:/+/**(/_widget|/_composer|/parent)
                         micro.windows.info:@"At least one recipient was not a contact, send anyway?"
                           class:micro-windows-info micro-windows-info-sticky warning
-                          parent:x:/../*/p5.web.widgets.find-first-ancestor/*/*?value
                           widgets
                             button
                               innerValue:No
