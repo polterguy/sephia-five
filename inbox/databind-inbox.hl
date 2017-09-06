@@ -325,6 +325,18 @@ order by id desc limit 10 offset @offset"
                    */
                   sephia._internals.update-page-title
 
+                  /*
+                   * Checking to see if email is open in reader, and if so, deleting it.
+                   */
+                  p5.web.widgets.find
+                    .email-id:x:/@get-widget-property/*/*?value
+                  if:x:/@p5.web.widgets.find/*/*?value
+
+                    /*
+                     * Email is open in reader, deleting reader widget for email.
+                     */
+                    delete-widget:x:/@p5.web.widgets.find/*/*?value
+
 
 
 
