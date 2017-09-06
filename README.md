@@ -127,3 +127,5 @@ If you use Sephia Five in combination with your GMail address, all your email wi
 Sephia Five is licensed under the terms of the GNU GPL version 3. See the attached LICENSE file for details.
 
 There also exists [commercial sub-licensing options](https://gaiasoul.com/license/) for those wanting to sub-license Sephia Five.
+
+You are also welcome to send me an email at thomas@gaiasoul.com - If you'd like to speak to me about commercial venues, or other issues.
