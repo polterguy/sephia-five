@@ -73,5 +73,5 @@ container
              * There's at least one unread email.
              */
             set-widget-property:x:/../*/_event?value
-              innerValue:@"<span class=""icon-envelope desktop-app-icon""></span><span style=""position:absolute;top:5px;right:5px;font-size:.8rem;"">{0}</span>"
+              innerValue:@"<span class=""icon-envelope desktop-app-icon""></span><span style=""position:absolute;top:5px;right:5px;font-size:.7rem;"">Mails - {0}</span>"
                 :x:/@p5.mysql.scalar?value
