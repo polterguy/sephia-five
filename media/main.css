@@ -343,6 +343,7 @@ table.sephia-contacts-grid tr th:nth-child(1) {
  */
 .sephia-reader-meta-wrapper {
     color:#999;
+    overflow-x:hidden;
 }
 .sephia-meta {
     margin-bottom:0;

@@ -428,9 +428,7 @@ list-files:@SEPHIA/inbox/read-email-action-buttons/
   filter:.hl
 load-file:x:/-/*?name
 add:x:/../*/create-widget/**/widgets/=action-strip-primary
-  src:x:/@load-file/*/*/*/.primary/.
-add:x:/../*/create-widget/**/widgets/=action-strip-secondary
-  src:x:/@load-file/*/*(!/*/.primary/.)
+  src:x:/@load-file/*/*
 
 
 
@@ -526,8 +524,6 @@ create-widget
              * that explicitly says he wants to see these parts.
              */
             container
-              visible:false
-              .meta-data
               class:sephia-reader-meta-wrapper
               widgets
 
@@ -685,22 +681,6 @@ create-widget
             div
               class:row air-top
               widgets
-
-                div
-                  class:col-70 right
-                  .secondary
-                  widgets
-
-                    /*
-                     * Secondary "action strip" containing all buttons for actions user can do with email, 
-                     * such as "Reply", "Forward", "Delete", etc.
-                     *
-                     * This one is initially invisible until user toggles visibility by clicking the "magic button".
-                     */
-                    div
-                      class:strip
-                      style:"display:inline-block;"
-                      widgets:action-strip-secondary
                 div
                   class:col right
                   widgets
