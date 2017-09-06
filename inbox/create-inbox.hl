@@ -101,7 +101,6 @@ create-widget:sephia-search-wrapper
                   set-widget-property:sephia-search-txt
                     placeholder:"Search amongst {0} emails, default filter is 'inbox:' ..."
                       :x:/@p5.mysql.scalar?value
-                micro.page.set-focus:x:/../*/_event?value
 
             /*
              * Button to search inbox.
