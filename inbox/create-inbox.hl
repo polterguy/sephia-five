@@ -242,6 +242,14 @@ create-widget:sephia-search-wrapper
                  */
                 sephia._internals.update-page-title
 
+    div
+      class:col
+      widgets
+        div
+          class:strip right
+          style:"float:right;"
+          widgets
+
             /*
              * Button to open settings.
              */
@@ -270,19 +278,10 @@ create-widget:sephia-search-wrapper
                           widgets
                             sephia._internals.widgets.settings
 
-    div
-      class:col
-      widgets
-        div
-          class:strip right
-          style:"float:right;"
-          widgets
-
             /*
              * Button to compose a new email.
              */
-            literal
-              element:button
+            button
               style:"padding-left:45px;padding-right:45px;"
               innerValue:@"<span class=""icon-envelope""></span>"
               title:Compose new email
@@ -321,7 +320,7 @@ create-widget:sephia-search-wrapper
                   :x:/@create-widget?value
 
             /*
-             * Button to close Sephia, without logging out.
+             * Button to close Sephia.
              *
              * Leads the user to the main root URL of system.
              */

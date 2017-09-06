@@ -1724,9 +1724,9 @@ setTimeout(function(){
                   onclick
 
                     /*
-                     * Re-launches Sephia for simplicity, no need to reload location.
+                     * Re-launches inbox by reloading location for simplicity.
                      */
-                    micro.evaluate.file:@SEPHIA/launch.hl
+                    p5.web.reload-location
 
                 /*
                  * "Next" button that will display the "next" tabview.
