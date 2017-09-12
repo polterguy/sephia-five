@@ -200,20 +200,8 @@ table.sephia-contacts-grid tr th:nth-child(1) {
 }
 .sephia-reader-close {
     position:absolute;
-    top:0;
-    right:0;
-    height:auto;
-    padding:10px 35px;
-    border-left:solid 1px var(--wid-border-col);
-    border-top:none;
-    border-right:none;
-    border-bottom:solid 1px var(--wid-border-col);
-    border-bottom-left-radius:var(--border-radius);
-    border-top-left-radius:0;
-    border-bottom-right-radius:0;
-    background:linear-gradient(#fefefe, #fafafa);
-    border-top-right-radius:var(--border-radius);
-    font-size:1.1rem;
+    top:1rem;
+    right:1rem;
 }
 .sephia-reader-content {
     white-space: pre-wrap;
