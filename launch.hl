@@ -28,7 +28,7 @@ if:x:/@p5.web.session.get/*/*/*/filename?value
    * User has requested to download a file.
    */
   eval-x:x:/+/*
-  micro.evaluate.file:@SEPHIA/download-file.hl
+  micro.evaluate.file:@SEPHIA/inbox/download-file.hl
     filename:x:/@p5.web.session.get/*/*/*/filename?value
     folder:x:/@p5.web.session.get/*/*/*/folder?value
     prefix:x:/@p5.web.session.get/*/*/*/prefix?value
