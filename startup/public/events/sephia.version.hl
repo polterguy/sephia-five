@@ -1,0 +1,7 @@
+﻿
+/*
+ * Creates our version Active Event.
+ */
+create-event:sephia.version
+
+  return:decimal:5.0
