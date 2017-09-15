@@ -95,10 +95,16 @@ catch
     not
 
     /*
+     * Making sure we prepend the database prefix in front of schema name.
+     */
+    p5.config.get:p5.data.prefix
+
+    /*
      * Creating database schema.
      */
     p5.mysql.connect:[sys]
-      p5.mysql.execute:@"CREATE SCHEMA `sephia`;"
+      p5.mysql.execute:@"CREATE SCHEMA `{0}sephia`;"
+        :x:/@p5.config.get/*?value
 
     /*
      * Invoking self, with [second] being true, to avoid never ending recursion.
