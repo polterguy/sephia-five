@@ -14,7 +14,7 @@ create-event:sephia._internals.html.create-hyperlinks
    * Using regular expression to convert anything that resembles a hyperlink into an actual hyperlink.
    */
   replace:x:/../*/_arg?value
-    src:regex:@"/(\(|<|\[|\s|>)+(http|https|ftp)(\://)([a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3})((:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~])*)/"
+    src:regex:@"/(\(|<|\[|\s|>)+(http|https|ftp)(\://)([a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3})((:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\(\)\-\._\?\,\'/\\\+&amp;%\$#\=~])*)/"
     dest:@"$1<a target=""_blank"" href=""$2$3$4$5"" rel=""noreferrer""><strong>$4</strong>$5</a>"
 
   /*
