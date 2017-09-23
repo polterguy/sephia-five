@@ -87,6 +87,118 @@ Please notify your contacts of that you prefer for them to send you plain text e
   sephia._internals.html.create-hyperlinks:x:/@p5.html.html-encode?value
 
   /*
+   * Since we HTML encode content before we create our hyperlinks, the actual content
+   * of any URLs are also (unfortunately) also HTML encoded, hence we must "de-encode"
+   * all hyperlinks after the process of creating them, in addition to removing parts
+   * of their href attributes that are obviously not a part of the actual URL,
+   * such as if the URL ends with ">", ")" or something similar, which are probably
+   * not ment to be a part of the actual URL.
+   */
+  html2lambda:x:/@sephia._internals.html.create-hyperlinks?value
+
+  /*
+   * Looping through each [@href] attribute from above conversion.
+   */
+  for-each:x:/@html2lambda/**/\@href
+
+    /*
+     * URL decoding [@href] attribute's value.
+     */
+    set:x:/@_dp/#?value
+      p5.html.html-decode:x:/@_dp/#?value
+
+    /*
+     * Checking if [@href] ends with ">" or ")", at which case we remove it from
+     * the [@href].
+     */
+    if
+      ends-with:x:/@_dp/#?value
+        src:>
+
+      /*
+       * [@href] attribute ends with ">", making sure we remove it.
+       */
+      length:x:/@_dp/#?value
+      -:x:/@length?value
+        _:1
+      split:x:/@_dp/#?value
+        =:x:/@-?value
+      set:x:/@_dp/#?value
+        src:x:/@split/0?name
+
+      /*
+       * Removing ">" from associated [#text] of Hyperlink.
+       */
+      length:x:/@_dp/#/./**/#text/<-/$?value
+      -:x:/@length?value
+        _:1
+      split:x:/@_dp/#/./**/#text/<-/$?value
+        =:x:/@-?value
+      set:x:/@_dp/#/./**/#text/<-/$?value
+        src:x:/@split/0?name
+
+      /*
+       * Checking if hyperlink has a younger sibling [#text] node, at which case we append
+       * our ">" into it.
+       *
+       * If it doesn't, we insert one with only the ">" parts as a younger sibling.
+       */
+      if:x:/@_dp/#/./+/#text
+        set:x:/@_dp/#/./+?value
+          src:&gt;{0}
+            :x:/@_dp/#/./+?value
+      else
+        insert-after:x:/@_dp/#/.
+          src
+            #text:&gt;
+
+    else-if
+      ends-with:x:/@_dp/#?value
+        src:)
+
+      /*
+       * [@href] attribute ends with ")", making sure we remove it.
+       */
+      length:x:/@_dp/#?value
+      -:x:/@length?value
+        _:1
+      split:x:/@_dp/#?value
+        =:x:/@-?value
+      set:x:/@_dp/#?value
+        src:x:/@split/0?name
+
+      /*
+       * Removing ")" from associated [#text] of Hyperlink.
+       */
+      length:x:/@_dp/#/./**/#text/<-/$?value
+      -:x:/@length?value
+        _:1
+      split:x:/@_dp/#/./**/#text/<-/$?value
+        =:x:/@-?value
+      set:x:/@_dp/#/./**/#text/<-/$?value
+        src:x:/@split/0?name
+
+      /*
+       * Checking if hyperlink has a younger sibling [#text] node, at which case we append
+       * our ")" into it.
+       *
+       * If it doesn't, we insert one with only the ">" parts as a younger sibling.
+       */
+      if:x:/@_dp/#/./+/#text
+        set:x:/@_dp/#/./+?value
+          src:){0}
+            :x:/@_dp/#/./+?value
+      else
+        insert-after:x:/@_dp/#/.
+          src
+            #text:)
+
+  /*
+   * Transforming lambda back to HTML.
+   */
+  lambda2html:x:/@html2lambda/*
+
+  /*
    * Returning pre-formatted "div" element wrapping content of email.
    */
   eval-x:x:/+/*/*
@@ -94,4 +206,4 @@ Please notify your contacts of that you prefer for them to send you plain text e
     literal
       element:div
       class:sephia-reader-content
-      innerValue:x:/@sephia._internals.html.create-hyperlinks?value
+      innerValue:x:/@lambda2html?value
