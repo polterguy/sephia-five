@@ -613,7 +613,7 @@ p5.sephia_send_email = function(e) {{
                  * Will trigger the above "file" input element's "open and browse for local files" popup.
                  */
                 button
-                  innerValue:@"<span class=""icon-folder-open-o""></span>"
+                  innerValue:@"<span class=""icon-folder-open""></span>"
                   style:"margin-bottom:0;"
                   class:sephia-compose-add-attachment
                   title:Add attachments
