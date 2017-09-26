@@ -224,7 +224,7 @@ Date: {2}
         /*
          * Then selecting all original recipients for email.
          */
-        p5.mysql.select:@"select type, contacts.email from recipients inner join contacts on recipients.contactid = contacts.id where recipients.emailid = @id"
+        p5.mysql.select:@"select r.type, c.email from recipients r inner join contacts c on r.contactid = c.id where r.emailid = @id"
           @id:x:/../*/_arg?value
         for-each:x:/@p5.mysql.select/*
           if:x:/@_dp/#/*/type/=To
