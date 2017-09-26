@@ -304,16 +304,17 @@ create-event:sephia.send-email
    * TODO: Should we append this part before the signature ...?
    * GMail is hiding signatures, for instance ...!! :P
    */
-  if:x:/@p5.auth.my-settings.get/*/sephia/*/license?value
-    =:GPL
+  if
+    license.is-valid
+    not
 
     /*
-     * Adding link to Sephia Five's main information page.
+     * Adding hyperlink to Sephia Five's main license information.
      */
     set:x:/../*/body?value
       src:@"{0}
 
-https://gaiasoul.com/got-privacy"
+https://gaiasoul.com/license"
         :x:/../*/body?value
 
   /*
