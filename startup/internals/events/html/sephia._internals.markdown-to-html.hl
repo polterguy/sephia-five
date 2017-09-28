@@ -43,7 +43,7 @@ create-event:sephia._internals.markdown-to-html
         sep:"\r\n-- \r\n"
 
     /*
-     * Adding signature to the end of our [_body].
+     * Adding signature to the end of our [_body], with some basic formatting.
      */
     set:x:/@_body?value
       src:"{0} \r\n<pre style=\"opacity:.3;background-color:inherit;\">-- \r\n{1}</pre>"
