@@ -13,8 +13,7 @@ markdown:bool:true
 pgp-subjects:"https://www.nytimes.com, https://www.wsj.com"
 skin:serious
 pgp-key-password:ThisIs$omeR4ndomPa$$w0rd4U
-license:GPL
-
+pop3-delete:bool:true
 
 
 
