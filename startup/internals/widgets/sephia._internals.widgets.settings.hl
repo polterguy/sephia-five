@@ -55,6 +55,7 @@ create-event:sephia._internals.widgets.settings
     hollywood-spam-filter:bool:false
     signature-spam-filter:bool:false
     cryptography-spam-filter:bool:false
+    inbox-size:10
 
   /*
    * Populating skin selector.
@@ -77,12 +78,12 @@ create-event:sephia._internals.widgets.settings
           innerValue:x:/@split/0/-2?name
 
   /*
-   * Making sure we check the correct "perferred content type" radio button.
+   * Making sure we select the correct "inbox-size" select dropdown option.
    */
-  add:x:/../*/return/**/input/*/type/=radio/./*/.data-field/=preferred-content-type/./*/.data-value/={0}/.
-    :x:(/../*/p5.auth.my-settings.get/*/sephia/*/preferred-content-type|/../*/.defaults/*/preferred-content-type)/$?value
+  add:x:/../*/return/**/select/=sephia-settings-inbox-count/*/widgets/*/option/*/.data-value/={0}/.
+    :x:(/../*/p5.auth.my-settings.get/*/sephia/*/inbox-size|/../*/.defaults/*/inbox-size)/$?value
     src
-      checked
+      selected
 
   /*
    * Checking if user wants to compose emails using Markdown.
@@ -238,6 +239,34 @@ create-event:sephia._internals.widgets.settings
                           select:sephia-settings-skin
                             .data-field:skin
                             widgets:skins
+              div
+                class:row
+                widgets
+                  div
+                    class:col
+                    widgets
+                      div
+                        class:strip fill
+                        widgets
+                          label
+                            for:sephia-settings-inbox-count
+                            innerValue:Inbox size
+                          select:sephia-settings-inbox-count
+                            .data-field:inbox-size
+                            title:How many emails you want to display at the same time
+                            widgets
+                              option
+                                innerValue:10
+                                .data-value:10
+                              option
+                                innerValue:15
+                                .data-value:15
+                              option
+                                innerValue:25
+                                .data-value:25
+                              option
+                                innerValue:50
+                                .data-value:50
               div
                 class:row
                 widgets

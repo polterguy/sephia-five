@@ -13,6 +13,7 @@
 .defaults
   offset:int:0
   filter:"inbox:"
+  inbox-size:10
 
 
 
@@ -24,6 +25,16 @@
 micro.lambda.contract.optional:x:/..
   offset:long
   filter
+
+
+
+
+
+/*
+ * Retrieving user's settings, to make sure we know how many emails to display
+ * at the same time.
+ */
+p5.auth.my-settings.get
 
 
 
@@ -138,12 +149,12 @@ else
 
 
 /*
- * Opening database and selecting top 10 emails, sorted descendingly by date.
+ * Opening database and selecting most resent emails, sorted descendingly by date.
  */
 p5.mysql.connect:[sephia]
 
   /*
-   * Selecting 10 newest emails.
+   * Selecting x newest emails.
    *
    * Notice, we do not order by date, since dates might sometimes be local, and/or slightly offsets.
    * Hence, we order our emails by "id" descendingly, which should always bring in the most recent email at the top.
@@ -154,12 +165,13 @@ where emails.username = @username and (subject like @filter or contacts.name lik
 or exists (select * from parts where content like @filter and parts.emailid = emails.id)
 or exists (select * from attachments where filename like @filter and attachments.emailid = emails.id))
 {0}
-order by id desc limit 10 offset @offset"
+order by id desc limit @limit offset @offset"
     :x:/@_filter-type?value
     @username:x:/@whoami/*/username?value
     @offset:x:(/../*/offset|/../*/.defaults/*/offset)/$?value.int
     @filter:%{0}%
       :x:(/../*/filter|/../*/.defaults/*/filter)/$?value
+    @limit:x:(/@p5.auth.my-settings.get/*/sephia/*/inbox-size|/../*/.defaults/*/inbox-size)/$?value.int
 
   /*
    * Creating rows for our grid databind operation below.
@@ -375,11 +387,11 @@ else
 
 
 /*
- * Checking if we've got less than 10 records in our dataset, at which point we're
- * atthe end of our dataset, and need to give user a visual clue.
+ * Checking if we've got less than x records in our dataset, at which point we're
+ * at the end of our dataset, and need to give user a visual clue.
  */
 if:x:/@p5.mysql.connect/*/p5.mysql.select/[0,1]/*?count
-  <:int:10
+  <:x:(/../*/p5.auth.my-settings.get/*/sephia/*/inbox-size|/../*/.defaults/*/inbox-size)/$?value.int
 
   /*
    * Giving user a visual clue of that we're at end of dataset.

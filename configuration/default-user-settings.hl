@@ -14,6 +14,7 @@ pgp-subjects:"https://www.nytimes.com, https://www.wsj.com"
 skin:serious
 pgp-key-password:ThisIs$omeR4ndomPa$$w0rd4U
 pop3-delete:bool:true
+inbox-count:10
 
 
 

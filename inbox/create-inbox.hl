@@ -150,8 +150,14 @@ create-widget:sephia-search-wrapper
                    */
                   return
 
+                /*
+                 * Subtracting [inbox-size] from user's settings from current view.
+                 */
+                .defaults
+                  inbox-size:10
+                p5.auth.my-settings.get
                 -:x:/@get-widget-property/*/*?value.int
-                  _:10
+                  _:x:(/@p5.auth.my-settings.get/*/sephia/*/inbox-size|/../*/.defaults/*/inbox-size)/$?value.int
                 set-widget-property:sephia-search-wrapper
                   .offset:x:/@-?value
 
@@ -177,8 +183,15 @@ create-widget:sephia-search-wrapper
                  */
                 get-widget-property:sephia-search-wrapper
                   .offset
+
+                /*
+                 * Subtracting [inbox-size] from user's settings from current view.
+                 */
+                .defaults
+                  inbox-size:10
+                p5.auth.my-settings.get
                 +:x:/@get-widget-property/*/*?value.int
-                  _:10
+                  _:x:(/@p5.auth.my-settings.get/*/sephia/*/inbox-size|/../*/.defaults/*/inbox-size)/$?value.int
                 get-widget-property:sephia-search-txt
                   value
                 eval-x:x:/+/*
