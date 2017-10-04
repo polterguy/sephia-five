@@ -321,6 +321,12 @@ create-event:sephia._internals.widgets.settings
                                                     @username:x:/@whoami/*/username?value
 
                                                 /*
+                                                 * Deleting all files in attachment folder.
+                                                 */
+                                                list-files:~/documents/private/sephia/attachments/
+                                                delete-file:x:/-/*?name
+
+                                                /*
                                                  * Notifying user.
                                                  */
                                                 micro.windows.info:{0} emails were deleted
