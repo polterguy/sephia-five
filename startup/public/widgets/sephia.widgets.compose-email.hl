@@ -168,6 +168,11 @@ p5.sephia_upload_files = function(e) {
       oninit
 
         /*
+         * Including CSS file for Sephia.
+         */
+        p5.web.include-css-file:@SEPHIA/media/main.css
+
+        /*
          * Intercepting [onclick] of "Send" button to create an Ajax "wait window", since this action can take some time.
          */
         p5.web.include-javascript:@"
