@@ -75,7 +75,7 @@ create-widget:sephia-search-wrapper
 
   widgets
     div:sephia-search-toolbar-wrapper
-      class:col-70 right
+      class:col-60 right
       widgets
         div
           class:strip fill
@@ -258,37 +258,9 @@ create-widget:sephia-search-wrapper
       class:col
       widgets
         div
-          class:strip right
+          class:strip right toolbar
           style:"float:right;"
           widgets
-
-            /*
-             * Button to open settings.
-             */
-            button
-              innerValue:@"<span class=""icon-cog""></span>"
-              title:Opens settings
-              accesskey:S
-              onclick
-
-                /*
-                 * Clearing out everything in main container widget of app.
-                 */
-                clear-widget:sephia-main-container
-
-                /*
-                 * Opening up settings.
-                 */
-                create-widget
-                  parent:sephia-main-container
-                  widgets
-                    div
-                      class:row air-top
-                      widgets
-                        div
-                          class:col
-                          widgets
-                            sephia._internals.widgets.settings
 
             /*
              * Button to compose a new email.
@@ -330,6 +302,34 @@ create-widget:sephia-search-wrapper
                  */
                 p5.web.send-javascript:@"p5.$('{0}').el.scrollIntoView(true);"
                   :x:/@create-widget?value
+
+            /*
+             * Button to open settings.
+             */
+            button
+              innerValue:@"<span class=""icon-cog""></span>"
+              title:Opens settings
+              accesskey:S
+              onclick
+
+                /*
+                 * Clearing out everything in main container widget of app.
+                 */
+                clear-widget:sephia-main-container
+
+                /*
+                 * Opening up settings.
+                 */
+                create-widget
+                  parent:sephia-main-container
+                  widgets
+                    div
+                      class:row air-top
+                      widgets
+                        div
+                          class:col
+                          widgets
+                            sephia._internals.widgets.settings
 
             /*
              * Button to close Sephia.
