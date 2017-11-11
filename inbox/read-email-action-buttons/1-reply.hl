@@ -3,7 +3,7 @@
  * Action button for replying to email
  */
 button
-  innerValue:@"<span class=""icon-mail-reply""></span>"
+  innerValue:@"<span class=""icon-reply""></span>"
   title:Reply to email
   class:reader-action-button
   oninit

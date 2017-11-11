@@ -158,8 +158,7 @@ if:x:/@p5.auth.my-settings.get/*/sephia
                     style:"display:inline-block;"
                     widgets
                       button
-                        style:"margin-bottom:0;border-bottom-left-radius:0;border-bottom-right-radius:0;margin-right:.5rem;border-bottom:0;"
-                        innerValue:@"<span class=""icon-home""></span>"
+                        innerValue:@"<span class=""icon-home3""></span>"
                         onclick
 
                           /*

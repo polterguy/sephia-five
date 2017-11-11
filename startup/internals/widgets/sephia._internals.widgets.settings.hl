@@ -1573,7 +1573,7 @@ setTimeout(function(){
                         widgets
                           literal
                             element:span
-                            class:icon-chevron-left
+                            class:icon-arrow-left
 
                       button
                         style:"margin-bottom:0;"
@@ -1621,7 +1621,7 @@ setTimeout(function(){
                         widgets
                           literal
                             element:span
-                            class:icon-chevron-right
+                            class:icon-arrow-right
 
         /*
          * Save button, beneath our tab widget.

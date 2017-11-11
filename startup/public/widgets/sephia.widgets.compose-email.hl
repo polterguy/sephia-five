@@ -1,4 +1,4 @@
-﻿﻿
+﻿
 /*
  * Extension widget for composing an email.
  *
@@ -633,7 +633,7 @@ p5.sephia_send_email = function(e) {{
                  * Discard email button.
                  */
                 button
-                  innerValue:@"<span class=""icon-close""></span>"
+                  innerValue:@"<span class=""icon-cross""></span>"
                   style:"margin-bottom:0;"
                   class:sephia-compose-discard-email
                   title:Discard email

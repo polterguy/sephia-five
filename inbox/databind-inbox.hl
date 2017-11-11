@@ -311,7 +311,7 @@ order by id desc limit @limit offset @offset"
           Delete
             widgets
               button
-                innerValue:@"<span class=""icon-trash""></span>"
+                innerValue:@"<span class=""icon-bin""></span>"
                 onclick
 
                   /*

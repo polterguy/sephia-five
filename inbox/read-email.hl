@@ -503,7 +503,7 @@ create-widget
              */
             button
               class:sephia-reader-close
-              innerValue:@"<span class=""icon-close""></span>"
+              innerValue:@"<span class=""icon-cross""></span>"
               onclick
 
                 /*

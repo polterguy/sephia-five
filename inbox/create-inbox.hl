@@ -1,4 +1,4 @@
-﻿﻿
+﻿
 /*
  * Shows our inbox for Sephia Five
  */
@@ -131,7 +131,7 @@ create-widget:sephia-search-wrapper
              * Button to page to previous page.
              */
             button
-              innerValue:@"<span class=""icon-chevron-left""></span>"
+              innerValue:@"<span class=""icon-arrow-left""></span>"
               title:Previous page
               accesskey:P
               onclick
@@ -172,7 +172,7 @@ create-widget:sephia-search-wrapper
              * Button to page to next page.
              */
             button
-              innerValue:@"<span class=""icon-chevron-right""></span>"
+              innerValue:@"<span class=""icon-arrow-right""></span>"
               title:Next page
               accesskey:N
               onclick
@@ -203,7 +203,7 @@ create-widget:sephia-search-wrapper
              * Button that clears search, and opens email inbox from the beginning.
              */
             button
-              innerValue:@"<span class=""icon-refresh""></span>"
+              innerValue:@"<span class=""icon-spinner11""></span>"
               title:Reload inbox
               accesskey:O
               onclick
@@ -267,7 +267,7 @@ create-widget:sephia-search-wrapper
              */
             button
               style:"padding-left:45px;padding-right:45px;"
-              innerValue:@"<span class=""icon-envelope""></span>"
+              innerValue:@"<span class=""icon-envelop""></span>"
               title:Compose new email
               accesskey:C
               onclick
@@ -337,7 +337,7 @@ create-widget:sephia-search-wrapper
              * Leads the user to the main root URL of system.
              */
             button
-              innerValue:@"<span class=""icon-home""></span>"
+              innerValue:@"<span class=""icon-home3""></span>"
               title:Close email
               accesskey:Q
               onclick

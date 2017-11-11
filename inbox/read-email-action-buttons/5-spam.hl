@@ -3,7 +3,7 @@
  * Action button for marking email is "nospam".
  */
 button
-  innerValue:@"<span class=""icon-ban""></span>"
+  innerValue:@"<span class=""icon-eye-blocked""></span>"
   title:This is spam
   class:reader-action-button
   oninit
