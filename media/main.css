@@ -1,1 +1,332 @@
-﻿.sephia-inbox td:nth-child(1),.sephia-inbox td:nth-child(3),.sephia-inbox th:nth-child(1),.sephia-inbox th:nth-child(3),table.sephia-contacts-grid tr td:nth-child(1),table.sephia-contacts-grid tr th:nth-child(1),table.sephia-settings-pgp-keys tr td:nth-child(2),table.sephia-settings-pgp-keys tr td:nth-child(3),table.sephia-settings-pgp-keys tr td:nth-child(4),table.sephia-settings-pgp-keys tr th:nth-child(2),table.sephia-settings-pgp-keys tr th:nth-child(3),table.sephia-settings-pgp-keys tr th:nth-child(4){display:none}.sephia-contacts-autocompleter-item:first-child,.sephia-unread{font-weight:700}.sephia-contacts-grid,.sephia-inbox{table-layout:fixed}.sephia-settings .micro-tab .micro-tab-views{background:url(/modules/micro/media/skins/serious/bg.svg)}.container{margin-bottom:150px}.reader-action-button,.sephia-attachment,.sephia-meta{margin-bottom:0}.sephia-inbox{width:100%}.sephia-status{float:left;color:silver;font-size:1.3rem;padding-right:1rem}.sephia-sent{font-style:italic;color:#e0e0e0}.sephia-inbox td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sephia-inbox td:nth-child(1){width:100px}.sephia-inbox td:nth-child(3){width:200px;white-space:nowrap;overflow:visible;text-align:left}.sephia-inbox td:nth-child(3) .icon-paperclip{float:right;color:#e0e0e0;padding-left:20px}.sephia-inbox td:nth-child(4){width:50px;text-align:right}.sephia-inbox td:nth-child(4) button{margin-bottom:0;height:30px;padding:8px 15px 7px;opacity:.3}.sephia-inbox td:nth-child(4) button:active,.sephia-inbox td:nth-child(4) button:focus,.sephia-inbox td:nth-child(4) button:hover{opacity:1}.sephia-inbox tbody tr td{border-top:none;padding:5px}@media screen and (min-width:800px){.sephia-inbox td:nth-child(1),.sephia-inbox td:nth-child(3),.sephia-inbox th:nth-child(1),.sephia-inbox th:nth-child(3),table.sephia-contacts-grid tr td:nth-child(1),table.sephia-contacts-grid tr th:nth-child(1),table.sephia-settings-pgp-keys tr td:nth-child(2),table.sephia-settings-pgp-keys tr td:nth-child(3),table.sephia-settings-pgp-keys tr td:nth-child(4),table.sephia-settings-pgp-keys tr th:nth-child(2),table.sephia-settings-pgp-keys tr th:nth-child(3),table.sephia-settings-pgp-keys tr th:nth-child(4){display:table-cell}.strip>label:first-child{min-width:120px}.sephia-inbox td:nth-child(1){width:200px}}@media screen and (min-width:700px){.sephia-inbox td:nth-child(3){display:table-cell}}@media screen and (min-width:600px){.sephia-inbox td:nth-child(1){display:table-cell}}.sephia-reader{padding:1rem;position:relative}.sephia-reader-sent{background-color:#fcfcfc}.sephia-reader-subject{border-top-left-radius:var(--border-radius);border-top-right-radius:var(--border-radius);margin-right:50px}.sephia-reader-close{position:absolute;top:1rem;right:1rem}.sephia-reader-content{white-space:pre-wrap;width:100%;overflow:hidden}.sephia-reader-content-error{background:snow}.sephia-reader-content pre{padding:0}.sephia-reader-content blockquote{font-size:1rem;padding:1rem;border-radius:var(--border-radius);box-shadow:2px 2px 3px rgba(0,0,0,.2);margin-right:3px;position:relative}.sephia-reader-received .sephia-reader-content>blockquote,.sephia-reader-received .sephia-reader-content>blockquote>blockquote>blockquote,.sephia-reader-received .sephia-reader-content>blockquote>blockquote>blockquote>blockquote>blockquote,.sephia-reader-received .sephia-reader-content>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote{background-color:#fcfcfc}.sephia-reader-received .sephia-reader-content>blockquote>blockquote,.sephia-reader-received .sephia-reader-content>blockquote>blockquote>blockquote>blockquote,.sephia-reader-received .sephia-reader-content>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote,.sephia-reader-received .sephia-reader-content>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote,.sephia-reader-sent .sephia-reader-content>blockquote,.sephia-reader-sent .sephia-reader-content>blockquote>blockquote>blockquote,.sephia-reader-sent .sephia-reader-content>blockquote>blockquote>blockquote>blockquote>blockquote,.sephia-reader-sent .sephia-reader-content>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote{background-color:#fff}.sephia-reader-received .sephia-reader-content>blockquote:after,.sephia-reader-received .sephia-reader-content>blockquote>blockquote>blockquote:after,.sephia-reader-received .sephia-reader-content>blockquote>blockquote>blockquote>blockquote>blockquote:after,.sephia-reader-received .sephia-reader-content>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote:after{content:'You said';position:absolute;bottom:5px;right:5px;color:#ccc;font-size:.8rem;font-style:italic}.sephia-reader-received .sephia-reader-content>blockquote>blockquote:after,.sephia-reader-received .sephia-reader-content>blockquote>blockquote>blockquote>blockquote:after,.sephia-reader-received .sephia-reader-content>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote:after,.sephia-reader-received .sephia-reader-content>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote:after,.sephia-reader-sent .sephia-reader-content>blockquote:after,.sephia-reader-sent .sephia-reader-content>blockquote>blockquote>blockquote:after,.sephia-reader-sent .sephia-reader-content>blockquote>blockquote>blockquote>blockquote>blockquote:after,.sephia-reader-sent .sephia-reader-content>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote:after{content:'The other party said';position:absolute;bottom:5px;right:5px;color:#ccc;font-size:.8rem;font-style:italic}.sephia-reader-sent .sephia-reader-content>blockquote>blockquote,.sephia-reader-sent .sephia-reader-content>blockquote>blockquote>blockquote>blockquote,.sephia-reader-sent .sephia-reader-content>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote,.sephia-reader-sent .sephia-reader-content>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote{background-color:#fcfcfc}.sephia-reader-sent .sephia-reader-content>blockquote>blockquote:after,.sephia-reader-sent .sephia-reader-content>blockquote>blockquote>blockquote>blockquote:after,.sephia-reader-sent .sephia-reader-content>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote:after,.sephia-reader-sent .sephia-reader-content>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote>blockquote:after{content:'You said';position:absolute;bottom:5px;right:5px;color:#ccc;font-size:.8rem;font-style:italic}.sephia-reader-meta-wrapper{color:#999;overflow-x:hidden}.sephia-meta ul{margin-top:1rem;list-style-type:none}.sephia-attachments:after{content:"";display:table;clear:both}.sephia-attachment{margin-right:1rem;float:left}.sephia-attachments div.warning{background:0 0}.sephia-attachments div.warning button{background:linear-gradient(#fee,#fcc)}@keyframes sephia-composer-ajax-wait{0%,15%{opacity:0}100%{opacity:1}}.sephia-composer-ajax-wait{display:block!important;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:1000;animation-name:sephia-composer-ajax-wait;animation-duration:2s;animation-fill-mode:forwards}.sephia-composer-ajax-wait h1{display:block;width:300px;margin-left:auto;margin-right:auto;margin-top:25%;color:#fdfdfd}.sephia-compose-bcc-wrapper,.sephia-compose-cc-wrapper,.sephia-compose-to-wrapper{position:relative}.sephia-compose-bcc-wrapper>label:first-child,.sephia-compose-cc-wrapper>label:first-child,.sephia-compose-to-wrapper>label:first-child{min-width:auto}.sephia-contacts-autocompleter{position:absolute;left:35px;top:calc(100% - 10px);z-index:1000;background:var(--wid-dark-col)}.sephia-contacts-autocompleter-item{cursor:pointer;display:list-item;list-style-type:none;white-space:nowrap;color:var(--form-txt-col);padding:7px 20px;font-size:.7rem}.sephia-contacts-autocompleter-item:hover{background:var(--wid-darker-col)}.sephia-contacts-grid tr td:nth-child(1),.sephia-contacts-grid tr th:nth-child(1){width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sephia-contacts-grid tr td:nth-child(2),.sephia-contacts-grid tr th:nth-child(2){max-width:calc(100% - 300px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sephia-contacts-grid tr td:nth-child(3),.sephia-contacts-grid tr th:nth-child(3){width:50px;text-align:right}.sephia-safe,.sephia-unknown,.sephia-unsafe{position:relative;overflow:visible}.sephia-safe:after,.sephia-unknown:after,.sephia-unsafe:after{font-family:icomoon!important;position:absolute;bottom:1rem;left:1rem;color:#ddd;font-size:1.7rem}.sephia-unsafe:after{content:'\f119'}.sephia-safe:after{content:'\f118'}.sephia-unknown:after{content:'\f11a'}
+﻿.sephia-inbox td:nth-child(1), .sephia-inbox td:nth-child(3), .sephia-inbox th:nth-child(1), .sephia-inbox th:nth-child(3), table.sephia-contacts-grid tr td:nth-child(1), table.sephia-contacts-grid tr th:nth-child(1), table.sephia-settings-pgp-keys tr td:nth-child(2), table.sephia-settings-pgp-keys tr td:nth-child(3), table.sephia-settings-pgp-keys tr td:nth-child(4), table.sephia-settings-pgp-keys tr th:nth-child(2), table.sephia-settings-pgp-keys tr th:nth-child(3), table.sephia-settings-pgp-keys tr th:nth-child(4) {
+    display: none;
+}
+
+.sephia-contacts-autocompleter-item:first-child, .sephia-unread {
+    font-weight: 700;
+}
+
+.sephia-contacts-grid, .sephia-inbox {
+    table-layout: fixed;
+}
+
+.sephia-settings .micro-tab .micro-tab-views {
+    background: url(/modules/micro/media/skins/serious/bg.svg);
+}
+
+.container {
+    margin-bottom: 150px;
+}
+
+.reader-action-button, .sephia-attachment, .sephia-meta {
+    margin-bottom: 0;
+}
+
+.sephia-inbox {
+    width: 100%;
+}
+
+.sephia-status {
+    float: left;
+    color: silver;
+    font-size: 1.3rem;
+    padding-right: 1rem;
+}
+
+.sephia-sent {
+    font-style: italic;
+    color: #e0e0e0;
+}
+
+.sephia-inbox td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+    .sephia-inbox td:nth-child(1) {
+        width: 100px;
+    }
+
+    .sephia-inbox td:nth-child(3) {
+        width: 200px;
+        white-space: nowrap;
+        overflow: visible;
+        text-align: left;
+    }
+
+        .sephia-inbox td:nth-child(3) .icon-paperclip {
+            float: right;
+            color: #e0e0e0;
+            padding-left: 20px;
+        }
+
+    .sephia-inbox td:nth-child(4) {
+        width: 50px;
+        text-align: right;
+    }
+
+        .sephia-inbox td:nth-child(4) button {
+            margin-bottom: 0;
+            height: 30px;
+            padding: 8px 15px 7px;
+            opacity: .3;
+        }
+
+            .sephia-inbox td:nth-child(4) button:active, .sephia-inbox td:nth-child(4) button:focus, .sephia-inbox td:nth-child(4) button:hover {
+                opacity: 1;
+            }
+
+.sephia-inbox tbody tr td {
+    border-top: none;
+    padding: 5px;
+}
+
+@media screen and (min-width:800px) {
+    .sephia-inbox td:nth-child(1), .sephia-inbox td:nth-child(3), .sephia-inbox th:nth-child(1), .sephia-inbox th:nth-child(3), table.sephia-contacts-grid tr td:nth-child(1), table.sephia-contacts-grid tr th:nth-child(1), table.sephia-settings-pgp-keys tr td:nth-child(2), table.sephia-settings-pgp-keys tr td:nth-child(3), table.sephia-settings-pgp-keys tr td:nth-child(4), table.sephia-settings-pgp-keys tr th:nth-child(2), table.sephia-settings-pgp-keys tr th:nth-child(3), table.sephia-settings-pgp-keys tr th:nth-child(4) {
+        display: table-cell;
+    }
+
+    .strip > label:first-child {
+        min-width: 120px;
+    }
+
+    .sephia-inbox td:nth-child(1) {
+        width: 200px;
+    }
+}
+
+@media screen and (min-width:700px) {
+    .sephia-inbox td:nth-child(3) {
+        display: table-cell;
+    }
+}
+
+@media screen and (min-width:600px) {
+    .sephia-inbox td:nth-child(1) {
+        display: table-cell;
+    }
+}
+
+.sephia-reader {
+    padding: 1rem;
+    position: relative;
+}
+
+.sephia-reader-sent {
+    background-color: #fcfcfc;
+}
+
+.sephia-reader-subject {
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+    margin-right: 50px;
+}
+
+.sephia-reader-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
+
+.sephia-reader-content {
+    white-space: pre-wrap;
+    width: 100%;
+    overflow: hidden;
+}
+
+.sephia-reader-content-error {
+    background: snow;
+}
+
+.sephia-reader-content pre {
+    padding: 0;
+}
+
+.sephia-reader-content blockquote {
+    font-size: 1rem;
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    box-shadow: 2px 2px 3px rgba(0,0,0,.2);
+    margin-right: 3px;
+    position: relative;
+}
+
+.sephia-reader-received .sephia-reader-content > blockquote, .sephia-reader-received .sephia-reader-content > blockquote > blockquote > blockquote, .sephia-reader-received .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote, .sephia-reader-received .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote {
+    background-color: #fcfcfc;
+}
+
+    .sephia-reader-received .sephia-reader-content > blockquote > blockquote, .sephia-reader-received .sephia-reader-content > blockquote > blockquote > blockquote > blockquote, .sephia-reader-received .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote, .sephia-reader-received .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote, .sephia-reader-sent .sephia-reader-content > blockquote, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote {
+        background-color: #fff;
+    }
+
+        .sephia-reader-received .sephia-reader-content > blockquote:after, .sephia-reader-received .sephia-reader-content > blockquote > blockquote > blockquote:after, .sephia-reader-received .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote:after, .sephia-reader-received .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote:after {
+            content: 'You said';
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            color: #ccc;
+            font-size: .8rem;
+            font-style: italic;
+        }
+
+        .sephia-reader-received .sephia-reader-content > blockquote > blockquote:after, .sephia-reader-received .sephia-reader-content > blockquote > blockquote > blockquote > blockquote:after, .sephia-reader-received .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote:after, .sephia-reader-received .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote:after, .sephia-reader-sent .sephia-reader-content > blockquote:after, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote:after, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote:after, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote:after {
+            content: 'The other party said';
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            color: #ccc;
+            font-size: .8rem;
+            font-style: italic;
+        }
+
+        .sephia-reader-sent .sephia-reader-content > blockquote > blockquote, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote > blockquote, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote {
+            background-color: #fcfcfc;
+        }
+
+            .sephia-reader-sent .sephia-reader-content > blockquote > blockquote:after, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote > blockquote:after, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote:after, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote:after {
+                content: 'You said';
+                position: absolute;
+                bottom: 5px;
+                right: 5px;
+                color: #ccc;
+                font-size: .8rem;
+                font-style: italic;
+            }
+
+.sephia-reader-meta-wrapper {
+    color: #999;
+    overflow-x: hidden;
+}
+
+.sephia-meta ul {
+    margin-top: 1rem;
+    list-style-type: none;
+}
+
+.sephia-attachments:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.sephia-attachment {
+    margin-right: 1rem;
+    float: left;
+}
+
+.sephia-attachments div.warning {
+    background: 0 0;
+}
+
+    .sephia-attachments div.warning button {
+        background: linear-gradient(#fee,#fcc);
+    }
+
+@keyframes sephia-composer-ajax-wait {
+    0%,15% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.sephia-composer-ajax-wait {
+    display: block !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,.7);
+    z-index: 1000;
+    animation-name: sephia-composer-ajax-wait;
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+}
+
+    .sephia-composer-ajax-wait h1 {
+        display: block;
+        width: 300px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 25%;
+        color: #fdfdfd;
+    }
+
+.sephia-compose-bcc-wrapper, .sephia-compose-cc-wrapper, .sephia-compose-to-wrapper {
+    position: relative;
+}
+
+    .sephia-compose-bcc-wrapper > label:first-child, .sephia-compose-cc-wrapper > label:first-child, .sephia-compose-to-wrapper > label:first-child {
+        min-width: auto;
+    }
+
+.sephia-contacts-autocompleter {
+    position: absolute;
+    left: 35px;
+    top: calc(100% - 10px);
+    z-index: 1000;
+    background: var(--wid-dark-col);
+}
+
+.sephia-contacts-autocompleter-item {
+    cursor: pointer;
+    display: list-item;
+    list-style-type: none;
+    white-space: nowrap;
+    color: var(--form-txt-col);
+    padding: 7px 20px;
+    font-size: .7rem;
+}
+
+    .sephia-contacts-autocompleter-item:hover {
+        background: var(--wid-darker-col);
+    }
+
+.sephia-contacts-grid tr td:nth-child(1), .sephia-contacts-grid tr th:nth-child(1) {
+    width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sephia-contacts-grid tr td:nth-child(2), .sephia-contacts-grid tr th:nth-child(2) {
+    max-width: calc(100% - 300px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sephia-contacts-grid tr td:nth-child(3), .sephia-contacts-grid tr th:nth-child(3) {
+    width: 50px;
+    text-align: right;
+}
+
+.sephia-safe, .sephia-unknown, .sephia-unsafe {
+    position: relative;
+    overflow: visible;
+}
+
+    .sephia-safe:after, .sephia-unknown:after, .sephia-unsafe:after {
+        font-family: icomoon !important;
+        position: absolute;
+        bottom: 1rem;
+        left: 1rem;
+        color: #ddd;
+        font-size: 1.7rem;
+    }
+
+    .sephia-unsafe:after {
+        content: '\e9e5';
+    }
+
+    .sephia-safe:after {
+        content: '\e9e1';
+    }
+
+    .sephia-unknown:after {
+        content: '\e9f7';
+    }

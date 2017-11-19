@@ -1010,6 +1010,7 @@ create-event:sephia._internals.widgets.settings
                                        */
                                       p5.crypto.create-random
                                         resolution:256
+                                        hex:true
                                       set-widget-property:x:/../*/_event?value
                                         value:x:/@p5.crypto.create-random?value
 
