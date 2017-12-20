@@ -1,6 +1,5 @@
-
 /*
- * Desktop widget file for Sephia Five.
+ * Desktop widget file.
  */
 container
   element:a
@@ -33,45 +32,10 @@ container
   widgets
     span
       class:desktop-app-name
-      innerValue:Email
-      oninit
-
-        /*
-         * Making sure user is logged in, and if not, we don't display any count at all.
-         */
-        whoami
-        if:x:/@whoami/*/default?value
-
-          /*
-           * User is not logged in, returning early.
-           */
-          return
-
-
-        /*
-         * Doing a count of unread emails for user, and adding to icon.
-         */
-        p5.mysql.connect:[sephia]
-          p5.mysql.scalar:@"select count(*) from emails where username = @username and isread = 0 and type = 'received'"
-            @username:x:/@whoami/*/username?value
-
-          /*
-           * Setting widget's innerValue, making sure we drop 'count' altogether, if it's zero.
-           */
-          if:x:/@p5.mysql.scalar?value.int
-            =:int:0
-
-            /*
-             * There are no unread emails.
-             */
-            set-widget-property:x:/../*/_event?value
-              innerValue:@"<span class=""icon-envelop desktop-app-icon""></span><span style=""position:absolute;top:5px;right:5px;font-size:.7rem;"">Emails</span>"
-
-          else
-
-            /*
-             * There's at least one unread email.
-             */
-            set-widget-property:x:/../*/_event?value
-              innerValue:@"<span class=""icon-envelop desktop-app-icon""></span><span style=""position:absolute;top:5px;right:5px;font-size:.7rem;"">Emails - {0}</span>"
-                :x:/@p5.mysql.scalar?value
+      widgets
+        literal
+          element:span
+          class:icon-envelop desktop-app-icon
+        span
+          style:"position:absolute;top:5px;right:5px;font-size:.7rem;"
+          innerValue:Emails
