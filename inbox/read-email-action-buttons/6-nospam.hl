@@ -1,9 +1,8 @@
-﻿
 /*
  * Action button for marking email is "nospam".
  */
 button
-  innerValue:@"<span class=""icon-share-square-o""></span>"
+  innerValue:@"<span class=""icon-eye""></span>"
   title:This is not spam
   class:reader-action-button
   oninit
