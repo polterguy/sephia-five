@@ -466,71 +466,6 @@ p5.sephia_send_email = function(e) {{
                         error:Couldn't send email
 
                 /*
-                 * Preview button.
-                 */
-                button
-                  innerValue:@"<span class=""icon-eye""></span>"
-                  style:"margin-bottom:0;"
-                  class:sephia-compose-preview
-                  title:Preview email
-                  onclick
-
-                    /*
-                     * Allows user to preview how email will look like once sent.
-                     *
-                     * First retrieving body widget's content.
-                     */
-                    p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                      .email-composer
-                    p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-                      .data-field:body
-
-                    /*
-                     * Checking if preview widget is already visible, and if so,
-                     * instead of showing it, we delete it, show the writer widget,
-                     * and return early.
-                     */
-                    get-widget-property:x:/@p5.web.widgets.find/*/*?value
-                      visible
-                    if:x:/@get-widget-property/*/*?value
-                      not
-
-                      /*
-                       * Deleting preview widget, displaying write widget, and
-                       * returning early.
-                       */
-                      p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-                        .preview
-                      delete-widget:x:/@p5.web.widgets.find/*/*?value
-                      set-widget-property:x:/./@p5.web.widgets.find/*/*?value
-                        visible:true
-                      return
-
-                    /*
-                     * Converting body of email to markdown.
-                     */
-                    get-widget-property:x:/@p5.web.widgets.find/*/*?value
-                      value
-                    sephia._internals.markdown-to-html:x:/@get-widget-property/*/*?value
-
-                    /*
-                     * Hiding body typing widget, and displaying a preview widget instead.
-                     */
-                    set-widget-property:x:/@p5.web.widgets.find/*/*?value
-                      visible:false
-                    create-widget
-                      after:x:/@p5.web.widgets.find/*/*?value
-                      .preview
-                      widgets
-                        div
-                          class:sephia-reader sephia-reader-sent
-                          style:"margin-bottom:1rem;"
-                          widgets
-                            div
-                              class:sephia-reader-content
-                              innerValue:x:/@sephia._internals.markdown-to-html?value
-
-                /*
                  * Hidden file input element, handled through JavaScript, that allows user
                  * to add attachments to his email.
                  */
@@ -615,7 +550,7 @@ p5.sephia_send_email = function(e) {{
                  * Will trigger the above "file" input element's "open and browse for local files" popup.
                  */
                 button
-                  innerValue:@"<span class=""icon-folder-open""></span>"
+                  innerValue:@"<span class=""icon-upload2""></span>"
                   style:"margin-bottom:0;"
                   class:sephia-compose-add-attachment
                   title:Add attachments

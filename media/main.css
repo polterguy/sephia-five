@@ -1,4 +1,4 @@
-﻿.sephia-inbox td:nth-child(1), .sephia-inbox td:nth-child(3), .sephia-inbox th:nth-child(1), .sephia-inbox th:nth-child(3), table.sephia-contacts-grid tr td:nth-child(1), table.sephia-contacts-grid tr th:nth-child(1), table.sephia-settings-pgp-keys tr td:nth-child(2), table.sephia-settings-pgp-keys tr td:nth-child(3), table.sephia-settings-pgp-keys tr td:nth-child(4), table.sephia-settings-pgp-keys tr th:nth-child(2), table.sephia-settings-pgp-keys tr th:nth-child(3), table.sephia-settings-pgp-keys tr th:nth-child(4) {
+.sephia-inbox td:nth-child(1), .sephia-inbox td:nth-child(3), .sephia-inbox th:nth-child(1), .sephia-inbox th:nth-child(3), table.sephia-contacts-grid tr td:nth-child(1), table.sephia-contacts-grid tr th:nth-child(1), table.sephia-settings-pgp-keys tr td:nth-child(2), table.sephia-settings-pgp-keys tr td:nth-child(3), table.sephia-settings-pgp-keys tr td:nth-child(4), table.sephia-settings-pgp-keys tr th:nth-child(2), table.sephia-settings-pgp-keys tr th:nth-child(3), table.sephia-settings-pgp-keys tr th:nth-child(4) {
     display: none;
 }
 
@@ -11,7 +11,7 @@
 }
 
 .sephia-settings .micro-tab .micro-tab-views {
-    background: url(/modules/micro/media/skins/serious/bg.svg);
+    box-shadow:2px 2px 5px rgba(0,0,0,.2);
 }
 
 .container {
