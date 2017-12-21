@@ -1,4 +1,3 @@
-﻿
 /*
  * Creates our "recipient" widget.
  *
@@ -196,7 +195,7 @@ create-event:sephia._internals.widgets.recipients
                 role:button
                 .value:x:/@_dp/#/*/email?value
                 tabindex:-1
-                innerValue:{0} &lt;{1}&gt;
+                innerValue:{0} <{1}>
                   :x:/@_dp/#/*/name?value
                   :x:/@_dp/#/*/email?value
                 onclick
@@ -339,7 +338,7 @@ p5.sephia_isTextSelected = function(txt) {{
 }}"
           :x:/../*/_event?value
 
-      class:row
+      class:row air-top
       widgets
         div
           class:col-50 strip fill sephia-compose-to-wrapper

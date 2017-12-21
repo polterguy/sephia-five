@@ -1,4 +1,3 @@
-﻿
 /*
  * Extension widget for composing an email.
  *
@@ -162,7 +161,7 @@ p5.sephia_upload_files = function(e) {
   /*
    * Returning actual widget to caller.
    */
-  eval-x:x:/../*/return/**/widgets/=content/*(/input|/literal)/*/value|/../*/return/*/*/class
+  eval-x:x:/../*/return/**/widgets/=content/*(/input|/micro.widgets.codemirror)/*/value|/../*/return/*/*/class
   return
     div
       oninit
@@ -303,12 +302,10 @@ p5.sephia_send_email = function(e) {{
          *
          * Notice, the signature of user is automatically appended into the email's body.
          */
-        literal
-          element:textarea
+        micro.widgets.codemirror
+          mode:markdown
           class:fill sephia-compose-body
-          placeholder:Content ...
           .data-field:body
-          rows:15
           value:@"{0}
 
 
