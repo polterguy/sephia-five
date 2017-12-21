@@ -1,7 +1,6 @@
+# Sephia Five - A PGP webmail client
 
-# Sephia Five - Military grade PGP cryptography for everyone
-
-Sephia Five is an Open Source webmail system, that among other things features military grade PGP cryptography, so ridiculously easy to use, that we refer to its design principles as KISS - _Keep It Simple and Stupid_. Security starts with simplicity. Unless something is simple, it can never be secure. Complexity in the user interface makes people do erronous things. Simplicity eliminates a lot of these pitfalls, and such becomes a guarantor of security.
+Sephia Five is an webmail Phosphorus Five module, with support for PGP cryptography, and many more interesting features.
 
 ![alt screenshot of Sephia Five](media/screenshots/screenshot-13.png)
 
@@ -105,10 +104,19 @@ Although we ourselves are not particularly happy about _"color salads"_, it is v
 
 A seasoned web designer could easily use any of the pre-existing themes, to easily apply your color profile and design to the system.
 
-## Getting started
 
-The easiest way to install Sephia Five is through the _"Bazar"_ of [Phosphorus Five](https://github.com/polterguy/phosphorusfive). Follow the installation
-instructions over at the Phosphorus Five repository, visit the _"Bazar"_, choose Sephia Five, and enjoy your privacy!
+## Installation
+
+The easiest way to install it, is to [install phosphorus five](https://github.com/polterguy/phosphorusfive),
+for then to visit _"The Bazar"_, and simply install it through the Bazar on your local machine/server.
+However, if you want a more manual installation path, you can download the latest release,
+unzip it, and move the unzipped root folder into your _"core/p5.webapp/modules"_ folder. If you
+choose this path, you should rename the folder, removing any version information, making sure
+your module folder is called exactly _"sephia-five"_. Installation through the Bazar
+also requires you having some sort of GnuPG client on your machine/server. If you don't want
+to fiddle with installing GnuPG, you can resort to download the latest zip file release directly.
+However, since Sephia Five itself is dependent upon GnuPG to use PGP cryptography, this is arguably
+a mute point.
 
 ### Using Sephia with your GMail address
 
