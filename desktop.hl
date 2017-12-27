@@ -1,10 +1,11 @@
+
 /*
- * Desktop widget file.
+ * Desktop widget.
  */
 container
   element:a
   class:desktop-app shaded rounded air-inner
-  title:Emails
+  title:Sephia Five is a webmail client, with support for among other things PGP encrypted emails
   widgets
     span
       class:desktop-app-name
@@ -13,5 +14,5 @@ container
           element:span
           class:icon-envelop desktop-app-icon
         span
-          style:"position:absolute;top:5px;right:5px;font-size:.7rem;"
+          class:desktop-app-text
           innerValue:Emails
