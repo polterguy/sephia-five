@@ -73,29 +73,6 @@ p5.web.include-css-file:@MICRO/media/fonts.css
 
 
 /*
- * Verifying user is logged in, and if not, forcing the user to login before we proceed.
- */
-whoami
-if:x:/@whoami/*/default?value
-
-  /*
-   * User is not logged in.
-   *
-   * Notice, we also explicitly include the "serious" skin here, as default skin for Micro.
-   */
-  p5.web.include-css-file:@MICRO/media/skins/serious.css
-  p5.core.login
-
-  /*
-   * Returning early to abort evaluating the rest of our file.
-   */
-  return
-
-
-
-
-
-/*
  * Making sure user has an attachment folder.
  *
  * The first time the user opens Sephia, it will automatically create the user's

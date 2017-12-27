@@ -5,30 +5,6 @@ container
   element:a
   class:desktop-app shaded rounded air-inner
   title:Emails
-  oninit
-
-    /*
-     * Verifying user is logged in, and if not, deleting widget altogether, and returning early.
-     */
-    whoami
-    if:x:/@whoami/*/default?value
-
-      /*
-       * User is not logged in, simply deleting entire icon.
-       */
-      delete-widget:x:/../*/_event?value
-      return
-
-    /*
-     * Getting URL to point correctly.
-     */
-    p5.io.unroll-path:@SEPHIA/
-    split:x:/-?value
-      =:/
-    set-widget-property:x:/../*/_event?value
-      href:/{0}
-        :x:/@split/0/-?name
-
   widgets
     span
       class:desktop-app-name
