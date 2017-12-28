@@ -1,4 +1,3 @@
-
 /*
  * Uninstall file.
  */
@@ -11,5 +10,5 @@
  * Deleting all relevant Active Events, and that's it.
  */
 delete-event:p5.io.unroll-path.@SEPHIA
-vocabulary:sephia.
+vocabulary:~sephia.
 delete-event:x:/-/*?name
