@@ -4,4 +4,4 @@
  */
 create-event:sephia.version
 
-  return:decimal:5.5
+  return:decimal:5.6
