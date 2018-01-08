@@ -65,10 +65,9 @@ create-container-widget:sephia-main-container
 /*
  * Including Micro, and adding Awesome Fonts.
  */
-micro.page.minify-and-bundle-css-file
+p5.web.include-css-file
   @MICRO/media/main.css
   @MICRO/media/fonts.css
-p5.web.include-css-file:x:/-?value
 
 
 
