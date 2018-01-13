@@ -87,10 +87,6 @@
         display: table-cell;
     }
 
-    .strip > label:first-child {
-        min-width: 120px;
-    }
-
     .sephia-inbox td:nth-child(1) {
         width: 200px;
     }
