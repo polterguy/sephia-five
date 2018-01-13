@@ -266,7 +266,7 @@ create-widget:sephia-search-wrapper
              * Button to compose a new email.
              */
             button
-              style:"padding-left:35px;padding-right:35px;"
+              class:larger
               innerValue:@"<span class=""icon-envelop""></span>"
               title:Compose new email
               accesskey:C

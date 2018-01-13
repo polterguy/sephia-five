@@ -349,8 +349,8 @@ p5.sephia_send_email = function(e) {{
                  */
                 button
                   innerValue:@"<span class=""icon-send""></span>"
-                  style:"margin-bottom:0;padding-left:35px;padding-right:35px;"
-                  class:sephia-compose-send
+                  style:"margin-bottom:0;"
+                  class:sephia-compose-send larger
                   title:Send email
                   onclick:@"return p5.sephia_send_email(event);"
                   .onclick
