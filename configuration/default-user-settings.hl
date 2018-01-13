@@ -11,7 +11,7 @@ smtp-port:465
 smtp-ssl:bool:true
 markdown:bool:true
 pgp-subjects:"https://www.nytimes.com, https://www.wsj.com"
-skin:serious
+skin:off-white
 pgp-key-password:ThisIs$omeR4ndomPa$$w0rd4U
 pop3-delete:bool:true
 inbox-count:10

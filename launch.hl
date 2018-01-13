@@ -111,9 +111,9 @@ if:x:/@p5.auth.my-settings.get/*/sephia
    * User has no settings, displaying settings form, and returning early.
    *
    * First making sure we include the necessary default CSS skine files.
-   * By default, Sephia Five uses the "serious" skin.
+   * By default, Sephia Five uses the "off-white" skin.
    */
-  p5.web.include-css-file:@MICRO/media/skins/serious.css
+  p5.web.include-css-file:@MICRO/media/skins/off-white.css
   p5.web.include-css-file:@SEPHIA/media/main.css
 
   /*
