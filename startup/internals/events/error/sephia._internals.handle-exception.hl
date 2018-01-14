@@ -23,7 +23,6 @@ create-event:sephia._internals.handle-exception
    */
   create-widgets
     micro.widgets.modal:sephia-error-modal-widget
-      class:micro-modal micro-modal-smaller
       widgets
         h3
           innerValue:Oops!

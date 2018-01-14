@@ -1,4 +1,3 @@
-﻿
 /*
  * File responsible for starting Sephia Five, which means creating the main widget, 
  * and wire frame for displaying inbox, starting POP3 worker thread, etc.
@@ -66,7 +65,7 @@ create-container-widget:sephia-main-container
  * Including Micro, and adding Awesome Fonts.
  */
 p5.web.include-css-file
-  @MICRO/media/main.css
+  @MICRO/media/micro.css
   @MICRO/media/fonts.css
 
 

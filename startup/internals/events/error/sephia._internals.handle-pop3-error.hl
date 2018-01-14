@@ -85,7 +85,6 @@ create-event:sephia._internals.handle-pop3-error
    */
   create-widgets
     micro.widgets.modal:sephia-error-window
-      class:micro-modal micro-modal-smaller
       widgets
         h3
           innerValue:Oops!

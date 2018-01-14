@@ -129,7 +129,7 @@ p5.mysql.connect:[sephia]
               widgets
                 button
                   innerValue:Yes
-                  style:"margin-bottom:0;margin-left:15px;"
+                  style:"margin-left:15px;"
                   onclick
 
                     /*

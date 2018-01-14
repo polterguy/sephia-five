@@ -119,7 +119,7 @@ create-event:sephia.contacts.show
                       delete-widget-property:sephia-contact-is-verified
                         disabled
                       p5.web.widgets.find-first-ancestor-like:x:/../*/_event?value
-                        class:micro-modal-content
+                        class:micro-widgets-modal-content
                       eval-x:x:/+/*
                       micro.windows.info:Key found
                         parent:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
@@ -137,7 +137,7 @@ create-event:sephia.contacts.show
                          * Warning user that key didn't exist.
                          */
                         p5.web.widgets.find-first-ancestor-like:x:/../*/_event?value
-                          class:micro-modal-content
+                          class:micro-widgets-modal-content
                         eval-x:x:/+/*
                         micro.windows.info:Couldn't find that key
                           parent:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
@@ -175,7 +175,7 @@ create-event:sephia.contacts.show
                        * No results.
                        */
                       p5.web.widgets.find-first-ancestor-like:x:/../*/_event?value
-                        class:micro-modal-content
+                        class:micro-widgets-modal-content
                       eval-x:x:/+/*
                       micro.windows.info:No matches
                         parent:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
@@ -194,7 +194,7 @@ create-event:sephia.contacts.show
                         email:x:/@get-widget-property/*/*?value
                         fingerprint:x:/@sephia.pgp.key-server.search/0?name
                       p5.web.widgets.find-first-ancestor-like:x:/../*/_event?value
-                        class:micro-modal-content
+                        class:micro-widgets-modal-content
                       eval-x:x:/+/*
                       micro.windows.info:Key found
                         parent:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
@@ -254,7 +254,7 @@ create-event:sephia.contacts.show
                                      * Oops ...!!
                                      */
                                     p5.web.widgets.find-first-ancestor-like:x:/../*/_event?value
-                                      class:micro-modal-content
+                                      class:micro-widgets-modal-content
                                     eval-x:x:/+/*
                                     micro.windows.info:Something went wrong during download
                                       parent:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
@@ -276,7 +276,7 @@ create-event:sephia.contacts.show
                                    * Informing user.
                                    */
                                   p5.web.widgets.find-first-like
-                                    class:micro-modal-content
+                                    class:micro-widgets-modal-content
                                   eval-x:x:/+/*
                                   micro.windows.info:Key found
                                     parent:x:/@p5.web.widgets.find-first-like/*/*?value
@@ -345,7 +345,6 @@ create-event:sephia.contacts.show
                 widgets
                   button:sephia-contacts-save
                     innerValue:Save
-                    style:"margin-bottom:0;"
                     onclick
 
                       /*
@@ -390,7 +389,6 @@ create-event:sephia.contacts.show
 
                   button
                     innerValue:Close
-                    style:"margin-bottom:0;"
                     oninit
 
                       /*

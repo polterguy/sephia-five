@@ -156,7 +156,7 @@ create-event:sephia._internals.widgets.settings
          * Using a Micro tab widget to organize the different groups of settings.
          */
         micro.widgets.tab:sephia-settings-tab
-          class:micro-tab micro-tab-border
+          class:micro-widgets-tab micro-widgets-tab-border
 
           /*
            * Misc. settings, name, email and signature.
@@ -291,7 +291,6 @@ create-event:sephia._internals.widgets.settings
                         widgets
                           button
                             innerValue:Mark all emails as read
-                            style:"margin-bottom:0;"
                             onclick
 
                               /*
@@ -309,7 +308,6 @@ create-event:sephia._internals.widgets.settings
 
                           button
                             innerValue:Delete all emails
-                            style:"margin-bottom:0;"
                             onclick
 
                               /*
@@ -331,7 +329,6 @@ create-event:sephia._internals.widgets.settings
                                           widgets
                                             button
                                               innerValue:Yes
-                                              style:"margin-bottom:0;"
                                               oninit
 
                                                 /*
@@ -368,7 +365,6 @@ create-event:sephia._internals.widgets.settings
 
                                             button
                                               innerValue:No
-                                              style:"margin-bottom:0;"
                                               onclick
 
                                                 /*
@@ -945,7 +941,6 @@ create-event:sephia._internals.widgets.settings
                     class:col right
                     widgets
                       button
-                        style:"margin-bottom:0;"
                         innerValue:Create new PGP key pair
                         oninit
 
@@ -967,7 +962,6 @@ create-event:sephia._internals.widgets.settings
                           eval-x:x:/+/*/*/*/micro.widgets.wizard-form/*/text/*/value
                           create-widgets
                             micro.widgets.modal:sephia-create-pgp-key-modal
-                              class:micro-modal micro-modal-smaller
                               widgets
                                 h3
                                   innerValue:Create new PGP keypair
@@ -1066,7 +1060,7 @@ create-event:sephia._internals.widgets.settings
                                                * Passwords didn't match.
                                                */
                                               p5.web.widgets.find-first-like
-                                                class:micro-modal-content
+                                                class:micro-widgets-modal-content
                                               eval-x:x:/+/*
                                               micro.windows.info:Your passwords are not matching
                                                 parent:x:/@p5.web.widgets.find-first-like/*/*?value
@@ -1083,7 +1077,7 @@ create-event:sephia._internals.widgets.settings
                                                * No password was given.
                                                */
                                               p5.web.widgets.find-first-like
-                                                class:micro-modal-content
+                                                class:micro-widgets-modal-content
                                               eval-x:x:/+/*
                                               micro.windows.info:You must supply a password
                                                 parent:x:/@p5.web.widgets.find-first-like/*/*?value
@@ -1466,7 +1460,6 @@ setTimeout(function(){
                       input:sephia-settings-search-contacts
                         .data-field:no-data
                         type:text
-                        style:"margin-bottom:0;"
                         accesskey:F
                         class:smaller
                         onkeydown:@"if (event.keyCode == 13){p5.$('sephia-settings-search-contacts-button').raise('onclick');return false;}"
@@ -1501,7 +1494,6 @@ setTimeout(function(){
                                 :x:/@p5.mysql.scalar?value
 
                       button:sephia-settings-search-contacts-button
-                        style:"margin-bottom:0;"
                         onclick
 
                           /*
@@ -1531,7 +1523,6 @@ setTimeout(function(){
                             class:icon-search
 
                       button
-                        style:"margin-bottom:0;"
                         onclick
 
                           /*
@@ -1577,7 +1568,6 @@ setTimeout(function(){
                             class:icon-arrow-left
 
                       button
-                        style:"margin-bottom:0;"
                         onclick
 
                           /*
@@ -1865,9 +1855,9 @@ setTimeout(function(){
                      * Figuring out the currently visible tab view.
                      */
                     p5.web.widgets.find-first-like:sephia-settings-tab
-                      class:micro-tab-buttons
+                      class:micro-widgets-tab-buttons
                     p5.web.widgets.find-first-like:x:/-/*/*?value
-                      class:micro-tab-active
+                      class:micro-widgets-tab-active
 
                     /*
                      * Finding the next tab view button, if any.

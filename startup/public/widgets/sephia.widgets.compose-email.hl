@@ -349,7 +349,6 @@ p5.sephia_send_email = function(e) {{
                  */
                 button
                   innerValue:@"<span class=""icon-send""></span>"
-                  style:"margin-bottom:0;"
                   class:sephia-compose-send larger
                   title:Send email
                   onclick:@"return p5.sephia_send_email(event);"
@@ -551,7 +550,6 @@ p5.sephia_send_email = function(e) {{
                  */
                 button
                   innerValue:@"<span class=""icon-upload2""></span>"
-                  style:"margin-bottom:0;"
                   class:sephia-compose-add-attachment
                   title:Add attachments
 
@@ -566,7 +564,6 @@ p5.sephia_send_email = function(e) {{
                  */
                 button
                   innerValue:@"<span class=""icon-cross""></span>"
-                  style:"margin-bottom:0;"
                   class:sephia-compose-discard-email
                   title:Discard email
                   onclick
