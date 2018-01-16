@@ -708,7 +708,6 @@ create-widget
                      */
                     div
                       class:strip
-                      style:"display:inline-block;"
                       widgets:action-strip-primary
 
 

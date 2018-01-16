@@ -325,7 +325,6 @@ create-event:sephia._internals.widgets.settings
                                       widgets
                                         div
                                           class:strip
-                                          style:"display:inline-block;"
                                           widgets
                                             button
                                               innerValue:Yes
@@ -1035,7 +1034,6 @@ create-event:sephia._internals.widgets.settings
                                   widgets
                                     div
                                       class:strip
-                                      style:"display:inline-block;"
                                       widgets
 
                                         /*
@@ -1454,7 +1452,6 @@ setTimeout(function(){
                 widgets
                   div:sephia-settings-search-contacts-wrapper
                     class:strip
-                    style:"display:inline-block;"
                     .offset:0
                     widgets
                       input:sephia-settings-search-contacts
@@ -1622,7 +1619,6 @@ setTimeout(function(){
           widgets
             div
               class:strip
-              style:"display:inline-block;"
               widgets
 
                 /*

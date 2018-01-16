@@ -341,7 +341,6 @@ create-event:sephia.contacts.show
             widgets
               div
                 class:strip
-                style:"display:inline-block;"
                 widgets
                   button:sephia-contacts-save
                     innerValue:Save

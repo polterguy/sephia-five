@@ -341,7 +341,6 @@ p5.sephia_send_email = function(e) {{
           widgets
             div
               class:strip
-              style:"display:inline-block;"
               widgets
 
                 /*

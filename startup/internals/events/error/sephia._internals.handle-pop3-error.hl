@@ -99,7 +99,6 @@ create-event:sephia._internals.handle-pop3-error
           widgets
             div
               class:strip
-              style:"display:inline-block;"
               widgets
                 button
                   innerValue:Dismiss and restart

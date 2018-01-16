@@ -132,7 +132,6 @@ if:x:/@p5.auth.my-settings.get/*/sephia
                 widgets
                   div
                     class:strip toolbar
-                    style:"display:inline-block;"
                     widgets
                       button
                         innerValue:@"<span class=""icon-home3""></span>"
