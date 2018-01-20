@@ -1,4 +1,3 @@
-﻿
 /*
  * Creates our "settings" widget.
  *
@@ -168,14 +167,6 @@ create-event:sephia._internals.widgets.settings
                 class:row
                 widgets
                   div
-                    class:col
-                    widgets
-                      label
-                        innerValue:Your name and email
-              div
-                class:row
-                widgets
-                  div
                     class:col-50
                     widgets
                       div
@@ -184,6 +175,7 @@ create-event:sephia._internals.widgets.settings
                           label
                             for:sephia-settings-name
                             innerValue:Name
+                            class:description
                           input:sephia-settings-name
                             .data-field:name
                             type:text
@@ -201,22 +193,19 @@ create-event:sephia._internals.widgets.settings
                           label
                             for:sephia-settings-email
                             innerValue:Email
+                            class:description
                           input:sephia-settings-email
                             .data-field:email
                             type:text
                             placeholder:Your email ...
                             value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/email|/../*/.defaults/*/email)/$?value
                             onkeydown:@"if (event.keyCode == 13) {p5.$('sephia-settings-next').raise('onclick');return false;}"
-
-              div
-                class:row air-top
-                widgets
                   div
-                    class:col
+                    class:col-100
                     widgets
                       label
-                        for:sephia-settings-signature
                         innerValue:Signature
+                        style:"margin-bottom:0;"
                       literal:sephia-settings-signature
                         .data-field:signature
                         class:fill
@@ -224,26 +213,8 @@ create-event:sephia._internals.widgets.settings
                         placeholder:Signature ...
                         rows:7
                         value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/signature|/../*/.defaults/*/signature)/$?value
-              div
-                class:row
-                widgets
                   div
-                    class:col
-                    widgets
-                      div
-                        class:strip fill
-                        widgets
-                          label
-                            for:sephia-settings-skin
-                            innerValue:Theme
-                          select:sephia-settings-skin
-                            .data-field:skin
-                            widgets:skins
-              div
-                class:row
-                widgets
-                  div
-                    class:col
+                    class:col-100
                     widgets
                       div
                         class:strip fill
@@ -251,6 +222,7 @@ create-event:sephia._internals.widgets.settings
                           label
                             for:sephia-settings-inbox-count
                             innerValue:Inbox size
+                            class:description
                           select:sephia-settings-inbox-count
                             .data-field:inbox-size
                             title:How many emails you want to display at the same time
@@ -267,27 +239,22 @@ create-event:sephia._internals.widgets.settings
                               option
                                 innerValue:50
                                 .data-value:50
-              div
-                class:row
-                widgets
                   div
-                    class:col
+                    class:col-100
                     widgets
-                      input:sephia-settings-compose-markdown
-                        type:checkbox
-                        .data-field:markdown
                       label
-                        for:sephia-settings-compose-markdown
-                        innerValue:Use Markdown
                         title:Will allow you to read and write emails having their content converted into Markdown, if possible
-              div
-                class:row
-                widgets
+                        widgets
+                          input:sephia-settings-compose-markdown
+                            type:checkbox
+                            .data-field:markdown
+                          span
+                            innerValue:Use Markdown
                   div
-                    class:col right
+                    class:col-100
                     widgets
                       div
-                        class:strip
+                        class:strip right
                         widgets
                           button
                             innerValue:Mark all emails as read
@@ -381,22 +348,15 @@ create-event:sephia._internals.widgets.settings
                 class:row
                 widgets
                   div
-                    class:col
-                    widgets
-                      label
-                        innerValue:POP3 server settings
-              div
-                class:row
-                widgets
-                  div
                     class:col-50
                     widgets
                       div
                         class:strip fill
                         widgets
                           label
-                            innerValue:Srv
+                            innerValue:Server
                             for:sephia-settings-pop3-server
+                            class:description
                           input:sephia-settings-pop3-server
                             .data-field:pop3-server
                             type:text
@@ -406,11 +366,10 @@ create-event:sephia._internals.widgets.settings
                             oninit
                               micro.page.set-focus:sephia-settings-pop3-server
                           label
-                            for:sephia-settings-pop3-delete
-                            innerValue:Del
-                            title:Delete emails from POP3 server once they're fetched
-                          span
                             widgets
+                              span
+                                innerValue:Delete
+                                title:Delete emails from POP3 server once they're fetched
                               input:sephia-settings-pop3-delete
                                 .data-field:pop3-delete
                                 type:checkbox
@@ -423,6 +382,7 @@ create-event:sephia._internals.widgets.settings
                           label
                             innerValue:Port
                             for:sephia-settings-pop3-port
+                            class:description
                           input:sephia-settings-pop3-port
                             type:number
                             .data-field:pop3-port
@@ -430,23 +390,15 @@ create-event:sephia._internals.widgets.settings
                             value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/pop3-port|/../*/.defaults/*/pop3-port)/$?value
                             onkeydown:@"if (event.keyCode == 13) {p5.$('sephia-settings-next').raise('onclick');return false;}"
                           label
-                            for:sephia-settings-pop3-ssl
-                            innerValue:SSL
-                            title:Use SSL/TLS to connect to POP3 server
-                          span
                             widgets
+                              span
+                                innerValue:SSL
+                                title:Use SSL/TLS to connect to POP3 server
+                                class:description
                               input:sephia-settings-pop3-ssl
                                 .data-field:pop3-ssl
                                 type:checkbox
                                 checked
-              div
-                class:row air-top
-                widgets
-                  div
-                    class:col
-                    widgets
-                      label
-                        innerValue:POP3 username/password
               div
                 class:row
                 widgets
@@ -459,6 +411,7 @@ create-event:sephia._internals.widgets.settings
                           label
                             innerValue:Username
                             for:sephia-settings-pop3-username
+                            class:description
                           input:sephia-settings-pop3-username
                             .data-field:pop3-username
                             type:text
@@ -487,6 +440,7 @@ create-event:sephia._internals.widgets.settings
                         widgets
                           label
                             innerValue:Password
+                            class:description
                             for:sephia-settings-pop3-password
                           input:sephia-settings-pop3-password
                             type:password
@@ -552,10 +506,7 @@ create-event:sephia._internals.widgets.settings
                             href:"https://myaccount.google.com/lesssecureapps"
                             target:_blank
                             innerValue:Enable POP3 access to GMail 1
-                          br
-                          span
-                            innerValue:-
-                          br
+                            style:"margin-right:5rem;"
                           a
                             href:"https://mail.google.com/mail/#settings/fwdandpop"
                             target:_blank
@@ -571,14 +522,6 @@ create-event:sephia._internals.widgets.settings
                 class:row
                 widgets
                   div
-                    class:col
-                    widgets
-                      label
-                        innerValue:SMTP server settings
-              div
-                class:row
-                widgets
-                  div
                     class:col-50
                     widgets
                       div
@@ -587,6 +530,7 @@ create-event:sephia._internals.widgets.settings
                           label
                             innerValue:Server
                             for:sephia-settings-smtp-server
+                            class:description
                           input:sephia-settings-smtp-server
                             .data-field:smtp-server
                             type:text
@@ -603,6 +547,7 @@ create-event:sephia._internals.widgets.settings
                         widgets
                           label
                             innerValue:Port
+                            class:description
                             for:sephia-settings-smtp-port
                           input:sephia-settings-smtp-port
                             type:number
@@ -611,22 +556,13 @@ create-event:sephia._internals.widgets.settings
                             value:x:(/../*/p5.auth.my-settings.get/*/sephia/*/smtp-port|/../*/.defaults/*/smtp-port)/$?value
                             onkeydown:@"if (event.keyCode == 13) {p5.$('sephia-settings-next').raise('onclick');return false;}"
                           label
-                            for:sephia-settings-smtp-ssl
-                            innerValue:SSL
-                          span
                             widgets
+                              span
+                                innerValue:SSL
                               input:sephia-settings-smtp-ssl
                                 .data-field:smtp-ssl
                                 type:checkbox
                                 checked
-              div
-                class:row air-top
-                widgets
-                  div
-                    class:col
-                    widgets
-                      label
-                        innerValue:SMTP username/password
               div
                 class:row
                 widgets
@@ -638,6 +574,7 @@ create-event:sephia._internals.widgets.settings
                         widgets
                           label
                             innerValue:Username
+                            class:description
                             for:sephia-settings-smtp-username
                           input:sephia-settings-smtp-username
                             .data-field:smtp-username
@@ -667,6 +604,7 @@ create-event:sephia._internals.widgets.settings
                         widgets
                           label
                             innerValue:Password
+                            class:description
                             for:sephia-settings-smtp-password
                           input:sephia-settings-smtp-password
                             type:password
@@ -905,6 +843,7 @@ create-event:sephia._internals.widgets.settings
                         widgets
                           label
                             for:sephia-settings-pgp-password
+                            class:description
                             innerValue:Password
                           input:sephia-settings-pgp-password
                             .data-field:pgp-password
@@ -925,6 +864,7 @@ create-event:sephia._internals.widgets.settings
                         widgets
                           label
                             innerValue:Babelizers
+                            class:description
                             for:sephia-settings-subject-generator
                           input:sephia-settings-subject-generator
                             type:text
@@ -1265,33 +1205,36 @@ setTimeout(function(){
                           div
                             class:col
                             widgets
-                              input:sephia-settings-holloywood-spam-filter
-                                type:checkbox
-                                .data-field:hollywood-spam-filter
                               label
-                                for:sephia-settings-holloywood-spam-filter
-                                innerValue:Hollywood filter
                                 title:All emails coming from people that you have not first sent an email to, will be treated as spam
+                                widgets
+                                  input:sephia-settings-holloywood-spam-filter
+                                    type:checkbox
+                                    .data-field:hollywood-spam-filter
+                                  span
+                                    innerValue:Hollywood filter
                           div
                             class:col
                             widgets
-                              input:sephia-settings-signature-spam-filter
-                                type:checkbox
-                                .data-field:signature-spam-filter
                               label
-                                for:sephia-settings-signature-spam-filter
-                                innerValue:Signature filter
                                 title:All emails that are not cryptographically signed will be treated as spam
+                                widgets
+                                  input:sephia-settings-signature-spam-filter
+                                    type:checkbox
+                                    .data-field:signature-spam-filter
+                                  span
+                                    innerValue:Signature filter
                           div
                             class:col
                             widgets
-                              input:sephia-settings-cryptography-spam-filter
-                                type:checkbox
-                                .data-field:cryptography-spam-filter
                               label
-                                for:sephia-settings-cryptography-spam-filter
-                                innerValue:Cryptography filter
                                 title:All emails that are not encrypted will be treated as spam
+                                widgets
+                                  input:sephia-settings-cryptography-spam-filter
+                                    type:checkbox
+                                    .data-field:cryptography-spam-filter
+                                  span
+                                    innerValue:Cryptography filter
 
           /*
            * Contacts.

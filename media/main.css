@@ -2,10 +2,6 @@
     display: none;
 }
 
-.sephia-contacts-autocompleter-item:first-child, .sephia-unread {
-    font-weight: 700;
-}
-
 .sephia-contacts-grid, .sephia-inbox {
     table-layout: fixed;
 }
@@ -44,38 +40,38 @@
     white-space: nowrap;
 }
 
-    .sephia-inbox td:nth-child(1) {
-        width: 100px;
-    }
+.sephia-inbox td:nth-child(1) {
+    width: 100px;
+}
 
-    .sephia-inbox td:nth-child(3) {
-        width: 200px;
-        white-space: nowrap;
-        overflow: visible;
-        text-align: left;
-    }
+.sephia-inbox td:nth-child(3) {
+    width: 200px;
+    white-space: nowrap;
+    overflow: visible;
+    text-align: left;
+}
 
-        .sephia-inbox td:nth-child(3) .icon-paperclip {
-            float: right;
-            color: #e0e0e0;
-            padding-left: 20px;
-        }
+.sephia-inbox td:nth-child(3) .icon-paperclip {
+    float: right;
+    color: #e0e0e0;
+    padding-left: 20px;
+}
 
-    .sephia-inbox td:nth-child(4) {
-        width: 50px;
-        text-align: right;
-    }
+.sephia-inbox td:nth-child(4) {
+    width: 50px;
+    text-align: right;
+}
 
-        .sephia-inbox td:nth-child(4) button {
-            margin-bottom: 0;
-            height: 30px;
-            padding: 8px 15px 7px;
-            opacity: .3;
-        }
+.sephia-inbox td:nth-child(4) button {
+    margin-bottom: 0;
+    height: 30px;
+    padding: 8px 15px 7px;
+    opacity: .3;
+}
 
-            .sephia-inbox td:nth-child(4) button:active, .sephia-inbox td:nth-child(4) button:focus, .sephia-inbox td:nth-child(4) button:hover {
-                opacity: 1;
-            }
+.sephia-inbox td:nth-child(4) button:active, .sephia-inbox td:nth-child(4) button:focus, .sephia-inbox td:nth-child(4) button:hover {
+    opacity: 1;
+}
 
 .sephia-inbox tbody tr td {
     border-top: none;
@@ -83,25 +79,25 @@
 }
 
 @media screen and (min-width:800px) {
-    .sephia-inbox td:nth-child(1), .sephia-inbox td:nth-child(3), .sephia-inbox th:nth-child(1), .sephia-inbox th:nth-child(3), table.sephia-contacts-grid tr td:nth-child(1), table.sephia-contacts-grid tr th:nth-child(1), table.sephia-settings-pgp-keys tr td:nth-child(2), table.sephia-settings-pgp-keys tr td:nth-child(3), table.sephia-settings-pgp-keys tr td:nth-child(4), table.sephia-settings-pgp-keys tr th:nth-child(2), table.sephia-settings-pgp-keys tr th:nth-child(3), table.sephia-settings-pgp-keys tr th:nth-child(4) {
-        display: table-cell;
-    }
+.sephia-inbox td:nth-child(1), .sephia-inbox td:nth-child(3), .sephia-inbox th:nth-child(1), .sephia-inbox th:nth-child(3), table.sephia-contacts-grid tr td:nth-child(1), table.sephia-contacts-grid tr th:nth-child(1), table.sephia-settings-pgp-keys tr td:nth-child(2), table.sephia-settings-pgp-keys tr td:nth-child(3), table.sephia-settings-pgp-keys tr td:nth-child(4), table.sephia-settings-pgp-keys tr th:nth-child(2), table.sephia-settings-pgp-keys tr th:nth-child(3), table.sephia-settings-pgp-keys tr th:nth-child(4) {
+    display: table-cell;
+}
 
-    .sephia-inbox td:nth-child(1) {
-        width: 200px;
-    }
+.sephia-inbox td:nth-child(1) {
+    width: 200px;
+}
 }
 
 @media screen and (min-width:700px) {
-    .sephia-inbox td:nth-child(3) {
-        display: table-cell;
-    }
+.sephia-inbox td:nth-child(3) {
+    display: table-cell;
+}
 }
 
 @media screen and (min-width:600px) {
-    .sephia-inbox td:nth-child(1) {
-        display: table-cell;
-    }
+.sephia-inbox td:nth-child(1) {
+    display: table-cell;
+}
 }
 
 .sephia-reader {
@@ -152,43 +148,43 @@
     background-color: #fcfcfc;
 }
 
-    .sephia-reader-received .sephia-reader-content > blockquote > blockquote, .sephia-reader-received .sephia-reader-content > blockquote > blockquote > blockquote > blockquote, .sephia-reader-received .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote, .sephia-reader-received .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote, .sephia-reader-sent .sephia-reader-content > blockquote, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote {
-        background-color: #fff;
-    }
+.sephia-reader-received .sephia-reader-content > blockquote > blockquote, .sephia-reader-received .sephia-reader-content > blockquote > blockquote > blockquote > blockquote, .sephia-reader-received .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote, .sephia-reader-received .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote, .sephia-reader-sent .sephia-reader-content > blockquote, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote {
+    background-color: #fff;
+}
 
-        .sephia-reader-received .sephia-reader-content > blockquote:after, .sephia-reader-received .sephia-reader-content > blockquote > blockquote > blockquote:after, .sephia-reader-received .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote:after, .sephia-reader-received .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote:after {
-            content: 'You said';
-            position: absolute;
-            bottom: 5px;
-            right: 5px;
-            color: #ccc;
-            font-size: .8rem;
-            font-style: italic;
-        }
+.sephia-reader-received .sephia-reader-content > blockquote:after, .sephia-reader-received .sephia-reader-content > blockquote > blockquote > blockquote:after, .sephia-reader-received .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote:after, .sephia-reader-received .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote:after {
+    content: 'You said';
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    color: #ccc;
+    font-size: .8rem;
+    font-style: italic;
+}
 
-        .sephia-reader-received .sephia-reader-content > blockquote > blockquote:after, .sephia-reader-received .sephia-reader-content > blockquote > blockquote > blockquote > blockquote:after, .sephia-reader-received .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote:after, .sephia-reader-received .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote:after, .sephia-reader-sent .sephia-reader-content > blockquote:after, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote:after, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote:after, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote:after {
-            content: 'The other party said';
-            position: absolute;
-            bottom: 5px;
-            right: 5px;
-            color: #ccc;
-            font-size: .8rem;
-            font-style: italic;
-        }
+.sephia-reader-received .sephia-reader-content > blockquote > blockquote:after, .sephia-reader-received .sephia-reader-content > blockquote > blockquote > blockquote > blockquote:after, .sephia-reader-received .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote:after, .sephia-reader-received .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote:after, .sephia-reader-sent .sephia-reader-content > blockquote:after, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote:after, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote:after, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote:after {
+    content: 'The other party said';
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    color: #ccc;
+    font-size: .8rem;
+    font-style: italic;
+}
 
-        .sephia-reader-sent .sephia-reader-content > blockquote > blockquote, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote > blockquote, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote {
-            background-color: #fcfcfc;
-        }
+.sephia-reader-sent .sephia-reader-content > blockquote > blockquote, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote > blockquote, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote {
+    background-color: #fcfcfc;
+}
 
-            .sephia-reader-sent .sephia-reader-content > blockquote > blockquote:after, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote > blockquote:after, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote:after, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote:after {
-                content: 'You said';
-                position: absolute;
-                bottom: 5px;
-                right: 5px;
-                color: #ccc;
-                font-size: .8rem;
-                font-style: italic;
-            }
+.sephia-reader-sent .sephia-reader-content > blockquote > blockquote:after, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote > blockquote:after, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote:after, .sephia-reader-sent .sephia-reader-content > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote > blockquote:after {
+    content: 'You said';
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    color: #ccc;
+    font-size: .8rem;
+    font-style: italic;
+}
 
 .sephia-reader-meta-wrapper {
     color: #999;
@@ -215,18 +211,18 @@
     background: 0 0;
 }
 
-    .sephia-attachments div.warning button {
-        background: linear-gradient(#fee,#fcc);
-    }
+.sephia-attachments div.warning button {
+    background: linear-gradient(#fee,#fcc);
+}
 
 @keyframes sephia-composer-ajax-wait {
-    0%,15% {
-        opacity: 0;
-    }
+0%,15% {
+    opacity: 0;
+}
 
-    100% {
-        opacity: 1;
-    }
+100% {
+    opacity: 1;
+}
 }
 
 .sephia-composer-ajax-wait {
@@ -243,29 +239,30 @@
     animation-fill-mode: forwards;
 }
 
-    .sephia-composer-ajax-wait h1 {
-        display: block;
-        width: 300px;
-        margin-left: auto;
-        margin-right: auto;
-        margin-top: 25%;
-        color: #fdfdfd;
-    }
+.sephia-composer-ajax-wait h1 {
+    display: block;
+    width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 25%;
+    color: #fdfdfd;
+}
 
 .sephia-compose-bcc-wrapper, .sephia-compose-cc-wrapper, .sephia-compose-to-wrapper {
     position: relative;
 }
 
-    .sephia-compose-bcc-wrapper > label:first-child, .sephia-compose-cc-wrapper > label:first-child, .sephia-compose-to-wrapper > label:first-child {
-        min-width: auto;
-    }
+.sephia-compose-bcc-wrapper > label:first-child, .sephia-compose-cc-wrapper > label:first-child, .sephia-compose-to-wrapper > label:first-child {
+    min-width: auto;
+}
 
 .sephia-contacts-autocompleter {
     position: absolute;
     left: 35px;
     top: calc(100% - 10px);
-    z-index: 1000;
-    background: var(--wid-dark-col);
+    z-index: 5000;
+    background: var(--background);
+    min-width: 15rem;
 }
 
 .sephia-contacts-autocompleter-item {
@@ -273,14 +270,17 @@
     display: list-item;
     list-style-type: none;
     white-space: nowrap;
-    color: var(--form-txt-col);
     padding: 7px 20px;
     font-size: .7rem;
 }
 
-    .sephia-contacts-autocompleter-item:hover {
-        background: var(--wid-darker-col);
-    }
+.sephia-contacts-autocompleter-item:first-child, .sephia-unread {
+    font-weight: 700;
+}
+
+.sephia-contacts-autocompleter-item:hover {
+    background: rgba(0,0,0,.2);
+}
 
 .sephia-contacts-grid tr td:nth-child(1), .sephia-contacts-grid tr th:nth-child(1) {
     width: 250px;
@@ -306,23 +306,23 @@
     overflow: visible;
 }
 
-    .sephia-safe:after, .sephia-unknown:after, .sephia-unsafe:after {
-        font-family: icomoon !important;
-        position: absolute;
-        bottom: 1rem;
-        left: 1rem;
-        color: #ddd;
-        font-size: 1.7rem;
-    }
+.sephia-safe:after, .sephia-unknown:after, .sephia-unsafe:after {
+    font-family: icomoon !important;
+    position: absolute;
+    bottom: 1rem;
+    left: 1rem;
+    color: #ddd;
+    font-size: 1.7rem;
+}
 
-    .sephia-unsafe:after {
-        content: '\e9e5';
-    }
+.sephia-unsafe:after {
+    content: '\e9e5';
+}
 
-    .sephia-safe:after {
-        content: '\e9e1';
-    }
+.sephia-safe:after {
+    content: '\e9e1';
+}
 
-    .sephia-unknown:after {
-        content: '\e9f7';
-    }
+.sephia-unknown:after {
+    content: '\e9f7';
+}

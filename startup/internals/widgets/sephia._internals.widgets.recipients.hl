@@ -156,6 +156,7 @@ create-event:sephia._internals.widgets.recipients
          * for our autocompleter widget.
          */
         p5.web.widgets.get-parent:x:/@p5.web.post.get/*?value
+        p5.web.widgets.get-parent:x:/-/*/*?value
 
         /*
          * Checking if a previous autocompleter exists, and if so,
@@ -195,7 +196,7 @@ create-event:sephia._internals.widgets.recipients
                 role:button
                 .value:x:/@_dp/#/*/email?value
                 tabindex:-1
-                innerValue:{0} &lt;{1}&gt;
+                innerValue:{0} <{1}>
                   :x:/@_dp/#/*/name?value
                   :x:/@_dp/#/*/email?value
                 onclick
@@ -341,82 +342,91 @@ p5.sephia_isTextSelected = function(txt) {{
       class:row air-top
       widgets
         div
-          class:col-50 strip fill sephia-compose-to-wrapper
+          class:col-50
           widgets
-            label
-              innerValue:To
-              oninit
+            div
+              class:strip fill sephia-compose-to-wrapper
+              widgets
+                label
+                  innerValue:To
+                  oninit
 
-                /*
-                 * Making sure label is associated with text input field.
-                 */
-                p5.web.widgets.get-parent:x:/../*/_event?value
-                p5.web.widgets.find-first:x:/-/*/*?value
-                  element:input
-                set-widget-property:x:/../*/_event?value
-                  for:x:/@p5.web.widgets.find-first/*/*?value
+                    /*
+                     * Making sure label is associated with text input field.
+                     */
+                    p5.web.widgets.get-parent:x:/../*/_event?value
+                    p5.web.widgets.find-first:x:/-/*/*?value
+                      element:input
+                    set-widget-property:x:/../*/_event?value
+                      for:x:/@p5.web.widgets.find-first/*/*?value
 
-            input
-              type:text
-              class:sephia-compose-recipients-to
-              .data-field:to
-              .recipient
-              onkeypress:@"p5.sephia_search_contacts(event);"
-              onkeydown:@"return p5.sephia_search_keydown(event);"
-              onfocus:@"p5.sephia_search_focus(event);"
-              onblur:@"p5.sephia_search_blur(event);"
+                input
+                  type:text
+                  class:sephia-compose-recipients-to
+                  .data-field:to
+                  .recipient
+                  onkeypress:@"p5.sephia_search_contacts(event);"
+                  onkeydown:@"return p5.sephia_search_keydown(event);"
+                  onfocus:@"p5.sephia_search_focus(event);"
+                  onblur:@"p5.sephia_search_blur(event);"
 
         div
-          class:col-25 strip fill sephia-compose-cc-wrapper
+          class:col-25
           widgets
-            label
-              innerValue:Cc
-              oninit
+            div
+              class:strip fill sephia-compose-cc-wrapper
+              widgets
+                label
+                  innerValue:Cc
+                  oninit
 
-                /*
-                 * Making sure label is associated with text input field.
-                 */
-                p5.web.widgets.get-parent:x:/../*/_event?value
-                p5.web.widgets.find-first:x:/-/*/*?value
-                  element:input
-                set-widget-property:x:/../*/_event?value
-                  for:x:/@p5.web.widgets.find-first/*/*?value
+                    /*
+                     * Making sure label is associated with text input field.
+                     */
+                    p5.web.widgets.get-parent:x:/../*/_event?value
+                    p5.web.widgets.find-first:x:/-/*/*?value
+                      element:input
+                    set-widget-property:x:/../*/_event?value
+                      for:x:/@p5.web.widgets.find-first/*/*?value
 
-            input
-              type:text
-              class:sephia-compose-recipients-cc
-              .data-field:cc
-              .recipient
-              onkeypress:@"p5.sephia_search_contacts(event);"
-              onkeydown:@"return p5.sephia_search_keydown(event);"
-              onfocus:@"p5.sephia_search_focus(event);"
-              onblur:@"p5.sephia_search_blur(event);"
+                input
+                  type:text
+                  class:sephia-compose-recipients-cc
+                  .data-field:cc
+                  .recipient
+                  onkeypress:@"p5.sephia_search_contacts(event);"
+                  onkeydown:@"return p5.sephia_search_keydown(event);"
+                  onfocus:@"p5.sephia_search_focus(event);"
+                  onblur:@"p5.sephia_search_blur(event);"
 
         div
-          class:col-25 strip fill sephia-compose-bcc-wrapper
+          class:col-25
           widgets
-            label
-              innerValue:Bcc
-              oninit
+            div
+              class:strip fill sephia-compose-bcc-wrapper
+              widgets
+                label
+                  innerValue:Bcc
+                  oninit
 
-                /*
-                 * Making sure label is associated with text input field.
-                 */
-                p5.web.widgets.get-parent:x:/../*/_event?value
-                p5.web.widgets.find-first:x:/-/*/*?value
-                  element:input
-                set-widget-property:x:/../*/_event?value
-                  for:x:/@p5.web.widgets.find-first/*/*?value
+                    /*
+                     * Making sure label is associated with text input field.
+                     */
+                    p5.web.widgets.get-parent:x:/../*/_event?value
+                    p5.web.widgets.find-first:x:/-/*/*?value
+                      element:input
+                    set-widget-property:x:/../*/_event?value
+                      for:x:/@p5.web.widgets.find-first/*/*?value
 
-            input
-              type:text
-              class:sephia-compose-recipients-bcc
-              .data-field:bcc
-              .recipient
-              onkeypress:@"p5.sephia_search_contacts(event);"
-              onkeydown:@"return p5.sephia_search_keydown(event);"
-              onfocus:@"p5.sephia_search_focus(event);"
-              onblur:@"p5.sephia_search_blur(event);"
+                input
+                  type:text
+                  class:sephia-compose-recipients-bcc
+                  .data-field:bcc
+                  .recipient
+                  onkeypress:@"p5.sephia_search_contacts(event);"
+                  onkeydown:@"return p5.sephia_search_keydown(event);"
+                  onfocus:@"p5.sephia_search_focus(event);"
+                  onblur:@"p5.sephia_search_blur(event);"
 
 
 

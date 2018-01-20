@@ -98,14 +98,10 @@ p5.mysql.connect:[sephia]
               .folder
               .prefix
               .filename
-            eval-x:x:/+/*/*/*
-            p5.web.session.set:sephia.core.file-download
-              src
-                file
-                  folder:x:/@get-widget-property/*/*/.folder?value
-                  prefix:x:/@get-widget-property/*/*/.prefix?value
-                  filename:x:/@get-widget-property/*/*/.filename?value
-            p5.web.reload-location
+            micro.download.file:{0}{1}{2}
+              folder:x:/@get-widget-property/*/*/.folder?value
+              prefix:x:/@get-widget-property/*/*/.prefix?value
+              filename:x:/@get-widget-property/*/*/.filename?value
 
     else
 
@@ -144,14 +140,10 @@ p5.mysql.connect:[sephia]
                       .folder
                       .prefix
                       .filename
-                    eval-x:x:/+/*/*/*
-                    p5.web.session.set:sephia.core.file-download
-                      src
-                        file
-                          folder:x:/@get-widget-property/*/*/.folder?value
-                          prefix:x:/@get-widget-property/*/*/.prefix?value
-                          filename:x:/@get-widget-property/*/*/.filename?value
-                    p5.web.reload-location
+                    micro.download.file:{0}{1}{2}
+                      folder:x:/@get-widget-property/*/*/.folder?value
+                      prefix:x:/@get-widget-property/*/*/.prefix?value
+                      filename:x:/@get-widget-property/*/*/.filename?value
                 
 
     /*

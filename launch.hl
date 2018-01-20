@@ -11,42 +11,6 @@
 
 
 /*
- * Checking if user is attempting to download a file, such as an attachment etc.
- *
- * When the user tries to download an attachment, the attachment he tries to download,
- * will be stored in a session variable, and the page will be reloaded.
- * This will ensure that the file is downloaded, while the user stays in his current URL.
- *
- * Here we check for that session variable, and if it exist, we simply serve that file,
- * for then to delete the session variable.
- */
-p5.web.session.get:sephia.core.file-download
-if:x:/@p5.web.session.get/*/*/*/filename?value
-
-  /*
-   * User has requested to download a file.
-   */
-  eval-x:x:/+/*
-  micro.evaluate.file:@SEPHIA/inbox/download-file.hl
-    filename:x:/@p5.web.session.get/*/*/*/filename?value
-    folder:x:/@p5.web.session.get/*/*/*/folder?value
-    prefix:x:/@p5.web.session.get/*/*/*/prefix?value
-
-  /*
-   * Clearing our session variable.
-   */
-  p5.web.session.set:sephia.core.file-download
-
-  /*
-   * Returning early to avoid evaluating the rest of the file.
-   */
-  return
-
-
-
-
-
-/*
  * Creating main content container.
  *
  * This is the place where "everything" is stored in Sephia, and is used to display
@@ -64,9 +28,7 @@ create-container-widget:sephia-main-container
 /*
  * Including Micro, and adding Awesome Fonts.
  */
-p5.web.include-css-file
-  @MICRO/media/micro.css
-  @MICRO/media/fonts.css
+micro.css.include
 
 
 
@@ -107,15 +69,6 @@ if:x:/@p5.auth.my-settings.get/*/sephia
   not
 
   /*
-   * User has no settings, displaying settings form, and returning early.
-   *
-   * First making sure we include the necessary default CSS skine files.
-   * By default, Sephia Five uses the "serious" skin.
-   */
-  p5.web.include-css-file:@MICRO/media/skins/serious.css
-  p5.web.include-css-file:@SEPHIA/media/main.css
-
-  /*
    * Then creating our settings widget, before we return early.
    */
   create-widget
@@ -145,7 +98,6 @@ if:x:/@p5.auth.my-settings.get/*/sephia
 
           div
             class:col-100
-            style:"margin-top:-36px;"
             widgets
               sephia._internals.widgets.settings
                 wizard-mode:true
@@ -154,16 +106,6 @@ if:x:/@p5.auth.my-settings.get/*/sephia
    * Returning early to avoid evaluating the rest of this file.
    */
   return
-
-
-
-
-
-/*
- * Including the Micro skin user has selected in his settings.
- */
-p5.web.include-css-file:@MICRO/media/skins/{0}.css
-  :x:/@p5.auth.my-settings.get/*/sephia/*/skin?value
 
 
 
