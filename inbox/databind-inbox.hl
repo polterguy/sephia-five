@@ -1,4 +1,3 @@
-﻿
 /*
  * Databinds our inbox datagrid.
  *
@@ -261,21 +260,21 @@ order by id desc limit @limit offset @offset"
           src
             literal
               element:span
-              class:icon-smile-o
+              class:icon-smile
 
       case:int:1
         add:x:/..for-each/*/add/**/Subject/*/widgets/*/div/*/widgets
           src
             literal
               element:span
-              class:icon-meh-o
+              class:icon-neutral
 
       case:int:2
         add:x:/..for-each/*/add/**/Subject/*/widgets/*/div/*/widgets
           src
             literal
               element:span
-              class:icon-frown-o
+              class:icon-sad
 
     /*
      * Forward evaluating arguments, and creating our row.

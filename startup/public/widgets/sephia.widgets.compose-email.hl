@@ -412,37 +412,59 @@ p5.sephia_send_email = function(e) {{
                          * though some recipient(s) are not in his list of contacts.
                          */
                         eval-x:x:/+/**(/_widget|/_composer|/parent)
-                        micro.windows.info:@"At least one recipient was not a contact, send anyway?"
-                          class:micro-windows-info micro-windows-info-sticky warning
-                          widgets
-                            button
-                              innerValue:No
-                              oninit
-                                micro.page.set-focus:x:/../*/_event?value
-                              onclick
-                                delete-widget:micro-windows-info
-                            button
-                              innerValue:Yes
-                              onclick:@"return p5.sephia_send_email(event);"
-                              .onclick
+                        create-widgets
+                          micro.widgets.modal:sephia-recipient-not-contact-modal
+                            widgets
+                              h3
+                                innerValue:Warning!
+                              p
+                                innerValue:At least one recipient was not a contact, send anyway?
+                              div
+                                class:strip right
+                                widgets
+                                  button
+                                    innerValue:Yes
+                                    oninit
 
-                                /*
-                                 * Creating a hidden input element, that will be serialized when form is
-                                 * serialized, and pass in [force] to [sephia.send-email], forcing the
-                                 * email to be sent, even though one of the contacts was not in user's list of contacts.
-                                 *
-                                 * Then we simply invoke [.onclick] once again, which will force the email to be sent.
-                                 */
-                                _widget:x:/../*/_event?value
-                                _composer:x:/../*/p5.web.widgets.find-first-ancestor/*/*?value
-                                create-widget
-                                  parent:x:/@_composer?value
-                                  element:input
-                                  type:hidden
-                                  .data-field:force
-                                  value:true
-                                p5.web.widgets.ajax-events.raise:x:/@_widget?value
-                                  .onclick
+                                      /*
+                                       * Setting initial focus to "Yes" button.
+                                       */
+                                      micro.page.set-focus:x:/../*/_event?value
+
+                                    onclick:@"return p5.sephia_send_email(event);"
+                                    .onclick
+
+                                      /*
+                                       * Creating a hidden input element, that will be serialized when form is
+                                       * serialized, and pass in [force] to [sephia.send-email], forcing the
+                                       * email to be sent, even though one of the contacts was not in user's list of contacts.
+                                       *
+                                       * Then we simply invoke [.onclick] once again, which will force the email to be sent.
+                                       */
+                                      _widget:x:/../*/_event?value
+                                      _composer:x:/../*/p5.web.widgets.find-first-ancestor/*/*?value
+                                      create-widget
+                                        parent:x:/@_composer?value
+                                        element:input
+                                        type:hidden
+                                        .data-field:force
+                                        value:true
+                                      p5.web.widgets.ajax-events.raise:x:/@_widget?value
+                                        .onclick
+
+                                      /*
+                                       * Deleting widget, since email is now about to be sent.
+                                       */
+                                      delete-widget:sephia-recipient-not-contact-modal
+
+                                  button
+                                    innerValue:No
+                                    onclick
+
+                                      /*
+                                       * Simply deleting widget, to allow for user to edit recipients.
+                                       */
+                                      delete-widget:sephia-recipient-not-contact-modal
 
                         return
 

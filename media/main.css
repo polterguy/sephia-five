@@ -6,25 +6,13 @@
     table-layout: fixed;
 }
 
-.sephia-settings .micro-tab .micro-tab-views {
-    box-shadow:2px 2px 5px rgba(0,0,0,.2);
-}
-
-.container {
-    margin-bottom: 150px;
-}
-
-.reader-action-button, .sephia-attachment, .sephia-meta {
-    margin-bottom: 0;
-}
-
 .sephia-inbox {
     width: 100%;
 }
 
 .sephia-status {
     float: left;
-    color: silver;
+    color: rgba(0,0,0,.2);
     font-size: 1.3rem;
     padding-right: 1rem;
 }
@@ -106,7 +94,7 @@
 }
 
 .sephia-reader-sent {
-    background-color: #fcfcfc;
+    background-color: rgba(0,0,0,.05);
 }
 
 .sephia-reader-subject {
@@ -157,7 +145,6 @@
     position: absolute;
     bottom: 5px;
     right: 5px;
-    color: #ccc;
     font-size: .8rem;
     font-style: italic;
 }
@@ -167,7 +154,6 @@
     position: absolute;
     bottom: 5px;
     right: 5px;
-    color: #ccc;
     font-size: .8rem;
     font-style: italic;
 }
@@ -311,7 +297,6 @@
     position: absolute;
     bottom: 1rem;
     left: 1rem;
-    color: #ddd;
     font-size: 1.7rem;
 }
 

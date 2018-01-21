@@ -1,4 +1,3 @@
-﻿
 /*
  * Shows the details for the given [_arg] contact.
  */
@@ -75,6 +74,7 @@ create-event:sephia.contacts.show
                 label
                   for:sephia-contact-fingerprint
                   innerValue:Fingerprint
+                  class:description-7
                 input:sephia-contact-fingerprint
                   type:text
                   placeholder:Fingerprint ...
@@ -324,11 +324,10 @@ create-event:sephia.contacts.show
                                     delete-widget:sephia-contacts-choose-fingerprint
 
                 label
-                  for:sephia-contact-is-verified
-                  innerValue:Verified
                   title:Sign contact's PGP key, and set his public key as verified
-                span
                   widgets
+                    span
+                      innerValue:Verified
                     input:sephia-contact-is-verified
                       type:checkbox
                       .data-field:verified
