@@ -349,7 +349,7 @@ create-event:sephia.contacts.show
                        * Serializing form and saving new information for contact 
                        * to database.
                        */
-                      micro.widgets.wizard-form.value:sephia-contacts-data
+                      micro.form.serialize:sephia-contacts-data
 
                       /*
                        * Updating contact.
@@ -360,16 +360,16 @@ create-event:sephia.contacts.show
                        * Checking serialized value, and removing those not providing
                        * relevant data.
                        */
-                      if:x:/@micro.widgets.wizard-form.value/*/fingerprint?value
+                      if:x:/@micro.form.serialize/*/fingerprint?value
                         =:
-                        set:x:/@micro.widgets.wizard-form.value/*/fingerprint?value
-                        set:x:/@micro.widgets.wizard-form.value/*/verified
+                        set:x:/@micro.form.serialize/*/fingerprint?value
+                        set:x:/@micro.form.serialize/*/verified
 
                       /*
                        * Doing the actual update of our contact.
                        */
                       add:x:/+2
-                        src:x:/@micro.widgets.wizard-form.value/*
+                        src:x:/@micro.form.serialize/*
                       eval-x:x:/+/*/username
                       sephia.contacts.create-or-update
                         username:x:/@whoami/*/username?value

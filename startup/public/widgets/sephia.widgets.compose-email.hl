@@ -277,7 +277,7 @@ p5.sephia_send_email = function(e) {{
         /*
          * Obscurer widget, used when user is sending an email.
          */
-        micro.widgets.obscurer
+        micro.widgets.cover
           message:Sending your email, please wait ...
           style:"display:none;"
 

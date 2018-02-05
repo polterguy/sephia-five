@@ -1103,7 +1103,7 @@ create-event:sephia._internals.widgets.settings
                                              * Making sure we "lock" screen, until PGP key is generated.
                                              */
                                             create-widgets
-                                              micro.widgets.obscurer:sephia-pgp-obscurer
+                                              micro.widgets.cover:sephia-pgp-obscurer
                                                 message:Please wait while we create your PGP key pair ...
                                                 oninit
 
