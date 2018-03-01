@@ -224,7 +224,7 @@ create-event:sephia.contacts.show
                           src
                             item
                               .row
-                                .fingerprint::x:/@_dp/#?name
+                                .fingerprint:x:/@_dp/#?name
                                 onclick
 
                                   /*

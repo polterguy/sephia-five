@@ -158,9 +158,9 @@ p5.mysql.connect:[sephia]
     add:x:/../*/create-widget/**/widgets/=attachments
       src
         button
-          .folder::x:/@_dp/#/*/folder?value
-          .prefix::x:/@_dp/#/*/prefix?value
-          .filename::x:/@_dp/#/*/filename?value
+          .folder:x:/@_dp/#/*/folder?value
+          .prefix:x:/@_dp/#/*/prefix?value
+          .filename:x:/@_dp/#/*/filename?value
           innerValue:x:/@_dp/#/*/filename?value
 
   /*
